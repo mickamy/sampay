@@ -6,6 +6,8 @@ services:
       args:
         MAIN_GO_FILE: /src/cmd/api/main.go
         BIN_NAME: api
+      secrets:
+        - buf_token
     volumes:
       - ./backend:/src:delegated
       - /src/build
@@ -18,6 +20,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       target: dev
+      secrets:
+        - buf_token
     volumes:
       - ./frontend:/usr/src:delegated
       - /usr/src/build
@@ -25,6 +29,9 @@ services:
     ports:
       - "5173:5173"
 
+secrets:
+  buf_token:
+    file: secrets/buf_token
 
 volumes:
   go:

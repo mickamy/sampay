@@ -10,7 +10,11 @@ ENV BIN_NAME=$BIN_NAME
 WORKDIR /src
 
 ADD Makefile ./
-RUN make install-bin
+RUN make install-build install-dev
+
+RUN --mount=type=secret,id=buf_token \
+    BUF_TOKEN=$(cat /run/secrets/buf_token) && \
+    echo "$BUF_TOKEN" | buf registry login buf.build --token-stdin
 
 ADD . .
 
