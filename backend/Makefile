@@ -1,4 +1,5 @@
 .PHONY: \
+	build \
 	install \
 	install-build \
 	install-dev \
@@ -7,6 +8,9 @@
 	fmt \
 	lint \
 	help \
+
+build: ## Build the application
+	go build -o ./build/api ./cmd/api/main.go
 
 install: install-build install-dev install-mod ## Install all dependencies
 	@echo "All dependencies installed"
