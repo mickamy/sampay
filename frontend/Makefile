@@ -1,8 +1,7 @@
 .PHONY: \
 	build \
-	down \
-	down-v \
 	install \
+	help \
 
 build: ## Build the application
 	npm run build

@@ -1,0 +1,11 @@
+version: v2
+modules:
+  - name: buf.build/mickamy/sampay
+deps:
+  - buf.build/protocolbuffers/wellknowntypes
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE

@@ -11,6 +11,10 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@buf/mickamy_sampay.connectrpc_es": "^1.6.1-20250104044546-7afc785ad673.2",
+    "@bufbuild/protobuf": "^1.10.0",
+    "@connectrpc/connect": "^1.6.1",
+    "@connectrpc/connect-web": "^1.6.1",
     "@remix-run/node": "^2.15.2",
     "@remix-run/react": "^2.15.2",
     "@remix-run/serve": "^2.15.2",

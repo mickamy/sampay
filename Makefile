@@ -5,6 +5,7 @@
 	down \
 	down-v \
 	install \
+	help \
 
 build: ## Build the docker images
 	docker compose build

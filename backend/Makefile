@@ -1,20 +1,34 @@
 .PHONY: \
+	build \
 	install \
-	install-bin \
+	install-build \
+	install-dev \
 	install-mod \
+	gen \
 	fmt \
 	lint \
+	help \
 
-install: install-bin install-mod ## Install all dependencies
+build: ## Build the application
+	go build -o ./build/api ./cmd/api/main.go
+
+install: install-build install-dev install-mod ## Install all dependencies
 	@echo "All dependencies installed"
 
-install-bin: ## Install go bin dependencies
+install-build: ## Install build dependencies
+	go install github.com/bufbuild/buf/cmd/buf@latest
+
+install-dev: ## Install development dependencies
+	go install github.com/air-verse/air@latest
 	go install honnef.co/go/tools/cmd/staticcheck@latest
 	go install github.com/kisielk/errcheck@latest
-	go install github.com/air-verse/air@latest
 
 install-mod: ## Install go modules
 	go mod tidy
+
+gen: ## Generate all files
+	@echo "Generating files"
+	go generate ./...
 
 fmt: ## Run gofmt
 	gofmt -s -w .
