@@ -2,10 +2,10 @@ services:
   api:
     build:
       context: ./backend
-      dockerfile: Dockerfile
-      target: final
+      dockerfile: Dockerfile.dev
       args:
         MAIN_GO_FILE: /src/cmd/api/main.go
+        BIN_NAME: api
     volumes:
       - ./backend:/src:delegated
       - /src/build
