@@ -19,9 +19,9 @@ services:
       dockerfile: Dockerfile
       target: dev
     volumes:
-      - ./frontend:/src:delegated
-      - /src/build
-      - node_modules:/src/node_modules
+      - ./frontend:/usr/src:delegated
+      - /usr/src/build
+      - node_modules:/usr/src/node_modules
     ports:
       - "5173:5173"
 
