@@ -8,6 +8,8 @@ services:
         BIN_NAME: api
       secrets:
         - buf_token
+    env_file:
+      - .env.docker
     volumes:
       - ./backend:/src:delegated
       - /src/build
@@ -29,6 +31,26 @@ services:
     ports:
       - "5173:5173"
 
+  postgres:
+    image: postgres:16.4-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+      PGUSER: postgres
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
+      DB_NAME: sampay
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -h localhost" ]
+      interval: 3s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./backend/db:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
 secrets:
   buf_token:
     file: secrets/buf_token
@@ -36,3 +58,4 @@ secrets:
 volumes:
   go:
   node_modules:
+  postgres:

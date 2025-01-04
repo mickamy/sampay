@@ -4,6 +4,11 @@
 	install-build \
 	install-dev \
 	install-mod \
+	db-create \
+	db-migrate \
+	db-seed \
+	db-drop \
+	db-reset \
 	gen \
 	fmt \
 	lint \
@@ -17,6 +22,7 @@ install: install-build install-dev install-mod ## Install all dependencies
 
 install-build: ## Install build dependencies
 	go install github.com/bufbuild/buf/cmd/buf@latest
+	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 
 install-dev: ## Install development dependencies
 	go install github.com/air-verse/air@latest
@@ -25,6 +31,21 @@ install-dev: ## Install development dependencies
 
 install-mod: ## Install go modules
 	go mod tidy
+
+db-create: ## Create the database
+	PACKAGE_ROOT=$$(pwd) go run ./cmd/db/create/main.go
+
+db-migrate: ## Migrate the database
+	PACKAGE_ROOT=$$(pwd) go run ./cmd/db/migrate/main.go
+
+db-seed: ## Seed the database
+	PACKAGE_ROOT=$$(pwd) go run ./cmd/db/seed/main.go
+
+db-drop: ## Drop the database
+	PACKAGE_ROOT=$$(pwd) go run ./cmd/db/drop/main.go
+
+db-reset: db-drop db-create db-migrate db-seed ## Reset the database
+	@echo "Database reset"
 
 gen: ## Generate all files
 	@echo "Generating files"
