@@ -1,0 +1,29 @@
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: final
+      args:
+        MAIN_GO_FILE: /src/cmd/api/main.go
+    volumes:
+      - ./backend:/src:delegated
+      - /src/build
+      - go:/go
+
+  app:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production
+    volumes:
+      - ./frontend:/src:delegated
+      - /src/build
+      - node_modules:/src/node_modules
+    environment:
+      PUBLIC_API_BASE_URL: https://api.lvh.me/api
+      SESSION_SECRET: secret
+
+volumes:
+  go:
+  node_modules:
