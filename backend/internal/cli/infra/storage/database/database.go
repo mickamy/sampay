@@ -21,11 +21,11 @@ var (
 	writerOnce sync.Once
 	readerOnce sync.Once
 
-	writerDB *Database
-	readerDB *Database
+	writerDB *DB
+	readerDB *DB
 )
 
-func Connect(provider config.DatabaseConfigProvider, connType ConnectionType) (*Database, error) {
+func Connect(provider config.DatabaseConfigProvider, connType ConnectionType) (*DB, error) {
 	var err error
 	switch connType {
 	case WriterConnection:

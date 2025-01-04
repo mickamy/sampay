@@ -14,7 +14,7 @@ var (
 	instance *KVS
 )
 
-func Redis(cfg config.KVSConfig) (*KVS, error) {
+func Connect(cfg config.KVSConfig) (*KVS, error) {
 	var err error
 	if instance == nil {
 		once.Do(func() {
