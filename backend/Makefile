@@ -5,6 +5,10 @@
 	install-dev \
 	install-mod \
 	db-create \
+	db-migrate \
+	db-seed \
+	db-drop \
+	db-reset \
 	gen \
 	fmt \
 	lint \
@@ -30,6 +34,18 @@ install-mod: ## Install go modules
 
 db-create: ## Create the database
 	PACKAGE_ROOT=$$(pwd) go run ./cmd/db/create/main.go
+
+db-migrate: ## Migrate the database
+	PACKAGE_ROOT=$$(pwd) go run ./cmd/db/migrate/main.go
+
+db-seed: ## Seed the database
+	PACKAGE_ROOT=$$(pwd) go run ./cmd/db/seed/main.go
+
+db-drop: ## Drop the database
+	PACKAGE_ROOT=$$(pwd) go run ./cmd/db/drop/main.go
+
+db-reset: db-drop db-create db-migrate db-seed ## Reset the database
+	@echo "Database reset"
 
 gen: ## Generate all files
 	@echo "Generating files"
