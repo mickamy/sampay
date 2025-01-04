@@ -10,6 +10,7 @@
 	db-drop \
 	db-reset \
 	gen \
+	wire \
 	fmt \
 	lint \
 	help \
@@ -28,6 +29,7 @@ install-dev: ## Install development dependencies
 	go install github.com/air-verse/air@latest
 	go install honnef.co/go/tools/cmd/staticcheck@latest
 	go install github.com/kisielk/errcheck@latest
+	go install github.com/google/wire/cmd/wire@latest
 
 install-mod: ## Install go modules
 	go mod tidy
@@ -50,6 +52,9 @@ db-reset: db-drop db-create db-migrate db-seed ## Reset the database
 gen: ## Generate all files
 	@echo "Generating files"
 	go generate ./...
+
+wire: ## Generate wire files
+	wire ./...
 
 fmt: ## Run gofmt
 	gofmt -s -w .
