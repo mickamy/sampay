@@ -35,6 +35,6 @@ USER appuser
 
 COPY --from=build /build/app /build/
 
-EXPOSE 3000
+EXPOSE 8080
 
 ENTRYPOINT [ "/build/app" ]
