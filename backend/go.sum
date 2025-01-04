@@ -1,3 +1,5 @@
+buf.build/gen/go/mickamy/sampay/connectrpc/go v1.17.0-20250104044546-7afc785ad673.1 h1:+6b/loJ+HNmyrhlWihu8hm9ie9r2jSgqTXGpdEKRYas=
+buf.build/gen/go/mickamy/sampay/connectrpc/go v1.17.0-20250104044546-7afc785ad673.1/go.mod h1:yQWVPo32rGqT6AI3Jhib68A7StJksuqPkhjDGO+tzf4=
 connectrpc.com/connect v1.17.0 h1:W0ZqMhtVzn9Zhn2yATuUokDLO5N+gIuBWMOnsQrfmZk=
 connectrpc.com/connect v1.17.0/go.mod h1:0292hj1rnx8oFrStN7cB4jjVBeqs+Yx5yDIC2prWDO8=
 github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
