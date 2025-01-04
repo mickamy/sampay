@@ -1,6 +1,6 @@
 version: v2
 modules:
-  - path: proto
+  - name: buf.build/mickamy/sampay
 deps:
   - buf.build/protocolbuffers/wellknowntypes
 lint:
