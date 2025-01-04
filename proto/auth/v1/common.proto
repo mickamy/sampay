@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package auth.v1;
+
+import "google/protobuf/timestamp.proto";
+
+message Token {
+  string value = 1;
+  google.protobuf.Timestamp expires_at = 2;
+}
+
+message Tokens {
+  Token access = 1;
+  Token refresh = 2;
+}
