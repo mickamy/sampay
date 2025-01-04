@@ -64,9 +64,9 @@ func New(id string) (Tokens, error) {
 	return Tokens{Access: access, Refresh: refresh}, nil
 }
 
-func generateAccessToken(userID string) (Token, error) {
+func generateAccessToken(id string) (Token, error) {
 	claims := jwt.MapClaims{}
-	claims[idKey] = userID
+	claims[idKey] = id
 	exp := time.Now().Add(accessTokenExpiresIn)
 	claims["exp"] = exp.Unix()
 
@@ -78,9 +78,9 @@ func generateAccessToken(userID string) (Token, error) {
 	return Token{Value: accessTokenValue, ExpiresAt: exp}, nil
 }
 
-func generateRefreshToken(userID string, accessToken Token) (Token, error) {
+func generateRefreshToken(id string, accessToken Token) (Token, error) {
 	claims := jwt.MapClaims{}
-	claims[idKey] = userID
+	claims[idKey] = id
 	claims["jwt"] = accessToken.Value
 	exp := time.Now().Add(refreshTokenExpiresIn)
 	claims["exp"] = exp.Unix()
@@ -120,11 +120,11 @@ func ExtractID(tokenStr string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to verify jwt: %w", err)
 	}
-	userID, ok := claims[idKey].(string)
+	id, ok := claims[idKey].(string)
 	if !ok {
-		return "", fmt.Errorf("failed to extract user id from jwt")
+		return "", fmt.Errorf("failed to extract id from jwt")
 	}
-	return userID, nil
+	return id, nil
 }
 
 func IsRefreshTokenClaims(claims jwt.MapClaims) bool {
