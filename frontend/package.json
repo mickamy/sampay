@@ -11,9 +11,6 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^2.2.3",
-    "@connectrpc/connect": "^2.0.0",
-    "@connectrpc/connect-web": "^2.0.0",
     "@remix-run/node": "^2.15.2",
     "@remix-run/react": "^2.15.2",
     "@remix-run/serve": "^2.15.2",
@@ -22,8 +19,6 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@bufbuild/buf": "^1.48.0",
-    "@bufbuild/protoc-gen-es": "^2.2.3",
     "@remix-run/dev": "^2.15.2",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
