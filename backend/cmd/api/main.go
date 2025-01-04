@@ -9,31 +9,32 @@ import (
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/auth/v1/authv1connect"
 	authv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/auth/v1"
 	"connectrpc.com/connect"
+	"github.com/rs/cors"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 )
 
 func main() {
 	s := newServer()
+
+	fmt.Println("listening on port 8080...")
 	if err := s.ListenAndServe(); err != nil {
 		fmt.Println("failed to start server:", err)
 		os.Exit(1)
 	}
 }
 
-func newServer() http.Server {
+func newServer() *http.Server {
 	api := http.NewServeMux()
-
-	fmt.Println("listening on port 8080...")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		fmt.Println("Failed to start server:", err)
-	}
-
 	api.Handle(authv1connect.NewSessionServiceHandler(&SessionService{}))
 
-	return http.Server{
-		Addr:    ":8080",
-		Handler: api,
-	}
+	// TODO: restrict CORS
+	corsHandler := cors.AllowAll().Handler(api)
 
+	return &http.Server{
+		Addr:    ":8080",
+		Handler: h2c.NewHandler(corsHandler, &http2.Server{}),
+	}
 }
 
 type SessionService struct{}
