@@ -51,6 +51,20 @@ services:
     ports:
       - "5432:5432"
 
+  redis:
+    image: redis:7.0.15-alpine
+    volumes:
+      - redis:/data
+    ports:
+      - "6379:6379"
+    environment:
+      REDIS_PASSWORD: password
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+
 secrets:
   buf_token:
     file: secrets/buf_token
@@ -59,3 +73,4 @@ volumes:
   go:
   node_modules:
   postgres:
+  redis:
