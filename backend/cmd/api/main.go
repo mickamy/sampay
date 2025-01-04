@@ -1,34 +1,53 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"io"
 	"net/http"
+	"os"
+
+	"buf.build/gen/go/mickamy/sampay/connectrpc/go/auth/v1/authv1connect"
+	authv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/auth/v1"
+	"connectrpc.com/connect"
 )
 
 func main() {
-	fmt.Println("API server is running...")
-	http.HandleFunc("/echo", echoHandler)
+	s := newServer()
+	if err := s.ListenAndServe(); err != nil {
+		fmt.Println("failed to start server:", err)
+		os.Exit(1)
+	}
+}
+
+func newServer() http.Server {
+	api := http.NewServeMux()
 
 	fmt.Println("listening on port 8080...")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		fmt.Println("Failed to start server:", err)
 	}
+
+	api.Handle(authv1connect.NewSessionServiceHandler(&SessionService{}))
+
+	return http.Server{
+		Addr:    ":8080",
+		Handler: api,
+	}
+
 }
 
-func echoHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, "failed to read request body", http.StatusInternalServerError)
-		return
-	}
-	defer func(Body io.ReadCloser) {
-		_ = Body.Close()
-	}(r.Body)
+type SessionService struct{}
 
-	_, err = fmt.Fprintf(w, "Echo: %s", string(body))
-	if err != nil {
-		http.Error(w, "failed to write response", http.StatusInternalServerError)
-		return
-	}
+func (s *SessionService) SignIn(ctx context.Context, req *connect.Request[authv1.SignInRequest]) (*connect.Response[authv1.SignInResponse], error) {
+	panic("implement me")
 }
+
+func (s *SessionService) Refresh(ctx context.Context, req *connect.Request[authv1.RefreshRequest]) (*connect.Response[authv1.RefreshResponse], error) {
+	panic("implement	me")
+}
+
+func (s *SessionService) SignOut(ctx context.Context, req *connect.Request[authv1.SignOutRequest]) (*connect.Response[authv1.SignOutResponse], error) {
+	panic("implement me")
+}
+
+var _ authv1connect.SessionServiceHandler = (*SessionService)(nil)
