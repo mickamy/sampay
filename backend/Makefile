@@ -6,6 +6,7 @@
 	gen-pb \
 	fmt \
 	lint \
+	help \
 
 install: install-bin install-mod ## Install all dependencies
 	@echo "All dependencies installed"

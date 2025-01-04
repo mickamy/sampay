@@ -5,6 +5,8 @@
 	down \
 	down-v \
 	install \
+	gen \
+	help \
 
 build: ## Build the docker images
 	docker compose build
@@ -24,6 +26,10 @@ down-v: ## Stop the containers and remove volumes
 install: ## Install all dependencies
 	cd backend && make install
 	cd frontend && make install
+
+gen: ## Generate all files
+	cd backend && make gen
+	cd frontend && make gen
 
 help: ## Display a list of available Makefile targets with their descriptions
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
