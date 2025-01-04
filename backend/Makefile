@@ -4,6 +4,7 @@
 	install-build \
 	install-dev \
 	install-mod \
+	db-create \
 	gen \
 	fmt \
 	lint \
@@ -17,6 +18,7 @@ install: install-build install-dev install-mod ## Install all dependencies
 
 install-build: ## Install build dependencies
 	go install github.com/bufbuild/buf/cmd/buf@latest
+	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 
 install-dev: ## Install development dependencies
 	go install github.com/air-verse/air@latest
@@ -25,6 +27,9 @@ install-dev: ## Install development dependencies
 
 install-mod: ## Install go modules
 	go mod tidy
+
+db-create: ## Create the database
+	PACKAGE_ROOT=$$(pwd) go run ./cmd/db/create/main.go
 
 gen: ## Generate all files
 	@echo "Generating files"
