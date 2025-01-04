@@ -29,7 +29,6 @@ install-mod: ## Install go modules
 gen: gen-pb ## Generate all files
 
 gen-pb: ## Generate protobuf/connect files
-	rm -rf ./gen
 	buf generate ../proto
 
 fmt: ## Run gofmt
