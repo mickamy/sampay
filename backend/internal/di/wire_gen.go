@@ -8,12 +8,23 @@ package di
 
 import (
 	"mickamy.com/sampay/config"
+	"mickamy.com/sampay/internal/cli/infra/kvs"
+	"mickamy.com/sampay/internal/cli/infra/storage/database"
+	"mickamy.com/sampay/internal/domain/auth/di"
+	"mickamy.com/sampay/internal/domain/auth/repository"
+	"mickamy.com/sampay/internal/domain/auth/usecase"
+	di2 "mickamy.com/sampay/internal/domain/user/di"
+	repository2 "mickamy.com/sampay/internal/domain/user/repository"
 )
 
 // Injectors from wire.go:
 
 func InitInfras() (Infras, error) {
 	databaseConfig := config.Database()
+	db, err := provideDB(databaseConfig)
+	if err != nil {
+		return Infras{}, err
+	}
 	readWriter, err := provideReadWriter(databaseConfig)
 	if err != nil {
 		return Infras{}, err
@@ -27,17 +38,47 @@ func InitInfras() (Infras, error) {
 		return Infras{}, err
 	}
 	kvsConfig := config.KVS()
-	client, err := provideKVS(kvsConfig)
+	v, err := provideKVS(kvsConfig)
 	if err != nil {
 		return Infras{}, err
 	}
 	diInfras := Infras{
+		DB:         db,
 		ReadWriter: readWriter,
 		Writer:     writer,
 		Reader:     reader,
-		KVS:        client,
+		KVS:        v,
 	}
 	return diInfras, nil
+}
+
+func InitAuthRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di.Repositories {
+	authentication := repository.NewAuthentication(db)
+	session := repository.NewSession(kvs2)
+	repositories := di.Repositories{
+		Authentication: authentication,
+		Session:        session,
+	}
+	return repositories
+}
+
+func InitAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di.UseCases {
+	authentication := repository.NewAuthentication(db)
+	session := repository.NewSession(kvs2)
+	user := repository2.NewUser(db)
+	createSession := usecase.NewCreateSession(reader, authentication, session, user)
+	useCases := di.UseCases{
+		CreateSession: createSession,
+	}
+	return useCases
+}
+
+func InitUserRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di2.Repositories {
+	user := repository2.NewUser(db)
+	repositories := di2.Repositories{
+		User: user,
+	}
+	return repositories
 }
 
 // wire.go:
