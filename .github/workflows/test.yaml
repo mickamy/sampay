@@ -96,7 +96,7 @@ jobs:
       - name: Set up Buf
         run: |
           npm config set @buf:registry https://buf.build/gen/npm/v1/ && \
-          npm config set //buf.build/gen/npm/v1/:_authToken {{ secrets.BUF_TOKEN }}
+          npm config set //buf.build/gen/npm/v1/:_authToken ${{ secrets.BUF_TOKEN }}
 
       - name: Install dependencies
         run: cd frontend && npm ci
