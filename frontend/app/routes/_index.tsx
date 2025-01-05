@@ -5,15 +5,21 @@ import { createConnectTransport } from "@connectrpc/connect-web";
 const client = createClient(
   SessionService,
   createConnectTransport({
-    baseUrl: "http://localhost:8080",
+    baseUrl: "http://localhost:8080/api",
   })
 );
 
 export default function Index() {
   const signIn = async () => {
-    console.log("sign in clicked!");
-    const response = await client.signIn({});
-    console.log(response);
+    try {
+      const response = await client.signIn({
+        emailOrSlug: "",
+        password: "",
+      });
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
