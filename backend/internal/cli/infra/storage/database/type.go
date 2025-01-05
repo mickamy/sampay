@@ -5,6 +5,8 @@ import (
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+
+	"mickamy.com/sampay/internal/lib/slices"
 )
 
 // DB is a wrapper of *gorm.DB
@@ -100,3 +102,17 @@ var (
 )
 
 type Scope func(db DB) DB
+
+func (s Scope) Gorm() func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		return s(DB{db}).DB
+	}
+}
+
+type Scopes []Scope
+
+func (ss Scopes) Gorm() []func(db *gorm.DB) *gorm.DB {
+	return slices.Map(ss, func(s Scope) func(db *gorm.DB) *gorm.DB {
+		return s.Gorm()
+	})
+}
