@@ -8,6 +8,8 @@ on:
 jobs:
   test-backend:
     runs-on: ubuntu-latest
+    env:
+      GOPRIVATE: buf.build/gen/go
     timeout-minutes: 10
 
     steps:
