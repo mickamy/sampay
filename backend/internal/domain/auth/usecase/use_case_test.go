@@ -14,18 +14,14 @@ import (
 
 var (
 	databaseDSN infra.DatabaseDSN
-	kvsAddr     infra.KVSAddr
 )
 
 func TestMain(m *testing.M) {
 	var wg sync.WaitGroup
-	wg.Add(2)
+	wg.Add(1)
 
 	databaseDSNCh := make(chan infra.DatabaseDSN)
 	cleanUpDBCh := make(chan func())
-
-	kvsAddrCh := make(chan infra.KVSAddr)
-	cleanUpKVSCh := make(chan func())
 
 	go func() {
 		defer wg.Done()
@@ -34,23 +30,12 @@ func TestMain(m *testing.M) {
 		cleanUpDBCh <- c
 	}()
 
-	go func() {
-		defer wg.Done()
-		addr, c := infra.NewKVS()
-		kvsAddrCh <- addr
-		cleanUpKVSCh <- c
-	}()
-
 	databaseDSN = <-databaseDSNCh
 	cleanUpDatabase := <-cleanUpDBCh
-
-	kvsAddr = <-kvsAddrCh
-	cleanUpKVS := <-cleanUpKVSCh
 
 	wg.Wait()
 
 	defer cleanUpDatabase()
-	defer cleanUpKVS()
 
 	os.Exit(m.Run())
 }
@@ -63,7 +48,11 @@ func newReadWriter(t *testing.T) *database.ReadWriter {
 
 func newKVS(t *testing.T) *kvs.KVS {
 	t.Helper()
+
+	addr, c := infra.NewKVS()
+	t.Cleanup(c)
+
 	return redis.NewClient(&redis.Options{
-		Addr: string(kvsAddr),
+		Addr: string(addr),
 	})
 }
