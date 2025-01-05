@@ -31,7 +31,7 @@ func (h *Session) SignIn(
 	req *connect.Request[authv1.SignInRequest],
 ) (*connect.Response[authv1.SignInResponse], error) {
 	out, err := h.create.Do(ctx, usecase.CreateSessionInput{
-		Email:    req.Msg.EmailOrSlug,
+		Email:    req.Msg.Email,
 		Password: req.Msg.Password,
 	})
 	if err != nil {

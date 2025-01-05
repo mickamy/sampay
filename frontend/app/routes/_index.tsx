@@ -13,7 +13,7 @@ export default function Index() {
   const signIn = async () => {
     try {
       const response = await client.signIn({
-        emailOrSlug: "",
+        email: "",
         password: "",
       });
       console.log(response);
