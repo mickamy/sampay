@@ -104,7 +104,7 @@ jobs:
           EOF
 
       - name: Prepare Database
-        run: make db-prepare
+        run: cd backend && make db-prepare
 
       - name: Test
         run: cd backend && make test
