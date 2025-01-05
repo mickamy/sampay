@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/auth/v1/authv1connect"
@@ -11,18 +12,24 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"mickamy.com/sampay/internal/domain/auth/usecase"
+	dto "mickamy.com/sampay/internal/domain/common/dto"
+	"mickamy.com/sampay/internal/lib/contexts"
 	"mickamy.com/sampay/internal/lib/jwt"
+	"mickamy.com/sampay/internal/misc/i18n"
 )
 
 type Session struct {
-	create usecase.CreateSession
+	create  usecase.CreateSession
+	refresh usecase.RefreshSession
 }
 
 func NewSession(
 	create usecase.CreateSession,
+	refresh usecase.RefreshSession,
 ) *Session {
 	return &Session{
-		create: create,
+		create:  create,
+		refresh: refresh,
 	}
 }
 
@@ -35,8 +42,14 @@ func (h *Session) SignIn(
 		Password: req.Msg.Password,
 	})
 	if err != nil {
+		lang := contexts.MustLanguage(ctx)
+		if errors.Is(err, usecase.ErrCreateSessionPasswordNotMatch) {
+			return nil, dto.NewBadRequest(err).
+				WithMessage(i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "auth.error.invalid_email_password"})).
+				AsConnectError()
+		}
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to execute use case: %w", err))
+		return nil, dto.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&authv1.SignInResponse{
 		UserId: out.Session.UserID,
@@ -49,7 +62,22 @@ func (h *Session) Refresh(
 	ctx context.Context,
 	req *connect.Request[authv1.RefreshRequest],
 ) (*connect.Response[authv1.RefreshResponse], error) {
-	panic("implement me")
+	out, err := h.refresh.Do(ctx, usecase.RefreshSessionInput{
+		RefreshToken: *req.Msg.RefreshToken,
+	})
+	if err != nil {
+		if errors.Is(err, usecase.ErrRefreshSessionTokenNotFound) {
+			return nil, dto.NewBadRequest(err).
+				WithMessage(i18n.MustLocalizeMessageCtx(ctx, i18n.Config{MessageID: "auth.error.invalid_refresh_token"})).
+				AsConnectError()
+		}
+		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to execute use case: %w", err))
+	}
+
+	return connect.NewResponse(&authv1.RefreshResponse{
+		Tokens: h.newTokens(out.Tokens),
+	}), nil
 }
 
 func (h *Session) SignOut(
