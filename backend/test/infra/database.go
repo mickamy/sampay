@@ -9,17 +9,21 @@ import (
 	"testing"
 	"time"
 
+	"github.com/DATA-DOG/go-txdb"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/google/uuid"
+	_ "github.com/lib/pq"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	gormLogger "gorm.io/gorm/logger"
 
 	"mickamy.com/sampay/config"
 	"mickamy.com/sampay/internal/cli/db/seed"
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
+	"mickamy.com/sampay/internal/lib/logger"
 	"mickamy.com/sampay/internal/lib/slices"
 )
 
@@ -110,7 +114,9 @@ func initPostgresContainers(cfg config.DatabaseConfig) (DSN, CleanUp) {
 		cfg.WriterPass,
 		cfg.TimeZone,
 	)
-	writerDB, err := gorm.Open(postgres.New(postgres.Config{DSN: writerDSN}), &gorm.Config{})
+	writerDB, err := gorm.Open(postgres.New(postgres.Config{DSN: writerDSN}), &gorm.Config{
+		Logger: logger.Gorm.LogMode(gormLogger.Silent),
+	})
 	if err != nil {
 		log.Fatalf("cloud not connect to writer database: %s", err)
 	}
@@ -124,7 +130,9 @@ func initPostgresContainers(cfg config.DatabaseConfig) (DSN, CleanUp) {
 		cfg.TimeZone,
 	)
 
-	readerDB, err := gorm.Open(postgres.New(postgres.Config{DSN: readerDSN}), &gorm.Config{})
+	readerDB, err := gorm.Open(postgres.New(postgres.Config{DSN: readerDSN}), &gorm.Config{
+		Logger: logger.Gorm.LogMode(gormLogger.Silent),
+	})
 	if err != nil {
 		log.Fatalf("cloud not connect to reader database: %s", err)
 	}
@@ -186,12 +194,15 @@ func initActualDB(cfg config.DatabaseConfig) (DSN, CleanUp) {
 func OpenTXDB(t *testing.T, dsn string) *database.DB {
 	t.Helper()
 
-	driverName := "txdb_" + t.Name()
+	driverName := "txdb_" + uuid.NewString()
+	txdb.Register(driverName, "postgres", dsn)
 
 	gormDB, err := gorm.Open(postgres.New(postgres.Config{
 		DriverName: driverName,
 		DSN:        dsn,
-	}))
+	}), &gorm.Config{
+		Logger: logger.Gorm.LogMode(gormLogger.Info),
+	})
 	if err != nil {
 		t.Fatalf("failed to execute gorm.Open: %s", err)
 	}
