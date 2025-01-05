@@ -20,7 +20,7 @@ func TestAuthentication_Create(t *testing.T) {
 
 	// arrange
 	ctx := context.Background()
-	db := NewReadWriter(t)
+	db := newReadWriter(t)
 	user := userFixture.User(nil)
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
 	auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
@@ -51,7 +51,7 @@ func TestAuthentication_FindByKey(t *testing.T) {
 
 	// arrange
 	ctx := context.Background()
-	db := NewReadWriter(t)
+	db := newReadWriter(t)
 	user := userFixture.User(nil)
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
 	auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
@@ -83,7 +83,7 @@ func TestAuthentication_ListByUserID(t *testing.T) {
 
 	// arrange
 	ctx := context.Background()
-	db := NewReadWriter(t)
+	db := newReadWriter(t)
 	user := userFixture.User(nil)
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
 	var auths []authModel.Authentication
@@ -123,7 +123,7 @@ func TestAuthentication_Update(t *testing.T) {
 
 	// arrange
 	ctx := context.Background()
-	db := NewReadWriter(t)
+	db := newReadWriter(t)
 	user := userFixture.User(nil)
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
 	auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {

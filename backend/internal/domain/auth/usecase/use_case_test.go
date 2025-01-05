@@ -5,39 +5,65 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/redis/go-redis/v9"
+
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
+	"mickamy.com/sampay/internal/cli/infra/storage/kvs"
 	"mickamy.com/sampay/test/infra"
 )
 
 var (
-	dsn infra.DSN
+	databaseDSN infra.DatabaseDSN
+	kvsAddr     infra.KVSAddr
 )
 
 func TestMain(m *testing.M) {
 	var wg sync.WaitGroup
-	wg.Add(1)
+	wg.Add(2)
 
-	dsnCh := make(chan infra.DSN)
-	cleanUpCh := make(chan func())
+	databaseDSNCh := make(chan infra.DatabaseDSN)
+	cleanUpDBCh := make(chan func())
+
+	kvsAddrCh := make(chan infra.KVSAddr)
+	cleanUpKVSCh := make(chan func())
 
 	go func() {
 		defer wg.Done()
 		dsn, c := infra.NewDB()
-		dsnCh <- dsn
-		cleanUpCh <- c
+		databaseDSNCh <- dsn
+		cleanUpDBCh <- c
 	}()
 
-	dsn = <-dsnCh
-	cleanUp := <-cleanUpCh
+	go func() {
+		defer wg.Done()
+		addr, c := infra.NewKVS()
+		kvsAddrCh <- addr
+		cleanUpKVSCh <- c
+	}()
+
+	databaseDSN = <-databaseDSNCh
+	cleanUpDatabase := <-cleanUpDBCh
+
+	kvsAddr = <-kvsAddrCh
+	cleanUpKVS := <-cleanUpKVSCh
 
 	wg.Wait()
 
-	defer cleanUp()
+	defer cleanUpDatabase()
+	defer cleanUpKVS()
 
 	os.Exit(m.Run())
 }
 
-func NewReadWriter(t *testing.T) *database.ReadWriter {
-	txdb := infra.OpenTXDB(t, string(dsn.Writer))
+func newReadWriter(t *testing.T) *database.ReadWriter {
+	t.Helper()
+	txdb := infra.OpenTXDB(t, string(databaseDSN.Writer))
 	return database.NewReadWriter(&database.Writer{DB: txdb}, &database.Reader{DB: txdb})
+}
+
+func newKVS(t *testing.T) *kvs.KVS {
+	t.Helper()
+	return redis.NewClient(&redis.Options{
+		Addr: string(kvsAddr),
+	})
 }

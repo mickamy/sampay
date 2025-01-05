@@ -10,7 +10,6 @@ import (
 	"mickamy.com/sampay/internal/domain/auth/model"
 	"mickamy.com/sampay/internal/domain/auth/repository"
 	"mickamy.com/sampay/internal/lib/ulid"
-	"mickamy.com/sampay/test/infra"
 )
 
 func TestSessionRepository_Create(t *testing.T) {
@@ -23,7 +22,7 @@ func TestSessionRepository_Create(t *testing.T) {
 	require.NoError(t, err)
 
 	// act
-	sut := repository.NewSession(infra.NewKVS(t))
+	sut := repository.NewSession(newKVS(t))
 	err = sut.Create(ctx, session)
 
 	// assert
@@ -46,7 +45,7 @@ func TestSessionRepository_Delete(t *testing.T) {
 	require.NoError(t, err)
 
 	// act
-	sut := repository.NewSession(infra.NewKVS(t))
+	sut := repository.NewSession(newKVS(t))
 	err = sut.Create(ctx, session)
 	require.NoError(t, err)
 	err = sut.Delete(ctx, session)

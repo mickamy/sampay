@@ -21,7 +21,7 @@ func TestUser_Create(t *testing.T) {
 	// arrange
 	ctx := context.Background()
 	user := userFixture.User(nil)
-	db := NewReadWriter(t)
+	db := newReadWriter(t)
 
 	// act
 	sut := repository.NewUser(db.WriterDB())
@@ -42,7 +42,7 @@ func TestUser_FindByID(t *testing.T) {
 	// arrange
 	ctx := context.Background()
 	user := userFixture.User(nil)
-	db := NewReadWriter(t)
+	db := newReadWriter(t)
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
 
 	// act
@@ -61,7 +61,7 @@ func TestUser_FindBySlug(t *testing.T) {
 	// arrange
 	ctx := context.Background()
 	user := userFixture.User(nil)
-	db := NewReadWriter(t)
+	db := newReadWriter(t)
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
 
 	// act
@@ -80,7 +80,7 @@ func TestUser_FindByEmail(t *testing.T) {
 	// arrange
 	ctx := context.Background()
 	user := userFixture.User(nil)
-	db := NewReadWriter(t)
+	db := newReadWriter(t)
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
 	auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
 		m.UserID = user.ID
@@ -127,7 +127,7 @@ func TestUser_FindByEmailOrSlug(t *testing.T) {
 			user := userFixture.User(func(m *model.User) {
 				m.Slug = slug
 			})
-			db := NewReadWriter(t)
+			db := newReadWriter(t)
 			require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
 			if tc.emailOrSlug == email {
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {

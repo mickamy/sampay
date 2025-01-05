@@ -13,7 +13,6 @@ import (
 	"mickamy.com/sampay/internal/domain/auth/usecase"
 	"mickamy.com/sampay/internal/lib/either"
 	"mickamy.com/sampay/internal/lib/ulid"
-	"mickamy.com/sampay/test/infra"
 )
 
 func TestRefreshSession_Do(t *testing.T) {
@@ -62,7 +61,7 @@ func TestRefreshSession_Do(t *testing.T) {
 
 			// arrange
 			ctx := context.Background()
-			kvStore := infra.NewKVS(t)
+			kvStore := newKVS(t)
 			tc.arrange(t, ctx, kvStore)
 
 			// act

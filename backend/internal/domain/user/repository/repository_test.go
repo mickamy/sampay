@@ -10,14 +10,14 @@ import (
 )
 
 var (
-	dsn infra.DSN
+	dsn infra.DatabaseDSN
 )
 
 func TestMain(m *testing.M) {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	dsnCh := make(chan infra.DSN)
+	dsnCh := make(chan infra.DatabaseDSN)
 	cleanUpCh := make(chan func())
 
 	go func() {
@@ -37,7 +37,7 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func NewReadWriter(t *testing.T) *database.ReadWriter {
+func newReadWriter(t *testing.T) *database.ReadWriter {
 	txdb := infra.OpenTXDB(t, string(dsn.Writer))
 	return database.NewReadWriter(&database.Writer{DB: txdb}, &database.Reader{DB: txdb})
 }
