@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/auth/v1/authv1connect"
 	authv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/auth/v1"
@@ -21,6 +20,7 @@ import (
 type Session struct {
 	create  usecase.CreateSession
 	refresh usecase.RefreshSession
+	delete  usecase.DeleteSession
 }
 
 func NewSession(
@@ -62,6 +62,7 @@ func (h *Session) Refresh(
 	ctx context.Context,
 	req *connect.Request[authv1.RefreshRequest],
 ) (*connect.Response[authv1.RefreshResponse], error) {
+	// TODO: get refresh token from cookie
 	out, err := h.refresh.Do(ctx, usecase.RefreshSessionInput{
 		RefreshToken: *req.Msg.RefreshToken,
 	})
@@ -72,7 +73,7 @@ func (h *Session) Refresh(
 				AsConnectError()
 		}
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to execute use case: %w", err))
+		return nil, dto.NewInternalError(ctx, err).AsConnectError()
 	}
 
 	return connect.NewResponse(&authv1.RefreshResponse{
@@ -84,7 +85,19 @@ func (h *Session) SignOut(
 	ctx context.Context,
 	req *connect.Request[authv1.SignOutRequest],
 ) (*connect.Response[authv1.SignOutResponse], error) {
-	panic("implement me")
+	_, err := h.delete.Do(ctx, usecase.DeleteSessionInput{
+		AccessToken:  req.Msg.AccessToken,
+		RefreshToken: req.Msg.RefreshToken,
+	})
+	if err != nil {
+		// do not return error if deleting tokens failed
+		if !errors.Is(err, usecase.ErrDeleteSessionDeletingTokensFailed) {
+			slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
+			return nil, dto.NewInternalError(ctx, err).AsConnectError()
+		}
+	}
+
+	return connect.NewResponse(&authv1.SignOutResponse{}), nil
 }
 
 func (h *Session) newTokens(tokens jwt.Tokens) *authv1.Tokens {

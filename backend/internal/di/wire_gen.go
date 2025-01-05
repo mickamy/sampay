@@ -69,9 +69,11 @@ func InitAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *
 	user := repository2.NewUser(db)
 	createSession := usecase.NewCreateSession(reader, authentication, session, user)
 	refreshSession := usecase.NewRefreshSession(session)
+	deleteSession := usecase.NewDeleteSession(session)
 	useCases := di.UseCases{
 		CreateSession:  createSession,
 		RefreshSession: refreshSession,
+		DeleteSession:  deleteSession,
 	}
 	return useCases
 }
