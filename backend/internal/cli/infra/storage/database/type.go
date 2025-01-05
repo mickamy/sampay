@@ -13,10 +13,14 @@ import (
 type DB struct{ *gorm.DB }
 
 // Writer is a writer of DB
-type Writer DB
+type Writer struct {
+	*DB
+}
 
 // Reader is a reader of DB
-type Reader DB
+type Reader struct {
+	*DB
+}
 
 // WriterTransactional is a transactional for Writer
 type WriterTransactional interface {
@@ -28,22 +32,22 @@ type WriterTransactional interface {
 	LockForUpdate() WriterTransactional
 
 	// Writer is a method that returns a Writer
-	Writer() *Writer
+	Writer() *DB
 }
 
 func (w Writer) WriterTransaction(ctx context.Context, f func(tx WriterTransactional) error) error {
 	return w.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		return f(&Writer{tx})
+		return f(&Writer{&DB{tx}})
 	})
 }
 
 func (w Writer) LockForUpdate() WriterTransactional {
-	wWithLock := w.Clauses(clause.Locking{Strength: "UPDATE"})
-	return &Writer{wWithLock}
+	withLock := w.Clauses(clause.Locking{Strength: "UPDATE"})
+	return &Writer{&DB{withLock}}
 }
 
-func (w Writer) Writer() *Writer {
-	return &w
+func (w Writer) Writer() *DB {
+	return w.DB
 }
 
 // ReaderTransactional is a transactional for Reader
@@ -53,17 +57,17 @@ type ReaderTransactional interface {
 	ReaderTransaction(ctx context.Context, f func(tx ReaderTransactional) error) error
 
 	// Reader is a method that returns a Reader
-	Reader() *Reader
+	Reader() *DB
 }
 
 func (r Reader) ReaderTransaction(ctx context.Context, f func(tx ReaderTransactional) error) error {
 	return r.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		return f(&Reader{tx})
+		return f(&Reader{&DB{tx}})
 	})
 }
 
-func (r Reader) Reader() *Reader {
-	return &r
+func (r Reader) Reader() *DB {
+	return r.DB
 }
 
 // ReadWriter is a wrapper of Writer and Reader
@@ -88,12 +92,12 @@ func (db ReadWriter) LockForUpdate() WriterTransactional {
 	return db.writer.LockForUpdate()
 }
 
-func (db ReadWriter) Writer() *Writer {
-	return db.writer
+func (db ReadWriter) Writer() *DB {
+	return db.writer.DB
 }
 
-func (db ReadWriter) Reader() *Reader {
-	return db.reader
+func (db ReadWriter) Reader() *DB {
+	return db.reader.DB
 }
 
 var (
@@ -101,11 +105,11 @@ var (
 	_ ReaderTransactional = (*ReadWriter)(nil)
 )
 
-type Scope func(db DB) DB
+type Scope func(db *DB) *DB
 
 func (s Scope) Gorm() func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		return s(DB{db}).DB
+		return s(&DB{db}).DB
 	}
 }
 

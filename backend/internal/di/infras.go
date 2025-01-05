@@ -9,10 +9,19 @@ import (
 )
 
 type Infras struct {
+	*database.DB
 	*database.ReadWriter
 	*database.Writer
 	*database.Reader
 	*kvs.KVS
+}
+
+func provideDB(cfg config.DatabaseConfig) (*database.DB, error) {
+	writer, err := provideWriter(cfg)
+	if err != nil {
+		return nil, err
+	}
+	return &database.DB{DB: writer.DB.DB}, nil
 }
 
 func provideReadWriter(cfg config.DatabaseConfig) (*database.ReadWriter, error) {
@@ -40,7 +49,7 @@ func provideWriter(cfg config.DatabaseConfig) (*database.Writer, error) {
 		return nil, err
 	}
 
-	return (*database.Writer)(writer), nil
+	return &database.Writer{DB: writer}, nil
 }
 
 func provideReader(cfg config.DatabaseConfig) (*database.Reader, error) {
@@ -49,7 +58,7 @@ func provideReader(cfg config.DatabaseConfig) (*database.Reader, error) {
 		return nil, err
 	}
 
-	return (*database.Reader)(reader), nil
+	return &database.Reader{DB: reader}, nil
 }
 
 func provideKVS(cfg config.KVSConfig) (*kvs.KVS, error) {
@@ -58,6 +67,7 @@ func provideKVS(cfg config.KVSConfig) (*kvs.KVS, error) {
 
 //lint:ignore U1000 used by wire
 var infras = wire.NewSet(
+	provideDB,
 	provideReadWriter,
 	provideWriter,
 	provideReader,

@@ -129,7 +129,7 @@ func initPostgresContainers(cfg config.DatabaseConfig) (DSN, CleanUp) {
 		log.Fatalf("cloud not connect to reader database: %s", err)
 	}
 
-	if err := seed.Do(ctx, &database.Writer{writerDB}, "test"); err != nil {
+	if err := seed.Do(ctx, &database.Writer{DB: &database.DB{DB: writerDB}}, "test"); err != nil {
 		log.Fatalf("failed to seed: %s", err)
 	}
 
@@ -164,7 +164,7 @@ func initActualDB(cfg config.DatabaseConfig) (DSN, CleanUp) {
 
 	seedOnce.Do(func() {
 		ctx := context.Background()
-		if err := seed.Do(ctx, &database.Writer{DB: writer}, "test"); err != nil {
+		if err := seed.Do(ctx, &database.Writer{DB: &database.DB{DB: writer}}, "test"); err != nil {
 			log.Fatalf("failed to seed: %s", err)
 		}
 	})
