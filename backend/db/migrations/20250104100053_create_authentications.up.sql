@@ -14,3 +14,4 @@ CREATE TABLE authentications
 
 CREATE INDEX idx_authentications_user_id ON authentications (user_id);
 CREATE INDEX idx_authentications_type_identifier ON authentications (type, identifier);
+CREATE INDEX idx_authentications_user_id_type_identifier ON authentications (user_id, type, identifier);
