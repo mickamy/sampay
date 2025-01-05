@@ -7,6 +7,6 @@ import (
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
 )
 
-func Do(ctx context.Context, db *database.DB, env config.Env) error {
+func Do(ctx context.Context, writer *database.Writer, env config.Env) error {
 	return nil
 }

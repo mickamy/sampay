@@ -14,7 +14,15 @@ import (
 
 func InitInfras() (Infras, error) {
 	databaseConfig := config.Database()
-	readWriter, err := provideDB(databaseConfig)
+	readWriter, err := provideReadWriter(databaseConfig)
+	if err != nil {
+		return Infras{}, err
+	}
+	writer, err := provideWriter(databaseConfig)
+	if err != nil {
+		return Infras{}, err
+	}
+	reader, err := provideReader(databaseConfig)
 	if err != nil {
 		return Infras{}, err
 	}
@@ -25,6 +33,8 @@ func InitInfras() (Infras, error) {
 	}
 	diInfras := Infras{
 		ReadWriter: readWriter,
+		Writer:     writer,
+		Reader:     reader,
 		KVS:        client,
 	}
 	return diInfras, nil

@@ -110,7 +110,7 @@ func initPostgresContainers(cfg config.DatabaseConfig) (DSN, CleanUp) {
 		cfg.WriterPass,
 		cfg.TimeZone,
 	)
-	writer, err := gorm.Open(postgres.New(postgres.Config{DSN: writerDSN}), &gorm.Config{})
+	writerDB, err := gorm.Open(postgres.New(postgres.Config{DSN: writerDSN}), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("cloud not connect to writer database: %s", err)
 	}
@@ -124,26 +124,27 @@ func initPostgresContainers(cfg config.DatabaseConfig) (DSN, CleanUp) {
 		cfg.TimeZone,
 	)
 
-	// ping to reader database
-	_, err = gorm.Open(postgres.New(postgres.Config{DSN: readerDSN}), &gorm.Config{})
+	readerDB, err := gorm.Open(postgres.New(postgres.Config{DSN: readerDSN}), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("cloud not connect to reader database: %s", err)
 	}
 
-	if err := seed.Do(ctx, writer, "test"); err != nil {
+	if err := seed.Do(ctx, &database.Writer{writerDB}, "test"); err != nil {
 		log.Fatalf("failed to seed: %s", err)
 	}
 
 	return DSN{WriterDSN(writerDSN), ReaderDSN(readerDSN)}, func() {
-		sqlDB, err := writer.DB()
-		if err != nil {
-			log.Fatalf("cloud not get DB connection: %s", err)
-		}
-		if err := sqlDB.Close(); err != nil {
-			log.Fatalf("cloud not close DB connection: %s", err)
-		}
-		if err := ctn.Terminate(ctx); err != nil {
-			log.Fatalf("cloud not terminate container: %s", err)
+		for _, db := range []*gorm.DB{writerDB, readerDB} {
+			sqlDB, err := db.DB()
+			if err != nil {
+				log.Fatalf("cloud not get DB connection: %s", err)
+			}
+			if err := sqlDB.Close(); err != nil {
+				log.Fatalf("cloud not close DB connection: %s", err)
+			}
+			if err := ctn.Terminate(ctx); err != nil {
+				log.Fatalf("cloud not terminate container: %s", err)
+			}
 		}
 	}
 }
@@ -163,13 +164,13 @@ func initActualDB(cfg config.DatabaseConfig) (DSN, CleanUp) {
 
 	seedOnce.Do(func() {
 		ctx := context.Background()
-		if err := seed.Do(ctx, writer, config.Test); err != nil {
+		if err := seed.Do(ctx, &database.Writer{DB: writer}, "test"); err != nil {
 			log.Fatalf("failed to seed: %s", err)
 		}
 	})
 
 	return DSN{WriterDSN(writerDSN), ReaderDSN(readerDSN)}, func() {
-		for _, db := range []*database.DB{writer, reader} {
+		for _, db := range []*gorm.DB{writer, reader} {
 			sqlDB, err := db.DB()
 			if err != nil {
 				log.Fatalf("cloud not get DB connection: %s", err)
@@ -182,8 +183,6 @@ func initActualDB(cfg config.DatabaseConfig) (DSN, CleanUp) {
 	}
 }
 
-// OpenTXDB は [txdb] を用いて DB をオープンする。
-// この DB に対する操作は、テスト終了時にロールバックされる。
 func OpenTXDB(t *testing.T, dsn string) *database.DB {
 	t.Helper()
 
@@ -207,5 +206,5 @@ func OpenTXDB(t *testing.T, dsn string) *database.DB {
 		}
 	})
 
-	return gormDB
+	return &database.DB{DB: gormDB}
 }
