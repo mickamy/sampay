@@ -8,8 +8,8 @@ package di
 
 import (
 	"mickamy.com/sampay/config"
-	"mickamy.com/sampay/internal/cli/infra/kvs"
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
+	"mickamy.com/sampay/internal/cli/infra/storage/kvs"
 	"mickamy.com/sampay/internal/domain/auth/di"
 	"mickamy.com/sampay/internal/domain/auth/repository"
 	"mickamy.com/sampay/internal/domain/auth/usecase"

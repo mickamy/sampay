@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"mickamy.com/sampay/internal/domain/model"
-	"mickamy.com/sampay/internal/domain/repository"
+	"mickamy.com/sampay/internal/domain/auth/model"
+	"mickamy.com/sampay/internal/domain/auth/repository"
 	"mickamy.com/sampay/internal/lib/ulid"
 	"mickamy.com/sampay/test/infra"
 )

@@ -11,7 +11,7 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 
 	"mickamy.com/sampay/config"
-	"mickamy.com/sampay/internal/cli/infra/kvs"
+	"mickamy.com/sampay/internal/cli/infra/storage/kvs"
 )
 
 func NewKVS(t *testing.T) *kvs.KVS {

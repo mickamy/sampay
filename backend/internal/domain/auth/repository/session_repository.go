@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"mickamy.com/sampay/internal/cli/infra/kvs"
+	"mickamy.com/sampay/internal/cli/infra/storage/kvs"
 	"mickamy.com/sampay/internal/domain/auth/model"
 )
 
