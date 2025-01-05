@@ -5,7 +5,7 @@ package auth.v1;
 import "auth/v1/common.proto";
 
 message SignInRequest {
-  string email_or_slug = 1;
+  string email = 1;
   string password = 2;
 }
 
