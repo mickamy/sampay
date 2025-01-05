@@ -16,7 +16,9 @@ func (h *TestHandler) Test(
 	ctx context.Context,
 	req *connect.Request[testv1.TestRequest],
 ) (*connect.Response[testv1.TestResponse], error) {
-	h.Exec(ctx, req)
+	if h.Exec != nil {
+		h.Exec(ctx, req)
+	}
 	return connect.NewResponse(&testv1.TestResponse{}), nil
 }
 
