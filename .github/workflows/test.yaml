@@ -53,7 +53,7 @@ jobs:
           cd backend && cat <<EOF > .envTZ=Asia/Tokyo
             ENV=development
             PACKAGE_ROOT=$(pwd)
-            
+          
             DB_HOST=localhost
             DB_PORT=5432
             DB_WRITER_USER=sampay_writer
@@ -64,15 +64,15 @@ jobs:
             DB_TIMEZONE=Asia/Tokyo
             DB_ADMIN_USER=postgres
             DB_ADMIN_PASSWORD=password
-            
+          
             DATABASE_WRITER_URL=postgresql://$DB_WRITER_USER:$DB_WRITER_USER@$DB_HOST:$DB_PORT/$DB_NAME?timezone=$DB_TIMEZONE&sslmode=disable
             DATABASE_READER_URL=postgresql://$DB_READER_USER:$DB_READER_USER@$DB_HOST:$DB_PORT/$DB_NAME?timezone=$DB_TIMEZONE&sslmode=disable
-            
+          
             # for golang-migrate/migrate
             POSTGRESQL_URL=$DATABASE_WRITER_URL
-            
+          
             REDIS_URL=redis://:password@localhost:6379/0
-            
+          
             JWT_SIGNING_SECRET=secret
           EOF
 
@@ -91,9 +91,10 @@ jobs:
         with:
           node-version: '22.12'
 
-      - uses: bufbuild/buf-setup-action@v1
-        with:
-          buf_api_token: ${{ secrets.BUF_TOKEN }}
+      - name: Set up Buf
+        run: |
+          npm config set @buf:registry https://buf.build/gen/npm/v1/ && \
+          npm config set //buf.build/gen/npm/v1/:_authToken {{ secrets.BUF_TOKEN }}
 
       - name: Install dependencies
         run: cd frontend && npm ci
