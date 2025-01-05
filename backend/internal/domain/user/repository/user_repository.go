@@ -3,10 +3,8 @@ package repository
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
@@ -20,7 +18,6 @@ type User interface {
 	FindBySlug(ctx context.Context, slug string, scopes ...database.Scope) (*model.User, error)
 	FindByEmail(ctx context.Context, email string, scopes ...database.Scope) (*model.User, error)
 	FindByEmailOrSlug(ctx context.Context, emailOrSlug string, scopes ...database.Scope) (*model.User, error)
-	Upsert(ctx context.Context, m *model.User) error
 	WithTx(tx *database.DB) User
 }
 
@@ -94,26 +91,6 @@ func (repo *user) FindByEmailOrSlug(ctx context.Context, emailOrSlug string, sco
 		return nil, err
 	}
 	return &m, err
-}
-
-func (repo *user) Upsert(ctx context.Context, m *model.User) error {
-	if m.Slug == "" {
-		return errors.New("slug is required")
-	}
-
-	var id string
-	err := repo.db.WithContext(ctx).Model(&model.User{}).
-		Where("slug = ?", m.Slug).
-		Limit(1).
-		Pluck("id", &id).
-		Error
-	if err != nil {
-		return fmt.Errorf("failed to find user by slug: %w", err)
-	}
-	if id != "" {
-		return repo.db.WithContext(ctx).Model(m).Clauses(clause.Returning{}).Where("slug = ?").Updates(m).Error
-	}
-	return repo.db.WithContext(ctx).Create(m).Error
 }
 
 func (repo *user) WithTx(tx *database.DB) User {
