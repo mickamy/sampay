@@ -64,16 +64,18 @@ func InitAuthRepositories(db *database.DB, readWriter *database.ReadWriter, writ
 }
 
 func InitAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di.UseCases {
-	authentication := repository.NewAuthentication(db)
 	session := repository.NewSession(kvs2)
 	user := repository2.NewUser(db)
+	authenticateUser := usecase.NewAuthenticateUser(reader, session, user)
+	authentication := repository.NewAuthentication(db)
 	createSession := usecase.NewCreateSession(reader, authentication, session, user)
 	refreshSession := usecase.NewRefreshSession(session)
 	deleteSession := usecase.NewDeleteSession(session)
 	useCases := di.UseCases{
-		CreateSession:  createSession,
-		RefreshSession: refreshSession,
-		DeleteSession:  deleteSession,
+		AuthenticateUser: authenticateUser,
+		CreateSession:    createSession,
+		RefreshSession:   refreshSession,
+		DeleteSession:    deleteSession,
 	}
 	return useCases
 }
