@@ -1,0 +1,23 @@
+package model
+
+import (
+	"fmt"
+
+	"mickamy.com/sampay/internal/lib/jwt"
+)
+
+type Session struct {
+	UserID string
+	Tokens jwt.Tokens
+}
+
+func NewSession(userID string) (Session, error) {
+	tokens, err := jwt.New(userID)
+	if err != nil {
+		return Session{}, fmt.Errorf("failed to create jwt tokens: %w", err)
+	}
+	return Session{
+		UserID: userID,
+		Tokens: tokens,
+	}, nil
+}
