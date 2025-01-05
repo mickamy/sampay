@@ -54,7 +54,8 @@ jobs:
 
       - name: Inject .env
         run: |
-          cd backend && cat <<EOF > .envTZ=Asia/Tokyo
+          cd backend && cat <<EOF > .env
+            TZ=Asia/Tokyo
             ENV=development
             PACKAGE_ROOT=$(pwd)
           
