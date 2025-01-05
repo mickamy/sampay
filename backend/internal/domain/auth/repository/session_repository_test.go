@@ -58,4 +58,5 @@ func TestSessionRepository_Delete(t *testing.T) {
 	assert.False(t, exists)
 	exists, err = sut.RefreshTokenExists(ctx, userID, session.Tokens.Refresh.Value)
 	require.NoError(t, err)
+	assert.False(t, exists)
 }
