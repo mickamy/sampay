@@ -19,7 +19,7 @@ require (
 	github.com/google/wire v0.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
-	github.com/mickamy/slogger v0.0.2
+	github.com/mickamy/slogger v0.0.5
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/redis/go-redis/v9 v9.7.0
 	github.com/rs/cors v1.11.1

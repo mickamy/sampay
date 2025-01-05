@@ -145,8 +145,8 @@ github.com/lufia/plan9stats v0.0.0-20240909124753-873cd0166683 h1:7UMa6KCCMjZEMD
 github.com/lufia/plan9stats v0.0.0-20240909124753-873cd0166683/go.mod h1:ilwx/Dta8jXAgpFYFvSWEMwxmbWXyiUHkd5FwyKhb5k=
 github.com/magiconair/properties v1.8.9 h1:nWcCbLq1N2v/cpNsy5WvQ37Fb+YElfq20WJ/a8RkpQM=
 github.com/magiconair/properties v1.8.9/go.mod h1:Dhd985XPs7jluiymwWYZ0G4Z61jb3vdS329zhj2hYo0=
-github.com/mickamy/slogger v0.0.2 h1:4BQ7ICF41eHmNhnG7z6sD2jMYgEVhgWJSXokrTniKnM=
-github.com/mickamy/slogger v0.0.2/go.mod h1:weM62JQt0uZWc3FjETy7G5dyTERY/whCZ5QnRrRXXHk=
+github.com/mickamy/slogger v0.0.5 h1:Lkg+iXvypzQbHPe55pbyuSciFvQdmdUz/4L0I+BdMfE=
+github.com/mickamy/slogger v0.0.5/go.mod h1:weM62JQt0uZWc3FjETy7G5dyTERY/whCZ5QnRrRXXHk=
 github.com/moby/docker-image-spec v1.3.1 h1:jMKff3w6PgbfSa69GfNg+zN/XLhfXJGnEx3Nl2EsFP0=
 github.com/moby/docker-image-spec v1.3.1/go.mod h1:eKmb5VW8vQEh/BAr2yvVNvuiJuY6UIocYsFu/DxxRpo=
 github.com/moby/patternmatcher v0.6.0 h1:GmP9lR19aU5GqSSFko+5pRqHi+Ohk1O69aFiKkVGiPk=
