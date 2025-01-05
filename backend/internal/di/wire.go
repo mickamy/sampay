@@ -39,6 +39,17 @@ func InitAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *
 	return auth.UseCases{}
 }
 
+func InitAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) auth.Handlers {
+	wire.Build(
+		auth.HandlerSet,
+		auth.UseCaseSet,
+		auth.RepositorySet,
+		user.RepositorySet,
+		wire.Struct(new(auth.Handlers), "*"),
+	)
+	return auth.Handlers{}
+}
+
 func InitUserRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) user.Repositories {
 	wire.Build(
 		user.RepositorySet,

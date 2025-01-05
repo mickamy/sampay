@@ -3,6 +3,7 @@ package di
 import (
 	"github.com/google/wire"
 
+	"mickamy.com/sampay/internal/domain/auth/handler"
 	"mickamy.com/sampay/internal/domain/auth/repository"
 	"mickamy.com/sampay/internal/domain/auth/usecase"
 )
@@ -25,4 +26,13 @@ type UseCases struct {
 //lint:ignore U1000 used by wire
 var UseCaseSet = wire.NewSet(
 	usecase.NewCreateSession,
+)
+
+type Handlers struct {
+	*handler.Session
+}
+
+//lint:ignore U1000 used by wire
+var HandlerSet = wire.NewSet(
+	handler.NewSession,
 )

@@ -11,6 +11,7 @@ import (
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/cli/infra/storage/kvs"
 	"mickamy.com/sampay/internal/domain/auth/di"
+	"mickamy.com/sampay/internal/domain/auth/handler"
 	"mickamy.com/sampay/internal/domain/auth/repository"
 	"mickamy.com/sampay/internal/domain/auth/usecase"
 	di2 "mickamy.com/sampay/internal/domain/user/di"
@@ -71,6 +72,18 @@ func InitAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *
 		CreateSession: createSession,
 	}
 	return useCases
+}
+
+func InitAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di.Handlers {
+	authentication := repository.NewAuthentication(db)
+	session := repository.NewSession(kvs2)
+	user := repository2.NewUser(db)
+	createSession := usecase.NewCreateSession(reader, authentication, session, user)
+	handlerSession := handler.NewSession(createSession)
+	handlers := di.Handlers{
+		Session: handlerSession,
+	}
+	return handlers
 }
 
 func InitUserRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di2.Repositories {
