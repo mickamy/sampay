@@ -24,7 +24,6 @@ type Authentication interface {
 	FindByKey(ctx context.Context, key AuthenticationKey, scopes ...database.Scope) (*model.Authentication, error)
 	ListByUserID(ctx context.Context, userID string, scopes ...database.Scope) ([]model.Authentication, error)
 	Update(ctx context.Context, m *model.Authentication) error
-	Upsert(ctx context.Context, m *model.Authentication, key AuthenticationKey) error
 	WithTx(tx *database.DB) Authentication
 }
 
@@ -43,7 +42,7 @@ func (repo *authentication) Create(ctx context.Context, m *model.Authentication)
 func (repo *authentication) FindByKey(ctx context.Context, key AuthenticationKey, scopes ...database.Scope) (*model.Authentication, error) {
 	m := new(model.Authentication)
 	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
-		First(m, "user_id = ? type = ? AND identifier = ?", key.UserID, key.Type, key.Identifier).
+		First(m, "user_id = ? AND type = ? AND identifier = ?", key.UserID, key.Type, key.Identifier).
 		Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

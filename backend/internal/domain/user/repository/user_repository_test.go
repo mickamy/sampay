@@ -10,7 +10,7 @@ import (
 
 	authFixture "mickamy.com/sampay/internal/domain/auth/fixture"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
-	"mickamy.com/sampay/internal/domain/user/fixture"
+	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/domain/user/repository"
 )
@@ -20,7 +20,7 @@ func TestUser_Create(t *testing.T) {
 
 	// arrange
 	ctx := context.Background()
-	user := fixture.User(nil)
+	user := userFixture.User(nil)
 	db := NewReadWriter(t)
 
 	// act
@@ -41,7 +41,7 @@ func TestUser_FindByID(t *testing.T) {
 
 	// arrange
 	ctx := context.Background()
-	user := fixture.User(nil)
+	user := userFixture.User(nil)
 	db := NewReadWriter(t)
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
 
@@ -60,7 +60,7 @@ func TestUser_FindBySlug(t *testing.T) {
 
 	// arrange
 	ctx := context.Background()
-	user := fixture.User(nil)
+	user := userFixture.User(nil)
 	db := NewReadWriter(t)
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
 
@@ -79,7 +79,7 @@ func TestUser_FindByEmail(t *testing.T) {
 
 	// arrange
 	ctx := context.Background()
-	user := fixture.User(nil)
+	user := userFixture.User(nil)
 	db := NewReadWriter(t)
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
 	auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
@@ -124,7 +124,7 @@ func TestUser_FindByEmailOrSlug(t *testing.T) {
 
 			// arrange
 			ctx := context.Background()
-			user := fixture.User(func(m *model.User) {
+			user := userFixture.User(func(m *model.User) {
 				m.Slug = slug
 			})
 			db := NewReadWriter(t)
