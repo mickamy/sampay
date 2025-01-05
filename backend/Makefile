@@ -13,6 +13,7 @@
 	wire \
 	fmt \
 	lint \
+	test \
 	help \
 
 build: ## Build the application
@@ -63,6 +64,9 @@ lint: ## Run linters (vet, staticcheck, and errcheck)
 	go vet ./...
 	staticcheck ./...
 	errcheck ./...
+
+test: ## Run tests
+	go test -v ./...
 
 help: ## Display a list of available Makefile targets with their descriptions
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
