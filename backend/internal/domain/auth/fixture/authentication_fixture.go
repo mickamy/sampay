@@ -22,7 +22,7 @@ func AuthenticationEmailPassword(setter func(m *model.Authentication)) model.Aut
 	m := Authentication(func(m *model.Authentication) {
 		m.Type = model.AuthenticationTypeEmailPassword
 		m.Identifier = gofakeit.GlobalFaker.Email()
-		m.Secret = either.Must(passwd.New("password", 16))
+		m.Secret = either.Must(passwd.New("P@ssw0rd", 16))
 	})
 
 	if setter != nil {
