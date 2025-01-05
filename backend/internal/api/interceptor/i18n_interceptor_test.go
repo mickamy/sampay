@@ -15,14 +15,7 @@ import (
 	"mickamy.com/sampay/internal/domain/test/handler"
 	"mickamy.com/sampay/internal/lib/contexts"
 	"mickamy.com/sampay/internal/lib/language"
-	"mickamy.com/sampay/internal/lib/ptr"
 )
-
-type mockHandler struct{}
-
-func (m *mockHandler) Handle(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
-	return connect.NewResponse[string](ptr.Of("mock response")), nil
-}
 
 func TestI18N(t *testing.T) {
 	t.Parallel()
