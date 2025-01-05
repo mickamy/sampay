@@ -8,8 +8,6 @@ on:
 jobs:
   test-backend:
     runs-on: ubuntu-latest
-    env:
-      GOPRIVATE: buf.build/gen/go
     timeout-minutes: 10
 
     steps:
@@ -25,7 +23,7 @@ jobs:
           buf_api_token: ${{ secrets.BUF_TOKEN }}
 
       - name: Install dependencies
-        run: cd backend && make install
+        run: cd backend && export GOPRIVATE=buf.build/gen/go && make install
 
       - name: Verify all files are up to date
         run: |
