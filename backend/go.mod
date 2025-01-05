@@ -3,8 +3,8 @@ module mickamy.com/sampay
 go 1.23.4
 
 require (
-	buf.build/gen/go/mickamy/sampay/connectrpc/go v1.17.0-20250105045416-293991d406e2.1
-	buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.1-20250105045416-293991d406e2.1
+	buf.build/gen/go/mickamy/sampay/connectrpc/go v1.17.0-20250105115656-a0c4127c386a.1
+	buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.1-20250105115656-a0c4127c386a.1
 	connectrpc.com/connect v1.17.0
 	github.com/DATA-DOG/go-txdb v0.2.0
 	github.com/aws/aws-sdk-go-v2 v1.32.7
@@ -19,7 +19,8 @@ require (
 	github.com/google/wire v0.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
-	github.com/mickamy/slogger v0.0.5
+	github.com/mickamy/slogger v0.0.6
+	github.com/nicksnyder/go-i18n/v2 v2.4.1
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/redis/go-redis/v9 v9.7.0
 	github.com/rs/cors v1.11.1
@@ -28,7 +29,9 @@ require (
 	go.uber.org/mock v0.5.0
 	golang.org/x/crypto v0.31.0
 	golang.org/x/net v0.33.0
+	golang.org/x/text v0.21.0
 	google.golang.org/protobuf v1.36.1
+	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.25.12
 )
@@ -104,6 +107,4 @@ require (
 	go.uber.org/atomic v1.11.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

@@ -20,12 +20,14 @@ var RepositorySet = wire.NewSet(
 )
 
 type UseCases struct {
-	CreateSession usecase.CreateSession
+	usecase.CreateSession
+	usecase.RefreshSession
 }
 
 //lint:ignore U1000 used by wire
 var UseCaseSet = wire.NewSet(
 	usecase.NewCreateSession,
+	usecase.NewRefreshSession,
 )
 
 type Handlers struct {

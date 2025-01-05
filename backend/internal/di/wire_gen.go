@@ -68,8 +68,10 @@ func InitAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *
 	session := repository.NewSession(kvs2)
 	user := repository2.NewUser(db)
 	createSession := usecase.NewCreateSession(reader, authentication, session, user)
+	refreshSession := usecase.NewRefreshSession(session)
 	useCases := di.UseCases{
-		CreateSession: createSession,
+		CreateSession:  createSession,
+		RefreshSession: refreshSession,
 	}
 	return useCases
 }
@@ -79,7 +81,8 @@ func InitAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *
 	session := repository.NewSession(kvs2)
 	user := repository2.NewUser(db)
 	createSession := usecase.NewCreateSession(reader, authentication, session, user)
-	handlerSession := handler.NewSession(createSession)
+	refreshSession := usecase.NewRefreshSession(session)
+	handlerSession := handler.NewSession(createSession, refreshSession)
 	handlers := di.Handlers{
 		Session: handlerSession,
 	}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package common.v1;
+
+message Message {
+  string message = 1;
+}
+
+message BadRequest {
+  message FieldViolation {
+    string field = 1;
+    repeated string descriptions = 2;
+  }
+
+  repeated FieldViolation field_violations = 1;
+}
