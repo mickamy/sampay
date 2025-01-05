@@ -1,3 +1,5 @@
+name: Push to Buf Schema Registry
+
 on: push
 jobs:
   push-module:

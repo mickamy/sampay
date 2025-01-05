@@ -8,11 +8,13 @@
 	db-migrate \
 	db-seed \
 	db-drop \
+	db-prepare \
 	db-reset \
 	gen \
 	wire \
 	fmt \
 	lint \
+	test \
 	help \
 
 build: ## Build the application
@@ -30,6 +32,7 @@ install-dev: ## Install development dependencies
 	go install honnef.co/go/tools/cmd/staticcheck@latest
 	go install github.com/kisielk/errcheck@latest
 	go install github.com/google/wire/cmd/wire@latest
+	go install go.uber.org/mock/mockgen@latest
 
 install-mod: ## Install go modules
 	go mod tidy
@@ -46,11 +49,15 @@ db-seed: ## Seed the database
 db-drop: ## Drop the database
 	PACKAGE_ROOT=$$(pwd) go run ./cmd/db/drop/main.go
 
-db-reset: db-drop db-create db-migrate db-seed ## Reset the database
+db-prepare: db-create db-migrate db-seed ## Prepare the database
+	@echo "Database prepared"
+
+db-reset: db-drop db-prepare ## Reset the database
 	@echo "Database reset"
 
 gen: ## Generate all files
 	@echo "Generating files"
+	find ./ -type d -name "mock_*" -exec rm -r {} +
 	go generate ./...
 
 wire: ## Generate wire files
@@ -63,6 +70,9 @@ lint: ## Run linters (vet, staticcheck, and errcheck)
 	go vet ./...
 	staticcheck ./...
 	errcheck ./...
+
+test: ## Run tests
+	PACKAGE_ROOT=$$(pwd) go test -v ./...
 
 help: ## Display a list of available Makefile targets with their descriptions
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \

@@ -24,7 +24,7 @@ func Migrate(ctx context.Context) error {
 	// migrate
 	{
 		migrations := filepath.Join(config.Common().PackageRoot, "db", "migrations")
-		m, err := migrate.New(fmt.Sprintf("file://%s", migrations), cfg.URL())
+		m, err := migrate.New(fmt.Sprintf("file://%s", migrations), cfg.WriterURL())
 		if err != nil {
 			return fmt.Errorf("failed to initialize migrations: %w", err)
 		}
