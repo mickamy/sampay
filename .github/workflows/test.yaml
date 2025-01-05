@@ -7,6 +7,28 @@ on:
 
 jobs:
   test-backend:
+    services:
+      postgres:
+        image: postgres:16.4-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:7.0.15-alpine
+        env:
+          REDIS_PASSWORD: password
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli -a password ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     runs-on: ubuntu-latest
     env:
       GOPRIVATE: buf.build/gen/go
@@ -80,6 +102,9 @@ jobs:
           
             JWT_SIGNING_SECRET=secret
           EOF
+
+      - name: Prepare Database
+        run: make db-prepare
 
       - name: Test
         run: cd backend && make test

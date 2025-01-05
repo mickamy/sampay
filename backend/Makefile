@@ -8,6 +8,7 @@
 	db-migrate \
 	db-seed \
 	db-drop \
+	db-prepare \
 	db-reset \
 	gen \
 	wire \
@@ -48,7 +49,10 @@ db-seed: ## Seed the database
 db-drop: ## Drop the database
 	PACKAGE_ROOT=$$(pwd) go run ./cmd/db/drop/main.go
 
-db-reset: db-drop db-create db-migrate db-seed ## Reset the database
+db-prepare: db-create db-migrate db-seed ## Prepare the database
+	@echo "Database prepared"
+
+db-reset: db-drop db-prepare ## Reset the database
 	@echo "Database reset"
 
 gen: ## Generate all files
