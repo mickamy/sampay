@@ -3,6 +3,7 @@ modules:
   - name: buf.build/mickamy/sampay
 deps:
   - buf.build/protocolbuffers/wellknowntypes
+  - buf.build/bufbuild/protovalidate
 lint:
   use:
     - STANDARD
