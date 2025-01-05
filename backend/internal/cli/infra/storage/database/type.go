@@ -31,8 +31,8 @@ type WriterTransactional interface {
 	// LockForUpdate is a method that locks the rows for update
 	LockForUpdate() WriterTransactional
 
-	// Writer is a method that returns a Writer
-	Writer() *DB
+	// WriterDB is a method that returns a DB of Writer
+	WriterDB() *DB
 }
 
 func (w Writer) WriterTransaction(ctx context.Context, f func(tx WriterTransactional) error) error {
@@ -46,7 +46,7 @@ func (w Writer) LockForUpdate() WriterTransactional {
 	return &Writer{&DB{withLock}}
 }
 
-func (w Writer) Writer() *DB {
+func (w Writer) WriterDB() *DB {
 	return w.DB
 }
 
@@ -56,8 +56,8 @@ type ReaderTransactional interface {
 	// f is a function that receives a ReaderTransactional and returns an error
 	ReaderTransaction(ctx context.Context, f func(tx ReaderTransactional) error) error
 
-	// Reader is a method that returns a Reader
-	Reader() *DB
+	// ReaderDB is a method that returns a DB of Reader
+	ReaderDB() *DB
 }
 
 func (r Reader) ReaderTransaction(ctx context.Context, f func(tx ReaderTransactional) error) error {
@@ -66,7 +66,7 @@ func (r Reader) ReaderTransaction(ctx context.Context, f func(tx ReaderTransacti
 	})
 }
 
-func (r Reader) Reader() *DB {
+func (r Reader) ReaderDB() *DB {
 	return r.DB
 }
 
@@ -92,12 +92,20 @@ func (db ReadWriter) LockForUpdate() WriterTransactional {
 	return db.writer.LockForUpdate()
 }
 
-func (db ReadWriter) Writer() *DB {
+func (db ReadWriter) WriterDB() *DB {
 	return db.writer.DB
 }
 
-func (db ReadWriter) Reader() *DB {
+func (db ReadWriter) ReaderDB() *DB {
 	return db.reader.DB
+}
+
+func (db ReadWriter) Writer() *Writer {
+	return db.writer
+}
+
+func (db ReadWriter) Reader() *Reader {
+	return db.reader
 }
 
 var (

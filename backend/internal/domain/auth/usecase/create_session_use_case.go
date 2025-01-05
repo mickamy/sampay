@@ -54,7 +54,7 @@ func (uc *createSession) Do(ctx context.Context, input CreateSessionInput) (Crea
 	var userID string
 
 	if err := uc.reader.ReaderTransaction(ctx, func(tx database.ReaderTransactional) error {
-		user, err := uc.userRepo.WithTx(tx.Reader()).FindByEmail(ctx, input.Email)
+		user, err := uc.userRepo.WithTx(tx.ReaderDB()).FindByEmail(ctx, input.Email)
 		if err != nil {
 			return fmt.Errorf("failed to find user: %w", err)
 		}
@@ -62,7 +62,7 @@ func (uc *createSession) Do(ctx context.Context, input CreateSessionInput) (Crea
 			return ErrCreateSessionPasswordNotMatch
 		}
 
-		auths, err := uc.authenticationRepo.WithTx(tx.Reader()).ListByUserID(ctx, user.ID)
+		auths, err := uc.authenticationRepo.WithTx(tx.ReaderDB()).ListByUserID(ctx, user.ID)
 		if err != nil {
 			return err
 		}
