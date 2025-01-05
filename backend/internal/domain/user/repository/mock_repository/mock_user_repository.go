@@ -137,20 +137,6 @@ func (mr *MockUserMockRecorder) FindBySlug(ctx, slug any, scopes ...any) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindBySlug", reflect.TypeOf((*MockUser)(nil).FindBySlug), varargs...)
 }
 
-// Upsert mocks base method.
-func (m_2 *MockUser) Upsert(ctx context.Context, m *model.User) error {
-	m_2.ctrl.T.Helper()
-	ret := m_2.ctrl.Call(m_2, "Upsert", ctx, m)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockUserMockRecorder) Upsert(ctx, m any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockUser)(nil).Upsert), ctx, m)
-}
-
 // WithTx mocks base method.
 func (m *MockUser) WithTx(tx *database.DB) repository.User {
 	m.ctrl.T.Helper()

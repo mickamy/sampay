@@ -111,20 +111,6 @@ func (mr *MockAuthenticationMockRecorder) Update(ctx, m any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockAuthentication)(nil).Update), ctx, m)
 }
 
-// Upsert mocks base method.
-func (m_2 *MockAuthentication) Upsert(ctx context.Context, m *model.Authentication, key repository.AuthenticationKey) error {
-	m_2.ctrl.T.Helper()
-	ret := m_2.ctrl.Call(m_2, "Upsert", ctx, m, key)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockAuthenticationMockRecorder) Upsert(ctx, m, key any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockAuthentication)(nil).Upsert), ctx, m, key)
-}
-
 // WithTx mocks base method.
 func (m *MockAuthentication) WithTx(tx *database.DB) repository.Authentication {
 	m.ctrl.T.Helper()
