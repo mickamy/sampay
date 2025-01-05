@@ -7,6 +7,7 @@ require (
 	buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.1-20250104044546-7afc785ad673.1
 	connectrpc.com/connect v1.17.0
 	github.com/DATA-DOG/go-txdb v0.2.0
+	github.com/brianvoe/gofakeit/v7 v7.1.2
 	github.com/caarlos0/env/v11 v11.3.1
 	github.com/docker/docker v27.2.0+incompatible
 	github.com/golang-jwt/jwt/v5 v5.2.1
@@ -23,6 +24,7 @@ require (
 	go.uber.org/mock v0.5.0
 	golang.org/x/crypto v0.31.0
 	golang.org/x/net v0.33.0
+	google.golang.org/protobuf v1.36.1
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.25.12
 )
@@ -32,7 +34,6 @@ require (
 	github.com/AdaLogics/go-fuzz-headers v0.0.0-20240806141605-e8a1dd7889d6 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
-	github.com/brianvoe/gofakeit/v7 v7.1.2 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/containerd/log v0.1.0 // indirect
@@ -88,6 +89,5 @@ require (
 	golang.org/x/sync v0.10.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
-	google.golang.org/protobuf v1.36.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
