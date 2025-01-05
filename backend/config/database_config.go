@@ -16,25 +16,41 @@ type DatabaseConfigProvider interface {
 type DatabaseConfig struct {
 	Host          string `env:"DB_HOST"`
 	Port          string `env:"DB_PORT"`
-	User          string `env:"DB_WRITER_USER"`
-	Password      string `env:"DB_WRITER_PASSWORD"`
+	Writer        string `env:"DB_WRITER_USER"`
+	WriterPass    string `env:"DB_WRITER_PASSWORD"`
+	Reader        string `env:"DB_READER_USER"`
+	ReaderPass    string `env:"DB_READER_PASSWORD"`
 	Name          string `env:"DB_NAME"`
 	TimeZone      string `env:"DB_TIMEZONE"`
 	AdminUser     string `env:"DB_ADMIN_USER" envDefault:"postgres"`
 	AdminPassword string `env:"DB_ADMIN_PASSWORD"`
 }
 
-func (c DatabaseConfig) DSN() string {
+func (c DatabaseConfig) ReaderURL() string {
 	return fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s TimeZone=%s sslmode=disable",
-		c.Host, c.Port, c.User, c.Password, c.Name, c.TimeZone,
+		"postgres://%s:%s@%s:%s/%s?sslmode=disable&TimeZone=Asia/Tokyo",
+		c.Reader, c.ReaderPass, c.Host, c.Port, c.Name,
 	)
 }
 
-func (c DatabaseConfig) URL() string {
+func (c DatabaseConfig) WriterURL() string {
 	return fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable&TimeZone=Asia/Tokyo",
-		c.User, c.Password, c.Host, c.Port, c.Name,
+		c.Writer, c.WriterPass, c.Host, c.Port, c.Name,
+	)
+}
+
+func (c DatabaseConfig) WriterDSN() string {
+	return fmt.Sprintf(
+		"host=%s port=%s user=%s dbname=%s password=%s TimeZone=%s sslmode=disable",
+		c.Host, c.Port, c.Writer, c.Name, c.WriterPass, c.TimeZone,
+	)
+}
+
+func (c DatabaseConfig) ReaderDSN() string {
+	return fmt.Sprintf(
+		"host=%s port=%s user=%s dbname=%s password=%s TimeZone=%s sslmode=disable",
+		c.Host, c.Port, c.Reader, c.Name, c.ReaderPass, c.TimeZone,
 	)
 }
 
@@ -45,17 +61,41 @@ func (c DatabaseConfig) AdminDSN() string {
 	)
 }
 
-func (c DatabaseConfig) AdminURL() string {
-	return fmt.Sprintf(
-		"postgres://postgres:%s@%s:%s/postgres?TimeZone=%s&sslmode=disable",
-		c.AdminPassword, c.Host, c.Port, c.TimeZone,
-	)
+type writerProvider struct {
+	cfg DatabaseConfig
+}
+
+func (w writerProvider) DSN() string {
+	return w.cfg.WriterDSN()
+}
+
+func (w writerProvider) URL() string {
+	return w.cfg.WriterURL()
+}
+
+func (c DatabaseConfig) WriterProvider() DatabaseConfigProvider {
+	return writerProvider{cfg: c}
+}
+
+type readerProvider struct {
+	cfg DatabaseConfig
+}
+
+func (r readerProvider) DSN() string {
+	return r.cfg.ReaderDSN()
+}
+
+func (r readerProvider) URL() string {
+	return r.cfg.ReaderURL()
+}
+
+func (c DatabaseConfig) ReaderProvider() DatabaseConfigProvider {
+	return readerProvider{cfg: c}
 }
 
 var (
 	databaseOnce sync.Once
 	database     DatabaseConfig
-	_            DatabaseConfigProvider = (*DatabaseConfig)(nil)
 )
 
 func Database() DatabaseConfig {
@@ -66,8 +106,10 @@ func Database() DatabaseConfig {
 
 		if database.Host == "" ||
 			database.Port == "" ||
-			database.User == "" ||
-			database.Password == "" ||
+			database.Writer == "" ||
+			database.WriterPass == "" ||
+			database.Reader == "" ||
+			database.ReaderPass == "" ||
 			database.Name == "" ||
 			database.TimeZone == "" ||
 			database.AdminUser == "" ||

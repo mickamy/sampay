@@ -18,12 +18,12 @@ type Infras struct {
 func provideDB(cfg config.DatabaseConfig) (*database.ReadWriter, error) {
 	var errs []error
 
-	writer, err := database.Connect(cfg, database.WriterConnection)
+	writer, err := database.Connect(cfg.WriterProvider(), database.WriterConnection)
 	if err != nil {
 		errs = append(errs, err)
 	}
 
-	reader, err := database.Connect(cfg, database.ReaderConnection)
+	reader, err := database.Connect(cfg.ReaderProvider(), database.ReaderConnection)
 	if err != nil {
 		errs = append(errs, err)
 	}
