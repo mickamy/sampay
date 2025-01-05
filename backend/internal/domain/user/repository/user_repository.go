@@ -16,9 +16,10 @@ import (
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
 type User interface {
 	Create(ctx context.Context, m *model.User) error
-	FindByID(ctx context.Context, id string, scopes database.Scopes) (*model.User, error)
-	FindBySlug(ctx context.Context, slug string, scopes database.Scopes) (*model.User, error)
-	FindByEmailOrSlug(ctx context.Context, emailOrSlug string, scopes database.Scopes) (*model.User, error)
+	FindByID(ctx context.Context, id string, scopes ...database.Scope) (*model.User, error)
+	FindBySlug(ctx context.Context, slug string, scopes ...database.Scope) (*model.User, error)
+	FindByEmail(ctx context.Context, email string, scopes ...database.Scope) (*model.User, error)
+	FindByEmailOrSlug(ctx context.Context, emailOrSlug string, scopes ...database.Scope) (*model.User, error)
 	Upsert(ctx context.Context, m *model.User) error
 	WithTx(tx *database.DB) User
 }
@@ -35,9 +36,9 @@ func (repo *user) Create(ctx context.Context, m *model.User) error {
 	return repo.db.WithContext(ctx).Create(&m).Error
 }
 
-func (repo *user) FindByID(ctx context.Context, id string, scopes database.Scopes) (*model.User, error) {
+func (repo *user) FindByID(ctx context.Context, id string, scopes ...database.Scope) (*model.User, error) {
 	var m model.User
-	err := repo.db.WithContext(ctx).Scopes(scopes.Gorm()...).
+	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
 		First(&m, "id = ?", id).
 		Error
 	if err != nil {
@@ -49,9 +50,9 @@ func (repo *user) FindByID(ctx context.Context, id string, scopes database.Scope
 	return &m, err
 }
 
-func (repo *user) FindBySlug(ctx context.Context, slug string, scopes database.Scopes) (*model.User, error) {
+func (repo *user) FindBySlug(ctx context.Context, slug string, scopes ...database.Scope) (*model.User, error) {
 	var m model.User
-	err := repo.db.WithContext(ctx).Scopes(scopes.Gorm()...).
+	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
 		First(&m, "slug = ?", slug).
 		Error
 	if err != nil {
@@ -63,9 +64,25 @@ func (repo *user) FindBySlug(ctx context.Context, slug string, scopes database.S
 	return &m, err
 }
 
-func (repo *user) FindByEmailOrSlug(ctx context.Context, emailOrSlug string, scopes database.Scopes) (*model.User, error) {
+func (repo *user) FindByEmail(ctx context.Context, emailOrSlug string, scopes ...database.Scope) (*model.User, error) {
 	var m model.User
-	err := repo.db.WithContext(ctx).Scopes(scopes.Gorm()...).
+	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
+		Joins("LEFT OUTER JOIN authentications ON users.id = authentications.user_id").
+		Where("(authentications.identifier = ? AND authentications.type = ?)", emailOrSlug, authModel.AuthenticationTypeEmailPassword).
+		First(&m).
+		Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &m, err
+}
+
+func (repo *user) FindByEmailOrSlug(ctx context.Context, emailOrSlug string, scopes ...database.Scope) (*model.User, error) {
+	var m model.User
+	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
 		Joins("LEFT OUTER JOIN authentications ON users.id = authentications.user_id").
 		Where("(authentications.identifier = ? AND authentications.type = ?) OR users.slug = ?", emailOrSlug, authModel.AuthenticationTypeEmailPassword, emailOrSlug).
 		First(&m).
@@ -102,7 +119,3 @@ func (repo *user) Upsert(ctx context.Context, m *model.User) error {
 func (repo *user) WithTx(tx *database.DB) User {
 	return &user{db: tx}
 }
-
-var (
-	_ User = (*user)(nil)
-)

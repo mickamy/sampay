@@ -59,3 +59,14 @@ func (m *Authentication) BeforeCreate(tx *gorm.DB) error {
 	}
 	return nil
 }
+
+type Authentications []Authentication
+
+func (ms Authentications) FindByType(t AuthenticationType) *Authentication {
+	for i := range ms {
+		if ms[i].Type == t {
+			return &ms[i]
+		}
+	}
+	return nil
+}

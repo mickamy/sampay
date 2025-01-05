@@ -21,8 +21,8 @@ type AuthenticationKey struct {
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
 type Authentication interface {
 	Create(ctx context.Context, m *model.Authentication) error
-	FindByTypeAndIdentifier(ctx context.Context, authType model.AuthenticationType, identifier string, scopes database.Scopes) (*model.Authentication, error)
-	ExistsByTypeAndIdentifier(ctx context.Context, authType model.AuthenticationType, identifier string) (bool, error)
+	FindByKey(ctx context.Context, key AuthenticationKey, scopes ...database.Scope) (*model.Authentication, error)
+	ListByUserID(ctx context.Context, userID string, scopes ...database.Scope) ([]model.Authentication, error)
 	Update(ctx context.Context, m *model.Authentication) error
 	Upsert(ctx context.Context, m *model.Authentication, key AuthenticationKey) error
 	WithTx(tx *database.DB) Authentication
@@ -40,10 +40,10 @@ func (repo *authentication) Create(ctx context.Context, m *model.Authentication)
 	return repo.db.WithContext(ctx).Create(&m).Error
 }
 
-func (repo *authentication) FindByTypeAndIdentifier(ctx context.Context, authType model.AuthenticationType, identifier string, scopes database.Scopes) (*model.Authentication, error) {
+func (repo *authentication) FindByKey(ctx context.Context, key AuthenticationKey, scopes ...database.Scope) (*model.Authentication, error) {
 	m := new(model.Authentication)
-	err := repo.db.WithContext(ctx).Scopes(scopes.Gorm()...).
-		First(m, "type = ? AND identifier = ?", authType, identifier).
+	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
+		First(m, "user_id = ? type = ? AND identifier = ?", key.UserID, key.Type, key.Identifier).
 		Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -54,14 +54,15 @@ func (repo *authentication) FindByTypeAndIdentifier(ctx context.Context, authTyp
 	return m, err
 }
 
-func (repo *authentication) ExistsByTypeAndIdentifier(ctx context.Context, authType model.AuthenticationType, identifier string) (bool, error) {
-	var id string
-	err := repo.db.WithContext(ctx).
-		Model(model.Authentication{}).
-		Where("type = ? AND identifier = ?", authType, identifier).
-		Limit(1).
-		Pluck("id", &id).Error
-	return id != "", err
+func (repo *authentication) ListByUserID(ctx context.Context, userID string, scopes ...database.Scope) ([]model.Authentication, error) {
+	var ms []model.Authentication
+	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
+		Find(&ms, "user_id = ?", userID).
+		Error
+	if err != nil {
+		return nil, err
+	}
+	return ms, nil
 }
 
 func (repo *authentication) Update(ctx context.Context, m *model.Authentication) error {
