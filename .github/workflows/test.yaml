@@ -1,0 +1,107 @@
+name: Test
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: ./backend/go.mod
+          cache-dependency-path: ./backend/go.sum
+
+      - name: Install dependencies
+        run: cd backend && make install
+
+      - name: Verify all files are up to date
+        run: |
+          cd backend && make gen
+
+          if [[ $(git status --porcelain) ]]; then
+            echo "Error: There are uncommitted changes in the working directory after generation."
+            git diff
+            exit 1
+          fi
+
+      - name: Verify all files are formatted
+        run: |
+          cd backend && make fmt
+
+          if [[ $(git status --porcelain) ]]; then
+            echo "Error: There are uncommitted changes in the working directory after generation."
+            git diff
+            exit 1
+          fi
+
+      - name: Lint
+        run: cd backend && make lint
+
+      - name: Inject .env
+        run: |
+          cd backend && cat <<EOF > .envTZ=Asia/Tokyo
+            ENV=development
+            PACKAGE_ROOT=$(pwd)
+            
+            DB_HOST=localhost
+            DB_PORT=5432
+            DB_WRITER_USER=sampay_writer
+            DB_WRITER_PASSWORD=password
+            DB_READER_USER=sampay_reader
+            DB_READER_PASSWORD=password
+            DB_NAME=sampay
+            DB_TIMEZONE=Asia/Tokyo
+            DB_ADMIN_USER=postgres
+            DB_ADMIN_PASSWORD=password
+            
+            DATABASE_WRITER_URL=postgresql://$DB_WRITER_USER:$DB_WRITER_USER@$DB_HOST:$DB_PORT/$DB_NAME?timezone=$DB_TIMEZONE&sslmode=disable
+            DATABASE_READER_URL=postgresql://$DB_READER_USER:$DB_READER_USER@$DB_HOST:$DB_PORT/$DB_NAME?timezone=$DB_TIMEZONE&sslmode=disable
+            
+            # for golang-migrate/migrate
+            POSTGRESQL_URL=$DATABASE_WRITER_URL
+            
+            REDIS_URL=redis://:password@localhost:6379/0
+            
+            JWT_SIGNING_SECRET=secret
+          EOF
+
+      - name: Test
+        run: cd backend && make test
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.12'
+
+      - name: Install dependencies
+        run: cd frontend && npm ci
+
+      - name: Type check
+        run: cd frontend && npm run typecheck
+
+      - name: Verify all files are formatted
+        run: |
+          cd frontend && npm run format
+
+          if [[ $(git status --porcelain) ]]; then
+            echo "Error: There are uncommitted changes in the working directory after generation."
+            git diff
+            exit 1
+          fi
+
+      - name: Lint
+        run: cd frontend && npm run lint
