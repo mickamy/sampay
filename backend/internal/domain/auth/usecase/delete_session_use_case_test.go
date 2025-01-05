@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/kvs"
@@ -15,7 +14,7 @@ import (
 	"mickamy.com/sampay/internal/lib/ulid"
 )
 
-func TestRefreshSession_Do(t *testing.T) {
+func TestDeleteSession_Do(t *testing.T) {
 	t.Parallel()
 
 	userID := ulid.New()
@@ -24,32 +23,19 @@ func TestRefreshSession_Do(t *testing.T) {
 	tcs := []struct {
 		name    string
 		arrange func(t *testing.T, ctx context.Context, kvs *kvs.KVS)
-		input   func(t *testing.T) usecase.RefreshSessionInput
-		assert  func(t *testing.T, got usecase.RefreshSessionOutput, err error)
+		input   func(t *testing.T) usecase.DeleteSessionInput
+		assert  func(t *testing.T, got usecase.DeleteSessionOutput, err error)
 	}{
 		{
 			name: "success",
 			arrange: func(t *testing.T, ctx context.Context, kvs *kvs.KVS) {
 				require.NoError(t, authRepository.NewSession(kvs).Create(ctx, validSession))
 			},
-			input: func(t *testing.T) usecase.RefreshSessionInput {
-				return usecase.RefreshSessionInput{RefreshToken: validSession.Tokens.Refresh.Value}
+			input: func(t *testing.T) usecase.DeleteSessionInput {
+				return usecase.DeleteSessionInput{AccessToken: validSession.Tokens.Access.Value, RefreshToken: validSession.Tokens.Refresh.Value}
 			},
-			assert: func(t *testing.T, got usecase.RefreshSessionOutput, err error) {
+			assert: func(t *testing.T, got usecase.DeleteSessionOutput, err error) {
 				require.NoError(t, err)
-				assert.NotEmpty(t, got.Tokens.Access.Value)
-				assert.NotEmpty(t, got.Tokens.Refresh.Value)
-			},
-		},
-		{
-			name: "refresh token not found",
-			arrange: func(t *testing.T, ctx context.Context, kvs *kvs.KVS) {
-			},
-			input: func(t *testing.T) usecase.RefreshSessionInput {
-				return usecase.RefreshSessionInput{RefreshToken: validSession.Tokens.Refresh.Value}
-			},
-			assert: func(t *testing.T, got usecase.RefreshSessionOutput, err error) {
-				require.ErrorIs(t, err, usecase.ErrRefreshSessionTokenNotFound)
 			},
 		},
 	}
@@ -65,7 +51,7 @@ func TestRefreshSession_Do(t *testing.T) {
 			tc.arrange(t, ctx, kvStore)
 
 			// act
-			got, err := usecase.NewRefreshSession(authRepository.NewSession(kvStore)).Do(ctx, tc.input(t))
+			got, err := usecase.NewDeleteSession(authRepository.NewSession(kvStore)).Do(ctx, tc.input(t))
 
 			// assert
 			tc.assert(t, got, err)

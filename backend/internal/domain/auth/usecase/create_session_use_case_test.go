@@ -12,7 +12,6 @@ import (
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	"mickamy.com/sampay/internal/domain/auth/usecase"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
-	"mickamy.com/sampay/test/infra"
 )
 
 func TestCreateSessionUseCase_Do(t *testing.T) {
@@ -20,7 +19,7 @@ func TestCreateSessionUseCase_Do(t *testing.T) {
 
 	// arrange
 	ctx := context.Background()
-	db := NewReadWriter(t)
+	db := newReadWriter(t)
 	user := userFixture.User(nil)
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
 	auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
@@ -29,7 +28,7 @@ func TestCreateSessionUseCase_Do(t *testing.T) {
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&auth).Error)
 
 	// act
-	sut := di.InitAuthUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), infra.NewKVS(t)).CreateSession
+	sut := di.InitAuthUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).CreateSession
 	got, err := sut.Do(ctx, usecase.CreateSessionInput{
 		Email:    auth.Identifier,
 		Password: "P@ssw0rd",

@@ -31,17 +31,17 @@ var (
 	seedOnce = sync.Once{}
 )
 
-type CleanUp = func()
+type CleanUpDB = func()
 
 type WriterDSN string
 type ReaderDSN string
 
-type DSN struct {
+type DatabaseDSN struct {
 	Writer WriterDSN
 	Reader ReaderDSN
 }
 
-func NewDB() (DSN, CleanUp) {
+func NewDB() (DatabaseDSN, CleanUpDB) {
 	if useTestContainers {
 		return initPostgresContainers(config.Database())
 	}
@@ -49,7 +49,7 @@ func NewDB() (DSN, CleanUp) {
 	return initActualDB(config.Database())
 }
 
-func initPostgresContainers(cfg config.DatabaseConfig) (DSN, CleanUp) {
+func initPostgresContainers(cfg config.DatabaseConfig) (DatabaseDSN, CleanUpDB) {
 	ctx := context.Background()
 
 	packageRoot := config.Common().PackageRoot
@@ -141,7 +141,7 @@ func initPostgresContainers(cfg config.DatabaseConfig) (DSN, CleanUp) {
 		log.Fatalf("failed to seed: %s", err)
 	}
 
-	return DSN{WriterDSN(writerDSN), ReaderDSN(readerDSN)}, func() {
+	return DatabaseDSN{WriterDSN(writerDSN), ReaderDSN(readerDSN)}, func() {
 		for _, db := range []*gorm.DB{writerDB, readerDB} {
 			sqlDB, err := db.DB()
 			if err != nil {
@@ -157,7 +157,7 @@ func initPostgresContainers(cfg config.DatabaseConfig) (DSN, CleanUp) {
 	}
 }
 
-func initActualDB(cfg config.DatabaseConfig) (DSN, CleanUp) {
+func initActualDB(cfg config.DatabaseConfig) (DatabaseDSN, CleanUpDB) {
 	writerDSN := cfg.WriterDSN()
 	writer, err := gorm.Open(postgres.New(postgres.Config{DSN: writerDSN}))
 	if err != nil {
@@ -177,7 +177,7 @@ func initActualDB(cfg config.DatabaseConfig) (DSN, CleanUp) {
 		}
 	})
 
-	return DSN{WriterDSN(writerDSN), ReaderDSN(readerDSN)}, func() {
+	return DatabaseDSN{WriterDSN(writerDSN), ReaderDSN(readerDSN)}, func() {
 		for _, db := range []*gorm.DB{writer, reader} {
 			sqlDB, err := db.DB()
 			if err != nil {

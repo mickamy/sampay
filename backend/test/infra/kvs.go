@@ -3,28 +3,27 @@ package infra
 import (
 	"context"
 	"fmt"
-	"testing"
+	"log"
 
+	"github.com/alicebob/miniredis/v2"
 	"github.com/google/uuid"
-	"github.com/redis/go-redis/v9"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
-
-	"mickamy.com/sampay/config"
-	"mickamy.com/sampay/internal/cli/infra/storage/kvs"
 )
 
-func NewKVS(t *testing.T) *kvs.KVS {
-	t.Helper()
+type KVSAddr string
 
+type CleanUpKVS = func()
+
+func NewKVS() (KVSAddr, CleanUpKVS) {
 	if useTestContainers {
-		return initRedisContainers(t)
+		return initRedisContainers()
 	}
 
-	return initActualRedis(t)
+	return initMiniRedis()
 }
 
-func initRedisContainers(t *testing.T) *redis.Client {
+func initRedisContainers() (KVSAddr, CleanUpKVS) {
 	ctx := context.Background()
 
 	ctn, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
@@ -40,45 +39,35 @@ func initRedisContainers(t *testing.T) *redis.Client {
 		Started: true,
 	})
 	if err != nil {
-		t.Fatalf("could not start redis: %s", err)
+		log.Fatalf("could not start redis: %s", err)
 	}
 
 	host, err := ctn.Host(ctx)
 	if err != nil {
-		t.Fatalf("could not get host: %s", err)
+		log.Fatalf("could not get host: %s", err)
 	}
 
 	port, err := ctn.MappedPort(ctx, "6379")
 	if err != nil {
-		t.Fatalf("could not get port %s: %s", "6379", err)
+		log.Fatalf("could not get port %s: %s", "6379", err)
 	}
 
-	t.Cleanup(func() {
+	addr := fmt.Sprintf("%s:%s", host, port.Port())
+
+	return KVSAddr(addr), func() {
 		if err := ctn.Terminate(ctx); err != nil {
-			t.Fatalf("could not stop redis: %s", err)
+			log.Fatalf("could not stop redis: %s", err)
 		}
-	})
-
-	rds := redis.NewClient(&redis.Options{
-		Addr: host + ":" + port.Port(),
-	})
-
-	return rds
+	}
 }
 
-func initActualRedis(t *testing.T) *redis.Client {
-	opts, err := redis.ParseURL(config.KVS().URL)
+func initMiniRedis() (KVSAddr, CleanUpKVS) {
+	mr, err := miniredis.Run()
 	if err != nil {
-		panic(fmt.Errorf("failed to parse redis url: %s", err))
+		log.Fatalf("could not start miniredis: %s", err)
 	}
 
-	client := redis.NewClient(opts)
-
-	t.Cleanup(func() {
-		if err := client.Close(); err != nil {
-			t.Logf("failed to close redis connection: %s", err)
-		}
-	})
-
-	return client
+	return KVSAddr(mr.Addr()), func() {
+		mr.Close()
+	}
 }

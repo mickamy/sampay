@@ -22,6 +22,8 @@ func NewServer(infras di.Infras) http.Server {
 	interceptors := connect.WithInterceptors(
 		interceptor.Logging(),
 		interceptor.I18N(),
+		interceptor.Authenticate(di.InitAuthUseCases(infras.DB, infras.ReadWriter, infras.Writer, infras.Reader, infras.KVS).AuthenticateUser),
+		interceptor.Cookie(),
 	)
 
 	for _, route := range []func(mux *http.ServeMux, infras di.Infras, options ...connect.HandlerOption){
