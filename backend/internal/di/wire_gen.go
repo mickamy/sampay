@@ -16,6 +16,7 @@ import (
 	"mickamy.com/sampay/internal/domain/auth/usecase"
 	di2 "mickamy.com/sampay/internal/domain/registration/di"
 	handler2 "mickamy.com/sampay/internal/domain/registration/handler"
+	repository3 "mickamy.com/sampay/internal/domain/registration/repository"
 	usecase2 "mickamy.com/sampay/internal/domain/registration/usecase"
 	di3 "mickamy.com/sampay/internal/domain/user/di"
 	repository2 "mickamy.com/sampay/internal/domain/user/repository"
@@ -96,13 +97,24 @@ func InitAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *
 	return handlers
 }
 
+func InitRegistrationRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di2.Repositories {
+	usageCategory := repository3.NewUsageCategory(db)
+	repositories := di2.Repositories{
+		UsageCategory: usageCategory,
+	}
+	return repositories
+}
+
 func InitRegistrationUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di2.UseCases {
 	authentication := repository.NewAuthentication(db)
 	session := repository.NewSession(kvs2)
 	user := repository2.NewUser(db)
 	createAccount := usecase2.NewCreateAccount(writer, authentication, session, user)
+	usageCategory := repository3.NewUsageCategory(db)
+	listUsageCategories := usecase2.NewListUsageCategories(reader, usageCategory)
 	useCases := di2.UseCases{
-		CreateAccount: createAccount,
+		CreateAccount:       createAccount,
+		ListUsageCategories: listUsageCategories,
 	}
 	return useCases
 }
@@ -113,8 +125,12 @@ func InitRegistrationHandlers(db *database.DB, readWriter *database.ReadWriter, 
 	user := repository2.NewUser(db)
 	createAccount := usecase2.NewCreateAccount(writer, authentication, session, user)
 	account := handler2.NewAccount(createAccount)
+	usageCategory := repository3.NewUsageCategory(db)
+	listUsageCategories := usecase2.NewListUsageCategories(reader, usageCategory)
+	handlerUsageCategory := handler2.NewUsageCategory(listUsageCategories)
 	handlers := di2.Handlers{
-		Account: account,
+		Account:       account,
+		UsageCategory: handlerUsageCategory,
 	}
 	return handlers
 }
