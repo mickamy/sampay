@@ -93,7 +93,7 @@ func (repo *authentication) Upsert(ctx context.Context, m *model.Authentication,
 	}
 	if id != "" {
 		return repo.db.WithContext(ctx).
-			Clauses(&clause.Returning{}).
+			Clauses(clause.Returning{}).
 			Where("user_id = ? AND type = ? AND identifier = ?", key.UserID, key.Type, key.Identifier).
 			Updates(&m).Error
 	}
