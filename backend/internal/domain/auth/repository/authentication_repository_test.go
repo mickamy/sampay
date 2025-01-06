@@ -5,9 +5,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	authFixture "mickamy.com/sampay/internal/domain/auth/fixture"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	"mickamy.com/sampay/internal/domain/auth/repository"
@@ -76,6 +78,62 @@ func TestAuthentication_FindByKey(t *testing.T) {
 	assert.Equal(t, auth.Identifier, got.Identifier)
 	assert.Equal(t, auth.Secret, got.Secret)
 	assert.Equal(t, auth.MFAEnabled, got.MFAEnabled)
+}
+
+func TestAuthentication_FindByTypeAndIdentifier(t *testing.T) {
+	t.Parallel()
+
+	tcs := []struct {
+		name    string
+		arrange func(t *testing.T, ctx context.Context, db *database.DB) (authModel.AuthenticationType, string)
+		assert  func(t *testing.T, got *authModel.Authentication, err error)
+	}{
+		{
+			name: "found",
+			arrange: func(t *testing.T, ctx context.Context, db *database.DB) (authModel.AuthenticationType, string) {
+				user := userFixture.User(nil)
+				require.NoError(t, db.WithContext(ctx).Create(&user).Error)
+				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
+					m.UserID = user.ID
+				})
+				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
+				return auth.Type, auth.Identifier
+			},
+			assert: func(t *testing.T, got *authModel.Authentication, err error) {
+				require.NoError(t, err)
+				require.NotNil(t, got)
+			},
+		},
+		{
+			name: "not found",
+			arrange: func(t *testing.T, ctx context.Context, db *database.DB) (authModel.AuthenticationType, string) {
+				return authModel.AuthenticationTypeEmailPassword, gofakeit.GlobalFaker.Email()
+			},
+			assert: func(t *testing.T, got *authModel.Authentication, err error) {
+				require.NoError(t, err)
+				require.Nil(t, got)
+			},
+		},
+	}
+
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			// arrange
+			ctx := context.Background()
+			db := newReadWriter(t)
+			authType, identifier := tc.arrange(t, ctx, db.WriterDB())
+
+			// act
+			sut := repository.NewAuthentication(db.WriterDB())
+			got, err := sut.FindByTypeAndIdentifier(ctx, authType, identifier)
+
+			// assert
+			tc.assert(t, got, err)
+		})
+	}
 }
 
 func TestAuthentication_ListByUserID(t *testing.T) {

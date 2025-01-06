@@ -5,3 +5,6 @@ auth:
 common:
   error:
     internal: 'ただいまアクセスが集中しております。しばらくしてから再度お試しください。'
+registration:
+  error:
+    email_already_registered: 'このメールアドレスは既に登録されています。'

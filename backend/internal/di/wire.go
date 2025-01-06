@@ -9,6 +9,7 @@ import (
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/cli/infra/storage/kvs"
 	auth "mickamy.com/sampay/internal/domain/auth/di"
+	registration "mickamy.com/sampay/internal/domain/registration/di"
 	user "mickamy.com/sampay/internal/domain/user/di"
 )
 
@@ -48,6 +49,27 @@ func InitAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *
 		wire.Struct(new(auth.Handlers), "*"),
 	)
 	return auth.Handlers{}
+}
+
+func InitRegistrationUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) registration.UseCases {
+	wire.Build(
+		registration.UseCaseSet,
+		auth.RepositorySet,
+		user.RepositorySet,
+		wire.Struct(new(registration.UseCases), "*"),
+	)
+	return registration.UseCases{}
+}
+
+func InitRegistrationHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) registration.Handlers {
+	wire.Build(
+		registration.HandlerSet,
+		registration.UseCaseSet,
+		auth.RepositorySet,
+		user.RepositorySet,
+		wire.Struct(new(registration.Handlers), "*"),
+	)
+	return registration.Handlers{}
 }
 
 func InitUserRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) user.Repositories {

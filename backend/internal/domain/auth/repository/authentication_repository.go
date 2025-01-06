@@ -22,6 +22,7 @@ type AuthenticationKey struct {
 type Authentication interface {
 	Create(ctx context.Context, m *model.Authentication) error
 	FindByKey(ctx context.Context, key AuthenticationKey, scopes ...database.Scope) (*model.Authentication, error)
+	FindByTypeAndIdentifier(ctx context.Context, authType model.AuthenticationType, identifier string, scopes ...database.Scope) (*model.Authentication, error)
 	ListByUserID(ctx context.Context, userID string, scopes ...database.Scope) ([]model.Authentication, error)
 	Update(ctx context.Context, m *model.Authentication) error
 	WithTx(tx *database.DB) Authentication
@@ -43,6 +44,20 @@ func (repo *authentication) FindByKey(ctx context.Context, key AuthenticationKey
 	m := new(model.Authentication)
 	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
 		First(m, "user_id = ? AND type = ? AND identifier = ?", key.UserID, key.Type, key.Identifier).
+		Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return m, err
+}
+
+func (repo *authentication) FindByTypeAndIdentifier(ctx context.Context, authType model.AuthenticationType, identifier string, scopes ...database.Scope) (*model.Authentication, error) {
+	m := new(model.Authentication)
+	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
+		First(m, "type = ? AND identifier = ?", authType, identifier).
 		Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

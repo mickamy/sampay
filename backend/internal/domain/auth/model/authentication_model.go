@@ -31,12 +31,13 @@ type Authentication struct {
 	UpdatedAt  time.Time
 }
 
-func NewAuthenticationEmailPassword(email, password string) (Authentication, error) {
+func NewAuthenticationEmailPassword(userID, email, password string) (Authentication, error) {
 	hash, err := passwd.New(password, 16)
 	if err != nil {
 		return Authentication{}, fmt.Errorf("failed to hash password: %w", err)
 	}
 	return Authentication{
+		UserID:     userID,
 		Type:       AuthenticationTypeEmailPassword,
 		Identifier: email,
 		Secret:     hash,
