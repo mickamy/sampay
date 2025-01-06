@@ -6,8 +6,6 @@ services:
       args:
         MAIN_GO_FILE: /src/cmd/api/main.go
         BIN_NAME: api
-      secrets:
-        - buf_token
     env_file:
       - .env.docker
     volumes:
@@ -22,8 +20,6 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       target: dev
-      secrets:
-        - buf_token
     volumes:
       - ./frontend:/usr/src:delegated
       - /usr/src/build
@@ -64,10 +60,6 @@ services:
       interval: 1s
       timeout: 3s
       retries: 30
-
-secrets:
-  buf_token:
-    file: secrets/buf_token
 
 volumes:
   go:

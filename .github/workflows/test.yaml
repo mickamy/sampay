@@ -44,10 +44,6 @@ jobs:
 
       - uses: bufbuild/buf-setup-action@v1
 
-      - name: Login to Buf Schema Registry
-        run: |
-          echo ${{ secrets.BUF_TOKEN }} | buf registry login buf.build --token-stdin
-
       - name: Install dependencies
         run: cd backend && make install
 
@@ -120,11 +116,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22.12'
-
-      - name: Set up Buf
-        run: |
-          npm config set @buf:registry https://buf.build/gen/npm/v1/ && \
-          npm config set //buf.build/gen/npm/v1/:_authToken ${{ secrets.BUF_TOKEN }}
 
       - name: Install dependencies
         run: cd frontend && npm ci
