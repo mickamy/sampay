@@ -77,6 +77,26 @@ func (mr *MockAuthenticationMockRecorder) FindByKey(ctx, key any, scopes ...any)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByKey", reflect.TypeOf((*MockAuthentication)(nil).FindByKey), varargs...)
 }
 
+// FindByTypeAndIdentifier mocks base method.
+func (m *MockAuthentication) FindByTypeAndIdentifier(ctx context.Context, authType model.AuthenticationType, identifier string, scopes ...database.Scope) (*model.Authentication, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{ctx, authType, identifier}
+	for _, a := range scopes {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "FindByTypeAndIdentifier", varargs...)
+	ret0, _ := ret[0].(*model.Authentication)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByTypeAndIdentifier indicates an expected call of FindByTypeAndIdentifier.
+func (mr *MockAuthenticationMockRecorder) FindByTypeAndIdentifier(ctx, authType, identifier any, scopes ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]any{ctx, authType, identifier}, scopes...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByTypeAndIdentifier", reflect.TypeOf((*MockAuthentication)(nil).FindByTypeAndIdentifier), varargs...)
+}
+
 // ListByUserID mocks base method.
 func (m *MockAuthentication) ListByUserID(ctx context.Context, userID string, scopes ...database.Scope) ([]model.Authentication, error) {
 	m.ctrl.T.Helper()
