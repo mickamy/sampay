@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package registration.v1;
+
+message GetOnboardingStepRequest {
+}
+
+message GetOnboardingStepResponse {
+  string step = 1;
+}
+
+message PostUsageCategoryRequest {
+  string category_type = 1;
+}
+
+message PostUsageCategoryResponse {
+}
+
+message PostUserProfileRequest {
+  string name = 1;
+  optional string bio = 2;
+}
+
+message PostUserProfileResponse {
+}
+
+service OnboardingService {
+  rpc GetOnboardingStep(GetOnboardingStepRequest) returns (GetOnboardingStepResponse) {}
+  rpc PostUsageCategory(PostUsageCategoryRequest) returns (PostUsageCategoryResponse) {}
+  rpc PostUserProfile(PostUserProfileRequest) returns (PostUserProfileResponse) {}
+}
