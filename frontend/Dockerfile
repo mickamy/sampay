@@ -5,11 +5,6 @@ FROM node:${NODE_VERSION} AS base
 WORKDIR /usr/src
 COPY package*.json ./
 
-RUN --mount=type=secret,id=buf_token \
-    BUF_TOKEN=$(cat /run/secrets/buf_token) && \
-    npm config set @buf:registry https://buf.build/gen/npm/v1/ && \
-    npm config set //buf.build/gen/npm/v1/:_authToken "$BUF_TOKEN"
-
 RUN --mount=type=cache,target=/root/.npm \
     npm install
 

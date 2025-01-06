@@ -6,10 +6,6 @@ WORKDIR /src
 ADD Makefile ./
 RUN make install-build
 
-RUN --mount=type=secret,id=buf_token \
-    BUF_TOKEN=$(cat /run/secrets/buf_token) && \
-    echo "$BUF_TOKEN" | buf registry login buf.build --token-stdin
-
 RUN --mount=type=cache,target=/go/pkg/mod/ \
     --mount=type=bind,source=go.mod,target=go.mod \
     go mod download -x
