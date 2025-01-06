@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package registration.v1;
+
+message UsageCategory {
+  string category_type = 1;
+  int32 display_order = 2;
+}
+
+message ListUsageCategoriesRequest {}
+
+message ListUsageCategoriesResponse {
+  repeated UsageCategory categories = 1;
+}
+
+service UsageCategoryService {
+  rpc ListUsageCategories(ListUsageCategoriesRequest) returns (ListUsageCategoriesResponse) {}
+}
