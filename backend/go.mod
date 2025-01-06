@@ -3,8 +3,8 @@ module mickamy.com/sampay
 go 1.23.4
 
 require (
-	buf.build/gen/go/mickamy/sampay/connectrpc/go v1.17.0-20250105115656-a0c4127c386a.1
-	buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.1-20250105115656-a0c4127c386a.1
+	buf.build/gen/go/mickamy/sampay/connectrpc/go v1.17.0-20250105145126-134779e92e58.1
+	buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.1-20250105145126-134779e92e58.1
 	connectrpc.com/connect v1.17.0
 	github.com/DATA-DOG/go-txdb v0.2.0
 	github.com/alicebob/miniredis/v2 v2.34.0
@@ -38,6 +38,7 @@ require (
 )
 
 require (
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.1-20241127180247-a33202765966.1 // indirect
 	dario.cat/mergo v1.0.1 // indirect
 	github.com/AdaLogics/go-fuzz-headers v0.0.0-20240806141605-e8a1dd7889d6 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20250102033503-faa5f7b0171c // indirect

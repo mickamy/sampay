@@ -8,12 +8,11 @@ import (
 	authv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/auth/v1"
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
+	authDTO "mickamy.com/sampay/internal/domain/auth/dto"
 	"mickamy.com/sampay/internal/domain/auth/usecase"
 	dto "mickamy.com/sampay/internal/domain/common/dto"
 	"mickamy.com/sampay/internal/lib/contexts"
-	"mickamy.com/sampay/internal/lib/jwt"
 	"mickamy.com/sampay/internal/misc/i18n"
 )
 
@@ -53,7 +52,7 @@ func (h *Session) SignIn(
 	}
 	res := connect.NewResponse(&authv1.SignInResponse{
 		UserId: out.Session.UserID,
-		Tokens: h.newTokens(out.Session.Tokens),
+		Tokens: authDTO.NewTokens(out.Session.Tokens),
 	})
 	return res, nil
 }
@@ -77,7 +76,7 @@ func (h *Session) Refresh(
 	}
 
 	return connect.NewResponse(&authv1.RefreshResponse{
-		Tokens: h.newTokens(out.Tokens),
+		Tokens: authDTO.NewTokens(out.Tokens),
 	}), nil
 }
 
@@ -98,20 +97,6 @@ func (h *Session) SignOut(
 	}
 
 	return connect.NewResponse(&authv1.SignOutResponse{}), nil
-}
-
-func (h *Session) newTokens(tokens jwt.Tokens) *authv1.Tokens {
-	return &authv1.Tokens{
-		Access:  h.newToken(tokens.Access),
-		Refresh: h.newToken(tokens.Refresh),
-	}
-}
-
-func (h *Session) newToken(token jwt.Token) *authv1.Token {
-	return &authv1.Token{
-		Value:     token.Value,
-		ExpiresAt: timestamppb.New(token.ExpiresAt),
-	}
 }
 
 var _ authv1connect.SessionServiceHandler = (*Session)(nil)

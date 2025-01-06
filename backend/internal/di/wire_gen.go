@@ -14,7 +14,10 @@ import (
 	"mickamy.com/sampay/internal/domain/auth/handler"
 	"mickamy.com/sampay/internal/domain/auth/repository"
 	"mickamy.com/sampay/internal/domain/auth/usecase"
-	di2 "mickamy.com/sampay/internal/domain/user/di"
+	di2 "mickamy.com/sampay/internal/domain/registration/di"
+	handler2 "mickamy.com/sampay/internal/domain/registration/handler"
+	usecase2 "mickamy.com/sampay/internal/domain/registration/usecase"
+	di3 "mickamy.com/sampay/internal/domain/user/di"
 	repository2 "mickamy.com/sampay/internal/domain/user/repository"
 )
 
@@ -93,9 +96,32 @@ func InitAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *
 	return handlers
 }
 
-func InitUserRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di2.Repositories {
+func InitRegistrationUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di2.UseCases {
+	authentication := repository.NewAuthentication(db)
+	session := repository.NewSession(kvs2)
 	user := repository2.NewUser(db)
-	repositories := di2.Repositories{
+	createAccount := usecase2.NewCreateAccount(writer, authentication, session, user)
+	useCases := di2.UseCases{
+		CreateAccount: createAccount,
+	}
+	return useCases
+}
+
+func InitRegistrationHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di2.Handlers {
+	authentication := repository.NewAuthentication(db)
+	session := repository.NewSession(kvs2)
+	user := repository2.NewUser(db)
+	createAccount := usecase2.NewCreateAccount(writer, authentication, session, user)
+	account := handler2.NewAccount(createAccount)
+	handlers := di2.Handlers{
+		Account: account,
+	}
+	return handlers
+}
+
+func InitUserRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di3.Repositories {
+	user := repository2.NewUser(db)
+	repositories := di3.Repositories{
 		User: user,
 	}
 	return repositories
