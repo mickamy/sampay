@@ -49,7 +49,9 @@ func (h *Onboarding) CreateUserAttribute(
 	ctx context.Context,
 	req *connect.Request[registrationv1.CreateUserAttributeRequest],
 ) (*connect.Response[registrationv1.CreateUserAttributeResponse], error) {
-	_, err := h.createAttribute.Do(ctx, usecase.CreateUserAttributeInput{})
+	_, err := h.createAttribute.Do(ctx, usecase.CreateUserAttributeInput{
+		UsageCategoryType: req.Msg.CategoryType,
+	})
 	if err != nil {
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		return nil, dto.NewInternalError(ctx, err).AsConnectError()
