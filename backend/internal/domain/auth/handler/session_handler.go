@@ -27,10 +27,12 @@ type Session struct {
 func NewSession(
 	create usecase.CreateSession,
 	refresh usecase.RefreshSession,
+	delete usecase.DeleteSession,
 ) *Session {
 	return &Session{
 		create:  create,
 		refresh: refresh,
+		delete:  delete,
 	}
 }
 

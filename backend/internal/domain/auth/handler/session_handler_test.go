@@ -337,6 +337,75 @@ func TestSession_Refresh(t *testing.T) {
 	})
 }
 
+func TestSession_SignOut(t *testing.T) {
+	t.Parallel()
+
+	user := userFixture.User(nil)
+
+	tsc := []struct {
+		name    string
+		arrange func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.SignOutRequest
+		assert  func(t *testing.T, got *connect.Response[authv1.SignOutResponse], err error)
+	}{
+		{
+			name: "success",
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.SignOutRequest {
+				session := authModel.MustNewSession(userID)
+				require.NoError(t, authRepository.NewSession(infras.KVS).Create(ctx, session))
+				return &authv1.SignOutRequest{
+					AccessToken:  session.Tokens.Access.Value,
+					RefreshToken: session.Tokens.Refresh.Value,
+				}
+			},
+			assert: func(t *testing.T, got *connect.Response[authv1.SignOutResponse], err error) {
+				require.NoError(t, err)
+				cookies := got.Header().Values("Set-Cookie")
+				assert.Len(t, cookies, 2)
+				assert.Contains(t, cookies, "access_token=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure")
+				assert.Contains(t, cookies, "refresh_token=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure")
+			},
+		},
+		{
+			name: "fail (session not found)",
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.SignOutRequest {
+				return &authv1.SignOutRequest{
+					AccessToken:  gofakeit.UUID(),
+					RefreshToken: gofakeit.UUID(),
+				}
+			},
+			assert: func(t *testing.T, got *connect.Response[authv1.SignOutResponse], err error) {
+				require.NoError(t, err)
+				cookies := got.Header().Values("Set-Cookie")
+				assert.Len(t, cookies, 2)
+				assert.Contains(t, cookies, "access_token=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure")
+				assert.Contains(t, cookies, "refresh_token=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure")
+			},
+		},
+	}
+
+	for _, tc := range tsc {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			// arrange
+			ctx := context.Background()
+			infras := di.NewInfras(newReadWriter(t), newKVS(t))
+			require.NoError(t, infras.Writer.Create(&user).Error)
+			req := tc.arrange(t, ctx, infras, user.ID)
+			server := newSessionServer(t, infras)
+
+			// act
+			client := authv1connect.NewSessionServiceClient(http.DefaultClient, server.URL)
+			connReq := connecttest.NewAuthenticatedRequest(t, ctx, req, nil, authModel.MustNewSession(user.ID), infras.KVS)
+			got, err := client.SignOut(ctx, connReq)
+
+			// assert
+			tc.assert(t, got, err)
+		})
+	}
+}
+
 func newSessionServer(t *testing.T, infras di.Infras) *httptest.Server {
 	return connecttest.NewServer(t, infras, func(interceptors []connect.Interceptor) (string, http.Handler) {
 		h := di.InitAuthHandlers(infras.Writer.DB, infras.ReadWriter, infras.Writer, infras.Reader, infras.KVS).Session
