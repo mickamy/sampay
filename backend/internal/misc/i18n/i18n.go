@@ -55,3 +55,7 @@ func MustLocalizeMessageCtx(ctx context.Context, config Config) string {
 	lang := contexts.MustLanguage(ctx)
 	return MustLocalizeMessage(lang, config)
 }
+
+func MustJapaneseMessage(config Config) string {
+	return MustLocalizeMessage(language.Japanese, config)
+}

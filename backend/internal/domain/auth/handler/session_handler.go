@@ -44,7 +44,7 @@ func (h *Session) SignIn(
 		lang := contexts.MustLanguage(ctx)
 		if errors.Is(err, usecase.ErrCreateSessionPasswordNotMatch) {
 			return nil, dto.NewBadRequest(err).
-				WithMessage(i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "auth.error.invalid_email_password"})).
+				WithMessage(i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "auth.handler.error.invalid_email_password"})).
 				AsConnectError()
 		}
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
@@ -68,7 +68,7 @@ func (h *Session) Refresh(
 	if err != nil {
 		if errors.Is(err, usecase.ErrRefreshSessionTokenNotFound) {
 			return nil, dto.NewBadRequest(err).
-				WithMessage(i18n.MustLocalizeMessageCtx(ctx, i18n.Config{MessageID: "auth.error.invalid_refresh_token"})).
+				WithMessage(i18n.MustLocalizeMessageCtx(ctx, i18n.Config{MessageID: "auth.handler.error.invalid_email_password"})).
 				AsConnectError()
 		}
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)

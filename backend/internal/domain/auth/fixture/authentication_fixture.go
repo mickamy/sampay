@@ -4,7 +4,7 @@ import (
 	"github.com/brianvoe/gofakeit/v7"
 
 	"mickamy.com/sampay/internal/domain/auth/model"
-	"mickamy.com/sampay/internal/lib/either"
+	commonFixture "mickamy.com/sampay/internal/domain/common/fixture"
 	"mickamy.com/sampay/internal/lib/passwd"
 )
 
@@ -22,7 +22,7 @@ func AuthenticationEmailPassword(setter func(m *model.Authentication)) model.Aut
 	m := Authentication(func(m *model.Authentication) {
 		m.Type = model.AuthenticationTypeEmailPassword
 		m.Identifier = gofakeit.GlobalFaker.Email()
-		m.Secret = either.Must(passwd.New("P@ssw0rd", 16))
+		m.Secret = passwd.MustNew(commonFixture.Password, 16)
 	})
 
 	if setter != nil {
