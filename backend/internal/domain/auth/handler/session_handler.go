@@ -119,6 +119,13 @@ func (h *Session) SignOut(
 		RefreshToken: req.Msg.RefreshToken,
 	})
 	if err != nil {
+		lang := contexts.MustLanguage(ctx)
+		if errors.Is(err, usecase.ErrDeleteSessionNotFound) || errors.Is(err, usecase.ErrDeleteSessionTokenMismatch) {
+			return nil, dto.NewBadRequest(err).
+				WithMessage(i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "auth.handler.error.invalid_access_refresh_token"})).
+				AsConnectError()
+		}
+
 		// do not return error if deleting tokens failed
 		if !errors.Is(err, usecase.ErrDeleteSessionDeletingTokensFailed) {
 			slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)

@@ -11,6 +11,8 @@ import (
 )
 
 var (
+	ErrDeleteSessionNotFound             = errors.New("session not found")
+	ErrDeleteSessionTokenMismatch        = errors.New("token mismatch")
 	ErrDeleteSessionDeletingTokensFailed = errors.New("deleting tokens failed")
 )
 
@@ -42,16 +44,16 @@ func NewDeleteSession(
 func (uc *deleteSession) Do(ctx context.Context, input DeleteSessionInput) (DeleteSessionOutput, error) {
 	userID, err := jwt.ExtractID(input.AccessToken)
 	if err != nil {
-		return DeleteSessionOutput{}, fmt.Errorf("failed to extract user id from access token: %w", err)
+		return DeleteSessionOutput{}, errors.Join(ErrDeleteSessionNotFound, fmt.Errorf("failed to extract user id from access token: %w", err))
 	}
 
 	userIDFromRefresh, err := jwt.ExtractID(input.RefreshToken)
 	if err != nil {
-		return DeleteSessionOutput{}, fmt.Errorf("failed to extract user id from refresh token: %w", err)
+		return DeleteSessionOutput{}, errors.Join(ErrDeleteSessionNotFound, fmt.Errorf("failed to extract user id from refresh token: %w", err))
 	}
 
 	if userID != userIDFromRefresh {
-		return DeleteSessionOutput{}, fmt.Errorf("invalid user id: %s != %s", userID, userIDFromRefresh)
+		return DeleteSessionOutput{}, errors.Join(ErrDeleteSessionTokenMismatch)
 	}
 
 	if err := uc.sessionRepo.Delete(ctx, authModel.Session{

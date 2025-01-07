@@ -374,11 +374,18 @@ func TestSession_SignOut(t *testing.T) {
 				}
 			},
 			assert: func(t *testing.T, got *connect.Response[authv1.SignOutResponse], err error) {
-				require.NoError(t, err)
-				cookies := got.Header().Values("Set-Cookie")
-				assert.Len(t, cookies, 2)
-				assert.Contains(t, cookies, "access_token=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure")
-				assert.Contains(t, cookies, "refresh_token=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure")
+				require.Error(t, err)
+				assert.Equalf(t, connect.CodeInvalidArgument, connect.CodeOf(err), "code=%s", connect.CodeOf(err).String())
+				connErr := new(connect.Error)
+				require.ErrorAs(t, err, &connErr)
+				require.Len(t, connErr.Details(), 1)
+				detail := either.Must(connErr.Details()[0].Value())
+				if errMsg, ok := detail.(*commonv1.ErrorMessage); ok {
+					expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.handler.error.invalid_access_refresh_token"})
+					assert.Equal(t, expectedMsg, errMsg.Message)
+				} else {
+					require.Failf(t, "unexpected detail type", "got=%T", detail)
+				}
 			},
 		},
 	}

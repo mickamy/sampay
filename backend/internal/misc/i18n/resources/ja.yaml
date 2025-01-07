@@ -3,6 +3,7 @@ auth:
     error:
       invalid_email_password: 'メールアドレスまたはパスワードが正しくありません。'
       invalid_refresh_token: 'リフレッシュトークンが無効です。'
+      invalid_access_refresh_token: "認証情報が無効です。"
 common:
   handler:
     error:
