@@ -42,12 +42,12 @@ func NewRefreshSession(
 func (uc *refreshSession) Do(ctx context.Context, input RefreshSessionInput) (RefreshSessionOutput, error) {
 	id, err := jwt.ExtractID(input.RefreshToken)
 	if err != nil {
-		return RefreshSessionOutput{}, fmt.Errorf("failed to extract user ID from refresh token: %w", err)
+		return RefreshSessionOutput{}, errors.Join(ErrRefreshSessionTokenNotFound, fmt.Errorf("failed to extract user ID from refresh token: %w", err))
 	}
 
 	exists, err := uc.sessionRepo.RefreshTokenExists(ctx, id, input.RefreshToken)
 	if err != nil {
-		return RefreshSessionOutput{}, fmt.Errorf("failed to check if refresh token exists: %w", err)
+		return RefreshSessionOutput{}, errors.Join(ErrRefreshSessionTokenNotFound, fmt.Errorf("failed to check if refresh token exists: %w", err))
 	}
 	if !exists {
 		return RefreshSessionOutput{}, ErrRefreshSessionTokenNotFound
