@@ -24,7 +24,7 @@ func NewError(code connect.Code, err error) *Error {
 }
 
 func NewInternalError(ctx context.Context, err error) *Error {
-	message := i18n.MustLocalizeMessageCtx(ctx, i18n.Config{MessageID: "common.error.internal"})
+	message := i18n.MustLocalizeMessageCtx(ctx, i18n.Config{MessageID: "common.handler.error.internal"})
 	return NewError(connect.CodeInternal, err).WithMessage(message)
 }
 
@@ -52,12 +52,12 @@ func (m *Error) AsConnectError() *connect.Error {
 	if detail, detailErr := connect.NewErrorDetail(m.Message.AsProto()); detailErr == nil {
 		conErr.AddDetail(detail)
 	}
-	var violations []*commonv1.BadRequest_FieldViolation
+	var violations []*commonv1.BadRequestError_FieldViolation
 	for _, violation := range m.FieldViolations {
 		violations = append(violations, violation.AsProto())
 	}
 	if violations != nil {
-		if detail, detailErr := connect.NewErrorDetail(&commonv1.BadRequest{FieldViolations: violations}); detailErr == nil {
+		if detail, detailErr := connect.NewErrorDetail(&commonv1.BadRequestError{FieldViolations: violations}); detailErr == nil {
 			conErr.AddDetail(detail)
 		}
 	}
@@ -68,8 +68,8 @@ type LocalizedMessage struct {
 	Message string
 }
 
-func (m LocalizedMessage) AsProto() *commonv1.Message {
-	return &commonv1.Message{
+func (m LocalizedMessage) AsProto() *commonv1.ErrorMessage {
+	return &commonv1.ErrorMessage{
 		Message: m.Message,
 	}
 }
@@ -79,8 +79,8 @@ type FieldViolation struct {
 	Descriptions []string
 }
 
-func (m FieldViolation) AsProto() *commonv1.BadRequest_FieldViolation {
-	return &commonv1.BadRequest_FieldViolation{
+func (m FieldViolation) AsProto() *commonv1.BadRequestError_FieldViolation {
+	return &commonv1.BadRequestError_FieldViolation{
 		Field:        m.Field,
 		Descriptions: m.Descriptions,
 	}
