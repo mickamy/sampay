@@ -43,7 +43,7 @@ func TestSession_SignIn(t *testing.T) {
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
 					m.UserID = userID
 				})
-				require.NoError(t, infras.Writer.Create(&auth).Error)
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&auth).Error)
 				return &authv1.SignInRequest{
 					Email:    auth.Identifier,
 					Password: commonFixture.Password,
@@ -64,7 +64,7 @@ func TestSession_SignIn(t *testing.T) {
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
 					m.UserID = userID
 				})
-				require.NoError(t, infras.Writer.Create(&auth).Error)
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&auth).Error)
 				return &authv1.SignInRequest{
 					Email:    gofakeit.GlobalFaker.Email(),
 					Password: commonFixture.Password,
@@ -91,7 +91,7 @@ func TestSession_SignIn(t *testing.T) {
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
 					m.UserID = userID
 				})
-				require.NoError(t, infras.Writer.Create(&auth).Error)
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&auth).Error)
 				return &authv1.SignInRequest{
 					Email:    auth.Identifier,
 					Password: commonFixture.Password + "invalid",
@@ -122,7 +122,7 @@ func TestSession_SignIn(t *testing.T) {
 			// arrange
 			ctx := context.Background()
 			infras := di.NewInfras(newReadWriter(t), newKVS(t))
-			require.NoError(t, infras.Writer.Create(&user).Error)
+			require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
 			ctx = contexts.SetAuthenticatedUser(ctx, user)
 			req := tc.arrange(t, ctx, infras, user.ID)
 			server := newSessionServer(t, infras)
@@ -222,7 +222,7 @@ func TestSession_Refresh(t *testing.T) {
 				// arrange
 				ctx := context.Background()
 				infras := di.NewInfras(newReadWriter(t), newKVS(t))
-				require.NoError(t, infras.Writer.Create(&user).Error)
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
 				req := tc.arrange(t, ctx, infras, user.ID)
 				server := newSessionServer(t, infras)
 
@@ -319,7 +319,7 @@ func TestSession_Refresh(t *testing.T) {
 				// arrange
 				ctx := context.Background()
 				infras := di.NewInfras(newReadWriter(t), newKVS(t))
-				require.NoError(t, infras.Writer.Create(&user).Error)
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
 				cookie := tc.arrange(t, ctx, infras, user.ID)
 				server := newSessionServer(t, infras)
 
@@ -391,7 +391,7 @@ func TestSession_SignOut(t *testing.T) {
 			// arrange
 			ctx := context.Background()
 			infras := di.NewInfras(newReadWriter(t), newKVS(t))
-			require.NoError(t, infras.Writer.Create(&user).Error)
+			require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
 			req := tc.arrange(t, ctx, infras, user.ID)
 			server := newSessionServer(t, infras)
 

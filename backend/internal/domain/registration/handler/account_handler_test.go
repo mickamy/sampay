@@ -52,11 +52,11 @@ func TestAccount_SignUp(t *testing.T) {
 			name: "email already exists",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *registrationv1.SignUpRequest {
 				user := userFixture.User(nil)
-				require.NoError(t, infras.Writer.Create(&user).Error)
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
 					m.UserID = user.ID
 				})
-				require.NoError(t, infras.Writer.Create(&auth).Error)
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&auth).Error)
 				return &registrationv1.SignUpRequest{
 					Email:    auth.Identifier,
 					Password: gofakeit.GlobalFaker.Password(true, true, true, true, false, 12),
