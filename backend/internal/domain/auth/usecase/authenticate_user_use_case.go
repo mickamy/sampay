@@ -64,7 +64,7 @@ func (uc *authenticateUser) Do(ctx context.Context, input AuthenticateUserInput)
 
 	var user userModel.User
 	if err := uc.reader.ReaderTransaction(ctx, func(tx database.ReaderTransactional) error {
-		u, err := uc.userRepo.WithTx(tx.ReaderDB()).FindByID(ctx, userID)
+		u, err := uc.userRepo.WithTx(tx.ReaderDB()).Find(ctx, userID)
 		if err != nil {
 			return fmt.Errorf("failed to find user: %w", err)
 		}

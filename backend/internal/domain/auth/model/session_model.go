@@ -21,3 +21,11 @@ func NewSession(userID string) (Session, error) {
 		Tokens: tokens,
 	}, nil
 }
+
+func MustNewSession(userID string) Session {
+	s, err := NewSession(userID)
+	if err != nil {
+		panic(err)
+	}
+	return s
+}

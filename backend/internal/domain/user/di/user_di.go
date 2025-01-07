@@ -8,12 +8,19 @@ import (
 
 type Repositories struct {
 	repository.User
-}
-
-type UseCases struct {
+	repository.UserAttribute
+	repository.UserProfile
 }
 
 //lint:ignore U1000 used by wire
 var RepositorySet = wire.NewSet(
 	repository.NewUser,
+	repository.NewUserAttribute,
+	repository.NewUserProfile,
 )
+
+type UseCases struct {
+}
+
+//lint:ignore U1000 used by wire
+var UseCaseSet = wire.NewSet()

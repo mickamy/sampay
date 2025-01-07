@@ -36,6 +36,14 @@ func New(p string, saltSize int) (string, error) {
 	return hashed, nil
 }
 
+func MustNew(p string, saltSize int) string {
+	hashed, err := New(p, saltSize)
+	if err != nil {
+		panic(err)
+	}
+	return hashed
+}
+
 // Salt generates a random salt of the specified size.
 // Input: size of the salt `size`
 // Output: generated random salt, or an error

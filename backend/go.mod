@@ -3,8 +3,8 @@ module mickamy.com/sampay
 go 1.23.4
 
 require (
-	buf.build/gen/go/mickamy/sampay/connectrpc/go v1.17.0-20250106112432-fbd6ae5121ce.1
-	buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.1-20250106112432-fbd6ae5121ce.1
+	buf.build/gen/go/mickamy/sampay/connectrpc/go v1.17.0-20250107081210-6ef36a03adaa.1
+	buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.1-20250107081210-6ef36a03adaa.1
 	connectrpc.com/connect v1.17.0
 	github.com/DATA-DOG/go-txdb v0.2.0
 	github.com/alicebob/miniredis/v2 v2.34.0
@@ -28,8 +28,8 @@ require (
 	github.com/stretchr/testify v1.10.0
 	github.com/testcontainers/testcontainers-go v0.34.0
 	go.uber.org/mock v0.5.0
-	golang.org/x/crypto v0.31.0
-	golang.org/x/net v0.33.0
+	golang.org/x/crypto v0.32.0
+	golang.org/x/net v0.34.0
 	golang.org/x/text v0.21.0
 	google.golang.org/protobuf v1.36.1
 	gopkg.in/yaml.v3 v3.0.1

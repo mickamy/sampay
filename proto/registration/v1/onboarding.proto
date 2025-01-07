@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package registration.v1;
+
+message GetOnboardingStepRequest {
+}
+
+message GetOnboardingStepResponse {
+  string step = 1;
+}
+
+message CreateUserAttributeRequest {
+  string category_type = 1;
+}
+
+message CreateUserAttributeResponse {
+}
+
+message CreateUserProfileRequest {
+  string name = 1;
+  optional string bio = 2;
+}
+
+message CreateUserProfileResponse {
+}
+
+service OnboardingService {
+  rpc GetOnboardingStep(GetOnboardingStepRequest) returns (GetOnboardingStepResponse) {}
+  rpc CreateUserAttribute(CreateUserAttributeRequest) returns (CreateUserAttributeResponse) {}
+  rpc CreateUserProfile(CreateUserProfileRequest) returns (CreateUserProfileResponse) {}
+}

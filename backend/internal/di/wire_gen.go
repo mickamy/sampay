@@ -90,7 +90,8 @@ func InitAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *
 	user := repository2.NewUser(db)
 	createSession := usecase.NewCreateSession(reader, authentication, session, user)
 	refreshSession := usecase.NewRefreshSession(session)
-	handlerSession := handler.NewSession(createSession, refreshSession)
+	deleteSession := usecase.NewDeleteSession(session)
+	handlerSession := handler.NewSession(createSession, refreshSession, deleteSession)
 	handlers := di.Handlers{
 		Session: handlerSession,
 	}
@@ -110,10 +111,18 @@ func InitRegistrationUseCases(db *database.DB, readWriter *database.ReadWriter, 
 	session := repository.NewSession(kvs2)
 	user := repository2.NewUser(db)
 	createAccount := usecase2.NewCreateAccount(writer, authentication, session, user)
+	userAttribute := repository2.NewUserAttribute(db)
+	createUserAttribute := usecase2.NewCreateUserAttribute(writer, userAttribute)
+	userProfile := repository2.NewUserProfile(db)
+	createUserProfile := usecase2.NewCreateUserProfile(writer, userProfile)
+	getOnboardingStep := usecase2.NewGetOnboardingStep(reader, user)
 	usageCategory := repository3.NewUsageCategory(db)
 	listUsageCategories := usecase2.NewListUsageCategories(reader, usageCategory)
 	useCases := di2.UseCases{
 		CreateAccount:       createAccount,
+		CreateUserAttribute: createUserAttribute,
+		CreateUserProfile:   createUserProfile,
+		GetOnboardingStep:   getOnboardingStep,
 		ListUsageCategories: listUsageCategories,
 	}
 	return useCases
@@ -125,11 +134,18 @@ func InitRegistrationHandlers(db *database.DB, readWriter *database.ReadWriter, 
 	user := repository2.NewUser(db)
 	createAccount := usecase2.NewCreateAccount(writer, authentication, session, user)
 	account := handler2.NewAccount(createAccount)
+	getOnboardingStep := usecase2.NewGetOnboardingStep(reader, user)
+	userAttribute := repository2.NewUserAttribute(db)
+	createUserAttribute := usecase2.NewCreateUserAttribute(writer, userAttribute)
+	userProfile := repository2.NewUserProfile(db)
+	createUserProfile := usecase2.NewCreateUserProfile(writer, userProfile)
+	onboarding := handler2.NewOnboarding(getOnboardingStep, createUserAttribute, createUserProfile)
 	usageCategory := repository3.NewUsageCategory(db)
 	listUsageCategories := usecase2.NewListUsageCategories(reader, usageCategory)
 	handlerUsageCategory := handler2.NewUsageCategory(listUsageCategories)
 	handlers := di2.Handlers{
 		Account:       account,
+		Onboarding:    onboarding,
 		UsageCategory: handlerUsageCategory,
 	}
 	return handlers
@@ -137,8 +153,12 @@ func InitRegistrationHandlers(db *database.DB, readWriter *database.ReadWriter, 
 
 func InitUserRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di3.Repositories {
 	user := repository2.NewUser(db)
+	userAttribute := repository2.NewUserAttribute(db)
+	userProfile := repository2.NewUserProfile(db)
 	repositories := di3.Repositories{
-		User: user,
+		User:          user,
+		UserAttribute: userAttribute,
+		UserProfile:   userProfile,
 	}
 	return repositories
 }

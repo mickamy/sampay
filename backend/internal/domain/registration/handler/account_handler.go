@@ -40,7 +40,7 @@ func (h *Account) SignUp(
 		lang := contexts.MustLanguage(ctx)
 		if errors.Is(err, usecase.ErrCreateAccountEmailAlreadyExists) {
 			return nil, dto.NewBadRequest(err).
-				WithMessage(i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "registration.error.email_already_registered"})).
+				WithFieldViolation("email", i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "registration.handler.error.email_already_exists"})).
 				AsConnectError()
 		}
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)

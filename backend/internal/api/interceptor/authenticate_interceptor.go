@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/auth/v1/authv1connect"
+	"buf.build/gen/go/mickamy/sampay/connectrpc/go/registration/v1/registrationv1connect"
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
@@ -20,6 +21,7 @@ var (
 var authSkippingProcedures = []string{
 	authv1connect.SessionServiceSignInProcedure,
 	authv1connect.SessionServiceRefreshProcedure,
+	registrationv1connect.AccountServiceSignUpProcedure,
 }
 
 func skipper(req connect.AnyRequest) bool {

@@ -15,6 +15,9 @@ type User struct {
 	Slug      string
 	CreatedAt time.Time
 	UpdatedAt time.Time
+
+	Attribute UserAttribute
+	Profile   UserProfile
 }
 
 func (m *User) BeforeCreate(tx *gorm.DB) error {
