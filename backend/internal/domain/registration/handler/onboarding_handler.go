@@ -13,14 +13,20 @@ import (
 )
 
 type Onboarding struct {
-	getStep usecase.GetOnboardingStep
+	getStep         usecase.GetOnboardingStep
+	createAttribute usecase.CreateUserAttribute
+	createProfile   usecase.CreateUserProfile
 }
 
 func NewOnboarding(
 	getStep usecase.GetOnboardingStep,
+	createAttribute usecase.CreateUserAttribute,
+	createProfile usecase.CreateUserProfile,
 ) *Onboarding {
 	return &Onboarding{
-		getStep: getStep,
+		getStep:         getStep,
+		createAttribute: createAttribute,
+		createProfile:   createProfile,
 	}
 }
 
@@ -39,20 +45,33 @@ func (h *Onboarding) GetOnboardingStep(
 	return res, nil
 }
 
-func (h *Onboarding) PostUsageCategory(
+func (h *Onboarding) CreateUserAttribute(
 	ctx context.Context,
-	req *connect.Request[registrationv1.PostUsageCategoryRequest],
-) (*connect.Response[registrationv1.PostUsageCategoryResponse], error) {
-	//TODO implement me
-	panic("implement me")
+	req *connect.Request[registrationv1.CreateUserAttributeRequest],
+) (*connect.Response[registrationv1.CreateUserAttributeResponse], error) {
+	_, err := h.createAttribute.Do(ctx, usecase.CreateUserAttributeInput{})
+	if err != nil {
+		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
+		return nil, dto.NewInternalError(ctx, err).AsConnectError()
+	}
+	res := connect.NewResponse(&registrationv1.CreateUserAttributeResponse{})
+	return res, nil
 }
 
-func (h *Onboarding) PostUserProfile(
+func (h *Onboarding) CreateUserProfile(
 	ctx context.Context,
-	req *connect.Request[registrationv1.PostUserProfileRequest],
-) (*connect.Response[registrationv1.PostUserProfileResponse], error) {
-	//TODO implement me
-	panic("implement me")
+	req *connect.Request[registrationv1.CreateUserProfileRequest],
+) (*connect.Response[registrationv1.CreateUserProfileResponse], error) {
+	_, err := h.createProfile.Do(ctx, usecase.CreateUserProfileInput{
+		Name: req.Msg.Name,
+		Bio:  req.Msg.Bio,
+	})
+	if err != nil {
+		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
+		return nil, dto.NewInternalError(ctx, err).AsConnectError()
+	}
+	res := connect.NewResponse(&registrationv1.CreateUserProfileResponse{})
+	return res, nil
 }
 
 var _ registrationv1connect.OnboardingServiceHandler = (*Onboarding)(nil)
