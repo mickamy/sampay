@@ -76,12 +76,12 @@ func TestSession_SignIn(t *testing.T) {
 				connErr := new(connect.Error)
 				require.ErrorAs(t, err, &connErr)
 				require.Len(t, connErr.Details(), 1)
-				msg := either.Must(connErr.Details()[0].Value())
-				if errMsg, ok := msg.(*commonv1.ErrorMessage); ok {
+				detail := either.Must(connErr.Details()[0].Value())
+				if errMsg, ok := detail.(*commonv1.ErrorMessage); ok {
 					expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.handler.error.invalid_email_password"})
 					assert.Equal(t, expectedMsg, errMsg.Message)
 				} else {
-					require.Failf(t, "unexpected detail type", "got=%T", msg)
+					require.Failf(t, "unexpected detail type", "got=%T", detail)
 				}
 			},
 		},
@@ -103,12 +103,12 @@ func TestSession_SignIn(t *testing.T) {
 				connErr := new(connect.Error)
 				require.ErrorAs(t, err, &connErr)
 				require.Len(t, connErr.Details(), 1)
-				msg := either.Must(connErr.Details()[0].Value())
-				if errMsg, ok := msg.(*commonv1.ErrorMessage); ok {
+				detail := either.Must(connErr.Details()[0].Value())
+				if errMsg, ok := detail.(*commonv1.ErrorMessage); ok {
 					expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.handler.error.invalid_email_password"})
 					assert.Equal(t, expectedMsg, errMsg.Message)
 				} else {
-					require.Failf(t, "unexpected detail type", "got=%T", msg)
+					require.Failf(t, "unexpected detail type", "got=%T", detail)
 				}
 			},
 		},
@@ -179,12 +179,12 @@ func TestSession_Refresh(t *testing.T) {
 					connErr := new(connect.Error)
 					require.ErrorAs(t, err, &connErr)
 					require.Len(t, connErr.Details(), 1)
-					msg := either.Must(connErr.Details()[0].Value())
-					if errMsg, ok := msg.(*commonv1.ErrorMessage); ok {
+					detail := either.Must(connErr.Details()[0].Value())
+					if errMsg, ok := detail.(*commonv1.ErrorMessage); ok {
 						expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.handler.error.invalid_refresh_token"})
 						assert.Equal(t, expectedMsg, errMsg.Message)
 					} else {
-						require.Failf(t, "unexpected detail type", "got=%T", msg)
+						require.Failf(t, "unexpected detail type", "got=%T", detail)
 					}
 				},
 			},
@@ -203,12 +203,12 @@ func TestSession_Refresh(t *testing.T) {
 					connErr := new(connect.Error)
 					require.ErrorAs(t, err, &connErr)
 					require.Len(t, connErr.Details(), 1)
-					msg := either.Must(connErr.Details()[0].Value())
-					if errMsg, ok := msg.(*commonv1.ErrorMessage); ok {
+					detail := either.Must(connErr.Details()[0].Value())
+					if errMsg, ok := detail.(*commonv1.ErrorMessage); ok {
 						expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.handler.error.invalid_refresh_token"})
 						assert.Equal(t, expectedMsg, errMsg.Message)
 					} else {
-						require.Failf(t, "unexpected detail type", "got=%T", msg)
+						require.Failf(t, "unexpected detail type", "got=%T", detail)
 					}
 				},
 			},
@@ -275,12 +275,12 @@ func TestSession_Refresh(t *testing.T) {
 					connErr := new(connect.Error)
 					require.ErrorAs(t, err, &connErr)
 					require.Len(t, connErr.Details(), 1)
-					msg := either.Must(connErr.Details()[0].Value())
-					if errMsg, ok := msg.(*commonv1.ErrorMessage); ok {
+					detail := either.Must(connErr.Details()[0].Value())
+					if errMsg, ok := detail.(*commonv1.ErrorMessage); ok {
 						expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.handler.error.invalid_refresh_token"})
 						assert.Equal(t, expectedMsg, errMsg.Message)
 					} else {
-						require.Failf(t, "unexpected detail type", "got=%T", msg)
+						require.Failf(t, "unexpected detail type", "got=%T", detail)
 					}
 				},
 			},
@@ -300,12 +300,12 @@ func TestSession_Refresh(t *testing.T) {
 					connErr := new(connect.Error)
 					require.ErrorAs(t, err, &connErr)
 					require.Len(t, connErr.Details(), 1)
-					msg := either.Must(connErr.Details()[0].Value())
-					if errMsg, ok := msg.(*commonv1.ErrorMessage); ok {
+					detail := either.Must(connErr.Details()[0].Value())
+					if errMsg, ok := detail.(*commonv1.ErrorMessage); ok {
 						expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.handler.error.invalid_refresh_token"})
 						assert.Equal(t, expectedMsg, errMsg.Message)
 					} else {
-						require.Failf(t, "unexpected detail type", "got=%T", msg)
+						require.Failf(t, "unexpected detail type", "got=%T", detail)
 					}
 				},
 			},
