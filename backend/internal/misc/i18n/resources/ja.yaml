@@ -7,3 +7,7 @@ common:
   handler:
     error:
       internal: 'ただいまアクセスが集中しております。しばらくしてから再度お試しください。'
+registration:
+  handler:
+    error:
+      email_already_exists: 'このメールアドレスは既に登録されています。'

@@ -49,8 +49,10 @@ func (m *Error) WithFieldViolation(field string, description ...string) *Error {
 
 func (m *Error) AsConnectError() *connect.Error {
 	conErr := connect.NewError(m.Code, m.Err)
-	if detail, detailErr := connect.NewErrorDetail(m.Message.AsProto()); detailErr == nil {
-		conErr.AddDetail(detail)
+	if !m.Message.IsZero() {
+		if detail, detailErr := connect.NewErrorDetail(m.Message.AsProto()); detailErr == nil {
+			conErr.AddDetail(detail)
+		}
 	}
 	var violations []*commonv1.BadRequestError_FieldViolation
 	for _, violation := range m.FieldViolations {
@@ -72,6 +74,10 @@ func (m LocalizedMessage) AsProto() *commonv1.ErrorMessage {
 	return &commonv1.ErrorMessage{
 		Message: m.Message,
 	}
+}
+
+func (m LocalizedMessage) IsZero() bool {
+	return m.Message == ""
 }
 
 type FieldViolation struct {

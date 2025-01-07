@@ -199,7 +199,7 @@ func TestSession_Refresh(t *testing.T) {
 				},
 				assert: func(t *testing.T, got *connect.Response[authv1.RefreshResponse], err error) {
 					require.Error(t, err)
-					assert.Equal(t, connect.CodeInvalidArgument, connect.CodeOf(err))
+					assert.Equalf(t, connect.CodeInvalidArgument, connect.CodeOf(err), "code=%s", connect.CodeOf(err).String())
 					connErr := new(connect.Error)
 					require.ErrorAs(t, err, &connErr)
 					require.Len(t, connErr.Details(), 1)
@@ -296,7 +296,7 @@ func TestSession_Refresh(t *testing.T) {
 				},
 				assert: func(t *testing.T, got *connect.Response[authv1.RefreshResponse], err error) {
 					require.Error(t, err)
-					assert.Equal(t, connect.CodeInvalidArgument, connect.CodeOf(err))
+					assert.Equalf(t, connect.CodeInvalidArgument, connect.CodeOf(err), "code=%s", connect.CodeOf(err).String())
 					connErr := new(connect.Error)
 					require.ErrorAs(t, err, &connErr)
 					require.Len(t, connErr.Details(), 1)
