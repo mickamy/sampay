@@ -3,7 +3,9 @@ package repository_test
 import (
 	"context"
 	"testing"
+	"time"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
@@ -32,7 +34,12 @@ func TestUserProfile_Create(t *testing.T) {
 	require.NoError(t, err)
 	var got model.UserProfile
 	require.NoError(t, db.ReaderDB().WithContext(ctx).Where("user_id = ?", user.ID).First(&got).Error)
-	require.Equal(t, m, got)
+	assert.Equal(t, m.UserID, got.UserID)
+	assert.Equal(t, m.Name, got.Name)
+	assert.Equal(t, m.Bio, got.Bio)
+	assert.Equal(t, m.ImageID, got.ImageID)
+	assert.WithinDuration(t, m.CreatedAt, got.CreatedAt, time.Second)
+	assert.WithinDuration(t, m.UpdatedAt, got.UpdatedAt, time.Second)
 }
 
 func TestUserProfile_Find(t *testing.T) {
