@@ -14,7 +14,8 @@ import (
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
 type User interface {
 	Create(ctx context.Context, m *model.User) error
-	FindByID(ctx context.Context, id string, scopes ...database.Scope) (*model.User, error)
+	Get(ctx context.Context, id string, scopes ...database.Scope) (model.User, error)
+	Find(ctx context.Context, id string, scopes ...database.Scope) (*model.User, error)
 	FindBySlug(ctx context.Context, slug string, scopes ...database.Scope) (*model.User, error)
 	FindByEmail(ctx context.Context, email string, scopes ...database.Scope) (*model.User, error)
 	FindByEmailOrSlug(ctx context.Context, emailOrSlug string, scopes ...database.Scope) (*model.User, error)
@@ -33,7 +34,18 @@ func (repo *user) Create(ctx context.Context, m *model.User) error {
 	return repo.db.WithContext(ctx).Create(&m).Error
 }
 
-func (repo *user) FindByID(ctx context.Context, id string, scopes ...database.Scope) (*model.User, error) {
+func (repo *user) Get(ctx context.Context, id string, scopes ...database.Scope) (model.User, error) {
+	m, err := repo.Find(ctx, id, scopes...)
+	if err != nil {
+		return model.User{}, err
+	}
+	if m == nil {
+		return model.User{}, database.ErrRecordNotFound
+	}
+	return *m, err
+}
+
+func (repo *user) Find(ctx context.Context, id string, scopes ...database.Scope) (*model.User, error) {
 	var m model.User
 	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
 		First(&m, "id = ?", id).
@@ -95,4 +107,12 @@ func (repo *user) FindByEmailOrSlug(ctx context.Context, emailOrSlug string, sco
 
 func (repo *user) WithTx(tx *database.DB) User {
 	return &user{db: tx}
+}
+
+func UserPreloadAttribute(tx *database.DB) *database.DB {
+	return &database.DB{DB: tx.Preload("Attribute")}
+}
+
+func UserPreloadProfile(tx *database.DB) *database.DB {
+	return &database.DB{DB: tx.Preload("Profile")}
 }

@@ -57,6 +57,26 @@ func (mr *MockUserMockRecorder) Create(ctx, m any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUser)(nil).Create), ctx, m)
 }
 
+// Find mocks base method.
+func (m *MockUser) Find(ctx context.Context, id string, scopes ...database.Scope) (*model.User, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{ctx, id}
+	for _, a := range scopes {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Find", varargs...)
+	ret0, _ := ret[0].(*model.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Find indicates an expected call of Find.
+func (mr *MockUserMockRecorder) Find(ctx, id any, scopes ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]any{ctx, id}, scopes...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockUser)(nil).Find), varargs...)
+}
+
 // FindByEmail mocks base method.
 func (m *MockUser) FindByEmail(ctx context.Context, email string, scopes ...database.Scope) (*model.User, error) {
 	m.ctrl.T.Helper()
@@ -97,26 +117,6 @@ func (mr *MockUserMockRecorder) FindByEmailOrSlug(ctx, emailOrSlug any, scopes .
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByEmailOrSlug", reflect.TypeOf((*MockUser)(nil).FindByEmailOrSlug), varargs...)
 }
 
-// FindByID mocks base method.
-func (m *MockUser) FindByID(ctx context.Context, id string, scopes ...database.Scope) (*model.User, error) {
-	m.ctrl.T.Helper()
-	varargs := []any{ctx, id}
-	for _, a := range scopes {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "FindByID", varargs...)
-	ret0, _ := ret[0].(*model.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindByID indicates an expected call of FindByID.
-func (mr *MockUserMockRecorder) FindByID(ctx, id any, scopes ...any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{ctx, id}, scopes...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockUser)(nil).FindByID), varargs...)
-}
-
 // FindBySlug mocks base method.
 func (m *MockUser) FindBySlug(ctx context.Context, slug string, scopes ...database.Scope) (*model.User, error) {
 	m.ctrl.T.Helper()
@@ -135,6 +135,26 @@ func (mr *MockUserMockRecorder) FindBySlug(ctx, slug any, scopes ...any) *gomock
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]any{ctx, slug}, scopes...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindBySlug", reflect.TypeOf((*MockUser)(nil).FindBySlug), varargs...)
+}
+
+// Get mocks base method.
+func (m *MockUser) Get(ctx context.Context, id string, scopes ...database.Scope) (model.User, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{ctx, id}
+	for _, a := range scopes {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Get", varargs...)
+	ret0, _ := ret[0].(model.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockUserMockRecorder) Get(ctx, id any, scopes ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]any{ctx, id}, scopes...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockUser)(nil).Get), varargs...)
 }
 
 // WithTx mocks base method.

@@ -2,11 +2,16 @@ package database
 
 import (
 	"context"
+	"errors"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
 	"mickamy.com/sampay/internal/lib/slices"
+)
+
+var (
+	ErrRecordNotFound = errors.New("record not found")
 )
 
 // DB is a wrapper of *gorm.DB

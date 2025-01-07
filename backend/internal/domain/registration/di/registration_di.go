@@ -19,22 +19,26 @@ var RepositorySet = wire.NewSet(
 
 type UseCases struct {
 	usecase.CreateAccount
+	usecase.GetOnboardingStep
 	usecase.ListUsageCategories
 }
 
 //lint:ignore U1000 used by wire
 var UseCaseSet = wire.NewSet(
 	usecase.NewCreateAccount,
+	usecase.NewGetOnboardingStep,
 	usecase.NewListUsageCategories,
 )
 
 type Handlers struct {
 	*handler.Account
+	*handler.Onboarding
 	*handler.UsageCategory
 }
 
 //lint:ignore U1000 used by wire
 var HandlerSet = wire.NewSet(
 	handler.NewAccount,
+	handler.NewOnboarding,
 	handler.NewUsageCategory,
 )

@@ -36,7 +36,7 @@ func TestUser_Create(t *testing.T) {
 	assert.Equal(t, user.Slug, got.Slug)
 }
 
-func TestUser_FindByID(t *testing.T) {
+func TestUser_Find(t *testing.T) {
 	t.Parallel()
 
 	// arrange
@@ -47,7 +47,7 @@ func TestUser_FindByID(t *testing.T) {
 
 	// act
 	sut := repository.NewUser(db.WriterDB())
-	got, err := sut.FindByID(ctx, user.ID)
+	got, err := sut.Find(ctx, user.ID)
 
 	// assert
 	require.NoError(t, err)
