@@ -9,23 +9,23 @@ message GetOnboardingStepResponse {
   string step = 1;
 }
 
-message PostUsageCategoryRequest {
+message CreateUserAttributeRequest {
   string category_type = 1;
 }
 
-message PostUsageCategoryResponse {
+message CreateUserAttributeResponse {
 }
 
-message PostUserProfileRequest {
+message CreateUserProfileRequest {
   string name = 1;
   optional string bio = 2;
 }
 
-message PostUserProfileResponse {
+message CreateUserProfileResponse {
 }
 
 service OnboardingService {
   rpc GetOnboardingStep(GetOnboardingStepRequest) returns (GetOnboardingStepResponse) {}
-  rpc PostUsageCategory(PostUsageCategoryRequest) returns (PostUsageCategoryResponse) {}
-  rpc PostUserProfile(PostUserProfileRequest) returns (PostUserProfileResponse) {}
+  rpc CreateUserAttribute(CreateUserAttributeRequest) returns (CreateUserAttributeResponse) {}
+  rpc CreateUserProfile(CreateUserProfileRequest) returns (CreateUserProfileResponse) {}
 }
