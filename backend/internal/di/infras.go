@@ -16,6 +16,16 @@ type Infras struct {
 	*kvs.KVS
 }
 
+func NewInfras(readWriter *database.ReadWriter, kvs *kvs.KVS) Infras {
+	return Infras{
+		DB:         readWriter.WriterDB(),
+		ReadWriter: readWriter,
+		Writer:     readWriter.Writer(),
+		Reader:     readWriter.Reader(),
+		KVS:        kvs,
+	}
+}
+
 func provideDB(cfg config.DatabaseConfig) (*database.DB, error) {
 	writer, err := provideWriter(cfg)
 	if err != nil {
