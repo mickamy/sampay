@@ -30,8 +30,6 @@ import (
 func TestSession_SignIn(t *testing.T) {
 	t.Parallel()
 
-	user := userFixture.User(nil)
-
 	tsc := []struct {
 		name    string
 		arrange func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.SignInRequest
@@ -122,6 +120,7 @@ func TestSession_SignIn(t *testing.T) {
 			// arrange
 			ctx := context.Background()
 			infras := di.NewInfras(newReadWriter(t), newKVS(t))
+			user := userFixture.User(nil)
 			require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
 			ctx = contexts.SetAuthenticatedUser(ctx, user)
 			req := tc.arrange(t, ctx, infras, user.ID)
