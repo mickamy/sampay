@@ -20,6 +20,7 @@ var RepositorySet = wire.NewSet(
 type UseCases struct {
 	usecase.CreateAccount
 	usecase.CreateUserAttribute
+	usecase.CreateUserProfile
 	usecase.GetOnboardingStep
 	usecase.ListUsageCategories
 }
@@ -28,6 +29,7 @@ type UseCases struct {
 var UseCaseSet = wire.NewSet(
 	usecase.NewCreateAccount,
 	usecase.NewCreateUserAttribute,
+	usecase.NewCreateUserProfile,
 	usecase.NewGetOnboardingStep,
 	usecase.NewListUsageCategories,
 )

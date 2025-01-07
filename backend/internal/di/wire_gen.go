@@ -112,12 +112,15 @@ func InitRegistrationUseCases(db *database.DB, readWriter *database.ReadWriter, 
 	createAccount := usecase2.NewCreateAccount(writer, authentication, session, user)
 	userAttribute := repository2.NewUserAttribute(db)
 	createUserAttribute := usecase2.NewCreateUserAttribute(writer, userAttribute)
+	userProfile := repository2.NewUserProfile(db)
+	createUserProfile := usecase2.NewCreateUserProfile(writer, userProfile)
 	getOnboardingStep := usecase2.NewGetOnboardingStep(reader, user)
 	usageCategory := repository3.NewUsageCategory(db)
 	listUsageCategories := usecase2.NewListUsageCategories(reader, usageCategory)
 	useCases := di2.UseCases{
 		CreateAccount:       createAccount,
 		CreateUserAttribute: createUserAttribute,
+		CreateUserProfile:   createUserProfile,
 		GetOnboardingStep:   getOnboardingStep,
 		ListUsageCategories: listUsageCategories,
 	}
