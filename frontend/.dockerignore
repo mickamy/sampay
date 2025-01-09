@@ -30,5 +30,6 @@
 **/values.dev.yaml
 **/build
 **/dist
+.react-router
 LICENSE
 README.md
