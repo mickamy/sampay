@@ -1,47 +1,24 @@
-ARG NODE_VERSION=22.12.0
+ARG NODE_VERSION=22.13.0
 
-FROM node:${NODE_VERSION} AS base
+FROM node:${NODE_VERSION}-alpine AS development-dependencies-env
+COPY . /app
+WORKDIR /app
+RUN npm ci
 
-WORKDIR /usr/src
-COPY package*.json ./
+FROM node:${NODE_VERSION}-alpine AS production-dependencies-env
+COPY ./package.json package-lock.json /app/
+WORKDIR /app
+RUN npm ci --omit=dev
 
-RUN --mount=type=cache,target=/root/.npm \
-    npm install
-
-FROM base AS dev
-
-COPY . .
-
-EXPOSE 5173
-
-CMD ["npm", "run", "dev"]
-
-FROM base AS builder
-
-ENV NODE_ENV=production
-
-RUN --mount=type=cache,target=/root/.npm \
-    npm ci --include=dev
-
-COPY . .
-
+FROM node:${NODE_VERSION}-alpine AS build-env
+COPY . /app/
+COPY --from=development-dependencies-env /app/node_modules /app/node_modules
+WORKDIR /app
 RUN npm run build
 
-RUN npm prune --omit=dev
-
-FROM node:${NODE_VERSION}-alpine AS production
-
-WORKDIR /usr/src
-
-COPY --from=builder /usr/src/build ./build
-COPY --from=builder /usr/src/package*.json ./
-COPY --from=builder /usr/src/node_modules ./node_modules
-
-
-ENV NODE_ENV=production
-
-EXPOSE 3000
-
-USER node
-
-CMD ["npm", "start"]
+FROM node:${NODE_VERSION}-alpine
+COPY ./package.json package-lock.json /app/
+COPY --from=production-dependencies-env /app/node_modules /app/node_modules
+COPY --from=build-env /app/build /app/build
+WORKDIR /app
+CMD ["npm", "run", "start"]
