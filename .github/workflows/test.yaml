@@ -126,13 +126,10 @@ jobs:
 
       - name: Verify all files are formatted
         run: |
-          cd frontend && npm run format
+          cd frontend && npm run check
 
           if [[ $(git status --porcelain) ]]; then
             echo "Error: There are uncommitted changes in the working directory after generation."
             git diff
             exit 1
           fi
-
-      - name: Lint
-        run: cd frontend && npm run lint
