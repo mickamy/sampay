@@ -1,4 +1,4 @@
-ARG NODE_VERSION=22.13.0-alpine
+ARG NODE_VERSION=22.13.0
 
 FROM node:${NODE_VERSION}-alpine AS development-dependencies-env
 COPY . /app

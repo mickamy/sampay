@@ -19,11 +19,12 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      target: dev
+      target: development-dependencies-env
+    command: npm run dev
     volumes:
-      - ./frontend:/usr/src:delegated
-      - /usr/src/build
-      - node_modules:/usr/src/node_modules
+      - ./frontend:/app:delegated
+      - /app/build
+      - node_modules:/app/node_modules
     ports:
       - "5173:5173"
 
