@@ -1,3 +1,20 @@
 {
-  "test": "これはテストです"
+  "app": {
+    "title": "Sampay | 個人間決済リンクをたったひとつのリンクで"
+  },
+  "header": {
+    "sign-in": "ログイン",
+    "sign-up": "新規登録",
+    "sign-out": "ログアウト"
+  },
+  "auth": {
+    "sign-up": {
+      "title": "新規登録"
+    }
+  },
+  "form": {
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "register": "登録する"
+  }
 }

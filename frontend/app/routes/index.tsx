@@ -1,11 +1,13 @@
 import { useTranslation } from "react-i18next";
+import Header from "~/components/header";
 import { Button } from "~/components/ui/button";
+import { useSafeTranslation } from "~/lib/i18n/hooks";
 
 export default function Index() {
-  const { t } = useTranslation();
+  const { t } = useSafeTranslation();
   return (
-    <div className="flex w-screen h-screen justify-center items-center">
-      <Button>{t("test")}</Button>
+    <div>
+      <Header isLoggedIn={false} />
     </div>
   );
 }

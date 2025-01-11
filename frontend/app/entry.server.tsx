@@ -1,15 +1,16 @@
 import { PassThrough } from "node:stream";
 
+import * as process from "node:process";
 import { createReadableStreamFromReadable } from "@react-router/node";
 import { createInstance } from "i18next";
-import I18NextFSBackend from "i18next-fs-backend";
+import I18NextFSBackend from "i18next-fs-backend/cjs";
 import { isbot } from "isbot";
 import type { RenderToPipeableStreamOptions } from "react-dom/server";
 import { renderToPipeableStream } from "react-dom/server";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import type { AppLoadContext, EntryContext } from "react-router";
 import { ServerRouter } from "react-router";
-import i18nServer from "~/lib/i18n/index.server";
+import i18nServer, { initI18NServer } from "~/lib/i18n/index.server";
 import i18nConfig from "./lib/i18n/config";
 
 export const streamTimeout = 5_000;
@@ -31,19 +32,7 @@ export default async function handleRequest(
       ? "onAllReady"
       : "onShellReady";
 
-  const instance = createInstance();
-  const lng = await i18nServer.getLocale(request);
-  const ns = i18nServer.getRouteNamespaces(routerContext);
-
-  await instance
-    .use(initReactI18next)
-    .use(I18NextFSBackend)
-    .init({
-      ...i18nConfig,
-      lng,
-      ns,
-      backend: { loadPath: "./public/locales/{{lng}}/{{ns}}.json" },
-    });
+  const instance = await initI18NServer({ request, routerContext });
 
   return new Promise((resolve, reject) => {
     let didError = false;
