@@ -2,10 +2,14 @@ package response
 
 import (
 	"context"
+	"errors"
 
 	commonv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/common/v1"
 	"connectrpc.com/connect"
 
+	commonModel "mickamy.com/sampay/internal/domain/common/model"
+	"mickamy.com/sampay/internal/lib/contexts"
+	"mickamy.com/sampay/internal/lib/language"
 	"mickamy.com/sampay/internal/misc/i18n"
 )
 
@@ -21,6 +25,20 @@ func NewError(code connect.Code, err error) *Error {
 		Code: code,
 		Err:  err,
 	}
+}
+
+func ParseLocalizableError(lang language.Type, err error) *Error {
+	localizable := new(commonModel.LocalizableError)
+	if errors.As(err, &localizable) {
+		return NewBadRequest(err).
+			WithMessage(localizable.Localize(lang))
+	}
+	return nil
+}
+
+func ParseLocalizableErrorCtx(ctx context.Context, err error) *Error {
+	lang := contexts.MustLanguage(ctx)
+	return ParseLocalizableError(lang, err)
 }
 
 func NewInternalError(ctx context.Context, err error) *Error {

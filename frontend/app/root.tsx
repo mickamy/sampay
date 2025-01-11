@@ -1,12 +1,16 @@
+import { useTranslation } from "react-i18next";
 import {
   Links,
+  type LoaderFunction,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
   isRouteErrorResponse,
+  useLoaderData,
 } from "react-router";
-
+import { useChangeLanguage } from "remix-i18next/react";
+import i18nServer from "~/lib/i18n/index.server";
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
 
@@ -24,9 +28,23 @@ export const links: Route.LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
+interface LoaderData {
+  locale: string;
+}
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const locale = await i18nServer.getLocale(request);
+  const data: LoaderData = { locale };
+  return data;
+};
+
 export function Layout({ children }: { children: React.ReactNode }) {
+  const { locale } = useLoaderData<LoaderData>();
+  const { i18n } = useTranslation();
+  useChangeLanguage(locale);
+
   return (
-    <html lang="en">
+    <html lang={locale} dir={i18n.dir()}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

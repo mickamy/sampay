@@ -46,11 +46,10 @@ func (h *Session) SignIn(
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
-		if errors.Is(err, usecase.ErrCreateSessionPasswordNotMatch) {
-			return nil, dto.NewBadRequest(err).
-				WithMessage(i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "auth.handler.error.invalid_email_password"})).
-				AsConnectError()
+		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+			return nil, localizable.AsConnectError()
 		}
+
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		return nil, dto.NewInternalError(ctx, err).AsConnectError()
 	}
@@ -73,7 +72,7 @@ func (h *Session) Refresh(
 		if err != nil {
 			slogger.ErrorCtx(ctx, "failed to extract refresh token from cookie", "err", err)
 			return nil, dto.NewBadRequest(err).
-				WithMessage(i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "auth.handler.error.invalid_refresh_token"})).
+				WithMessage(i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "auth.usecase.error.invalid_refresh_token"})).
 				AsConnectError()
 		}
 		tkn = &tknFromCookie
@@ -83,11 +82,10 @@ func (h *Session) Refresh(
 		RefreshToken: *tkn,
 	})
 	if err != nil {
-		if errors.Is(err, usecase.ErrRefreshSessionTokenNotFound) {
-			return nil, dto.NewBadRequest(err).
-				WithMessage(i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "auth.handler.error.invalid_refresh_token"})).
-				AsConnectError()
+		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+			return nil, localizable.AsConnectError()
 		}
+
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		return nil, dto.NewInternalError(ctx, err).AsConnectError()
 	}
@@ -119,11 +117,10 @@ func (h *Session) SignOut(
 		RefreshToken: req.Msg.RefreshToken,
 	})
 	if err != nil {
+		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		lang := contexts.MustLanguage(ctx)
-		if errors.Is(err, usecase.ErrDeleteSessionNotFound) || errors.Is(err, usecase.ErrDeleteSessionTokenMismatch) {
-			return nil, dto.NewBadRequest(err).
-				WithMessage(i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "auth.handler.error.invalid_access_refresh_token"})).
-				AsConnectError()
+		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+			return nil, localizable.AsConnectError()
 		}
 
 		// do not return error if deleting tokens failed

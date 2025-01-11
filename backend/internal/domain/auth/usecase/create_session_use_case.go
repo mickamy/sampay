@@ -8,11 +8,15 @@ import (
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	authRepository "mickamy.com/sampay/internal/domain/auth/repository"
+	commonModel "mickamy.com/sampay/internal/domain/common/model"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
+	"mickamy.com/sampay/internal/misc/i18n"
 )
 
 var (
-	ErrCreateSessionPasswordNotMatch = errors.New("password not match")
+	ErrCreateSessionPasswordNotMatch = commonModel.
+		NewLocalizableError(errors.New("password not match")).
+		WithMessages(i18n.Config{MessageID: "auth.usecase.error.invalid_email_password"})
 )
 
 type CreateSessionInput struct {

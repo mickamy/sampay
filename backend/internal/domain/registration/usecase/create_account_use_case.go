@@ -2,17 +2,22 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	authRepository "mickamy.com/sampay/internal/domain/auth/repository"
+	commonModel "mickamy.com/sampay/internal/domain/common/model"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
+	"mickamy.com/sampay/internal/misc/i18n"
 )
 
 var (
-	ErrCreateAccountEmailAlreadyExists = fmt.Errorf("email already exists")
+	ErrCreateAccountEmailAlreadyExists = commonModel.
+		NewLocalizableError(errors.New("email already exists")).
+		WithMessages(i18n.Config{MessageID: "registration.usecase.error.email_already_exists"})
 )
 
 type CreateAccountInput struct {

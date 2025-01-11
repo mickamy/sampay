@@ -1,5 +1,5 @@
 auth:
-  handler:
+  usecase:
     error:
       invalid_email_password: 'メールアドレスまたはパスワードが正しくありません。'
       invalid_refresh_token: 'リフレッシュトークンが無効です。'
@@ -9,6 +9,6 @@ common:
     error:
       internal: 'ただいまアクセスが集中しております。しばらくしてから再度お試しください。'
 registration:
-  handler:
+  usecase:
     error:
       email_already_exists: 'このメールアドレスは既に登録されています。'

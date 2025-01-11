@@ -11,6 +11,7 @@ import (
 	dto "mickamy.com/sampay/internal/domain/common/dto"
 	"mickamy.com/sampay/internal/domain/registration/model"
 	"mickamy.com/sampay/internal/domain/registration/usecase"
+	"mickamy.com/sampay/internal/lib/contexts"
 	"mickamy.com/sampay/internal/lib/slices"
 )
 
@@ -32,6 +33,11 @@ func (h *UsageCategory) ListUsageCategories(
 ) (*connect.Response[registrationv1.ListUsageCategoriesResponse], error) {
 	out, err := h.list.Do(ctx, usecase.ListUsageCategoriesInput{})
 	if err != nil {
+		lang := contexts.MustLanguage(ctx)
+		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+			return nil, localizable.AsConnectError()
+		}
+
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		return nil, dto.NewInternalError(ctx, err).AsConnectError()
 	}
