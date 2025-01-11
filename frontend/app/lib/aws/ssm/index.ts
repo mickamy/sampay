@@ -1,6 +1,6 @@
 import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm";
 
-type ParameterName = "API_BASE_URL" | "SESSION_SECRET";
+type ParameterName = "SESSION_SECRET";
 
 export async function getParameter({
   name,

@@ -77,24 +77,22 @@ export interface Token {
 }
 
 export interface Tokens {
-  readonly access_token: Token;
-  readonly refresh_token: Token;
+  readonly access: Token;
+  readonly refresh: Token;
 }
 
 export interface AuthenticatedSession {
   readonly tokens: Tokens;
-  readonly tenant_id: string;
-  readonly user_id: string;
 }
 
-export async function getAuthenticatedSessions(
+export async function getAuthenticatedSession(
   request: Request,
 ): Promise<AuthenticatedSession | null> {
   const s = await getSession(request.headers.get("cookie"));
   return s.get("sessions");
 }
 
-export async function setAuthenticatedSessions(
+export async function setAuthenticatedSession(
   tokens: AuthenticatedSession,
 ): Promise<string> {
   const s = await getSession(null);
@@ -102,8 +100,8 @@ export async function setAuthenticatedSessions(
   return commitSession(s);
 }
 
-export async function destroyAuthenticatedSessions(request: Request) {
-  const s = await getAuthenticatedSessions(request);
+export async function destroyAuthenticatedSession(request: Request) {
+  const s = await getAuthenticatedSession(request);
   if (s == null) {
     return;
   }
@@ -112,6 +110,6 @@ export async function destroyAuthenticatedSessions(request: Request) {
 }
 
 export async function isLoggedIn(request: Request): Promise<boolean> {
-  const s = await getAuthenticatedSessions(request);
+  const s = await getAuthenticatedSession(request);
   return s != null;
 }
