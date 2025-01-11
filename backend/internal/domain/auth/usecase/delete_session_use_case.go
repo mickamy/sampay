@@ -7,12 +7,18 @@ import (
 
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	"mickamy.com/sampay/internal/domain/auth/repository"
+	commonModel "mickamy.com/sampay/internal/domain/common/model"
 	"mickamy.com/sampay/internal/lib/jwt"
+	"mickamy.com/sampay/internal/misc/i18n"
 )
 
 var (
-	ErrDeleteSessionNotFound             = errors.New("session not found")
-	ErrDeleteSessionTokenMismatch        = errors.New("token mismatch")
+	ErrDeleteSessionNotFound = commonModel.
+					NewLocalizableError(errors.New("session not found")).
+					WithMessages(i18n.Config{MessageID: "auth.usecase.error.invalid_access_refresh_token"})
+	ErrDeleteSessionTokenMismatch = commonModel.
+					NewLocalizableError(errors.New("token mismatch")).
+					WithMessages(i18n.Config{MessageID: "auth.usecase.error.invalid_access_refresh_token"})
 	ErrDeleteSessionDeletingTokensFailed = errors.New("deleting tokens failed")
 )
 

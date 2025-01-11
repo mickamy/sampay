@@ -10,6 +10,7 @@ import (
 
 	dto "mickamy.com/sampay/internal/domain/common/dto"
 	"mickamy.com/sampay/internal/domain/registration/usecase"
+	"mickamy.com/sampay/internal/lib/contexts"
 )
 
 type Onboarding struct {
@@ -36,6 +37,11 @@ func (h *Onboarding) GetOnboardingStep(
 ) (*connect.Response[registrationv1.GetOnboardingStepResponse], error) {
 	out, err := h.getStep.Do(ctx, usecase.GetOnboardingStepInput{})
 	if err != nil {
+		lang := contexts.MustLanguage(ctx)
+		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+			return nil, localizable.AsConnectError()
+		}
+
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		return nil, dto.NewInternalError(ctx, err).AsConnectError()
 	}
@@ -53,6 +59,11 @@ func (h *Onboarding) CreateUserAttribute(
 		UsageCategoryType: req.Msg.CategoryType,
 	})
 	if err != nil {
+		lang := contexts.MustLanguage(ctx)
+		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+			return nil, localizable.AsConnectError()
+		}
+
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		return nil, dto.NewInternalError(ctx, err).AsConnectError()
 	}
@@ -69,6 +80,11 @@ func (h *Onboarding) CreateUserProfile(
 		Bio:  req.Msg.Bio,
 	})
 	if err != nil {
+		lang := contexts.MustLanguage(ctx)
+		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+			return nil, localizable.AsConnectError()
+		}
+
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		return nil, dto.NewInternalError(ctx, err).AsConnectError()
 	}

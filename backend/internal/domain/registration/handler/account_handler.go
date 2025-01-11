@@ -11,9 +11,9 @@ import (
 
 	authDTO "mickamy.com/sampay/internal/domain/auth/dto"
 	dto "mickamy.com/sampay/internal/domain/common/dto"
+	commonModel "mickamy.com/sampay/internal/domain/common/model"
 	"mickamy.com/sampay/internal/domain/registration/usecase"
 	"mickamy.com/sampay/internal/lib/contexts"
-	"mickamy.com/sampay/internal/misc/i18n"
 )
 
 type Account struct {
@@ -38,10 +38,14 @@ func (h *Account) SignUp(
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
-		if errors.Is(err, usecase.ErrCreateAccountEmailAlreadyExists) {
-			return nil, dto.NewBadRequest(err).
-				WithFieldViolation("email", i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "registration.handler.error.email_already_exists"})).
-				AsConnectError()
+		localizable := new(commonModel.LocalizableError)
+		if errors.As(err, &localizable) {
+			if errors.Is(err, usecase.ErrCreateAccountEmailAlreadyExists) {
+				return nil, dto.NewBadRequest(err).
+					WithFieldViolation("email", localizable.Localize(lang)).
+					AsConnectError()
+			}
+			return nil, dto.NewBadRequest(err).WithMessage(localizable.Localize(lang)).AsConnectError()
 		}
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		return nil, dto.NewInternalError(ctx, err).AsConnectError()

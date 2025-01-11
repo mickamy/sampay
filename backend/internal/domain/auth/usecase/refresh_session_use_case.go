@@ -7,11 +7,17 @@ import (
 
 	"mickamy.com/sampay/internal/domain/auth/model"
 	"mickamy.com/sampay/internal/domain/auth/repository"
+	commonModel "mickamy.com/sampay/internal/domain/common/model"
 	"mickamy.com/sampay/internal/lib/jwt"
+	"mickamy.com/sampay/internal/misc/i18n"
 )
 
 var (
-	ErrRefreshSessionTokenNotFound = errors.New("token not found")
+	ErrRefreshSessionTokenNotFound = commonModel.
+		NewLocalizableError(errors.New("token not found")).
+		WithMessages(i18n.Config{
+			MessageID: "auth.usecase.error.invalid_refresh_token",
+		})
 )
 
 type RefreshSessionInput struct {

@@ -76,7 +76,7 @@ func TestSession_SignIn(t *testing.T) {
 				require.Len(t, connErr.Details(), 1)
 				detail := either.Must(connErr.Details()[0].Value())
 				if errMsg, ok := detail.(*commonv1.ErrorMessage); ok {
-					expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.handler.error.invalid_email_password"})
+					expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.usecase.error.invalid_email_password"})
 					assert.Equal(t, expectedMsg, errMsg.Message)
 				} else {
 					require.Failf(t, "unexpected detail type", "got=%T", detail)
@@ -103,7 +103,7 @@ func TestSession_SignIn(t *testing.T) {
 				require.Len(t, connErr.Details(), 1)
 				detail := either.Must(connErr.Details()[0].Value())
 				if errMsg, ok := detail.(*commonv1.ErrorMessage); ok {
-					expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.handler.error.invalid_email_password"})
+					expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.usecase.error.invalid_email_password"})
 					assert.Equal(t, expectedMsg, errMsg.Message)
 				} else {
 					require.Failf(t, "unexpected detail type", "got=%T", detail)
@@ -180,7 +180,7 @@ func TestSession_Refresh(t *testing.T) {
 					require.Len(t, connErr.Details(), 1)
 					detail := either.Must(connErr.Details()[0].Value())
 					if errMsg, ok := detail.(*commonv1.ErrorMessage); ok {
-						expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.handler.error.invalid_refresh_token"})
+						expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.usecase.error.invalid_refresh_token"})
 						assert.Equal(t, expectedMsg, errMsg.Message)
 					} else {
 						require.Failf(t, "unexpected detail type", "got=%T", detail)
@@ -204,7 +204,7 @@ func TestSession_Refresh(t *testing.T) {
 					require.Len(t, connErr.Details(), 1)
 					detail := either.Must(connErr.Details()[0].Value())
 					if errMsg, ok := detail.(*commonv1.ErrorMessage); ok {
-						expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.handler.error.invalid_refresh_token"})
+						expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.usecase.error.invalid_refresh_token"})
 						assert.Equal(t, expectedMsg, errMsg.Message)
 					} else {
 						require.Failf(t, "unexpected detail type", "got=%T", detail)
@@ -276,7 +276,7 @@ func TestSession_Refresh(t *testing.T) {
 					require.Len(t, connErr.Details(), 1)
 					detail := either.Must(connErr.Details()[0].Value())
 					if errMsg, ok := detail.(*commonv1.ErrorMessage); ok {
-						expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.handler.error.invalid_refresh_token"})
+						expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.usecase.error.invalid_refresh_token"})
 						assert.Equal(t, expectedMsg, errMsg.Message)
 					} else {
 						require.Failf(t, "unexpected detail type", "got=%T", detail)
@@ -301,7 +301,7 @@ func TestSession_Refresh(t *testing.T) {
 					require.Len(t, connErr.Details(), 1)
 					detail := either.Must(connErr.Details()[0].Value())
 					if errMsg, ok := detail.(*commonv1.ErrorMessage); ok {
-						expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.handler.error.invalid_refresh_token"})
+						expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.usecase.error.invalid_refresh_token"})
 						assert.Equal(t, expectedMsg, errMsg.Message)
 					} else {
 						require.Failf(t, "unexpected detail type", "got=%T", detail)
@@ -380,7 +380,7 @@ func TestSession_SignOut(t *testing.T) {
 				require.Len(t, connErr.Details(), 1)
 				detail := either.Must(connErr.Details()[0].Value())
 				if errMsg, ok := detail.(*commonv1.ErrorMessage); ok {
-					expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.handler.error.invalid_access_refresh_token"})
+					expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "auth.usecase.error.invalid_access_refresh_token"})
 					assert.Equal(t, expectedMsg, errMsg.Message)
 				} else {
 					require.Failf(t, "unexpected detail type", "got=%T", detail)
