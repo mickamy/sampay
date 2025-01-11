@@ -10,7 +10,6 @@ import {
   isRouteErrorResponse,
   useLoaderData,
 } from "react-router";
-import { useChangeLanguage } from "remix-i18next/react";
 import i18nServer from "~/lib/i18n/index.server";
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
@@ -31,17 +30,28 @@ export const links: Route.LinksFunction = () => [
 
 interface LoaderData {
   locale: string;
+  ENV: {
+    PUBLIC_API_BASE_URL: string;
+  };
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
+  if (process.env.NODE_ENV === "development") {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+  }
   const locale = await i18nServer.getLocale(request);
-  const data: LoaderData = { locale };
+  const data: LoaderData = {
+    locale,
+    ENV: {
+      PUBLIC_API_BASE_URL: process.env.PUBLIC_API_BASE_URL,
+    },
+  };
   return data;
 };
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const { locale } = useLoaderData<LoaderData>();
-  const { i18n } = useTranslation();
+  const { locale, ENV } = useLoaderData<LoaderData>();
+  const { i18n, t } = useTranslation();
   useEffect(() => {
     if (i18n.language !== locale) {
       i18n.changeLanguage(locale);
@@ -55,9 +65,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <title>{t("app.title")}</title>
       </head>
       <body>
-        <Suspense fallback={null}>{children}</Suspense>
+        {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify(ENV)}`,
+          }}
+        />
         <ScrollRestoration />
         <Scripts />
       </body>
