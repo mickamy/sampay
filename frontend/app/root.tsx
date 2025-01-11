@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Links,
@@ -70,6 +70,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body>
         {children}
         <script
+          // biome-ignore lint: suspicious/no-dangerously-set-inner-html
           dangerouslySetInnerHTML={{
             __html: `window.ENV = ${JSON.stringify(ENV)}`,
           }}
