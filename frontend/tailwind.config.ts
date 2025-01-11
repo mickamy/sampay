@@ -52,6 +52,9 @@ export default {
           "5": "hsl(var(--chart-5))",
         },
       },
+      screens: {
+        xs: "375px",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
