@@ -1,12 +1,9 @@
 import i18next from "i18next";
 import I18nextBrowserLanguageDetector from "i18next-browser-languagedetector";
 import I18NextHttpBackend from "i18next-http-backend";
-import {
-  type UseTranslationOptions,
-  initReactI18next,
-  useTranslation,
-} from "react-i18next";
+import { initReactI18next } from "react-i18next";
 import { getInitialNamespaces } from "remix-i18next/client";
+import zodJa from "zod-i18n-map/locales/ja/zod.json";
 import i18nConfig from "~/lib/i18n/config";
 
 export async function initI18NClient() {
@@ -30,6 +27,10 @@ export async function initI18NClient() {
           console.error("failed to initialize i18n client", err);
         } else {
           console.log("i18n client initialized");
+
+          if (!i18next.hasResourceBundle("ja", "zod")) {
+            i18next.addResourceBundle("ja", "zod", zodJa);
+          }
         }
       },
     );
