@@ -117,5 +117,5 @@ function Navigation({ isLoggedIn, className, ...props }: NavigationProps) {
 
 const loggedInNavItems = [
   { labelKey: "header.sign-in", href: "/auth/sign-in" },
-  { labelKey: "header.sign-up", href: "/auth/sign-up" },
+  { labelKey: "header.sign-up", href: "/registration/sign-up" },
 ];

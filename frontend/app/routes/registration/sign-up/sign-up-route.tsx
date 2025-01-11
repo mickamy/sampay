@@ -12,10 +12,10 @@ import {
   setAuthenticatedSession,
 } from "~/lib/cookie/authenticated.server";
 import { convertTokensToSession } from "~/models/auth/session-model";
-import { authSignUpEmailSchema } from "~/routes/auth/sign-up/components/sign-up-form";
+import { authSignUpEmailSchema } from "~/routes/registration/sign-up/components/sign-up-form";
 import SignUpEmailScreen, {
   type ActionData,
-} from "~/routes/auth/sign-up/components/sign-up-screen";
+} from "~/routes/registration/sign-up/components/sign-up-screen";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const loggedIn = await isLoggedIn(request);
