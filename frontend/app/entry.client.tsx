@@ -23,7 +23,6 @@ async function hydrate() {
       },
       preload: ["ja", "en"],
       cache: { enabled: true },
-      debug: process.env.NODE_ENV === "development",
     });
 }
 

@@ -2,7 +2,7 @@ import { PassThrough } from "node:stream";
 
 import { createReadableStreamFromReadable } from "@react-router/node";
 import { createInstance } from "i18next";
-import I18NextFSBackend from "i18next-fs-backend";
+import I18NextFSBackend from "i18next-fs-backend/cjs";
 import { isbot } from "isbot";
 import type { RenderToPipeableStreamOptions } from "react-dom/server";
 import { renderToPipeableStream } from "react-dom/server";
