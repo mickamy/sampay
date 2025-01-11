@@ -6,6 +6,8 @@
     "build": "cross-env NODE_ENV=production react-router build",
     "dev": "react-router dev --host",
     "start": "cross-env NODE_ENV=production react-router-serve ./build/server/index.js",
+    "check": "biome check --write",
+    "check:no-write": "biome check",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
@@ -23,6 +25,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@react-router/dev": "^7.1.1",
     "@types/node": "^22",
     "@types/react": "^19.0.1",
