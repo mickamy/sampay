@@ -1,3 +1,4 @@
+import { Suspense, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Links,
@@ -41,7 +42,11 @@ export const loader: LoaderFunction = async ({ request }) => {
 export function Layout({ children }: { children: React.ReactNode }) {
   const { locale } = useLoaderData<LoaderData>();
   const { i18n } = useTranslation();
-  useChangeLanguage(locale);
+  useEffect(() => {
+    if (i18n.language !== locale) {
+      i18n.changeLanguage(locale);
+    }
+  }, [locale, i18n]);
 
   return (
     <html lang={locale} dir={i18n.dir()}>
@@ -52,7 +57,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <Suspense fallback={null}>{children}</Suspense>
         <ScrollRestoration />
         <Scripts />
       </body>

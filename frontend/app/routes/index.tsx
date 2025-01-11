@@ -1,11 +1,14 @@
 import { useTranslation } from "react-i18next";
 import { Button } from "~/components/ui/button";
+import { useSafeTranslation } from "~/lib/i18n/hooks";
 
 export default function Index() {
-  const { t } = useTranslation();
+  const { t } = useSafeTranslation();
   return (
     <div className="flex w-screen h-screen justify-center items-center">
-      <Button>{t("test")}</Button>
+      <Button onClick={() => console.log("Button clicked!")}>
+        {t("test")}
+      </Button>
     </div>
   );
 }
