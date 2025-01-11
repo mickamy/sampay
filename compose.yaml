@@ -20,6 +20,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       target: development-dependencies-env
+    environment:
+      PUBLIC_API_BASE_URL: http://api:8080/api
+      SESSION_SECRET: secret
     command: npm run dev
     volumes:
       - ./frontend:/app:delegated
