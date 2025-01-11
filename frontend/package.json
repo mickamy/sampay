@@ -13,6 +13,8 @@
   "dependencies": {
     "@aws-sdk/client-ssm": "^3.726.1",
     "@buf/mickamy_sampay.bufbuild_es": "^2.2.3-20250107081210-6ef36a03adaa.1",
+    "@connectrpc/connect": "^2.0.1",
+    "@connectrpc/connect-web": "^2.0.1",
     "@radix-ui/react-dropdown-menu": "^2.1.4",
     "@radix-ui/react-slot": "^1.1.1",
     "@react-router/node": "^7.1.1",
