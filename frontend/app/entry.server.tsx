@@ -1,5 +1,6 @@
 import { PassThrough } from "node:stream";
 
+import * as process from "node:process";
 import { createReadableStreamFromReadable } from "@react-router/node";
 import { createInstance } from "i18next";
 import I18NextFSBackend from "i18next-fs-backend/cjs";
@@ -43,6 +44,7 @@ export default async function handleRequest(
       lng,
       ns,
       backend: { loadPath: "./public/locales/{{lng}}/{{ns}}.json" },
+      debug: process.env.NODE_ENV === "development",
     });
 
   return new Promise((resolve, reject) => {

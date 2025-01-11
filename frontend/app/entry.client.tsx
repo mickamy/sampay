@@ -1,3 +1,4 @@
+import process from "node:process";
 import i18next from "i18next";
 import I18nextBrowserLanguageDetector from "i18next-browser-languagedetector";
 import I18NextHttpBackend from "i18next-http-backend";
@@ -21,8 +22,7 @@ async function hydrate() {
         order: ["htmlTag"],
         caches: [],
       },
-      preload: ["ja", "en"],
-      cache: { enabled: true },
+      debug: process.env.NODE_ENV === "development",
     });
 }
 
