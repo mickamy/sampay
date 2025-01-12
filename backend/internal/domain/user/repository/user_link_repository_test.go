@@ -116,3 +116,27 @@ func TestUserLink_Update(t *testing.T) {
 	assert.Equal(t, m.ProviderType, got.ProviderType)
 	assert.Equal(t, m.URI, got.URI)
 }
+
+func TestUserLink_Delete(t *testing.T) {
+	t.Parallel()
+
+	// arrange
+	ctx := context.Background()
+	db := newReadWriter(t)
+	user := fixture.User(nil)
+	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
+	m := fixture.UserLink(func(m *model.UserLink) {
+		m.UserID = user.ID
+		m.DisplayAttribute = fixture.UserLinkDisplayAttribute(nil)
+	})
+	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&m).Error)
+
+	// act
+	sut := repository.NewUserLink(db.WriterDB())
+	err := sut.Delete(ctx, m.ID)
+
+	// assert
+	require.NoError(t, err)
+	var got model.UserLink
+	require.Error(t, db.ReaderDB().WithContext(ctx).First(&got, "id = ?", m.ID).Error)
+}

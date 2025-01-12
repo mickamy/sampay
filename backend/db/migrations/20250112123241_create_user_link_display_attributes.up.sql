@@ -5,7 +5,7 @@ CREATE TABLE user_link_display_attributes
     display_order SMALLINT     NOT NULL,
     created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_user_link_display_attributes_user_link_id FOREIGN KEY (user_link_id) REFERENCES user_links (id),
+    CONSTRAINT fk_user_link_display_attributes_user_link_id FOREIGN KEY (user_link_id) REFERENCES user_links (id) ON DELETE CASCADE,
     CONSTRAINT uq_user_link_display_attributes_display_order UNIQUE (display_order) DEFERRABLE INITIALLY DEFERRED
 );
 

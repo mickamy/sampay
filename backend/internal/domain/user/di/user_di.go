@@ -26,6 +26,7 @@ var RepositorySet = wire.NewSet(
 
 type UseCases struct {
 	usecase.CreateUserLink
+	usecase.DeleteUserLink
 	usecase.ListUserLink
 	usecase.UpdateUserLink
 }
@@ -33,6 +34,7 @@ type UseCases struct {
 //lint:ignore U1000 used by wire
 var UseCaseSet = wire.NewSet(
 	usecase.NewCreateUserLink,
+	usecase.NewDeleteUserLink,
 	usecase.NewListUserLink,
 	usecase.NewUpdateUserLink,
 )

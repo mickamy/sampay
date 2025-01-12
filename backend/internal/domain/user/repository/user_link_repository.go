@@ -16,6 +16,7 @@ type UserLink interface {
 	ListByUserID(ctx context.Context, userID string, scopes ...database.Scope) ([]model.UserLink, error)
 	Find(ctx context.Context, id string, scopes ...database.Scope) (*model.UserLink, error)
 	Update(ctx context.Context, m *model.UserLink) error
+	Delete(ctx context.Context, id string) error
 	WithTx(tx *database.DB) UserLink
 }
 
@@ -51,6 +52,10 @@ func (repo *userLink) Find(ctx context.Context, id string, scopes ...database.Sc
 
 func (repo *userLink) Update(ctx context.Context, m *model.UserLink) error {
 	return repo.db.WithContext(ctx).Save(m).Error
+}
+
+func (repo *userLink) Delete(ctx context.Context, id string) error {
+	return repo.db.WithContext(ctx).Delete(&model.UserLink{}, "id = ?", id).Error
 }
 
 func (repo *userLink) WithTx(tx *database.DB) UserLink {
