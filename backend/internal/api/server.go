@@ -14,6 +14,7 @@ import (
 	"mickamy.com/sampay/internal/api/interceptor"
 	"mickamy.com/sampay/internal/di"
 	authRouter "mickamy.com/sampay/internal/domain/auth/router"
+	commonRouter "mickamy.com/sampay/internal/domain/common/router"
 	registrationRouter "mickamy.com/sampay/internal/domain/registration/router"
 )
 
@@ -29,6 +30,7 @@ func NewServer(infras di.Infras) http.Server {
 
 	for _, route := range []func(mux *http.ServeMux, infras di.Infras, options ...connect.HandlerOption){
 		authRouter.Route,
+		commonRouter.Route,
 		registrationRouter.Route,
 	} {
 		route(mux, infras, interceptors)
