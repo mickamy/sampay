@@ -1,7 +1,7 @@
 import { Menu, X } from "lucide-react";
 import type React from "react";
 import { type HTMLAttributes, useCallback, useState } from "react";
-import { Link } from "react-router";
+import { Form, Link } from "react-router";
 import BrandLogo from "~/components/brand-logo";
 import { Button } from "~/components/ui/button";
 import {
@@ -63,9 +63,11 @@ function Navigation({ isLoggedIn, className, ...props }: NavigationProps) {
         >
           {loggedInNavItems.map((item) => {
             return (
-              <Button variant="ghost" className="rounded-md" key={item.href}>
-                <Link to={item.href}>{t(item.labelKey)}</Link>
-              </Button>
+              <Link key={item.href} to={item.href}>
+                <Button variant="ghost" className="rounded-md">
+                  {t(item.labelKey)}
+                </Button>
+              </Link>
             );
           })}
         </div>
@@ -100,16 +102,16 @@ function Navigation({ isLoggedIn, className, ...props }: NavigationProps) {
   }
   return (
     <div className={cn("", className)} {...props}>
-      <form method="delete" action="/auth/sign-out" className="w-full">
-        <Button variant="ghost" className="w-full" type="submit">
+      <Form method="delete" action="/auth/sign-out" className="w-full">
+        <Button variant="ghost" className="w-full">
           {t("header.sign-out")}
         </Button>
-      </form>
+      </Form>
     </div>
   );
 }
 
 const loggedInNavItems = [
   { labelKey: "header.sign-in", href: "/auth/sign-in" },
-  { labelKey: "header.sign-up", href: "/registration/sign-up" },
+  { labelKey: "header.sign-up", href: "/account/sign-up" },
 ];

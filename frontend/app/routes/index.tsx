@@ -1,13 +1,17 @@
-import { useTranslation } from "react-i18next";
+import { type LoaderFunction, useLoaderData } from "react-router";
 import Header from "~/components/header";
-import { Button } from "~/components/ui/button";
-import { useSafeTranslation } from "~/lib/i18n/hooks";
+import { isLoggedIn } from "~/lib/cookie/authenticated.server";
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const loggedIn = await isLoggedIn(request);
+  return Response.json({ loggedIn });
+};
 
 export default function Index() {
-  const { t } = useSafeTranslation();
+  const { loggedIn } = useLoaderData();
   return (
     <div>
-      <Header isLoggedIn={false} />
+      <Header isLoggedIn={loggedIn} />
     </div>
   );
 }

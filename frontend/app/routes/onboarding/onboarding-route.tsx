@@ -7,12 +7,12 @@ import {
 } from "react-router";
 import { withAuthentication } from "~/lib/api/request";
 import { convertToUsageCategories } from "~/models/user/usage-category-model";
-import { onboardingAttributeSchema } from "~/routes/registration/onboarding/components/onboarding-attribute-form";
-import { onboardingProfileSchema } from "~/routes/registration/onboarding/components/onboarding-profile-form";
+import { onboardingAttributeSchema } from "~/routes/onboarding/components/onboarding-attribute-form";
+import { onboardingProfileSchema } from "~/routes/onboarding/components/onboarding-profile-form";
 import OnboardingScreen, {
   type ActionData,
   type LoaderData,
-} from "~/routes/registration/onboarding/components/onboarding-screen";
+} from "~/routes/onboarding/components/onboarding-screen";
 
 export const loader: LoaderFunction = async ({ request }) => {
   return withAuthentication({ request }, async ({ getClient }) => {
@@ -72,13 +72,13 @@ export const action: ActionFunction = async ({ request }) => {
 async function submitAttribute({
   request,
   json,
-}: { request: Request; json: unknown }) {
+}: { request: Request; json: unknown }): Promise<Response> {
   return withAuthentication({ request }, async ({ getClient }) => {
     const { category } = onboardingAttributeSchema.parse(json);
     await getClient(OnboardingService).createUserAttribute({
       categoryType: category,
     });
-    return redirect("/registration/onboarding");
+    return redirect("/onboarding");
   })
     .then((res) => {
       return res.map((error) => {
@@ -92,7 +92,7 @@ async function submitAttribute({
 async function submitProfile({
   request,
   json,
-}: { request: Request; json: unknown }) {
+}: { request: Request; json: unknown }): Promise<Response> {
   return withAuthentication({ request }, async ({ getClient }) => {
     const { name, bio } = onboardingProfileSchema.parse(json);
     await getClient(OnboardingService).createUserProfile({ name, bio });

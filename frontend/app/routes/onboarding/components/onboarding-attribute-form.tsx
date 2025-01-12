@@ -58,7 +58,7 @@ export default function OnboardingAttributeForm({
         {...props}
       >
         <div className="font-bold justify-self-center">
-          {t("registration.onboarding.attribute.title")}
+          {t("onboarding.attribute.title")}
         </div>
         <FormField
           control={form.control}

@@ -7,10 +7,10 @@ import type { OnboardingStep } from "~/models/onboarding/onboarding-step";
 import type { UsageCategory } from "~/models/user/usage-category-model";
 import OnboardingAttributeForm, {
   onboardingAttributeSchema,
-} from "~/routes/registration/onboarding/components/onboarding-attribute-form";
+} from "~/routes/onboarding/components/onboarding-attribute-form";
 import OnboardingProfileForm, {
   onboardingProfileSchema,
-} from "~/routes/registration/onboarding/components/onboarding-profile-form";
+} from "~/routes/onboarding/components/onboarding-profile-form";
 
 export interface LoaderData {
   step: OnboardingStep;

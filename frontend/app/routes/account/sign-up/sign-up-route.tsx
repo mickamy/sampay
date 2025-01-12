@@ -12,10 +12,10 @@ import {
   setAuthenticatedSession,
 } from "~/lib/cookie/authenticated.server";
 import { convertTokensToSession } from "~/models/auth/session-model";
-import { authSignUpEmailSchema } from "~/routes/registration/sign-up/components/sign-up-form";
-import SignUpEmailScreen, {
+import { authSignUpSchema } from "~/routes/account/sign-up/components/sign-up-form";
+import SignUpScreen, {
   type ActionData,
-} from "~/routes/registration/sign-up/components/sign-up-screen";
+} from "~/routes/account/sign-up/components/sign-up-screen";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const loggedIn = await isLoggedIn(request);
@@ -26,7 +26,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function SignUp() {
-  return <SignUpEmailScreen />;
+  return <SignUpScreen />;
 }
 
 export const action: ActionFunction = async ({ request }) => {
@@ -38,11 +38,9 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 
-async function signUp({ request }: { request: Request }) {
+async function signUp({ request }: { request: Request }): Promise<Response> {
   try {
-    const { email, password } = authSignUpEmailSchema.parse(
-      await request.json(),
-    );
+    const { email, password } = authSignUpSchema.parse(await request.json());
     const { tokens } = await getClient({
       service: AccountService,
       request,
@@ -56,16 +54,16 @@ async function signUp({ request }: { request: Request }) {
 
     const session = convertTokensToSession(tokens);
     if (!session) {
-      return redirect("/auth/sign-up");
+      return redirect("/registration/sign-up");
     }
 
     const headers = new Headers();
     headers.append("Set-Cookie", await setAuthenticatedSession(session));
-    return redirect("/registration/onboarding", { headers });
+    return redirect("/onboarding", { headers });
   } catch (e) {
     if (e instanceof ConnectError) {
       const data: ActionData = { error: convertToAPIError(e) };
-      return data;
+      return Response.json(data);
     }
     throw e;
   }
