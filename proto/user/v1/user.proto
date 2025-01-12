@@ -8,8 +8,9 @@ import "user/v1/user_profile.proto";
 
 message User {
   string id = 1 [(buf.validate.field).string.len = 26];
-  user.v1.UserProfile profile = 2;
-  repeated user.v1.UserLink links = 3;
+  string slug = 2 [(buf.validate.field).string.min_len = 1];
+  user.v1.UserProfile profile = 3;
+  repeated user.v1.UserLink links = 4;
 }
 
 message GetMeRequest {
