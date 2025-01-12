@@ -18,7 +18,7 @@ import (
 )
 
 func NewServer(infras di.Infras) http.Server {
-	api := http.NewServeMux()
+	mux := http.NewServeMux()
 
 	interceptors := connect.WithInterceptors(
 		interceptor.Logging(),
@@ -31,10 +31,9 @@ func NewServer(infras di.Infras) http.Server {
 		authRouter.Route,
 		registrationRouter.Route,
 	} {
-		route(api, infras, interceptors)
+		route(mux, infras, interceptors)
 	}
 
-	mux := http.NewServeMux()
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		if err := infras.Writer.Exec("SELECT 1").Error; err != nil {
 			slogger.ErrorCtx(r.Context(), "failed to ping database", "err", err)
@@ -53,8 +52,6 @@ func NewServer(infras di.Infras) http.Server {
 		}
 		w.WriteHeader(http.StatusOK)
 	})
-
-	mux.Handle("/api/", http.StripPrefix("/api", api))
 
 	corsHandler := cors.AllowAll().Handler(mux)
 
