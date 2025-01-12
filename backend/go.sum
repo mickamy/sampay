@@ -8,12 +8,16 @@ buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250112000337-793bd256502
 buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250112000337-793bd256502a.1/go.mod h1:wyIpEWwMkQLODJvpTpbYPFRkYLqt7OCbJBo1bn4A/Vo=
 buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250112000630-58e1ac5e43ed.1 h1:Y3fARK6ewg6o5cxpOdZasywnNc/MaVe2lA5Vp/cXhA8=
 buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250112000630-58e1ac5e43ed.1/go.mod h1:GJitmHWGjiciYDnTshv6BgE3pYxjuQp3M9FwrviRejg=
+buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250112024957-28a79f5b6f96.1 h1:ihTZW2Zq++n8ljL5k61/J2ub03AKBO/C4rpllmi6hOI=
+buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250112024957-28a79f5b6f96.1/go.mod h1:s3moaiMBNT73QtnFwF2Zq4O2ZRB+VArO84xeilsR8uk=
 buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.1-20250107081210-6ef36a03adaa.1 h1:cQMDw0V97rEKkvaCAQ5KJxw1QTW2yyFpp85nDlvcvVo=
 buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.1-20250107081210-6ef36a03adaa.1/go.mod h1:sDEmXBnyIsqelykxhD+/5U0V871pfhZri0oUb5XykK4=
 buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.2-20250112000337-793bd256502a.1 h1:rWpqELMb8NOPR28eMHSsSvyFdX3RflleTWgyRtACLQY=
 buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.2-20250112000337-793bd256502a.1/go.mod h1:lKsc9hzHp6rohm8cDKvs6JSXmVafqPxy+4aENFKZZbQ=
 buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.2-20250112000630-58e1ac5e43ed.1 h1:a0TW5qbQNOfkicIOyzulgw4x0hF3RSPO83Y7oBn8ZVM=
 buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.2-20250112000630-58e1ac5e43ed.1/go.mod h1:lKsc9hzHp6rohm8cDKvs6JSXmVafqPxy+4aENFKZZbQ=
+buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.2-20250112024957-28a79f5b6f96.1 h1:Pn8DBdqowG5djxVp7UW5i5dhTJHauETQZidnf5wHyHw=
+buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.2-20250112024957-28a79f5b6f96.1/go.mod h1:lKsc9hzHp6rohm8cDKvs6JSXmVafqPxy+4aENFKZZbQ=
 connectrpc.com/connect v1.17.0 h1:W0ZqMhtVzn9Zhn2yATuUokDLO5N+gIuBWMOnsQrfmZk=
 connectrpc.com/connect v1.17.0/go.mod h1:0292hj1rnx8oFrStN7cB4jjVBeqs+Yx5yDIC2prWDO8=
 connectrpc.com/connect v1.18.1 h1:PAg7CjSAGvscaf6YZKUefjoih5Z/qYkyaTrBW8xvYPw=

@@ -56,7 +56,7 @@ func (h *Onboarding) CreateUserAttribute(
 	req *connect.Request[registrationv1.CreateUserAttributeRequest],
 ) (*connect.Response[registrationv1.CreateUserAttributeResponse], error) {
 	_, err := h.createAttribute.Do(ctx, usecase.CreateUserAttributeInput{
-		UsageCategoryType: req.Msg.Type,
+		UsageCategoryType: req.Msg.CategoryType,
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)

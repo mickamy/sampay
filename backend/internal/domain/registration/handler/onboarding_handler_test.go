@@ -113,7 +113,7 @@ func TestOnboarding_CreateUserAttribute(t *testing.T) {
 			name: "success",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreateUserAttributeRequest {
 				return &registrationv1.CreateUserAttributeRequest{
-					Type: "other",
+					CategoryType: "other",
 				}
 			},
 			assert: func(t *testing.T, got *connect.Response[registrationv1.CreateUserAttributeResponse], err error) {
@@ -124,7 +124,7 @@ func TestOnboarding_CreateUserAttribute(t *testing.T) {
 			name: "fail (invalid category type)",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreateUserAttributeRequest {
 				return &registrationv1.CreateUserAttributeRequest{
-					Type: "invalid",
+					CategoryType: "invalid",
 				}
 			},
 			assert: func(t *testing.T, got *connect.Response[registrationv1.CreateUserAttributeResponse], err error) {

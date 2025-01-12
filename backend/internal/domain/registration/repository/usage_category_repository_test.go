@@ -42,6 +42,6 @@ func TestUsageCategory_Upsert(t *testing.T) {
 	// assert
 	require.NoError(t, err)
 	var got model.UsageCategory
-	require.NoError(t, db.WriterDB().WithContext(ctx).Where("category_type = ?", m.Type).First(&got).Error)
+	require.NoError(t, db.WriterDB().WithContext(ctx).Where("type = ?", m.Type).First(&got).Error)
 	assert.Equal(t, m, &got)
 }
