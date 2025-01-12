@@ -46,7 +46,7 @@ export default function OnboardingProfileForm({
         {...props}
       >
         <div className="font-bold justify-self-center">
-          {t("registration.onboarding.profile.title")}
+          {t("onboarding.profile.title")}
         </div>
         <FormField
           control={form.control}
