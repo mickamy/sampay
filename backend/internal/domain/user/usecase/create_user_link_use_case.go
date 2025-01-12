@@ -7,6 +7,7 @@ import (
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
+	"mickamy.com/sampay/internal/lib/contexts"
 )
 
 type CreateUserLinkInput struct {
@@ -40,6 +41,7 @@ func NewCreateUserLink(
 
 func (uc *createUserLink) Do(ctx context.Context, input CreateUserLinkInput) (CreateUserLinkOutput, error) {
 	m := userModel.UserLink{
+		UserID:       contexts.MustAuthenticatedUserID(ctx),
 		ProviderType: input.ProviderType,
 		URI:          input.URI,
 		DisplayAttribute: userModel.UserLinkDisplayAttribute{

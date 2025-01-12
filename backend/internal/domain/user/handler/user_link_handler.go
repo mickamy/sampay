@@ -13,7 +13,7 @@ import (
 	userModel "mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/domain/user/usecase"
 	"mickamy.com/sampay/internal/lib/contexts"
-	"mickamy.com/sampay/internal/lib/ptr"
+	"mickamy.com/sampay/internal/misc/i18n"
 )
 
 type UserLink struct {
@@ -37,6 +37,33 @@ func NewUserLink(
 	}
 }
 
+func (h UserLink) CreateUserLink(ctx context.Context, req *connect.Request[userv1.CreateUserLinkRequest]) (*connect.Response[userv1.CreateUserLinkResponse], error) {
+	lang := contexts.MustLanguage(ctx)
+	providerType, err := userModel.NewLinkProviderType(req.Msg.ProviderType)
+	if err != nil {
+		return nil, dto.NewBadRequest(err, dto.FieldViolation{
+			Field:        "provider_type",
+			Descriptions: []string{i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "user.handler.user_link.error.invalid_provider_type"})},
+		}).AsConnectError()
+	}
+
+	_, err = h.create.Do(ctx, usecase.CreateUserLinkInput{
+		ProviderType: providerType,
+		URI:          req.Msg.Uri,
+		Name:         req.Msg.Name,
+	})
+	if err != nil {
+		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+			return nil, localizable.AsConnectError()
+		}
+
+		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
+		return nil, dto.NewInternalError(ctx, err).AsConnectError()
+	}
+	res := connect.NewResponse(&userv1.CreateUserLinkResponse{})
+	return res, nil
+}
+
 func (h UserLink) ListUserLink(ctx context.Context, req *connect.Request[userv1.ListUserLinkRequest]) (*connect.Response[userv1.ListUserLinkResponse], error) {
 	out, err := h.list.Do(ctx, usecase.ListUserLinkInput{
 		UserID: req.Msg.UserId,
@@ -56,32 +83,25 @@ func (h UserLink) ListUserLink(ctx context.Context, req *connect.Request[userv1.
 	return res, nil
 }
 
-func (h UserLink) CreateUserLink(ctx context.Context, req *connect.Request[userv1.CreateUserLinkRequest]) (*connect.Response[userv1.CreateUserLinkResponse], error) {
-	_, err := h.create.Do(ctx, usecase.CreateUserLinkInput{
-		ProviderType: userModel.MustNewLinkProviderType(req.Msg.ProviderType),
+func (h UserLink) UpdateUserLink(ctx context.Context, req *connect.Request[userv1.UpdateUserLinkRequest]) (*connect.Response[userv1.UpdateUserLinkResponse], error) {
+	lang := contexts.MustLanguage(ctx)
+	var providerType *userModel.UserLinkProviderType
+	if req.Msg.ProviderType != nil {
+		pt, err := userModel.NewLinkProviderType(*req.Msg.ProviderType)
+		if err != nil {
+			return nil, dto.NewBadRequest(err, dto.FieldViolation{
+				Field:        "provider_type",
+				Descriptions: []string{i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "user.handler.user_link.error.invalid_provider_type"})},
+			}).AsConnectError()
+		}
+		providerType = &pt
+	}
+
+	_, err := h.update.Do(ctx, usecase.UpdateUserLinkInput{
+		ID:           req.Msg.Id,
+		ProviderType: providerType,
 		URI:          req.Msg.Uri,
 		Name:         req.Msg.Name,
-	})
-	if err != nil {
-		lang := contexts.MustLanguage(ctx)
-		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
-			return nil, localizable.AsConnectError()
-		}
-
-		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-		return nil, dto.NewInternalError(ctx, err).AsConnectError()
-	}
-	res := connect.NewResponse(&userv1.CreateUserLinkResponse{})
-	return res, nil
-}
-
-func (h UserLink) UpdateUserLink(ctx context.Context, req *connect.Request[userv1.UpdateUserLinkRequest]) (*connect.Response[userv1.UpdateUserLinkResponse], error) {
-	_, err := h.update.Do(ctx, usecase.UpdateUserLinkInput{
-		ProviderType: ptr.Map(req.Msg.ProviderType, func(v *string) *userModel.UserLinkProviderType {
-			return ptr.Of(userModel.MustNewLinkProviderType(*v))
-		}),
-		URI:  req.Msg.Uri,
-		Name: req.Msg.Name,
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)

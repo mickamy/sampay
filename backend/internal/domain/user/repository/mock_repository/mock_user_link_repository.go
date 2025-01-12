@@ -57,6 +57,20 @@ func (mr *MockUserLinkMockRecorder) Create(ctx, m any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUserLink)(nil).Create), ctx, m)
 }
 
+// Delete mocks base method.
+func (m *MockUserLink) Delete(ctx context.Context, id string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Delete", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Delete indicates an expected call of Delete.
+func (mr *MockUserLinkMockRecorder) Delete(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockUserLink)(nil).Delete), ctx, id)
+}
+
 // Find mocks base method.
 func (m *MockUserLink) Find(ctx context.Context, id string, scopes ...database.Scope) (*model.UserLink, error) {
 	m.ctrl.T.Helper()
@@ -75,6 +89,21 @@ func (mr *MockUserLinkMockRecorder) Find(ctx, id any, scopes ...any) *gomock.Cal
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]any{ctx, id}, scopes...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockUserLink)(nil).Find), varargs...)
+}
+
+// GetLastDisplayOrderByUserID mocks base method.
+func (m *MockUserLink) GetLastDisplayOrderByUserID(ctx context.Context, userID string) (int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLastDisplayOrderByUserID", ctx, userID)
+	ret0, _ := ret[0].(int)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLastDisplayOrderByUserID indicates an expected call of GetLastDisplayOrderByUserID.
+func (mr *MockUserLinkMockRecorder) GetLastDisplayOrderByUserID(ctx, userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLastDisplayOrderByUserID", reflect.TypeOf((*MockUserLink)(nil).GetLastDisplayOrderByUserID), ctx, userID)
 }
 
 // ListByUserID mocks base method.

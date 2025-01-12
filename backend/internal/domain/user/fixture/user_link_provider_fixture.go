@@ -8,7 +8,7 @@ import (
 func UserLinkProvider(setter func(m *model.UserLinkProvider)) model.UserLinkProvider {
 	m := model.UserLinkProvider{
 		Type:         UserLinkProviderType(),
-		DisplayOrder: commonFixture.Int(),
+		DisplayOrder: commonFixture.Intn(100),
 	}
 
 	if setter != nil {
