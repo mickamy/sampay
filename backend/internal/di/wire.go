@@ -112,3 +112,12 @@ func InitUserRepositories(db *database.DB, readWriter *database.ReadWriter, writ
 	)
 	return user.Repositories{}
 }
+
+func InitUserUseCase(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) user.UseCases {
+	wire.Build(
+		user.UseCaseSet,
+		user.RepositorySet,
+		wire.Struct(new(user.UseCases), "*"),
+	)
+	return user.UseCases{}
+}
