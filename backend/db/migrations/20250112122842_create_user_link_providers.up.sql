@@ -1,4 +1,4 @@
-CREATE TABLE link_providers
+CREATE TABLE user_link_providers
 (
     type          user_link_provider_type NOT NULL PRIMARY KEY,
     display_order SMALLINT                NOT NULL,
