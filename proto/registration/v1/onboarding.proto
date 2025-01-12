@@ -1,31 +1,32 @@
 syntax = "proto3";
 
-import "common/v1/direct_upload_url.proto";
-
 package registration.v1;
 
-message GetOnboardingStepRequest {
-}
+import "buf/validate/validate.proto";
+import "common/v1/direct_upload_url.proto";
+
+message GetOnboardingStepRequest {}
 
 message GetOnboardingStepResponse {
-  string step = 1;
+  string step = 1 [(buf.validate.field).string.min_len = 1];
 }
 
 message CreateUserAttributeRequest {
-  string category_type = 1;
+  string category_type = 1 [(buf.validate.field).string.min_len = 1];
 }
 
-message CreateUserAttributeResponse {
-}
+message CreateUserAttributeResponse {}
 
 message CreateUserProfileRequest {
-  string name = 1;
-  optional string bio = 2;
+  string name = 1 [
+    (buf.validate.field).string.min_len = 1,
+    (buf.validate.field).string.max_len = 64
+  ];
+  optional string bio = 2 [(buf.validate.field).string.max_len = 256];
   optional common.v1.S3Object image = 3;
 }
 
-message CreateUserProfileResponse {
-}
+message CreateUserProfileResponse {}
 
 service OnboardingService {
   rpc GetOnboardingStep(GetOnboardingStepRequest) returns (GetOnboardingStepResponse) {}

@@ -2,10 +2,11 @@ syntax = "proto3";
 
 package auth.v1;
 
+import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
 
 message Token {
-  string value = 1;
+  string value = 1 [(buf.validate.field).string.min_len = 1];
   google.protobuf.Timestamp expires_at = 2;
 }
 
