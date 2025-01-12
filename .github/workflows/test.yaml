@@ -6,7 +6,7 @@ on:
       - '**'
 
 jobs:
-  test-backend:
+  backend:
     services:
       postgres:
         image: postgres:16.4-alpine
@@ -106,7 +106,7 @@ jobs:
       - name: Test
         run: cd backend && make test
 
-  test-frontend:
+  frontend:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
