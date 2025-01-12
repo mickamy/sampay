@@ -20,3 +20,7 @@ user:
     user_attribute:
       error:
         duplicated: '既に登録済みです。'
+  handler:
+    user_link:
+      error:
+        invalid_provider_type: "無効なリンク提供業者です。"

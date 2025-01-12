@@ -16,6 +16,7 @@ import (
 	authRouter "mickamy.com/sampay/internal/domain/auth/router"
 	commonRouter "mickamy.com/sampay/internal/domain/common/router"
 	registrationRouter "mickamy.com/sampay/internal/domain/registration/router"
+	userRouter "mickamy.com/sampay/internal/domain/user/router"
 )
 
 func NewServer(infras di.Infras) http.Server {
@@ -24,6 +25,7 @@ func NewServer(infras di.Infras) http.Server {
 	interceptors := connect.WithInterceptors(
 		interceptor.Logging(),
 		interceptor.I18N(),
+		interceptor.Recovery(),
 		interceptor.Authenticate(di.InitAuthUseCases(infras.DB, infras.ReadWriter, infras.Writer, infras.Reader, infras.KVS).AuthenticateUser),
 		interceptor.Cookie(),
 	)
@@ -32,6 +34,7 @@ func NewServer(infras di.Infras) http.Server {
 		authRouter.Route,
 		commonRouter.Route,
 		registrationRouter.Route,
+		userRouter.Route,
 	} {
 		route(mux, infras, interceptors)
 	}

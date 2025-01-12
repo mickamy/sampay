@@ -2,20 +2,21 @@ syntax = "proto3";
 
 package auth.v1;
 
+import "buf/validate/validate.proto";
 import "auth/v1/common.proto";
 
 message SignInRequest {
-  string email = 1;
+  string email = 1 [(buf.validate.field).string.email = true];
   string password = 2;
 }
 
 message SignInResponse {
-  string user_id = 1;
+  string user_id = 1 [(buf.validate.field).string.len = 26];
   auth.v1.Tokens tokens = 2;
 }
 
 message RefreshRequest {
-  optional string refresh_token = 1;
+  optional string refresh_token = 1 [(buf.validate.field).string.min_len = 1];
 }
 
 message RefreshResponse {
@@ -23,8 +24,8 @@ message RefreshResponse {
 }
 
 message SignOutRequest {
-  string access_token = 1;
-  string refresh_token = 2;
+  string access_token = 1 [(buf.validate.field).string.min_len = 1];
+  string refresh_token = 2 [(buf.validate.field).string.min_len = 1];
 }
 
 message SignOutResponse {}

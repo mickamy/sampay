@@ -2,12 +2,14 @@ syntax = "proto3";
 
 package test.v1;
 
+import "buf/validate/validate.proto";
+
 message EchoRequest {
-  string message = 1;
+  string message = 1 [(buf.validate.field).string.min_len = 1];
 }
 
 message EchoResponse {
-  string message = 1;
+  string message = 1 [(buf.validate.field).string.min_len = 1];
 }
 
 service EchoService {

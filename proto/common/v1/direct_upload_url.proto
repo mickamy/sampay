@@ -5,19 +5,18 @@ package common.v1;
 import "buf/validate/validate.proto";
 
 message S3Object {
-  string bucket = 1;
-  string key = 2;
-  string content_type = 3;
+  string bucket = 1 [(buf.validate.field).string.min_len = 1];
+  string key = 2 [(buf.validate.field).string.min_len = 1];
 }
 
-message DirectUploadURLRequest {
+message CreateDirectUploadURLRequest {
   S3Object s3_object = 1;
 }
 
-message DirectUploadURLResponse {
+message CreateDirectUploadURLResponse {
   string url = 1 [(buf.validate.field).string.uri = true];
 }
 
 service DirectUploadURLService {
-  rpc Request(DirectUploadURLRequest) returns (DirectUploadURLResponse) {}
+  rpc CreateDirectUploadURL(CreateDirectUploadURLRequest) returns (CreateDirectUploadURLResponse) {}
 }

@@ -27,32 +27,32 @@ func TestSession_SignIn(t *testing.T) {
 
 	tsc := []struct {
 		name    string
-		arrange func(t *testing.T, ctx context.Context, infras di.Infras) *commonv1.DirectUploadURLRequest
-		assert  func(t *testing.T, got *connect.Response[commonv1.DirectUploadURLResponse], err error)
+		arrange func(t *testing.T, ctx context.Context, infras di.Infras) *commonv1.CreateDirectUploadURLRequest
+		assert  func(t *testing.T, got *connect.Response[commonv1.CreateDirectUploadURLResponse], err error)
 	}{
 		{
 			name: "success",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *commonv1.DirectUploadURLRequest {
-				return &commonv1.DirectUploadURLRequest{
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *commonv1.CreateDirectUploadURLRequest {
+				return &commonv1.CreateDirectUploadURLRequest{
 					S3Object: &commonv1.S3Object{
 						Bucket: gofakeit.GlobalFaker.ProductName(),
 						Key:    gofakeit.UUID(),
 					},
 				}
 			},
-			assert: func(t *testing.T, got *connect.Response[commonv1.DirectUploadURLResponse], err error) {
+			assert: func(t *testing.T, got *connect.Response[commonv1.CreateDirectUploadURLResponse], err error) {
 				require.NoError(t, err)
 				assert.NotEmpty(t, got.Msg.Url)
 			},
 		},
 		{
 			name: "fail",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *commonv1.DirectUploadURLRequest {
-				return &commonv1.DirectUploadURLRequest{
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *commonv1.CreateDirectUploadURLRequest {
+				return &commonv1.CreateDirectUploadURLRequest{
 					S3Object: nil,
 				}
 			},
-			assert: func(t *testing.T, got *connect.Response[commonv1.DirectUploadURLResponse], err error) {
+			assert: func(t *testing.T, got *connect.Response[commonv1.CreateDirectUploadURLResponse], err error) {
 				require.Error(t, err)
 				assert.Equalf(t, connect.CodeInvalidArgument, connect.CodeOf(err), "code=%s", connect.CodeOf(err).String())
 				connErr := new(connect.Error)
@@ -86,7 +86,7 @@ func TestSession_SignIn(t *testing.T) {
 			// act
 			client := commonv1connect.NewDirectUploadURLServiceClient(http.DefaultClient, server.URL)
 			connReq := connecttest.NewAuthenticatedRequest(t, ctx, req, nil, authModel.MustNewSession(user.ID), infras.KVS)
-			got, err := client.Request(ctx, connReq)
+			got, err := client.CreateDirectUploadURL(ctx, connReq)
 
 			// assert
 			tc.assert(t, got, err)

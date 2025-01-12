@@ -22,7 +22,9 @@ import (
 	repository3 "mickamy.com/sampay/internal/domain/registration/repository"
 	usecase3 "mickamy.com/sampay/internal/domain/registration/usecase"
 	di4 "mickamy.com/sampay/internal/domain/user/di"
+	handler4 "mickamy.com/sampay/internal/domain/user/handler"
 	repository2 "mickamy.com/sampay/internal/domain/user/repository"
+	usecase4 "mickamy.com/sampay/internal/domain/user/usecase"
 	"mickamy.com/sampay/internal/lib/aws/s3"
 )
 
@@ -188,11 +190,43 @@ func InitRegistrationHandlers(db *database.DB, readWriter *database.ReadWriter, 
 func InitUserRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di4.Repositories {
 	user := repository2.NewUser(db)
 	userAttribute := repository2.NewUserAttribute(db)
+	userLinkProvider := repository2.NewUserLinkProvider(db)
+	userLink := repository2.NewUserLink(db)
 	userProfile := repository2.NewUserProfile(db)
 	repositories := di4.Repositories{
-		User:          user,
-		UserAttribute: userAttribute,
-		UserProfile:   userProfile,
+		User:             user,
+		UserAttribute:    userAttribute,
+		UserLinkProvider: userLinkProvider,
+		UserLink:         userLink,
+		UserProfile:      userProfile,
 	}
 	return repositories
+}
+
+func InitUserUseCase(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di4.UseCases {
+	userLink := repository2.NewUserLink(db)
+	createUserLink := usecase4.NewCreateUserLink(writer, userLink)
+	deleteUserLink := usecase4.NewDeleteUserLink(writer, userLink)
+	listUserLink := usecase4.NewListUserLink(reader, userLink)
+	updateUserLink := usecase4.NewUpdateUserLink(writer, userLink)
+	useCases := di4.UseCases{
+		CreateUserLink: createUserLink,
+		DeleteUserLink: deleteUserLink,
+		ListUserLink:   listUserLink,
+		UpdateUserLink: updateUserLink,
+	}
+	return useCases
+}
+
+func InitUserHandler(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di4.Handlers {
+	userLink := repository2.NewUserLink(db)
+	createUserLink := usecase4.NewCreateUserLink(writer, userLink)
+	listUserLink := usecase4.NewListUserLink(reader, userLink)
+	updateUserLink := usecase4.NewUpdateUserLink(writer, userLink)
+	deleteUserLink := usecase4.NewDeleteUserLink(writer, userLink)
+	handlerUserLink := handler4.NewUserLink(createUserLink, listUserLink, updateUserLink, deleteUserLink)
+	handlers := di4.Handlers{
+		UserLink: handlerUserLink,
+	}
+	return handlers
 }

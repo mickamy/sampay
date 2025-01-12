@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package user.v1;
+
+import "buf/validate/validate.proto";
+
+message UserLinkProvider {
+  string type = 1 [(buf.validate.field).string.min_len = 1];
+  int32 display_order = 2 [(buf.validate.field).int32.gte = 0];
+}
+
+message UserLinkDisplayAttribute {
+  string user_link_id = 1 [(buf.validate.field).string.len = 26];
+  string name = 2 [(buf.validate.field).string.max_len = 256];
+  int32 display_order = 3 [(buf.validate.field).int32.gte = 0];
+}
+
+message UserLink {
+  string id = 1 [(buf.validate.field).string.len = 26];
+  string user_id = 2 [(buf.validate.field).string.len = 26];
+  string uri = 3 [(buf.validate.field).string.uri = true];
+  string provider_type = 4;
+  UserLinkDisplayAttribute display_attribute = 5;
+}
+
+message ListUserLinkRequest {
+  string user_id = 1 [(buf.validate.field).string.len = 26];
+}
+
+message ListUserLinkResponse {
+  repeated UserLink links = 1;
+}
+
+message CreateUserLinkRequest {
+  string provider_type = 1 [(buf.validate.field).string.min_len = 1];
+  string uri = 2 [(buf.validate.field).string.uri = true];
+  string name = 3 [(buf.validate.field).string.max_len = 256];
+}
+
+message CreateUserLinkResponse {}
+
+message UpdateUserLinkRequest {
+  string id = 1 [(buf.validate.field).string.len = 26];
+  optional string provider_type = 2 [(buf.validate.field).string.min_len = 1];
+  optional string uri = 3 [(buf.validate.field).string.uri = true];
+  optional string name = 4 [(buf.validate.field).string.max_len = 256];
+  optional int32 display_order = 5 [(buf.validate.field).int32.gte = 0];
+}
+
+message UpdateUserLinkResponse {}
+
+message DeleteUserLinkRequest {
+  string id = 1 [(buf.validate.field).string.len = 26];
+}
+
+message DeleteUserLinkResponse {}
+
+service UserLinkService {
+  rpc ListUserLink(ListUserLinkRequest) returns (ListUserLinkResponse) {}
+  rpc CreateUserLink(CreateUserLinkRequest) returns (CreateUserLinkResponse) {}
+  rpc UpdateUserLink(UpdateUserLinkRequest) returns (UpdateUserLinkResponse) {}
+  rpc DeleteUserLink(DeleteUserLinkRequest) returns (DeleteUserLinkResponse) {}
+}

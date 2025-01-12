@@ -2,13 +2,15 @@ syntax = "proto3";
 
 package common.v1;
 
+import "buf/validate/validate.proto";
+
 message ErrorMessage {
-  string message = 1;
+  string message = 1 [(buf.validate.field).string.min_len = 1];
 }
 
 message BadRequestError {
   message FieldViolation {
-    string field = 1;
+    string field = 1 [(buf.validate.field).string.min_len = 1];
     repeated string descriptions = 2;
   }
 

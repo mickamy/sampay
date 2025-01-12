@@ -34,7 +34,8 @@ func seedUsageCategory(ctx context.Context, writer *database.Writer, env config.
 		}
 		return nil
 	}); err != nil {
-		return fmt.Errorf("failed to seed usage categories: %w", err)
+		return err
+
 	}
 
 	return nil
