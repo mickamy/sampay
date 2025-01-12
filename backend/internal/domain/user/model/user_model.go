@@ -18,6 +18,7 @@ type User struct {
 
 	Attribute UserAttribute
 	Profile   UserProfile
+	Links     []UserLink
 }
 
 func (m *User) BeforeCreate(tx *gorm.DB) error {
