@@ -55,7 +55,7 @@ func Authenticate(uc usecase.AuthenticateUser) connect.UnaryInterceptorFunc {
 				slogger.WarnCtx(ctx, "failed to authenticate user", "err", err)
 				return nil, connect.NewError(connect.CodeUnauthenticated, err)
 			}
-			ctx = contexts.SetAuthenticatedUser(ctx, out.User)
+			ctx = contexts.SetAuthenticatedUserID(ctx, out.User.ID)
 			return next(ctx, req)
 		}
 	}

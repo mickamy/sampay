@@ -12,10 +12,10 @@ import {
   setAuthenticatedSession,
 } from "~/lib/cookie/authenticated.server";
 import { convertTokensToSession } from "~/models/auth/session-model";
-import { authSignUpEmailSchema } from "~/routes/auth/sign-up/components/sign-up-form";
+import { authSignUpEmailSchema } from "~/routes/registration/sign-up/components/sign-up-form";
 import SignUpEmailScreen, {
   type ActionData,
-} from "~/routes/auth/sign-up/components/sign-up-screen";
+} from "~/routes/registration/sign-up/components/sign-up-screen";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const loggedIn = await isLoggedIn(request);
@@ -43,13 +43,15 @@ async function signUp({ request }: { request: Request }) {
     const { email, password } = authSignUpEmailSchema.parse(
       await request.json(),
     );
-    console.log("email", email, "password", password);
-    const { tokens } = await getClient(AccountService).signUp({
+    const { tokens } = await getClient({
+      service: AccountService,
+      request,
+    }).signUp({
       email,
       password,
     });
     if (!tokens) {
-      return redirect("/auth/sign-up");
+      return redirect("/registration/sign-up");
     }
 
     const session = convertTokensToSession(tokens);
@@ -59,7 +61,7 @@ async function signUp({ request }: { request: Request }) {
 
     const headers = new Headers();
     headers.append("Set-Cookie", await setAuthenticatedSession(session));
-    return redirect("/onboarding", { headers });
+    return redirect("/registration/onboarding", { headers });
   } catch (e) {
     if (e instanceof ConnectError) {
       const data: ActionData = { error: convertToAPIError(e) };

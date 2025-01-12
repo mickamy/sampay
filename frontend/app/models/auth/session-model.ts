@@ -20,11 +20,15 @@ export function convertTokensToSession(
     tokens: {
       access: {
         value: tokens.access.value,
-        expiresAt: convertTimestampToDate(tokens.access.expiresAt),
+        expiresAt: convertTimestampToDate(
+          tokens.access.expiresAt,
+        ).toISOString(),
       },
       refresh: {
         value: tokens.refresh.value,
-        expiresAt: convertTimestampToDate(tokens.refresh.expiresAt),
+        expiresAt: convertTimestampToDate(
+          tokens.refresh.expiresAt,
+        ).toISOString(),
       },
     },
   };

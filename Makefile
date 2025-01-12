@@ -5,6 +5,7 @@
 	down \
 	down-v \
 	install \
+	ci \
 	help \
 
 build: ## Build the docker images
@@ -25,6 +26,10 @@ down-v: ## Stop the containers and remove volumes
 install: ## Install all dependencies
 	cd backend && make install
 	cd frontend && make install
+
+ci:
+	cd backend && make ci
+	cd frontend && make ci
 
 help: ## Display a list of available Makefile targets with their descriptions
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \

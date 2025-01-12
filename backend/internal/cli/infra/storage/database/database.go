@@ -6,8 +6,10 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	gormLogger "gorm.io/gorm/logger"
 
 	"mickamy.com/sampay/config"
+	"mickamy.com/sampay/internal/lib/logger"
 )
 
 type ConnectionType string
@@ -47,9 +49,24 @@ func Connect(provider config.DatabaseConfigProvider, connType ConnectionType) (*
 	}
 }
 func initializeDB(provider config.DatabaseConfigProvider) (*DB, error) {
-	db, err := gorm.Open(postgres.New(postgres.Config{DSN: provider.DSN()}))
+	db, err := gorm.Open(
+		postgres.New(postgres.Config{DSN: provider.DSN()}),
+		&gorm.Config{Logger: logger.Gorm.LogMode(logLevel())},
+	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 	return &DB{db}, nil
+}
+
+func logLevel() gormLogger.LogLevel {
+	switch config.Common().LogLevel {
+	case "debug", "info":
+		return gormLogger.Info
+	case "warn":
+		return gormLogger.Warn
+	case "error":
+		return gormLogger.Error
+	}
+	return gormLogger.Info
 }

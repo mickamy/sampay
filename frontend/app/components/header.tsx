@@ -58,19 +58,13 @@ function Navigation({ isLoggedIn, className, ...props }: NavigationProps) {
     return (
       <>
         <div
-          className={cn("hidden xs:flex justify-center", className)}
+          className={cn("hidden xs:flex justify-center space-x-2", className)}
           {...props}
         >
           {loggedInNavItems.map((item) => {
             return (
-              <Button
-                variant="ghost"
-                className="ml-4 rounded-md"
-                key={item.href}
-              >
-                <Link to={item.href} className="block size-full">
-                  {t(item.labelKey)}
-                </Link>
+              <Button variant="ghost" className="rounded-md" key={item.href}>
+                <Link to={item.href}>{t(item.labelKey)}</Link>
               </Button>
             );
           })}
@@ -117,5 +111,5 @@ function Navigation({ isLoggedIn, className, ...props }: NavigationProps) {
 
 const loggedInNavItems = [
   { labelKey: "header.sign-in", href: "/auth/sign-in" },
-  { labelKey: "header.sign-up", href: "/auth/sign-up" },
+  { labelKey: "header.sign-up", href: "/registration/sign-up" },
 ];

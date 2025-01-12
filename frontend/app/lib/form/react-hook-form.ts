@@ -68,9 +68,9 @@ function convertToFieldErrors<TFieldValues extends FieldValues = FieldValues>(
     return [];
   }
   if ("violations" in error) {
-    return Object.entries(error.violations).map(([key, violation]) => {
+    return error.violations.map((violation) => {
       return {
-        key: key as Path<TFieldValues>,
+        key: violation.field as Path<TFieldValues>,
         values: violation.descriptions.map((description) => ({
           type: "api",
           message: description,

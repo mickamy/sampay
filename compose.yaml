@@ -10,6 +10,7 @@ services:
       - .env.docker
     volumes:
       - ./backend:/src:delegated
+      - ./log:/var/log:delegated
       - /src/build
       - go:/go
     ports:
@@ -21,11 +22,12 @@ services:
       dockerfile: Dockerfile
       target: development-dependencies-env
     environment:
-      PUBLIC_API_BASE_URL: http://api:8080/api
+      PUBLIC_API_BASE_URL: http://api:8080
       SESSION_SECRET: secret
     command: npm run dev
     volumes:
       - ./frontend:/app:delegated
+      - ./log:/var/log:delegated
       - /app/build
       - node_modules:/app/node_modules
     ports:

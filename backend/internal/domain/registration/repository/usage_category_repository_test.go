@@ -33,7 +33,7 @@ func TestUsageCategory_Upsert(t *testing.T) {
 	// arrange
 	ctx := context.Background()
 	db := newReadWriter(t)
-	m := &model.UsageCategory{CategoryType: "other", DisplayOrder: 100}
+	m := &model.UsageCategory{Type: "other", DisplayOrder: 100}
 
 	// act
 	sut := repository.NewUsageCategory(db.WriterDB())
@@ -42,6 +42,6 @@ func TestUsageCategory_Upsert(t *testing.T) {
 	// assert
 	require.NoError(t, err)
 	var got model.UsageCategory
-	require.NoError(t, db.WriterDB().WithContext(ctx).Where("category_type = ?", m.CategoryType).First(&got).Error)
+	require.NoError(t, db.WriterDB().WithContext(ctx).Where("type = ?", m.Type).First(&got).Error)
 	assert.Equal(t, m, &got)
 }

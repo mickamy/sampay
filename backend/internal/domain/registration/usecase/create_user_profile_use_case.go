@@ -41,7 +41,7 @@ func NewCreateUserProfile(
 func (uc *createUserProfile) Do(ctx context.Context, input CreateUserProfileInput) (CreateUserProfileOutput, error) {
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
 		m := userModel.UserProfile{
-			UserID: contexts.MustAuthenticatedUser(ctx).ID,
+			UserID: contexts.MustAuthenticatedUserID(ctx),
 			Name:   input.Name,
 			Bio:    input.Bio,
 		}

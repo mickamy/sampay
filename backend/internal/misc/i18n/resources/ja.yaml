@@ -12,3 +12,8 @@ registration:
   usecase:
     error:
       email_already_exists: 'このメールアドレスは既に登録されています。'
+user:
+  model:
+    user_attribute:
+      error:
+        duplicated: '既に登録済みです。'

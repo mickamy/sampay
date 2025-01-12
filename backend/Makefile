@@ -15,6 +15,7 @@
 	fmt \
 	lint \
 	test \
+	ci \
 	help \
 
 build: ## Build the application
@@ -73,6 +74,9 @@ lint: ## Run linters (vet, staticcheck, and errcheck)
 
 test: ## Run tests
 	PACKAGE_ROOT=$$(pwd) go test -v ./...
+
+ci: install-mod gen fmt lint test ## Run all CI checks
+	@echo "CI pipeline passed"
 
 help: ## Display a list of available Makefile targets with their descriptions
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \

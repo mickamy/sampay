@@ -12,6 +12,7 @@ import { redirect } from "react-router";
 import { API_BASE_URL, getClient } from "~/lib/api/client";
 import {
   createAuthenticateInterceptor,
+  createI18NInterceptor,
   loggingInterceptor,
 } from "~/lib/api/interceptors";
 import { type APIError, convertToAPIError } from "~/lib/api/response";
@@ -37,7 +38,7 @@ export async function authenticate(
     throw redirect("/auth/sign-in");
   }
   try {
-    return await refreshSession(session);
+    return await refreshSession({ request, original: session });
   } catch (e) {
     throw redirect("/auth/sign-in");
   }
@@ -45,20 +46,22 @@ export async function authenticate(
 
 export type getClientType = <T extends DescService>(service: T) => Client<T>;
 
-export async function withAuthentication({
-  request,
-  execute,
-}: {
-  request: Request;
-  execute: ({ getClient }: { getClient: getClientType }) => Promise<Response>;
-}): Promise<Either<Response, APIError>> {
+export async function withAuthentication(
+  {
+    request,
+  }: {
+    request: Request;
+  },
+  execute: ({ getClient }: { getClient: getClientType }) => Promise<Response>,
+): Promise<Either<Response, APIError>> {
   try {
     const session = await authenticate(request);
     const transport = createConnectTransport({
       baseUrl: API_BASE_URL,
       interceptors: [
-        loggingInterceptor,
+        createI18NInterceptor(request),
         createAuthenticateInterceptor(session),
+        loggingInterceptor,
       ],
     });
     const res = await execute({
@@ -77,10 +80,17 @@ export async function withAuthentication({
   }
 }
 
-async function refreshSession(
-  original: AuthenticatedSession,
-): Promise<AuthenticatedSession> {
-  const { tokens } = await getClient(SessionService).refresh({
+async function refreshSession({
+  request,
+  original,
+}: {
+  request: Request;
+  original: AuthenticatedSession;
+}): Promise<AuthenticatedSession> {
+  const { tokens } = await getClient({
+    service: SessionService,
+    request,
+  }).refresh({
     refreshToken: original.tokens.refresh.value,
   });
   if (tokens == null) {
@@ -97,12 +107,12 @@ const refreshThreshold = 5 * 60 * 1000; // 5 minutes
 
 function needsRefresh(session: AuthenticatedSession): boolean {
   const now = new Date();
-  const expiration = session.tokens.access.expiresAt;
+  const expiration = new Date(session.tokens.access.expiresAt);
   return expiration.getTime() - now.getTime() < refreshThreshold;
 }
 
 function canRefresh(session: AuthenticatedSession): boolean {
   const now = new Date();
-  const expiration = session.tokens.refresh.expiresAt;
+  const expiration = new Date(session.tokens.refresh.expiresAt);
   return expiration.getTime() > now.getTime();
 }

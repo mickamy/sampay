@@ -40,7 +40,7 @@ func NewCreateUserAttribute(
 func (uc *createUserAttribute) Do(ctx context.Context, input CreateUserAttributeInput) (CreateUserAttributeOutput, error) {
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
 		m := userModel.UserAttribute{
-			UserID:            contexts.MustAuthenticatedUser(ctx).ID,
+			UserID:            contexts.MustAuthenticatedUserID(ctx),
 			UsageCategoryType: input.UsageCategoryType,
 		}
 		if err := uc.userAttributeRepo.WithTx(tx.WriterDB()).Create(ctx, &m); err != nil {

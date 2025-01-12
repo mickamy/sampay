@@ -1,6 +1,6 @@
 CREATE TABLE usage_categories
 (
-    category_type usage_category_type NOT NULL PRIMARY KEY,
+    type          usage_category_type NOT NULL PRIMARY KEY,
     display_order SMALLINT            NOT NULL,
     created_at    TIMESTAMPTZ         NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at    TIMESTAMPTZ         NOT NULL DEFAULT CURRENT_TIMESTAMP,

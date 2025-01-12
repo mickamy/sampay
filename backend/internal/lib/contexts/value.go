@@ -4,31 +4,30 @@ import (
 	"context"
 	"errors"
 
-	"mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/lib/language"
 )
 
-type authenticatedUserKey struct{}
+type authenticatedUserIDKey struct{}
 type languageKey struct{}
 
-func SetAuthenticatedUser(ctx context.Context, user model.User) context.Context {
-	return context.WithValue(ctx, authenticatedUserKey{}, user)
+func SetAuthenticatedUserID(ctx context.Context, userID string) context.Context {
+	return context.WithValue(ctx, authenticatedUserIDKey{}, userID)
 }
 
-func AuthenticatedUser(ctx context.Context) (model.User, error) {
-	user, ok := ctx.Value(authenticatedUserKey{}).(model.User)
+func AuthenticatedUserID(ctx context.Context) (string, error) {
+	id, ok := ctx.Value(authenticatedUserIDKey{}).(string)
 	if ok {
-		return user, nil
+		return id, nil
 	}
-	return user, errors.New("no authenticated user found in context")
+	return id, errors.New("no authenticated user id found in context")
 }
 
-func MustAuthenticatedUser(ctx context.Context) model.User {
-	user, err := AuthenticatedUser(ctx)
+func MustAuthenticatedUserID(ctx context.Context) string {
+	id, err := AuthenticatedUserID(ctx)
 	if err != nil {
 		panic(err)
 	}
-	return user
+	return id
 }
 
 func SetLanguage(ctx context.Context, lang language.Type) context.Context {

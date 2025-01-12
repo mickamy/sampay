@@ -2,19 +2,52 @@
   "app": {
     "title": "Sampay | 個人間決済リンクをたったひとつのリンクで"
   },
-  "header": {
-    "sign-in": "ログイン",
-    "sign-up": "新規登録",
-    "sign-out": "ログアウト"
-  },
   "auth": {
     "sign-up": {
       "title": "新規登録"
     }
   },
+  "header": {
+    "sign-in": "ログイン",
+    "sign-up": "新規登録",
+    "sign-out": "ログアウト"
+  },
   "form": {
+    "complete": "完了",
     "email": "メールアドレス",
+    "next": "次へ",
     "password": "パスワード",
     "register": "登録する"
+  },
+  "model": {
+    "user": {
+      "profile": {
+        "name": "名前",
+        "bio": "自己紹介"
+      },
+      "usage_category": {
+        "business": "ビジネス",
+        "influencer": "インフルエンサー",
+        "personal": "個人",
+        "entertainment": "エンターテインメント",
+        "fashion": "ファッション",
+        "restaurant": "レストラン",
+        "health": "健康",
+        "non_profit": "非営利団体",
+        "tech": "テクノロジー",
+        "tourism": "観光",
+        "other": "その他"
+      }
+    }
+  },
+  "registration": {
+    "onboarding": {
+      "attribute": {
+        "title": "あなたの利用目的に近いものを1つ選んでください"
+      },
+      "profile": {
+        "title": "プロフィールを設定"
+      }
+    }
   }
 }

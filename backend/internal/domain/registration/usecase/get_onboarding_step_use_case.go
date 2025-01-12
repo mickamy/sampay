@@ -41,7 +41,7 @@ func (uc *getOnboardingStep) Do(ctx context.Context, input GetOnboardingStepInpu
 	var step registrationModel.OnboardingStep
 
 	if err := uc.reader.ReaderTransaction(ctx, func(tx database.ReaderTransactional) error {
-		user, err := uc.userRepo.WithTx(tx.ReaderDB()).Get(ctx, contexts.MustAuthenticatedUser(ctx).ID, userRepository.UserPreloadAttribute, userRepository.UserPreloadProfile)
+		user, err := uc.userRepo.WithTx(tx.ReaderDB()).Get(ctx, contexts.MustAuthenticatedUserID(ctx), userRepository.UserPreloadAttribute, userRepository.UserPreloadProfile)
 		if err != nil {
 			return fmt.Errorf("failed to find user: %w", err)
 		}

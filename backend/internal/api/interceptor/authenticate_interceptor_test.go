@@ -137,9 +137,9 @@ func TestAuthenticate(t *testing.T) {
 			kvStore := newKVS(t)
 			authorization := tc.arrange(t, ctx, db.WriterDB(), kvStore)
 			test := func(ctx context.Context, req *connect.Request[testv1.TestRequest]) {
-				authorizedUser, err := contexts.AuthenticatedUser(ctx)
+				authorizedUser, err := contexts.AuthenticatedUserID(ctx)
 				slogger.InfoCtx(ctx, "authorizedUser", "authorizedUser", authorizedUser, "name", t.Name())
-				assert.Equal(t, tc.want, authorizedUser.ID)
+				assert.Equal(t, tc.want, authorizedUser)
 				if tc.want == "" {
 					assert.Error(t, err)
 				} else {

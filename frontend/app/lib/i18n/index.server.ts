@@ -6,6 +6,7 @@ import { initReactI18next } from "react-i18next";
 import type { EntryContext } from "react-router";
 import { RemixI18Next } from "remix-i18next/server";
 import i18nConfig from "~/lib/i18n/config";
+import logger from "~/lib/logger";
 
 const i18nServer = new RemixI18Next({
   detection: {
@@ -42,11 +43,11 @@ export async function initI18NServer({
         backend: { loadPath: "./public/locales/{{lng}}/{{ns}}.json" },
         // debug: process.env.NODE_ENV === "development",
       },
-      (err, t) => {
-        if (err) {
-          console.error("failed to initialize i18n server", err);
+      (error, t) => {
+        if (error) {
+          logger.error({ error }, "failed to initialize i18n server");
         } else {
-          console.log("i18n server initialized");
+          logger.debug("i18n server initialized");
         }
       },
     );

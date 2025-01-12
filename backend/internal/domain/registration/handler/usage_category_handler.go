@@ -44,7 +44,7 @@ func (h *UsageCategory) ListUsageCategories(
 	res := connect.NewResponse(&registrationv1.ListUsageCategoriesResponse{
 		Categories: slices.Map(out.Categories, func(c model.UsageCategory) *registrationv1.UsageCategory {
 			return &registrationv1.UsageCategory{
-				CategoryType: c.CategoryType,
+				Type:         c.Type,
 				DisplayOrder: int32(c.DisplayOrder),
 			}
 		}),

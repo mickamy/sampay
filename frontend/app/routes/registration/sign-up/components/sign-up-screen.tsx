@@ -6,7 +6,7 @@ import type { z } from "~/lib/form/zod";
 import { useSafeTranslation } from "~/lib/i18n/hooks";
 import SignUpForm, {
   authSignUpEmailSchema,
-} from "~/routes/auth/sign-up/components/sign-up-form";
+} from "~/routes/registration/sign-up/components/sign-up-form";
 
 export interface ActionData {
   error?: APIError;
