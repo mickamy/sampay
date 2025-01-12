@@ -122,7 +122,7 @@ func TestSession_SignIn(t *testing.T) {
 			infras := di.NewInfras(newReadWriter(t), newKVS(t))
 			user := userFixture.User(nil)
 			require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
-			ctx = contexts.SetAuthenticatedUser(ctx, user)
+			ctx = contexts.SetAuthenticatedUserID(ctx, user.ID)
 			req := tc.arrange(t, ctx, infras, user.ID)
 			server := newSessionServer(t, infras)
 
