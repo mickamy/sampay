@@ -1,10 +1,22 @@
 {
+  "account": {
+    "sign-up": {
+      "title": "新規登録",
+      "terms": "利用規約",
+      "privacy": "プライバシーポリシー",
+      "have-account": "すでにアカウントをお持ちの方は",
+      "sign-in": "ログイン"
+    }
+  },
   "app": {
     "title": "Sampay | 個人間決済リンクをたったひとつのリンクで"
   },
   "auth": {
     "sign-in": {
-      "title": "ログイン"
+      "title": "ログイン",
+      "forgot-password": "パスワードをお忘れですか？",
+      "have-no-account": "アカウントをお持ちでない方は",
+      "sign-up": "新規登録"
     }
   },
   "header": {
@@ -48,11 +60,6 @@
     },
     "profile": {
       "title": "プロフィールを設定"
-    }
-  },
-  "account": {
-    "sign-up": {
-      "title": "新規登録"
     }
   }
 }
