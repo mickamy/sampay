@@ -76,8 +76,9 @@ func (h *Onboarding) CreateUserProfile(
 	req *connect.Request[registrationv1.CreateUserProfileRequest],
 ) (*connect.Response[registrationv1.CreateUserProfileResponse], error) {
 	_, err := h.createProfile.Do(ctx, usecase.CreateUserProfileInput{
-		Name: req.Msg.Name,
-		Bio:  req.Msg.Bio,
+		Name:  req.Msg.Name,
+		Bio:   req.Msg.Bio,
+		Image: dto.NewS3Object(req.Msg.Image),
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)

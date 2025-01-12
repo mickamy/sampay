@@ -13,19 +13,19 @@ type AWSConfig struct {
 
 var (
 	awsOnce sync.Once
-	aws     AWSConfig
+	_aws    AWSConfig
 )
 
 func AWS() AWSConfig {
 	awsOnce.Do(func() {
-		if err := env.Parse(&aws); err != nil {
+		if err := env.Parse(&_aws); err != nil {
 			panic(err)
 		}
 
-		if aws.CloudFrontDomain == "" {
-			panic(fmt.Errorf("some of required environment variables are missing: %#v", aws))
+		if _aws.CloudFrontDomain == "" {
+			panic(fmt.Errorf("some of required environment variables are missing: %#v", _aws))
 		}
 	})
 
-	return aws
+	return _aws
 }

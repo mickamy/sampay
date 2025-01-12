@@ -180,7 +180,33 @@ func TestOnboarding_CreateUserProfile(t *testing.T) {
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreateUserProfileRequest {
 				return &registrationv1.CreateUserProfileRequest{
 					Name: gofakeit.GlobalFaker.Name(),
+				}
+			},
+			assert: func(t *testing.T, got *connect.Response[registrationv1.CreateUserProfileResponse], err error) {
+				require.NoError(t, err)
+			},
+		},
+		{
+			name: "success with bio",
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreateUserProfileRequest {
+				return &registrationv1.CreateUserProfileRequest{
+					Name: gofakeit.GlobalFaker.Name(),
 					Bio:  ptr.Of(gofakeit.GlobalFaker.Sentence(20)),
+				}
+			},
+			assert: func(t *testing.T, got *connect.Response[registrationv1.CreateUserProfileResponse], err error) {
+				require.NoError(t, err)
+			},
+		},
+		{
+			name: "success with image",
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreateUserProfileRequest {
+				return &registrationv1.CreateUserProfileRequest{
+					Name: gofakeit.GlobalFaker.Name(),
+					Image: &commonv1.S3Object{
+						Bucket: gofakeit.GlobalFaker.ProductName(),
+						Key:    gofakeit.GlobalFaker.UUID(),
+					},
 				}
 			},
 			assert: func(t *testing.T, got *connect.Response[registrationv1.CreateUserProfileResponse], err error) {
