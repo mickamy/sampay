@@ -8,7 +8,12 @@ import (
 )
 
 type AWSConfig struct {
-	CloudFrontDomain string `env:"CLOUDFRONT_DOMAIN"`
+	AccessKeyID        string `env:"AWS_ACCESS_KEY_ID"`
+	AccessKeySecret    string `env:"AWS_ACCESS_KEY_SECRET"`
+	CloudFrontDomain   string `env:"CLOUDFRONT_DOMAIN"`
+	LocalstackEndpoint string `env:"LOCALSTACK_ENDPOINT"`
+	Region             string `env:"AWS_REGION"`
+	S3PublicBucket     string `env:"S3_PUBLIC_BUCKET_NAME"`
 }
 
 var (
@@ -22,7 +27,7 @@ func AWS() AWSConfig {
 			panic(err)
 		}
 
-		if _aws.CloudFrontDomain == "" {
+		if _aws.CloudFrontDomain == "" || _aws.Region == "" || _aws.S3PublicBucket == "" {
 			panic(fmt.Errorf("some of required environment variables are missing: %#v", _aws))
 		}
 	})

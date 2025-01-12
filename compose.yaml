@@ -25,6 +25,7 @@ services:
       target: development-dependencies-env
     environment:
       PUBLIC_API_BASE_URL: http://api:8080
+      PUBLIC_BUCKET_NAME: sampay-public
       SESSION_SECRET: secret
     command: npm run dev
     volumes:
