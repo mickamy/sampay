@@ -10,4 +10,4 @@ CREATE TYPE usage_category_type AS ENUM (
     'tech',
     'tourism',
     'other'
-);
+    );
