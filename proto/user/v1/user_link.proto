@@ -20,7 +20,7 @@ message UserLink {
   string id = 1;
   string user_id = 2;
   string uri = 3 [(buf.validate.field).string.uri = true];
-  UserLinkProvider provider = 4;
+  string provider_type = 4;
   UserLinkDisplayAttribute display_attribute = 5;
 }
 
@@ -33,7 +33,7 @@ message ListUserLinkResponse {
 }
 
 message CreateUserLinkRequest {
-  string link_provider_type = 1;
+  string provider_type = 1;
   string uri = 2 [(buf.validate.field).string.uri = true];
   string name = 3;
 }
@@ -43,7 +43,7 @@ message CreateUserLinkResponse {
 
 message UpdateUserLinkRequest {
   string id = 1;
-  optional string link_provider_type = 2;
+  optional string provider_type = 2;
   optional string uri = 3 [(buf.validate.field).string.uri = true];
   optional string name = 4;
   optional int32 display_order = 5;
