@@ -11,25 +11,25 @@ import { z } from "~/lib/form/zod";
 import { useSafeTranslation } from "~/lib/i18n/hooks";
 import { cn } from "~/lib/utils";
 
-export const authSignUpSchema = z.object({
+export const authSignInSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
+  password: z.string(),
 });
 
 interface Props extends HTMLAttributes<HTMLFormElement> {
-  onSubmitData: (data: z.infer<typeof authSignUpSchema>) => void;
+  onSubmitData: (data: z.infer<typeof authSignInSchema>) => void;
   error?: APIError;
 }
 
-export default function SignUpForm({
+export default function SignInForm({
   onSubmitData,
   error,
   className,
   ...props
 }: Props) {
-  const form = useFormWithAPIError<z.infer<typeof authSignUpSchema>>({
+  const form = useFormWithAPIError<z.infer<typeof authSignInSchema>>({
     props: {
-      resolver: zodResolver(authSignUpSchema),
+      resolver: zodResolver(authSignInSchema),
       defaultValues: {
         email: "",
         password: "",
@@ -62,7 +62,7 @@ export default function SignUpForm({
           />
           <Spacer />
           <ErrorMessage message={form.formState.errors.root?.message} />
-          <Button className="w-full">{t("form.sign-up")}</Button>
+          <Button className="w-full">{t("form.sign-in")}</Button>
         </form>
       </Form>
     </>

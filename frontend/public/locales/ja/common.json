@@ -2,6 +2,11 @@
   "app": {
     "title": "Sampay | 個人間決済リンクをたったひとつのリンクで"
   },
+  "auth": {
+    "sign-in": {
+      "title": "ログイン"
+    }
+  },
   "header": {
     "sign-in": "ログイン",
     "sign-up": "新規登録",
@@ -12,7 +17,9 @@
     "email": "メールアドレス",
     "next": "次へ",
     "password": "パスワード",
-    "register": "登録する"
+    "sign-in": "ログイン",
+    "sign-up": "登録する",
+    "submit": "送信"
   },
   "model": {
     "user": {

@@ -1,4 +1,4 @@
-import { AccountService } from "@buf/mickamy_sampay.bufbuild_es/registration/v1/account_pb";
+import { SessionService } from "@buf/mickamy_sampay.bufbuild_es/auth/v1/session_pb";
 import { ConnectError } from "@connectrpc/connect";
 import {
   type ActionFunction,
@@ -12,10 +12,10 @@ import {
   setAuthenticatedSession,
 } from "~/lib/cookie/authenticated.server";
 import { convertTokensToSession } from "~/models/auth/session-model";
-import { authSignUpSchema } from "~/routes/registration/sign-up/components/sign-up-form";
-import SignUpScreen, {
+import { authSignInSchema } from "~/routes/auth/sign-in/components/sign-in-form";
+import SignInScreen, {
   type ActionData,
-} from "~/routes/registration/sign-up/components/sign-up-screen";
+} from "~/routes/auth/sign-in/components/sign-in-screen";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const loggedIn = await isLoggedIn(request);
@@ -25,41 +25,41 @@ export const loader: LoaderFunction = async ({ request }) => {
   return null;
 };
 
-export default function SignUp() {
-  return <SignUpScreen />;
+export default function SignIn() {
+  return <SignInScreen />;
 }
 
 export const action: ActionFunction = async ({ request }) => {
   switch (request.method) {
     case "POST":
-      return signUp({ request });
+      return signIn({ request });
     default:
       return new Response(null, { status: 405 });
   }
 };
 
-async function signUp({ request }: { request: Request }): Promise<Response> {
+async function signIn({ request }: { request: Request }): Promise<Response> {
   try {
-    const { email, password } = authSignUpSchema.parse(await request.json());
+    const { email, password } = authSignInSchema.parse(await request.json());
     const { tokens } = await getClient({
-      service: AccountService,
+      service: SessionService,
       request,
-    }).signUp({
+    }).signIn({
       email,
       password,
     });
     if (!tokens) {
-      return redirect("/registration/sign-up");
+      return redirect("/auth/sign-in");
     }
 
     const session = convertTokensToSession(tokens);
     if (!session) {
-      return redirect("/registration/sign-up");
+      return redirect("/auth/sign-in");
     }
 
     const headers = new Headers();
     headers.append("Set-Cookie", await setAuthenticatedSession(session));
-    return redirect("/onboarding", { headers });
+    return redirect("/admin", { headers });
   } catch (e) {
     if (e instanceof ConnectError) {
       const data: ActionData = { error: convertToAPIError(e) };

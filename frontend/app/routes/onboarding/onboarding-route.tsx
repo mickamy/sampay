@@ -72,7 +72,7 @@ export const action: ActionFunction = async ({ request }) => {
 async function submitAttribute({
   request,
   json,
-}: { request: Request; json: unknown }) {
+}: { request: Request; json: unknown }): Promise<Response> {
   return withAuthentication({ request }, async ({ getClient }) => {
     const { category } = onboardingAttributeSchema.parse(json);
     await getClient(OnboardingService).createUserAttribute({
@@ -92,7 +92,7 @@ async function submitAttribute({
 async function submitProfile({
   request,
   json,
-}: { request: Request; json: unknown }) {
+}: { request: Request; json: unknown }): Promise<Response> {
   return withAuthentication({ request }, async ({ getClient }) => {
     const { name, bio } = onboardingProfileSchema.parse(json);
     await getClient(OnboardingService).createUserProfile({ name, bio });

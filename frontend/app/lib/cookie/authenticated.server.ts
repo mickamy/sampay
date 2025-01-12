@@ -103,7 +103,7 @@ export async function setAuthenticatedSession(
 export async function destroyAuthenticatedSession(request: Request) {
   const s = await getAuthenticatedSession(request);
   if (s == null) {
-    return;
+    throw new Error("session not found");
   }
   const session = await getSession();
   return destroySession(session);
