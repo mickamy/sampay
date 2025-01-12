@@ -10,7 +10,7 @@ message GetOnboardingStepResponse {
 }
 
 message CreateUserAttributeRequest {
-  string category_type = 1;
+  string type = 1;
 }
 
 message CreateUserAttributeResponse {

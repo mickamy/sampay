@@ -12,17 +12,17 @@ import (
 
 func seedUsageCategory(ctx context.Context, writer *database.Writer, env config.Env) error {
 	categories := []registrationModel.UsageCategory{
-		{CategoryType: "business", DisplayOrder: 1},
-		{CategoryType: "influencer", DisplayOrder: 2},
-		{CategoryType: "personal", DisplayOrder: 3},
-		{CategoryType: "entertainment", DisplayOrder: 4},
-		{CategoryType: "fashion", DisplayOrder: 5},
-		{CategoryType: "restaurant", DisplayOrder: 6},
-		{CategoryType: "health", DisplayOrder: 7},
-		{CategoryType: "non_profit", DisplayOrder: 8},
-		{CategoryType: "tech", DisplayOrder: 9},
-		{CategoryType: "tourism", DisplayOrder: 10},
-		{CategoryType: "other", DisplayOrder: 99},
+		{Type: "business", DisplayOrder: 1},
+		{Type: "influencer", DisplayOrder: 2},
+		{Type: "personal", DisplayOrder: 3},
+		{Type: "entertainment", DisplayOrder: 4},
+		{Type: "fashion", DisplayOrder: 5},
+		{Type: "restaurant", DisplayOrder: 6},
+		{Type: "health", DisplayOrder: 7},
+		{Type: "non_profit", DisplayOrder: 8},
+		{Type: "tech", DisplayOrder: 9},
+		{Type: "tourism", DisplayOrder: 10},
+		{Type: "other", DisplayOrder: 99},
 	}
 
 	if err := writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {

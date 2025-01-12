@@ -3,7 +3,7 @@ syntax = "proto3";
 package registration.v1;
 
 message UsageCategory {
-  string category_type = 1;
+  string type = 1;
   int32 display_order = 2;
 }
 
