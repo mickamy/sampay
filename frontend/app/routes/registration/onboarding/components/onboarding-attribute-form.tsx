@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { HTMLAttributes } from "react";
+import ErrorMessage from "~/components/error-message";
 import { Button } from "~/components/ui/button";
 import {
   Form,
@@ -7,7 +8,6 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "~/components/ui/form";
 import { Label } from "~/components/ui/label";
@@ -16,12 +16,14 @@ import type { APIError } from "~/lib/api/response";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
 import { useSafeTranslation } from "~/lib/i18n/hooks";
-import { OnboardingSteps } from "~/models/onboarding/onboarding-step";
-import type { UsageCategory } from "~/models/registration/usage-category-model";
-import { authSignUpEmailSchema } from "~/routes/registration/sign-up/components/sign-up-form";
+import {
+  type UsageCategory,
+  UsageCategoryTypes,
+} from "~/models/user/usage-category-model";
 
 export const onboardingAttributeSchema = z.object({
-  category: z.enum(OnboardingSteps),
+  type: z.enum(["attribute"]),
+  category: z.enum(UsageCategoryTypes),
 });
 
 interface Props extends HTMLAttributes<HTMLFormElement> {
@@ -39,7 +41,9 @@ export default function OnboardingAttributeForm({
   const form = useFormWithAPIError<z.infer<typeof onboardingAttributeSchema>>({
     props: {
       resolver: zodResolver(onboardingAttributeSchema),
-      defaultValues: {},
+      defaultValues: {
+        type: "attribute",
+      },
     },
     error,
   });
@@ -50,17 +54,17 @@ export default function OnboardingAttributeForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmitData)}
-        className="space-y-4"
+        className="w-full space-y-4"
         {...props}
       >
+        <div className="font-bold justify-self-center">
+          {t("registration.onboarding.attribute.title")}
+        </div>
         <FormField
           control={form.control}
           name="category"
           render={({ field }) => (
             <FormItem className="space-y-6">
-              <FormLabel className="font-bold">
-                {t("registration.onboarding.usage_category.title")}
-              </FormLabel>
               <FormControl>
                 <RadioGroup
                   onValueChange={field.onChange}
@@ -78,9 +82,7 @@ export default function OnboardingAttributeForm({
                           onClick={() => field.onChange(category.type)}
                           className="flex-1 px-2 cursor-pointer"
                         >
-                          {t(
-                            `registration.onboarding.usage_category.${category.type}`,
-                          )}
+                          {t(`model.user.usage_category.${category.type}`)}
                         </Label>
                       </div>
                     );
@@ -92,6 +94,9 @@ export default function OnboardingAttributeForm({
             </FormItem>
           )}
         />
+        <div className="w-full">
+          <ErrorMessage message={form.formState.errors.root?.message} />
+        </div>
         <Button className="w-full">{t("form.next")}</Button>
       </form>
     </Form>

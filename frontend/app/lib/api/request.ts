@@ -59,9 +59,9 @@ export async function withAuthentication(
     const transport = createConnectTransport({
       baseUrl: API_BASE_URL,
       interceptors: [
-        loggingInterceptor,
-        createAuthenticateInterceptor(session),
         createI18NInterceptor(request),
+        createAuthenticateInterceptor(session),
+        loggingInterceptor,
       ],
     });
     const res = await execute({
