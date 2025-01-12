@@ -28,6 +28,7 @@ func NewInterceptors(infras di.Infras) []connect.Interceptor {
 	return []connect.Interceptor{
 		interceptor.Logging(),
 		interceptor.I18N(),
+		interceptor.Recovery(),
 		interceptor.Authenticate(di.InitAuthUseCases(infras.DB, infras.ReadWriter, infras.Writer, infras.Reader, infras.KVS).AuthenticateUser),
 		interceptor.Cookie(),
 	}
