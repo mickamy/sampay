@@ -7,7 +7,7 @@ CREATE TABLE user_links
     created_at    TIMESTAMPTZ             NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at    TIMESTAMPTZ             NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user_links_user_id FOREIGN KEY (user_id) REFERENCES users (id),
-    CONSTRAINT fk_user_links_provider_type FOREIGN KEY (provider_type) REFERENCES link_providers (type)
+    CONSTRAINT fk_user_links_provider_type FOREIGN KEY (provider_type) REFERENCES user_link_providers (type)
 );
 
 CREATE INDEX idx_user_links_user_id ON user_links (user_id);
