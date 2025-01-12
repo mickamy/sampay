@@ -4,8 +4,8 @@ import { useJsonSubmit } from "~/hooks/use-submit";
 import type { APIError } from "~/lib/api/response";
 import type { z } from "~/lib/form/zod";
 import { useSafeTranslation } from "~/lib/i18n/hooks";
+import { authSignUpSchema } from "~/routes/account/sign-up/components/sign-up-form";
 import SignInForm from "~/routes/auth/sign-in/components/sign-in-form";
-import { authSignUpSchema } from "~/routes/registration/sign-up/components/sign-up-form";
 
 export interface ActionData {
   error?: APIError;

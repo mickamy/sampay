@@ -63,9 +63,11 @@ function Navigation({ isLoggedIn, className, ...props }: NavigationProps) {
         >
           {loggedInNavItems.map((item) => {
             return (
-              <Button variant="ghost" className="rounded-md" key={item.href}>
-                <Link to={item.href}>{t(item.labelKey)}</Link>
-              </Button>
+              <Link key={item.href} to={item.href}>
+                <Button variant="ghost" className="rounded-md">
+                  {t(item.labelKey)}
+                </Button>
+              </Link>
             );
           })}
         </div>
@@ -111,5 +113,5 @@ function Navigation({ isLoggedIn, className, ...props }: NavigationProps) {
 
 const loggedInNavItems = [
   { labelKey: "header.sign-in", href: "/auth/sign-in" },
-  { labelKey: "header.sign-up", href: "/registration/sign-up" },
+  { labelKey: "header.sign-up", href: "/account/sign-up" },
 ];
