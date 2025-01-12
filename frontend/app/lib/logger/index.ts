@@ -30,7 +30,10 @@ async function init() {
 
   return pino(
     { level },
-    pino.multistream([{ stream: process.stdout }, { stream: fileStream }]),
+    pino.multistream([
+      { stream: process.stdout, level },
+      { stream: fileStream, level },
+    ]),
   );
 }
 
