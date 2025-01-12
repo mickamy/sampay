@@ -54,6 +54,7 @@ func (repo *userProfile) WithTx(tx *database.DB) UserProfile {
 	return &userProfile{db: tx}
 }
 
-func UserProfileJoinPreloadImage(db *gorm.DB) *gorm.DB {
-	return db.Preload("Image")
+func UserProfileJoinPreloadImage(db *database.DB) *database.DB {
+	grm := db.Preload("Image")
+	return &database.DB{DB: grm}
 }

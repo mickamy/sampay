@@ -57,6 +57,26 @@ func (mr *MockUserLinkMockRecorder) Create(ctx, m any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUserLink)(nil).Create), ctx, m)
 }
 
+// ListByUserID mocks base method.
+func (m *MockUserLink) ListByUserID(ctx context.Context, userID string, scopes ...database.Scope) ([]model.UserLink, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{ctx, userID}
+	for _, a := range scopes {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ListByUserID", varargs...)
+	ret0, _ := ret[0].([]model.UserLink)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListByUserID indicates an expected call of ListByUserID.
+func (mr *MockUserLinkMockRecorder) ListByUserID(ctx, userID any, scopes ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]any{ctx, userID}, scopes...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByUserID", reflect.TypeOf((*MockUserLink)(nil).ListByUserID), varargs...)
+}
+
 // WithTx mocks base method.
 func (m *MockUserLink) WithTx(tx *database.DB) repository.UserLink {
 	m.ctrl.T.Helper()

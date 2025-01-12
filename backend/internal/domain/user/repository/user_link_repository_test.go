@@ -37,3 +37,29 @@ func TestUserLink_Create(t *testing.T) {
 	assert.Equal(t, m.ProviderType, got.ProviderType)
 	assert.Equal(t, m.URI, got.URI)
 }
+
+func TestUserLink_ListByUserID(t *testing.T) {
+	t.Parallel()
+
+	// arrange
+	ctx := context.Background()
+	db := newReadWriter(t)
+	user := fixture.User(nil)
+	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
+	m := fixture.UserLink(func(m *model.UserLink) {
+		m.UserID = user.ID
+	})
+	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&m).Error)
+
+	// act
+	sut := repository.NewUserLink(db.ReaderDB())
+	got, err := sut.ListByUserID(ctx, user.ID)
+
+	// assert
+	require.NoError(t, err)
+	assert.Len(t, got, 1)
+	assert.Equal(t, m.ID, got[0].ID)
+	assert.Equal(t, m.UserID, got[0].UserID)
+	assert.Equal(t, m.ProviderType, got[0].ProviderType)
+	assert.Equal(t, m.URI, got[0].URI)
+}

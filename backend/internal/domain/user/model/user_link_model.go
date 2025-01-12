@@ -22,7 +22,6 @@ type UserLink struct {
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 
-	Provider         UserLinkProvider
 	DisplayAttribute UserLinkDisplayAttribute
 }
 

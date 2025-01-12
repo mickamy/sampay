@@ -205,8 +205,10 @@ func InitUserRepositories(db *database.DB, readWriter *database.ReadWriter, writ
 func InitUserUseCase(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di4.UseCases {
 	userLink := repository2.NewUserLink(db)
 	createUserLink := usecase4.NewCreateUserLink(writer, userLink)
+	listUserLink := usecase4.NewListUserLink(reader, userLink)
 	useCases := di4.UseCases{
 		CreateUserLink: createUserLink,
+		ListUserLink:   listUserLink,
 	}
 	return useCases
 }

@@ -10,6 +10,7 @@ import (
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
 type UserLink interface {
 	Create(ctx context.Context, m *model.UserLink) error
+	ListByUserID(ctx context.Context, userID string, scopes ...database.Scope) ([]model.UserLink, error)
 	WithTx(tx *database.DB) UserLink
 }
 
@@ -25,6 +26,17 @@ func (repo *userLink) Create(ctx context.Context, m *model.UserLink) error {
 	return repo.db.WithContext(ctx).Create(m).Error
 }
 
+func (repo *userLink) ListByUserID(ctx context.Context, userID string, scopes ...database.Scope) ([]model.UserLink, error) {
+	var ms []model.UserLink
+	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).Find(&ms, "user_id = ?", userID).Error
+	return ms, err
+}
+
 func (repo *userLink) WithTx(tx *database.DB) UserLink {
 	return &userLink{db: tx}
+}
+
+func UserLinkJoinDisplayAttribute(db *database.DB) *database.DB {
+	grm := db.Joins("DisplayAttribute").Order(`"DisplayAttribute".display_order`)
+	return &database.DB{DB: grm}
 }
