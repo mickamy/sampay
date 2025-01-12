@@ -76,6 +76,8 @@ export function FormField<T extends z.ZodSchema>({
           value = field.value;
         }
 
+        const safeValue = value ?? "";
+
         return (
           <FormItem hidden={hidden} className={cn("flex-1", className)}>
             {label && <FormLabel className="font-bold">{label}</FormLabel>}
@@ -85,7 +87,7 @@ export function FormField<T extends z.ZodSchema>({
                   readOnly={readOnly}
                   placeholder={placeholder}
                   {...field}
-                  value={value}
+                  value={safeValue}
                 />
               ) : (
                 <Input
@@ -93,7 +95,7 @@ export function FormField<T extends z.ZodSchema>({
                   readOnly={readOnly}
                   placeholder={placeholder}
                   {...field}
-                  value={value}
+                  value={safeValue}
                 />
               )}
             </FormControl>

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useActionData, useLoaderData } from "react-router";
-import { useJsonSubmit } from "~/hooks/use-submit";
+import { useFormDataSubmit, useJsonSubmit } from "~/hooks/use-submit";
 import type { APIError } from "~/lib/api/response";
 import type { z } from "~/lib/form/zod";
 import type { OnboardingStep } from "~/models/onboarding/onboarding-step";
@@ -33,7 +33,7 @@ export default function OnboardingScreen() {
     [submitAttribute],
   );
 
-  const submitProfile = useJsonSubmit(onboardingProfileSchema);
+  const submitProfile = useFormDataSubmit(onboardingProfileSchema);
   const onSubmitProfile = useCallback(
     (data: z.infer<typeof onboardingProfileSchema>) => {
       submitProfile(data);
@@ -55,7 +55,10 @@ export default function OnboardingScreen() {
         />
       )}
       {step === "profile" && (
-        <OnboardingProfileForm onSubmitData={submitProfile} />
+        <OnboardingProfileForm
+          onSubmitData={onSubmitProfile}
+          error={actionData?.error}
+        />
       )}
     </div>
   );

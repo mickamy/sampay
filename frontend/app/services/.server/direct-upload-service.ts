@@ -37,7 +37,7 @@ export async function directUpload({
     }
     return obj;
   } catch (e) {
-    console.error("failed to upload file", e);
+    logger.error("failed to upload file", e);
     throw e;
   }
 }

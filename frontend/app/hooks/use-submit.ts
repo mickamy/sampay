@@ -30,7 +30,7 @@ export function useFormDataSubmit<T extends z.ZodTypeAny>(
       for (const [key, value] of Object.entries(values)) {
         if (value instanceof File) {
           formData.append(key, value);
-        } else {
+        } else if (value !== undefined) {
           formData.append(key, String(value));
         }
       }
@@ -38,7 +38,7 @@ export function useFormDataSubmit<T extends z.ZodTypeAny>(
       submit(formData, {
         method,
         encType: "multipart/form-data",
-      });
+      }).then((res) => {});
     },
     [submit, method],
   );
