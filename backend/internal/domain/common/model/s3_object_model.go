@@ -3,7 +3,10 @@ package model
 import (
 	"fmt"
 
+	"gorm.io/gorm"
+
 	"mickamy.com/sampay/config"
+	"mickamy.com/sampay/internal/lib/ulid"
 )
 
 type S3Object struct {
@@ -19,4 +22,11 @@ func (m S3Object) URL() string {
 	}
 	domain := config.AWS().CloudFrontDomain
 	return fmt.Sprintf("%s://%s/%s", scheme, domain, m.Key)
+}
+
+func (m *S3Object) BeforeCreate(db *gorm.DB) error {
+	if m.ID == "" {
+		m.ID = ulid.New()
+	}
+	return nil
 }
