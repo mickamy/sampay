@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "common/v1/direct_upload_url.proto";
+
 package registration.v1;
 
 message GetOnboardingStepRequest {
@@ -19,6 +21,7 @@ message CreateUserAttributeResponse {
 message CreateUserProfileRequest {
   string name = 1;
   optional string bio = 2;
+  optional common.v1.S3Object image = 3;
 }
 
 message CreateUserProfileResponse {

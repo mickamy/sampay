@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package common.v1;
+
+import "buf/validate/validate.proto";
+
+message S3Object {
+  string bucket = 1;
+  string key = 2;
+  string content_type = 3;
+}
+
+message DirectUploadURLRequest {
+  S3Object s3_object = 1;
+}
+
+message DirectUploadURLResponse {
+  string url = 1 [(buf.validate.field).string.uri = true];
+}
+
+service DirectUploadURLService {
+  rpc Request(DirectUploadURLRequest) returns (DirectUploadURLResponse) {}
+}
