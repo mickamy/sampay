@@ -103,7 +103,6 @@ func (l *gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (stri
 	if l.LogLevel <= lib.Silent {
 		return
 	}
-
 	elapsed := time.Since(begin)
 	switch {
 	case err != nil && l.LogLevel >= lib.Error && (!errors.Is(err, lib.ErrRecordNotFound) || !l.IgnoreRecordNotFoundError):
