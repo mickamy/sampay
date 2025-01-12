@@ -15,6 +15,8 @@ services:
       - go:/go
     ports:
       - "8080:8080"
+    networks:
+      default:
 
   web:
     build:
@@ -23,15 +25,18 @@ services:
       target: development-dependencies-env
     environment:
       PUBLIC_API_BASE_URL: http://api:8080
+      PUBLIC_BUCKET_NAME: sampay-public
       SESSION_SECRET: secret
     command: npm run dev
     volumes:
-      - ./frontend:/app:delegated
+      - ./frontend:/src:delegated
       - ./log:/var/log:delegated
-      - /app/build
-      - node_modules:/app/node_modules
+      - /src/build
+      - node_modules:/src/node_modules
     ports:
       - "5173:5173"
+    networks:
+      default:
 
   postgres:
     image: postgres:16.4-alpine
@@ -67,6 +72,34 @@ services:
       interval: 1s
       timeout: 3s
       retries: 30
+
+  localstack:
+    image: localstack/localstack:4.0.3
+    ports:
+      - "127.0.0.1:4566:4566"
+      - "127.0.0.1:4510-4559:4510-4559"
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+      - LS_LOG=error
+      - HOSTNAME_EXTERNAL=localstack
+      - DEFAULT_REGION=ap-northeast-1
+    volumes:
+      - ./localstack/volume:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./localstack/init.sh:/etc/localstack/init/ready.d/init-aws.sh
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:4566/_localstack/health" ]
+    networks:
+      default:
+        ipv4_address: 10.0.2.20
+
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 10.0.2.0/24
 
 volumes:
   go:

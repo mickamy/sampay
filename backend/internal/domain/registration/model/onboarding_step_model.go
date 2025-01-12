@@ -9,5 +9,5 @@ func (s OnboardingStep) String() string {
 const (
 	OnboardingStepAttribute OnboardingStep = "attribute"
 	OnboardingStepProfile   OnboardingStep = "profile"
-	OnboardingStepComplete  OnboardingStep = "complete"
+	OnboardingStepCompleted OnboardingStep = "completed"
 )

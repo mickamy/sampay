@@ -5,14 +5,16 @@ import (
 	"fmt"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
+	commonModel "mickamy.com/sampay/internal/domain/common/model"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
 	"mickamy.com/sampay/internal/lib/contexts"
 )
 
 type CreateUserProfileInput struct {
-	Name string
-	Bio  *string
+	Name  string
+	Bio   *string
+	Image *commonModel.S3Object
 }
 
 type CreateUserProfileOutput struct {
@@ -44,6 +46,7 @@ func (uc *createUserProfile) Do(ctx context.Context, input CreateUserProfileInpu
 			UserID: contexts.MustAuthenticatedUserID(ctx),
 			Name:   input.Name,
 			Bio:    input.Bio,
+			Image:  input.Image,
 		}
 		if err := uc.userProfileRepo.WithTx(tx.WriterDB()).Create(ctx, &m); err != nil {
 			return fmt.Errorf("failed to persist user profile: %w", err)

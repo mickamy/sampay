@@ -25,13 +25,20 @@
     "sign-out": "ログアウト"
   },
   "form": {
+    "change": "変更する",
+    "choose-file": "ファイルを選択してください",
     "complete": "完了",
     "email": "メールアドレス",
     "next": "次へ",
     "password": "パスワード",
     "sign-in": "ログイン",
     "sign-up": "登録する",
-    "submit": "送信"
+    "skip": "スキップ",
+    "submit": "送信",
+    "error": {
+      "invalid-file-type": "ファイル形式が無効です",
+      "too-large-file": "ファイルサイズが大きすぎます。{{size}}以下のファイルを選択してください"
+    }
   },
   "model": {
     "user": {

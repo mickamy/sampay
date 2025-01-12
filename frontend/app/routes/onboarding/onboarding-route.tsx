@@ -6,6 +6,7 @@ import {
   redirect,
 } from "react-router";
 import { withAuthentication } from "~/lib/api/request";
+import type { S3Object } from "~/models/common/s3-object-model";
 import { convertToUsageCategories } from "~/models/user/usage-category-model";
 import { onboardingAttributeSchema } from "~/routes/onboarding/components/onboarding-attribute-form";
 import { onboardingProfileSchema } from "~/routes/onboarding/components/onboarding-profile-form";
@@ -13,6 +14,7 @@ import OnboardingScreen, {
   type ActionData,
   type LoaderData,
 } from "~/routes/onboarding/components/onboarding-screen";
+import { directUpload } from "~/services/.server/direct-upload-service";
 
 export const loader: LoaderFunction = async ({ request }) => {
   return withAuthentication({ request }, async ({ getClient }) => {
@@ -54,27 +56,26 @@ export default function Onboarding() {
 export const action: ActionFunction = async ({ request }) => {
   switch (request.method) {
     case "POST": {
-      const json = await request.json();
-      switch (json.type) {
-        case "attribute":
-          return submitAttribute({ request, json });
-        case "profile":
-          return submitProfile({ request, json });
-        default:
-          throw new Response(null, { status: 400 });
+      if (request.headers.get("content-type")?.startsWith("application/json")) {
+        return submitAttribute({ request });
       }
+      if (
+        request.headers.get("content-type")?.startsWith("multipart/form-data")
+      ) {
+        return submitProfile({ request });
+      }
+      throw new Response(null, { status: 415 });
     }
     default:
-      return new Response(null, { status: 405 });
+      throw new Response(null, { status: 405 });
   }
 };
 
 async function submitAttribute({
   request,
-  json,
-}: { request: Request; json: unknown }): Promise<Response> {
+}: { request: Request }): Promise<Response> {
   return withAuthentication({ request }, async ({ getClient }) => {
-    const { category } = onboardingAttributeSchema.parse(json);
+    const { category } = onboardingAttributeSchema.parse(await request.json());
     await getClient(OnboardingService).createUserAttribute({
       categoryType: category,
     });
@@ -91,11 +92,24 @@ async function submitAttribute({
 
 async function submitProfile({
   request,
-  json,
-}: { request: Request; json: unknown }): Promise<Response> {
+}: { request: Request }): Promise<Response> {
   return withAuthentication({ request }, async ({ getClient }) => {
-    const { name, bio } = onboardingProfileSchema.parse(json);
-    await getClient(OnboardingService).createUserProfile({ name, bio });
+    const formData = Object.fromEntries(await request.formData());
+    const { image, ...data } = onboardingProfileSchema.parse(formData);
+
+    let imageObj: S3Object | undefined;
+    if (image) {
+      imageObj = await directUpload({
+        type: "profile_image",
+        file: image,
+        getClient,
+      });
+    }
+
+    await getClient(OnboardingService).createUserProfile({
+      image: imageObj,
+      ...data,
+    });
     return redirect("/admin");
   })
     .then((res) => {

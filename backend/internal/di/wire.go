@@ -9,17 +9,19 @@ import (
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/cli/infra/storage/kvs"
 	auth "mickamy.com/sampay/internal/domain/auth/di"
+	common "mickamy.com/sampay/internal/domain/common/di"
 	registration "mickamy.com/sampay/internal/domain/registration/di"
 	user "mickamy.com/sampay/internal/domain/user/di"
 )
 
-func InitConfigs() Configs {
-	return NewConfigs()
+func InitInfras() (Infras, error) {
+	wire.Build(infraSet, configSet, wire.Struct(new(Infras), "*"))
+	return Infras{}, nil
 }
 
-func InitInfras() (Infras, error) {
-	wire.Build(infras, configSet, wire.Struct(new(Infras), "*"))
-	return Infras{}, nil
+func InitLibs() Libs {
+	wire.Build(libSet, configSet, wire.Struct(new(Libs), "*"))
+	return Libs{}
 }
 
 func InitAuthRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) auth.Repositories {
@@ -49,6 +51,27 @@ func InitAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *
 		wire.Struct(new(auth.Handlers), "*"),
 	)
 	return auth.Handlers{}
+}
+
+func InitCommonUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) common.UseCases {
+	wire.Build(
+		common.UseCaseSet,
+		configSet,
+		libSet,
+		wire.Struct(new(common.UseCases), "*"),
+	)
+	return common.UseCases{}
+}
+
+func InitCommonHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) common.Handlers {
+	wire.Build(
+		common.HandlerSet,
+		configSet,
+		libSet,
+		common.UseCaseSet,
+		wire.Struct(new(common.Handlers), "*"),
+	)
+	return common.Handlers{}
 }
 
 func InitRegistrationRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) registration.Repositories {

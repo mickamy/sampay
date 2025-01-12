@@ -73,7 +73,7 @@ func TestGetOnboardingStep_Do(t *testing.T) {
 			},
 			assert: func(t *testing.T, got usecase.GetOnboardingStepOutput, err error) {
 				require.NoError(t, err)
-				assert.Equal(t, registrationModel.OnboardingStepComplete, got.Step)
+				assert.Equal(t, registrationModel.OnboardingStepCompleted, got.Step)
 			},
 		},
 	}

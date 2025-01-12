@@ -98,6 +98,13 @@ jobs:
             REDIS_URL=redis://:password@localhost:6379/0
           
             JWT_SIGNING_SECRET=secret
+  
+            AWS_REGION=ap-northeast-1
+            AWS_ACCESS_KEY_ID=test
+            AWS_ACCESS_KEY_SECRET=test
+            CLOUDFRONT_DOMAIN=localhost
+            LOCALSTACK_ENDPOINT=http://localhost:4566
+            S3_PUBLIC_BUCKET_NAME=sampay-public
           EOF
 
       - name: Prepare Database

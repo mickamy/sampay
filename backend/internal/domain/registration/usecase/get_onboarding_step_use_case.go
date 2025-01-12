@@ -56,7 +56,7 @@ func (uc *getOnboardingStep) Do(ctx context.Context, input GetOnboardingStepInpu
 			return nil
 		}
 
-		step = registrationModel.OnboardingStepComplete
+		step = registrationModel.OnboardingStepCompleted
 
 		return nil
 	}); err != nil {

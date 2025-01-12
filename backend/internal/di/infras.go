@@ -76,7 +76,7 @@ func provideKVS(cfg config.KVSConfig) (*kvs.KVS, error) {
 }
 
 //lint:ignore U1000 used by wire
-var infras = wire.NewSet(
+var infraSet = wire.NewSet(
 	provideDB,
 	provideReadWriter,
 	provideWriter,
