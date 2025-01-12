@@ -43,13 +43,15 @@ async function signUp({ request }: { request: Request }) {
     const { email, password } = authSignUpEmailSchema.parse(
       await request.json(),
     );
-    console.log("email", email, "password", password);
-    const { tokens } = await getClient(AccountService).signUp({
+    const { tokens } = await getClient({
+      service: AccountService,
+      request,
+    }).signUp({
       email,
       password,
     });
     if (!tokens) {
-      return redirect("/auth/sign-up");
+      return redirect("/registration/sign-up");
     }
 
     const session = convertTokensToSession(tokens);
