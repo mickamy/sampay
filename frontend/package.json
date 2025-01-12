@@ -1,5 +1,6 @@
 {
-  "name": "frontend",
+  "name": "sampay",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,7 +13,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-ssm": "^3.726.1",
-    "@buf/mickamy_sampay.bufbuild_es": "^2.2.3-20250107081210-6ef36a03adaa.1",
+    "@buf/mickamy_sampay.bufbuild_es": "^2.2.3-20250107081210",
     "@bufbuild/protobuf": "^2.2.3",
     "@connectrpc/connect": "^2.0.1",
     "@connectrpc/connect-web": "^2.0.1",
