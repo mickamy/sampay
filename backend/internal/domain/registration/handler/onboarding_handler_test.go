@@ -72,7 +72,7 @@ func TestOnboarding_GetOnboardingStep(t *testing.T) {
 			},
 			assert: func(t *testing.T, got *connect.Response[registrationv1.GetOnboardingStepResponse], err error) {
 				require.NoError(t, err)
-				require.Equal(t, registrationModel.OnboardingStepComplete.String(), got.Msg.Step)
+				require.Equal(t, registrationModel.OnboardingStepCompleted.String(), got.Msg.Step)
 			},
 		},
 	}
