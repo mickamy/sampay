@@ -12,6 +12,7 @@ import { redirect } from "react-router";
 import { API_BASE_URL, getClient } from "~/lib/api/client";
 import {
   createAuthenticateInterceptor,
+  createI18NInterceptor,
   loggingInterceptor,
 } from "~/lib/api/interceptors";
 import { type APIError, convertToAPIError } from "~/lib/api/response";
@@ -20,7 +21,6 @@ import {
   getAuthenticatedSession,
   setAuthenticatedSession,
 } from "~/lib/cookie/authenticated.server";
-import { type Either, Left, Right } from "~/lib/either/either";
 import { convertTokensToSession } from "~/models/auth/session-model";
 
 export async function authenticate(
@@ -37,7 +37,7 @@ export async function authenticate(
     throw redirect("/auth/sign-in");
   }
   try {
-    return await refreshSession(session);
+    return await refreshSession({ request, original: session });
   } catch (e) {
     throw redirect("/auth/sign-in");
   }
@@ -45,13 +45,14 @@ export async function authenticate(
 
 export type getClientType = <T extends DescService>(service: T) => Client<T>;
 
-export async function withAuthentication({
-  request,
-  execute,
-}: {
-  request: Request;
-  execute: ({ getClient }: { getClient: getClientType }) => Promise<Response>;
-}): Promise<Either<Response, APIError>> {
+export async function withAuthentication(
+  {
+    request,
+  }: {
+    request: Request;
+  },
+  execute: ({ getClient }: { getClient: getClientType }) => Promise<Response>,
+): Promise<Response | APIError> {
   try {
     const session = await authenticate(request);
     const transport = createConnectTransport({
@@ -59,28 +60,36 @@ export async function withAuthentication({
       interceptors: [
         loggingInterceptor,
         createAuthenticateInterceptor(session),
+        createI18NInterceptor(request),
       ],
     });
     const res = await execute({
       getClient: (service) => createClient(service, transport),
     });
     res.headers.append("set-cookie", await setAuthenticatedSession(session));
-    return new Left(res);
+    return res;
   } catch (e) {
     if (e instanceof ConnectError) {
       if (e.code === Code.Unauthenticated) {
         throw redirect("/auth/sign-in");
       }
-      return new Right(convertToAPIError(e));
+      return convertToAPIError(e);
     }
     throw e;
   }
 }
 
-async function refreshSession(
-  original: AuthenticatedSession,
-): Promise<AuthenticatedSession> {
-  const { tokens } = await getClient(SessionService).refresh({
+async function refreshSession({
+  request,
+  original,
+}: {
+  request: Request;
+  original: AuthenticatedSession;
+}): Promise<AuthenticatedSession> {
+  const { tokens } = await getClient({
+    service: SessionService,
+    request,
+  }).refresh({
     refreshToken: original.tokens.refresh.value,
   });
   if (tokens == null) {
