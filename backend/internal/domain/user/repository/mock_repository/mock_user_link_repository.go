@@ -57,6 +57,26 @@ func (mr *MockUserLinkMockRecorder) Create(ctx, m any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUserLink)(nil).Create), ctx, m)
 }
 
+// Find mocks base method.
+func (m *MockUserLink) Find(ctx context.Context, id string, scopes ...database.Scope) (*model.UserLink, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{ctx, id}
+	for _, a := range scopes {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Find", varargs...)
+	ret0, _ := ret[0].(*model.UserLink)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Find indicates an expected call of Find.
+func (mr *MockUserLinkMockRecorder) Find(ctx, id any, scopes ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]any{ctx, id}, scopes...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockUserLink)(nil).Find), varargs...)
+}
+
 // ListByUserID mocks base method.
 func (m *MockUserLink) ListByUserID(ctx context.Context, userID string, scopes ...database.Scope) ([]model.UserLink, error) {
 	m.ctrl.T.Helper()
@@ -75,6 +95,20 @@ func (mr *MockUserLinkMockRecorder) ListByUserID(ctx, userID any, scopes ...any)
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]any{ctx, userID}, scopes...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByUserID", reflect.TypeOf((*MockUserLink)(nil).ListByUserID), varargs...)
+}
+
+// Update mocks base method.
+func (m_2 *MockUserLink) Update(ctx context.Context, m *model.UserLink) error {
+	m_2.ctrl.T.Helper()
+	ret := m_2.ctrl.Call(m_2, "Update", ctx, m)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockUserLinkMockRecorder) Update(ctx, m any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockUserLink)(nil).Update), ctx, m)
 }
 
 // WithTx mocks base method.

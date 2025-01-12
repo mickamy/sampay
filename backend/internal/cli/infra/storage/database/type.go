@@ -17,6 +17,10 @@ var (
 // DB is a wrapper of *gorm.DB
 type DB struct{ *gorm.DB }
 
+func (db DB) FullSaveAssociations() *DB {
+	return &DB{db.Session(&gorm.Session{FullSaveAssociations: true})}
+}
+
 // Writer is a writer of DB
 type Writer struct {
 	*DB
