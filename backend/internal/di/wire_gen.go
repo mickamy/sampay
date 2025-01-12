@@ -207,11 +207,16 @@ func InitUserUseCase(db *database.DB, readWriter *database.ReadWriter, writer *d
 	userLink := repository2.NewUserLink(db)
 	createUserLink := usecase4.NewCreateUserLink(writer, userLink)
 	deleteUserLink := usecase4.NewDeleteUserLink(writer, userLink)
+	user := repository2.NewUser(db)
+	getMe := usecase4.NewGetMe(reader, user)
+	getUser := usecase4.NewGetUser(reader, user)
 	listUserLink := usecase4.NewListUserLink(reader, userLink)
 	updateUserLink := usecase4.NewUpdateUserLink(writer, userLink)
 	useCases := di4.UseCases{
 		CreateUserLink: createUserLink,
 		DeleteUserLink: deleteUserLink,
+		GetMe:          getMe,
+		GetUser:        getUser,
 		ListUserLink:   listUserLink,
 		UpdateUserLink: updateUserLink,
 	}
@@ -219,6 +224,10 @@ func InitUserUseCase(db *database.DB, readWriter *database.ReadWriter, writer *d
 }
 
 func InitUserHandler(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di4.Handlers {
+	user := repository2.NewUser(db)
+	getMe := usecase4.NewGetMe(reader, user)
+	getUser := usecase4.NewGetUser(reader, user)
+	handlerUser := handler4.NewUser(getMe, getUser)
 	userLink := repository2.NewUserLink(db)
 	createUserLink := usecase4.NewCreateUserLink(writer, userLink)
 	listUserLink := usecase4.NewListUserLink(reader, userLink)
@@ -226,6 +235,7 @@ func InitUserHandler(db *database.DB, readWriter *database.ReadWriter, writer *d
 	deleteUserLink := usecase4.NewDeleteUserLink(writer, userLink)
 	handlerUserLink := handler4.NewUserLink(createUserLink, listUserLink, updateUserLink, deleteUserLink)
 	handlers := di4.Handlers{
+		User:     handlerUser,
 		UserLink: handlerUserLink,
 	}
 	return handlers

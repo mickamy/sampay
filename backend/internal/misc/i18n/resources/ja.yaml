@@ -24,3 +24,7 @@ user:
     user_link:
       error:
         invalid_provider_type: "無効なリンク提供業者です。"
+  usecase:
+    get_user:
+      error:
+        not_found: 'ユーザーが見つかりません。'

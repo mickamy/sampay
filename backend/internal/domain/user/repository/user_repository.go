@@ -48,7 +48,7 @@ func (repo *user) Get(ctx context.Context, id string, scopes ...database.Scope) 
 func (repo *user) Find(ctx context.Context, id string, scopes ...database.Scope) (*model.User, error) {
 	var m model.User
 	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
-		First(&m, "id = ?", id).
+		First(&m, "users.id = ?", id).
 		Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -115,4 +115,12 @@ func UserPreloadAttribute(tx *database.DB) *database.DB {
 
 func UserPreloadProfile(tx *database.DB) *database.DB {
 	return &database.DB{DB: tx.Preload("Profile")}
+}
+
+func UserPreloadProfileAndImage(tx *database.DB) *database.DB {
+	return &database.DB{DB: tx.Joins("Profile.Image")}
+}
+
+func UserPreloadLinksAndDisplayAttributes(tx *database.DB) *database.DB {
+	return &database.DB{DB: tx.Preload("Links.DisplayAttribute")}
 }

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package user.v1;
+
+import "buf/validate/validate.proto";
+
+message UserProfile {
+  string name = 2 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.max_len = 64];
+  optional string bio = 3 [(buf.validate.field).string.max_len = 256];
+  optional string image_url = 4;
+}
