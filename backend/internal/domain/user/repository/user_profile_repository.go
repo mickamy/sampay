@@ -53,3 +53,7 @@ func (repo *userProfile) Update(ctx context.Context, m *model.UserProfile) error
 func (repo *userProfile) WithTx(tx *database.DB) UserProfile {
 	return &userProfile{db: tx}
 }
+
+func UserProfileJoinPreloadImage(db *gorm.DB) *gorm.DB {
+	return db.Preload("Image")
+}
