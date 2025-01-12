@@ -15,6 +15,7 @@ type UserLink interface {
 	Create(ctx context.Context, m *model.UserLink) error
 	ListByUserID(ctx context.Context, userID string, scopes ...database.Scope) ([]model.UserLink, error)
 	Find(ctx context.Context, id string, scopes ...database.Scope) (*model.UserLink, error)
+	GetLastDisplayOrderByUserID(ctx context.Context, userID string) (int, error)
 	Update(ctx context.Context, m *model.UserLink) error
 	Delete(ctx context.Context, id string) error
 	WithTx(tx *database.DB) UserLink
@@ -48,6 +49,21 @@ func (repo *userLink) Find(ctx context.Context, id string, scopes ...database.Sc
 		return nil, err
 	}
 	return m, err
+}
+
+func (repo *userLink) GetLastDisplayOrderByUserID(ctx context.Context, userID string) (int, error) {
+	var m model.UserLink
+	err := repo.db.WithContext(ctx).
+		Joins("DisplayAttribute").
+		Order(`"DisplayAttribute".display_order DESC`).
+		First(&m, "user_id = ?", userID).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return -1, nil
+		}
+		return -1, err
+	}
+	return m.DisplayAttribute.DisplayOrder, err
 }
 
 func (repo *userLink) Update(ctx context.Context, m *model.UserLink) error {

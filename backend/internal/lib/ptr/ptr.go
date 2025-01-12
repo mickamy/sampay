@@ -10,3 +10,10 @@ func Unwrap[T any](ptr *T) T {
 	}
 	return *ptr
 }
+
+func Map[T any, U any](val *T, mapper func(*T) U) U {
+	if val == nil {
+		return *new(U)
+	}
+	return mapper(val)
+}

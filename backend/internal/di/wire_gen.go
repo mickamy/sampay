@@ -22,6 +22,7 @@ import (
 	repository3 "mickamy.com/sampay/internal/domain/registration/repository"
 	usecase3 "mickamy.com/sampay/internal/domain/registration/usecase"
 	di4 "mickamy.com/sampay/internal/domain/user/di"
+	handler4 "mickamy.com/sampay/internal/domain/user/handler"
 	repository2 "mickamy.com/sampay/internal/domain/user/repository"
 	usecase4 "mickamy.com/sampay/internal/domain/user/usecase"
 	"mickamy.com/sampay/internal/lib/aws/s3"
@@ -215,4 +216,17 @@ func InitUserUseCase(db *database.DB, readWriter *database.ReadWriter, writer *d
 		UpdateUserLink: updateUserLink,
 	}
 	return useCases
+}
+
+func InitUserHandler(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di4.Handlers {
+	userLink := repository2.NewUserLink(db)
+	createUserLink := usecase4.NewCreateUserLink(writer, userLink)
+	listUserLink := usecase4.NewListUserLink(reader, userLink)
+	updateUserLink := usecase4.NewUpdateUserLink(writer, userLink)
+	deleteUserLink := usecase4.NewDeleteUserLink(writer, userLink)
+	handlerUserLink := handler4.NewUserLink(createUserLink, listUserLink, updateUserLink, deleteUserLink)
+	handlers := di4.Handlers{
+		UserLink: handlerUserLink,
+	}
+	return handlers
 }

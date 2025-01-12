@@ -121,3 +121,13 @@ func InitUserUseCase(db *database.DB, readWriter *database.ReadWriter, writer *d
 	)
 	return user.UseCases{}
 }
+
+func InitUserHandler(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) user.Handlers {
+	wire.Build(
+		user.HandlerSet,
+		user.RepositorySet,
+		user.UseCaseSet,
+		wire.Struct(new(user.Handlers), "*"),
+	)
+	return user.Handlers{}
+}

@@ -67,3 +67,11 @@ func NewLinkProviderType(s string) (UserLinkProviderType, error) {
 	}
 	return "", fmt.Errorf("invalid link provider type: %s", s)
 }
+
+func MustNewLinkProviderType(s string) UserLinkProviderType {
+	t, err := NewLinkProviderType(s)
+	if err != nil {
+		panic(err)
+	}
+	return t
+}

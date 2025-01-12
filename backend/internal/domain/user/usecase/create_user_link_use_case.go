@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
@@ -9,7 +10,9 @@ import (
 )
 
 type CreateUserLinkInput struct {
-	userModel.UserLink
+	ProviderType userModel.UserLinkProviderType
+	URI          string
+	Name         string
 }
 
 type CreateUserLinkOutput struct {
@@ -36,8 +39,22 @@ func NewCreateUserLink(
 }
 
 func (uc *createUserLink) Do(ctx context.Context, input CreateUserLinkInput) (CreateUserLinkOutput, error) {
+	m := userModel.UserLink{
+		ProviderType: input.ProviderType,
+		URI:          input.URI,
+		DisplayAttribute: userModel.UserLinkDisplayAttribute{
+			Name: input.Name,
+		},
+	}
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
-		if err := uc.userLinkRepo.WithTx(tx.WriterDB()).Create(ctx, &input.UserLink); err != nil {
+		order, err := uc.userLinkRepo.WithTx(tx.WriterDB()).GetLastDisplayOrderByUserID(ctx, m.UserID)
+		if err != nil {
+			return fmt.Errorf("failed to get last display order by user id: %w", err)
+		}
+
+		m.DisplayAttribute.DisplayOrder = order + 1
+
+		if err := uc.userLinkRepo.WithTx(tx.WriterDB()).Create(ctx, &m); err != nil {
 			return err
 		}
 

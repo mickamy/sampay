@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/domain/user/repository"
@@ -87,6 +88,63 @@ func TestUserLink_Find(t *testing.T) {
 	assert.Equal(t, m.UserID, got.UserID)
 	assert.Equal(t, m.ProviderType, got.ProviderType)
 	assert.Equal(t, m.URI, got.URI)
+}
+
+func TestUserLink_GetLastDisplayOrderByUserID(t *testing.T) {
+	t.Parallel()
+
+	tcs := []struct {
+		name    string
+		arrange func(t *testing.T, db *database.Writer, userID string)
+		assert  func(t *testing.T, got int, err error)
+	}{
+		{
+			name: "no record",
+			arrange: func(t *testing.T, db *database.Writer, userID string) {
+			},
+			assert: func(t *testing.T, got int, err error) {
+				require.NoError(t, err)
+				assert.Equal(t, -1, got)
+			},
+		},
+		{
+			name: "has record",
+			arrange: func(t *testing.T, db *database.Writer, userID string) {
+				m := fixture.UserLink(func(m *model.UserLink) {
+					m.UserID = userID
+					m.DisplayAttribute = fixture.UserLinkDisplayAttribute(func(m *model.UserLinkDisplayAttribute) {
+						m.DisplayOrder = 100
+					})
+				})
+				require.NoError(t, db.WithContext(context.Background()).Create(&m).Error)
+			},
+			assert: func(t *testing.T, got int, err error) {
+				require.NoError(t, err)
+				assert.Equal(t, 100, got)
+			},
+		},
+	}
+
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			// arrange
+			ctx := context.Background()
+			db := newReadWriter(t)
+			user := fixture.User(nil)
+			require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
+			tc.arrange(t, db.Writer(), user.ID)
+
+			// act
+			sut := repository.NewUserLink(db.ReaderDB())
+			got, err := sut.GetLastDisplayOrderByUserID(ctx, user.ID)
+
+			// assert
+			tc.assert(t, got, err)
+		})
+	}
 }
 
 func TestUserLink_Update(t *testing.T) {
