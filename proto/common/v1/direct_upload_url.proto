@@ -10,14 +10,14 @@ message S3Object {
   string content_type = 3;
 }
 
-message DirectUploadURLRequest {
+message CreateDirectUploadURLRequest {
   S3Object s3_object = 1;
 }
 
-message DirectUploadURLResponse {
+message CreateDirectUploadURLResponse {
   string url = 1 [(buf.validate.field).string.uri = true];
 }
 
 service DirectUploadURLService {
-  rpc Request(DirectUploadURLRequest) returns (DirectUploadURLResponse) {}
+  rpc CreateDirectUploadURL(CreateDirectUploadURLRequest) returns (CreateDirectUploadURLResponse) {}
 }

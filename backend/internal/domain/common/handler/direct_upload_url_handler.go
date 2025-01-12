@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/common/v1/commonv1connect"
-	"buf.build/gen/go/mickamy/sampay/protocolbuffers/go/common/v1"
+	commonv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/common/v1"
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
@@ -27,10 +27,10 @@ func NewDirectUploadURL(
 	}
 }
 
-func (h *DirectUploadURL) Request(
+func (h *DirectUploadURL) CreateDirectUploadURL(
 	ctx context.Context,
-	req *connect.Request[commonv1.DirectUploadURLRequest],
-) (*connect.Response[commonv1.DirectUploadURLResponse], error) {
+	req *connect.Request[commonv1.CreateDirectUploadURLRequest],
+) (*connect.Response[commonv1.CreateDirectUploadURLResponse], error) {
 	lang := contexts.MustLanguage(ctx)
 	obj := dto.NewS3Object(req.Msg.S3Object)
 	if obj == nil {
@@ -49,7 +49,7 @@ func (h *DirectUploadURL) Request(
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		return nil, dto.NewInternalError(ctx, err).AsConnectError()
 	}
-	res := connect.NewResponse(&commonv1.DirectUploadURLResponse{
+	res := connect.NewResponse(&commonv1.CreateDirectUploadURLResponse{
 		Url: out.URL,
 	})
 	return res, nil

@@ -21,7 +21,9 @@ export async function directUpload({
       key: await key(type),
       contentType: file.type,
     };
-    const { url } = await getClient(DirectUploadURLService).request({
+    const { url } = await getClient(
+      DirectUploadURLService,
+    ).createDirectUploadURL({
       s3Object: obj,
     });
     const res = await fetch(url, {
