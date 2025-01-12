@@ -23,9 +23,9 @@ export async function initI18NClient() {
         },
         debug: process.env.NODE_ENV === "development",
       },
-      (err, t) => {
-        if (err) {
-          logger.error({ err }, "failed to initialize i18n client");
+      (error, t) => {
+        if (error) {
+          logger.error({ error }, "failed to initialize i18n client");
         } else {
           logger.debug("i18n client initialized");
 

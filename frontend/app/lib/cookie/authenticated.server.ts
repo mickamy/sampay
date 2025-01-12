@@ -73,7 +73,7 @@ async function destroySession(
 
 export interface Token {
   readonly value: string;
-  readonly expiresAt: Date;
+  readonly expiresAt: string;
 }
 
 export interface Tokens {

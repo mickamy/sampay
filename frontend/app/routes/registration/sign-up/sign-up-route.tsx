@@ -61,7 +61,7 @@ async function signUp({ request }: { request: Request }) {
 
     const headers = new Headers();
     headers.append("Set-Cookie", await setAuthenticatedSession(session));
-    return redirect("/onboarding", { headers });
+    return redirect("/registration/onboarding", { headers });
   } catch (e) {
     if (e instanceof ConnectError) {
       const data: ActionData = { error: convertToAPIError(e) };

@@ -21,6 +21,7 @@ import {
   getAuthenticatedSession,
   setAuthenticatedSession,
 } from "~/lib/cookie/authenticated.server";
+import { type Either, Left, Right } from "~/lib/either/either";
 import { convertTokensToSession } from "~/models/auth/session-model";
 
 export async function authenticate(
@@ -52,7 +53,7 @@ export async function withAuthentication(
     request: Request;
   },
   execute: ({ getClient }: { getClient: getClientType }) => Promise<Response>,
-): Promise<Response | APIError> {
+): Promise<Either<Response, APIError>> {
   try {
     const session = await authenticate(request);
     const transport = createConnectTransport({
@@ -67,13 +68,13 @@ export async function withAuthentication(
       getClient: (service) => createClient(service, transport),
     });
     res.headers.append("set-cookie", await setAuthenticatedSession(session));
-    return res;
+    return new Left(res);
   } catch (e) {
     if (e instanceof ConnectError) {
       if (e.code === Code.Unauthenticated) {
         throw redirect("/auth/sign-in");
       }
-      return convertToAPIError(e);
+      return new Right(convertToAPIError(e));
     }
     throw e;
   }
@@ -106,12 +107,12 @@ const refreshThreshold = 5 * 60 * 1000; // 5 minutes
 
 function needsRefresh(session: AuthenticatedSession): boolean {
   const now = new Date();
-  const expiration = session.tokens.access.expiresAt;
+  const expiration = new Date(session.tokens.access.expiresAt);
   return expiration.getTime() - now.getTime() < refreshThreshold;
 }
 
 function canRefresh(session: AuthenticatedSession): boolean {
   const now = new Date();
-  const expiration = session.tokens.refresh.expiresAt;
+  const expiration = new Date(session.tokens.refresh.expiresAt);
   return expiration.getTime() > now.getTime();
 }

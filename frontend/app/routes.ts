@@ -13,5 +13,7 @@ export default [
     "registration/sign-up",
     "routes/registration/sign-up/sign-up-route.tsx",
   ),
-  ...prefix("onboarding", [index("routes/onboarding/onboarding-index.tsx")]),
+  ...prefix("/registration/onboarding", [
+    index("routes/registration/onboarding/onboarding-route.tsx"),
+  ]),
 ] satisfies RouteConfig;

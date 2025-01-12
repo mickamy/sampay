@@ -43,9 +43,9 @@ export async function initI18NServer({
         backend: { loadPath: "./public/locales/{{lng}}/{{ns}}.json" },
         // debug: process.env.NODE_ENV === "development",
       },
-      (err, t) => {
-        if (err) {
-          logger.error({ err }, "failed to initialize i18n server");
+      (error, t) => {
+        if (error) {
+          logger.error({ error }, "failed to initialize i18n server");
         } else {
           logger.debug("i18n server initialized");
         }
