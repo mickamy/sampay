@@ -11,6 +11,7 @@ import {
   useLoaderData,
 } from "react-router";
 import i18nServer from "~/lib/i18n/index.server";
+import logger from "~/lib/logger";
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
 
@@ -87,6 +88,8 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  logger.error({ error }, "ErrorBoundary");
+
   let message = "Oops!";
   let details = "An unexpected error occurred.";
   let stack: string | undefined;
