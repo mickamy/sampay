@@ -1,24 +1,24 @@
 ARG NODE_VERSION=22.13.0
 
 FROM node:${NODE_VERSION}-alpine AS development-dependencies-env
-COPY . /app
-WORKDIR /app
+COPY . /src
+WORKDIR /src
 RUN npm ci
 
 FROM node:${NODE_VERSION}-alpine AS production-dependencies-env
-COPY ./package.json package-lock.json /app/
-WORKDIR /app
+COPY ./package.json package-lock.json /src/
+WORKDIR /src
 RUN npm ci --omit=dev
 
 FROM node:${NODE_VERSION}-alpine AS build-env
-COPY . /app/
-COPY --from=development-dependencies-env /app/node_modules /app/node_modules
-WORKDIR /app
+COPY . /src/
+COPY --from=development-dependencies-env /src/node_modules /src/node_modules
+WORKDIR /src
 RUN npm run build
 
 FROM node:${NODE_VERSION}-alpine
-COPY ./package.json package-lock.json /app/
-COPY --from=production-dependencies-env /app/node_modules /app/node_modules
-COPY --from=build-env /app/build /app/build
-WORKDIR /app
+COPY ./package.json package-lock.json /src/
+COPY --from=production-dependencies-env /src/node_modules /src/node_modules
+COPY --from=build-env /src/build /src/build
+WORKDIR /src
 CMD ["npm", "run", "start"]

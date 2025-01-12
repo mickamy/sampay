@@ -26,10 +26,10 @@ services:
       SESSION_SECRET: secret
     command: npm run dev
     volumes:
-      - ./frontend:/app:delegated
+      - ./frontend:/src:delegated
       - ./log:/var/log:delegated
-      - /app/build
-      - node_modules:/app/node_modules
+      - /src/build
+      - node_modules:/src/node_modules
     ports:
       - "5173:5173"
 
