@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package user.v1;
+
+import "buf/validate/validate.proto";
+import "common/v1/direct_upload_url.proto";
+
+message UserLinkProvider {
+  string type = 1;
+  int32 display_order = 2;
+}
+
+message UserLinkDisplayAttribute {
+  string user_link_id = 1;
+  string name = 2;
+  int32 display_order = 3;
+}
+
+message UserLink {
+  string id = 1;
+  string user_id = 2;
+  string uri = 3 [(buf.validate.field).string.uri = true];
+  UserLinkProvider provider = 4;
+  UserLinkDisplayAttribute display_attribute = 5;
+}
+
+message ListUserLinkRequest {
+  string user_id = 1;
+}
+
+message ListUserLinkResponse {
+  repeated UserLink links = 1;
+}
+
+message CreateUserLinkRequest {
+  string link_provider_type = 1;
+  string uri = 2 [(buf.validate.field).string.uri = true];
+  string name = 3;
+  optional common.v1.S3Object qr = 4;
+}
+
+message CreateUserLinkResponse {
+}
+
+message UpdateUserLinkRequest {
+  string id = 1;
+  optional string link_provider_type = 2;
+  optional string uri = 3 [(buf.validate.field).string.uri = true];
+  optional string name = 4;
+  optional common.v1.S3Object qr = 5;
+}
+
+message UpdateUserLinkResponse {
+}
+
+message DeleteUserLinkRequest {
+  string id = 1;
+}
+
+message DeleteUserLinkResponse {
+}
+
+service UserLinkService {
+  rpc ListUserLink(ListUserLinkRequest) returns (ListUserLinkResponse) {}
+  rpc CreateUserLink(CreateUserLinkRequest) returns (CreateUserLinkResponse) {}
+  rpc UpdateUserLink(UpdateUserLinkRequest) returns (UpdateUserLinkResponse) {}
+  rpc DeleteUserLink(DeleteUserLinkRequest) returns (DeleteUserLinkResponse) {}
+}
