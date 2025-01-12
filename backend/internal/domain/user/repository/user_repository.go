@@ -117,8 +117,8 @@ func UserPreloadProfile(tx *database.DB) *database.DB {
 	return &database.DB{DB: tx.Preload("Profile")}
 }
 
-func UserJoinProfile(tx *database.DB) *database.DB {
-	return &database.DB{DB: tx.Joins("Profile")}
+func UserPreloadProfileAndImage(tx *database.DB) *database.DB {
+	return &database.DB{DB: tx.Joins("Profile.Image")}
 }
 
 func UserPreloadLinksAndDisplayAttributes(tx *database.DB) *database.DB {

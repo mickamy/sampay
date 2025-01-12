@@ -8,10 +8,12 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"mickamy.com/sampay/internal/di"
+	commonFixture "mickamy.com/sampay/internal/domain/common/fixture"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/domain/user/usecase"
 	"mickamy.com/sampay/internal/lib/contexts"
+	"mickamy.com/sampay/internal/lib/ptr"
 )
 
 func TestGetMe_Do(t *testing.T) {
@@ -21,7 +23,9 @@ func TestGetMe_Do(t *testing.T) {
 	ctx := context.Background()
 	db := newReadWriter(t)
 	me := userFixture.User(func(m *model.User) {
-		m.Profile = userFixture.UserProfile(nil)
+		m.Profile = userFixture.UserProfile(func(m *model.UserProfile) {
+			m.Image = ptr.Of(commonFixture.S3Object(nil))
+		})
 		m.Links = []model.UserLink{
 			userFixture.UserLink(func(m *model.UserLink) {
 				m.DisplayAttribute = userFixture.UserLinkDisplayAttribute(nil)
@@ -39,6 +43,7 @@ func TestGetMe_Do(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, me.ID, got.ID)
 	assert.NotEmpty(t, got.Profile)
+	assert.NotEmpty(t, got.Profile.Image)
 	require.NotEmpty(t, got.Links)
 	assert.NotEmpty(t, got.Links[0].DisplayAttribute)
 }

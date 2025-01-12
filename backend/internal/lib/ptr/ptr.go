@@ -17,3 +17,7 @@ func Map[T any, U any](val *T, mapper func(*T) U) U {
 	}
 	return mapper(val)
 }
+
+func IsNotNil[T any](val *T) bool {
+	return val != nil
+}
