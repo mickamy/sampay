@@ -31,6 +31,7 @@ type UseCases struct {
 	usecase.GetMe
 	usecase.GetUser
 	usecase.ListUserLink
+	usecase.UpdateUserLinkQRCode
 	usecase.UpdateUserLink
 	usecase.UpdateUserProfile
 	usecase.UpdateUserProfileImage
@@ -43,6 +44,7 @@ var UseCaseSet = wire.NewSet(
 	usecase.NewGetMe,
 	usecase.NewGetUser,
 	usecase.NewListUserLink,
+	usecase.NewUpdateUserLinkQRCode,
 	usecase.NewUpdateUserLink,
 	usecase.NewUpdateUserProfile,
 	usecase.NewUpdateUserProfileImage,

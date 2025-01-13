@@ -41,7 +41,7 @@ func TestUpdateUserProfileImage_Do(t *testing.T) {
 			},
 		},
 		{
-			name: "success (bio and image are not nil)",
+			name: "success (image is not nil)",
 			arrange: func(t *testing.T, ctx context.Context, writer *database.Writer) usecase.UpdateUserProfileImageInput {
 				return usecase.UpdateUserProfileImageInput{
 					Image: ptr.Of(commonFixture.S3Object(nil)),
