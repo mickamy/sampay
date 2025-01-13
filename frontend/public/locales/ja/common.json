@@ -8,6 +8,11 @@
       "sign-in": "ログイン"
     }
   },
+  "admin": {
+    "index": {
+      "edit-profile": "編集"
+    }
+  },
   "app": {
     "title": "Sampay | 個人間決済リンクをたったひとつのリンクで"
   },

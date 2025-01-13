@@ -21,7 +21,14 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     const data: LoaderData = { user: convertToUser(user) };
     return Response.json(data);
-  });
+  })
+    .then((it) => {
+      if (it.isRight()) {
+        throw new Error(`failed to load data: ${it.value}`);
+      }
+      return it;
+    })
+    .then((it) => it.value);
 };
 
 export default function Admin() {
