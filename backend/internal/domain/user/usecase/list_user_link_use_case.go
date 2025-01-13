@@ -41,7 +41,7 @@ func (uc *listUserLink) Do(ctx context.Context, input ListUserLinkInput) (ListUs
 	var ms []userModel.UserLink
 	if err := uc.reader.ReaderTransaction(ctx, func(tx database.ReaderTransactional) error {
 		var err error
-		ms, err = uc.userLinkRepo.WithTx(tx.ReaderDB()).ListByUserID(ctx, input.UserID, userRepository.UserLinkJoinDisplayAttribute)
+		ms, err = uc.userLinkRepo.WithTx(tx.ReaderDB()).ListByUserID(ctx, input.UserID, userRepository.UserLinkJoinDisplayAttribute, userRepository.UserLinkPreloadQRCode)
 		if err != nil {
 			return fmt.Errorf("failed to list user links: %w", err)
 		}

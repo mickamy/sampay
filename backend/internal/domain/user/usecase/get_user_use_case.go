@@ -49,7 +49,7 @@ func (uc *getUser) Do(ctx context.Context, input GetUserInput) (GetUserOutput, e
 	var m *userModel.User
 	if err := uc.reader.ReaderTransaction(ctx, func(tx database.ReaderTransactional) error {
 		var err error
-		m, err = uc.userRepo.WithTx(tx.ReaderDB()).FindBySlug(ctx, input.Slug, userRepository.UserPreloadProfileAndImage, userRepository.UserPreloadLinksAndDisplayAttributes)
+		m, err = uc.userRepo.WithTx(tx.ReaderDB()).FindBySlug(ctx, input.Slug, userRepository.UserPreloadProfileAndImage, userRepository.UserPreloadLinksQRCodeAndDisplayAttributes)
 		if err != nil {
 			return fmt.Errorf("failed to find user: %w", err)
 		}

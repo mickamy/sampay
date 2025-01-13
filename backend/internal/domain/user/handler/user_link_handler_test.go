@@ -312,7 +312,7 @@ func TestUserLink_UpdateUserLinkQRCode(t *testing.T) {
 			client := userv1connect.NewUserLinkServiceClient(http.DefaultClient, server.URL)
 			connReq := connecttest.NewAuthenticatedRequest(t, ctx, req, nil, authModel.MustNewSession(user.ID), infras.KVS)
 			got, err := client.UpdateUserLinkQRCode(ctx, connReq)
- 
+
 			// assert
 			tc.assert(t, got, err)
 		})

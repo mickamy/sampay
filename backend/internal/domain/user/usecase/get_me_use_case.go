@@ -41,7 +41,7 @@ func (uc *getMe) Do(ctx context.Context, input GetMeInput) (GetMeOutput, error) 
 	var m userModel.User
 	if err := uc.reader.ReaderTransaction(ctx, func(tx database.ReaderTransactional) error {
 		var err error
-		m, err = uc.userRepo.WithTx(tx.ReaderDB()).Get(ctx, contexts.MustAuthenticatedUserID(ctx), userRepository.UserPreloadProfileAndImage, userRepository.UserPreloadLinksAndDisplayAttributes)
+		m, err = uc.userRepo.WithTx(tx.ReaderDB()).Get(ctx, contexts.MustAuthenticatedUserID(ctx), userRepository.UserPreloadProfileAndImage, userRepository.UserPreloadLinksQRCodeAndDisplayAttributes)
 		if err != nil {
 			return fmt.Errorf("failed to get user: %w", err)
 		}

@@ -121,6 +121,6 @@ func UserPreloadProfileAndImage(tx *database.DB) *database.DB {
 	return &database.DB{DB: tx.Joins("Profile.Image")}
 }
 
-func UserPreloadLinksAndDisplayAttributes(tx *database.DB) *database.DB {
-	return &database.DB{DB: tx.Preload("Links.DisplayAttribute")}
+func UserPreloadLinksQRCodeAndDisplayAttributes(tx *database.DB) *database.DB {
+	return &database.DB{DB: tx.Preload("Links.DisplayAttribute").Preload("Links.QRCode")}
 }
