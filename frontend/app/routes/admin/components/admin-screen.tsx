@@ -8,7 +8,7 @@ import UserLinkFormDialog, {
 import UserProfile from "~/components/user-profile";
 import { userProfileSchema } from "~/components/user-profile-form";
 import useDialog from "~/hooks/use-dialog";
-import { useFormDataSubmit, useJsonSubmit } from "~/hooks/use-submit";
+import { useFormDataSubmit } from "~/hooks/use-submit";
 import type { UserLink } from "~/models/user/user-link-model";
 import type { User } from "~/models/user/user-model";
 import UserProfileFormDialog, {
@@ -25,7 +25,8 @@ export interface LoaderData {
 
 export interface ActionData
   extends UserProfileFormDialogActionData,
-    UserProfileImageFormDialogActionData {}
+    UserProfileImageFormDialogActionData,
+    UserLinkFormDialogActionData {}
 
 export default function AdminScreen() {
   const { user } = useLoaderData<LoaderData>();
@@ -55,7 +56,7 @@ export default function AdminScreen() {
     closeDialog: closeLinkFormDialog,
     actionData: linkFormDialogActionData,
   } = useDialog<UserLinkFormDialogActionData>();
-  const submitLinkForm = useJsonSubmit(userLinkSchema, "put");
+  const submitLinkForm = useFormDataSubmit(userLinkSchema, "put");
 
   const [linkToEdit, setLinkToEdit] = useState<UserLink | undefined>();
   const onEdit = useCallback(

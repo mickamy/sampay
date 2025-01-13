@@ -10,10 +10,6 @@ import (
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
 )
 
-var (
-	ErrUpdateUserLinkNotFound = errors.New("user link not found")
-)
-
 type UpdateUserLinkInput struct {
 	ID           string
 	ProviderType *userModel.UserLinkProviderType
@@ -52,7 +48,7 @@ func (uc *updateUserLink) Do(ctx context.Context, input UpdateUserLinkInput) (Up
 			return fmt.Errorf("failed to find user link: %w", err)
 		}
 		if m == nil {
-			return errors.Join(ErrUpdateUserLinkNotFound, fmt.Errorf("id=[%s]", input.ID))
+			return errors.Join(fmt.Errorf("user link not found: id=[%s]", input.ID))
 		}
 
 		if input.ProviderType != nil {

@@ -1,4 +1,5 @@
 import { OnboardingService } from "@buf/mickamy_sampay.bufbuild_es/registration/v1/onboarding_pb";
+import { UserLinkService } from "@buf/mickamy_sampay.bufbuild_es/user/v1/user_link_pb";
 import { UserService } from "@buf/mickamy_sampay.bufbuild_es/user/v1/user_pb";
 import { UserProfileService } from "@buf/mickamy_sampay.bufbuild_es/user/v1/user_profile_pb";
 import {
@@ -6,6 +7,7 @@ import {
   type LoaderFunction,
   redirect,
 } from "react-router";
+import { userLinkSchema } from "~/components/user-link-form";
 import { userProfileSchema } from "~/components/user-profile-form";
 import { withAuthentication } from "~/lib/api/request";
 import type { S3Object } from "~/models/common/s3-object-model";
@@ -64,8 +66,6 @@ export const action: ActionFunction = async ({ request }) => {
 async function handleJSONPut({ request }: { request: Request }) {
   const body = await request.json();
   switch (body.type) {
-    case "link":
-      return putLink({ request, body });
     default:
       throw new Error(`unknown type: ${body.type}`);
   }
@@ -74,13 +74,15 @@ async function handleJSONPut({ request }: { request: Request }) {
 async function handleMultipartPut({
   request,
 }: { request: Request }): Promise<Response> {
-  const formData = await request.formData();
-  const type = formData.get("type");
+  const body = await request.formData();
+  const type = body.get("type");
   switch (type) {
     case "profile":
-      return putProfile({ request, body: formData });
+      return putProfile({ request, body });
     case "profile_image":
-      return putProfileImage({ request, body: formData });
+      return putProfileImage({ request, body });
+    case "link":
+      return putLink({ request, body });
     default:
       throw new Error(`unknown type: ${type}`);
   }
@@ -148,7 +150,47 @@ async function putProfileImage({
     .then((it) => it.value);
 }
 
-async function putLink({ request, body }: { request: Request; body: unknown }) {
-  console.log("putLink", request, body);
-  return Response.json({});
+async function putLink({
+  request,
+  body,
+}: { request: Request; body: FormData }) {
+  return withAuthentication({ request }, async ({ getClient }) => {
+    const { qr_code, ...data } = userLinkSchema.parse(Object.fromEntries(body));
+
+    let imageObj: S3Object | undefined;
+    if (qr_code) {
+      imageObj = await directUpload({
+        type: "qr_code",
+        file: qr_code,
+        getClient,
+      });
+    }
+
+    const client = getClient(UserLinkService);
+    client.updateUserLinkQRCode({
+      id: data.id,
+      qrCode: imageObj,
+    });
+
+    await client.updateUserLink({
+      id: data.id,
+      providerType: data.provider_type,
+      uri: data.uri,
+      name: data.name,
+    });
+    const actionData: ActionData = {
+      putLinkSuccess: true,
+      putLinkError: undefined,
+    };
+    return Response.json(actionData);
+  })
+    .then((it) =>
+      it.map((error) =>
+        Response.json({
+          putLinkSuccess: false,
+          putLinkError: error,
+        }),
+      ),
+    )
+    .then((it) => it.value);
 }

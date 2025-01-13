@@ -28,6 +28,7 @@ import {
 
 export const userLinkSchema = z.object({
   type: z.enum(["link"]),
+  id: z.string().length(26).optional(),
   qr_code: z
     .any()
     .refine((file) => isFileLike(file), {
@@ -70,6 +71,7 @@ export default function UserLinkForm({
       resolver: zodResolver(userLinkSchema),
       defaultValues: {
         type: "link",
+        id: link?.id,
         provider_type: link?.providerType,
         uri: link?.uri,
         name: link?.displayAttribute.name,
