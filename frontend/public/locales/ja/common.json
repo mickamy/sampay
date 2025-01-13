@@ -1,43 +1,48 @@
 {
   "account": {
-    "sign-up": {
+    "sign_up": {
       "title": "新規登録",
       "terms": "利用規約",
       "privacy": "プライバシーポリシー",
-      "have-account": "すでにアカウントをお持ちの方は",
-      "sign-in": "ログイン"
+      "have_account": "すでにアカウントをお持ちの方は",
+      "sign_in": "ログイン"
+    }
+  },
+  "admin": {
+    "index": {
+      "edit_profile": "編集"
     }
   },
   "app": {
     "title": "Sampay | 個人間決済リンクをたったひとつのリンクで"
   },
   "auth": {
-    "sign-in": {
+    "sign_in": {
       "title": "ログイン",
-      "forgot-password": "パスワードをお忘れですか？",
-      "have-no-account": "アカウントをお持ちでない方は",
-      "sign-up": "新規登録"
+      "forgot_password": "パスワードをお忘れですか？",
+      "have_no_account": "アカウントをお持ちでない方は",
+      "sign_up": "新規登録"
     }
   },
   "header": {
-    "sign-in": "ログイン",
-    "sign-up": "新規登録",
-    "sign-out": "ログアウト"
+    "sign_in": "ログイン",
+    "sign_up": "新規登録",
+    "sign_out": "ログアウト"
   },
   "form": {
     "change": "変更する",
-    "choose-file": "ファイルを選択してください",
+    "choose_file": "ファイルを選択してください",
     "complete": "完了",
     "email": "メールアドレス",
     "next": "次へ",
     "password": "パスワード",
-    "sign-in": "ログイン",
-    "sign-up": "登録する",
+    "sign_in": "ログイン",
+    "sign_up": "登録する",
     "skip": "スキップ",
     "submit": "送信",
     "error": {
-      "invalid-file-type": "ファイル形式が無効です",
-      "too-large-file": "ファイルサイズが大きすぎます。{{size}}以下のファイルを選択してください"
+      "invalid_file_type": "ファイル形式が無効です",
+      "too_large_file": "ファイルサイズが大きすぎます。{{size}}以下のファイルを選択してください"
     }
   },
   "model": {

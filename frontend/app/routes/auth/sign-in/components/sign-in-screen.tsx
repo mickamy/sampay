@@ -30,20 +30,20 @@ export default function SignInScreen() {
     <>
       <div className="container mx-auto flex h-screen w-full flex-col justify-center px-12 space-y-6 sm:w-[420px] lg:p-8">
         <div className="flex flex-col space-y-2 text-center">
-          <h1 className="text-2xl font-semibold">{t("auth.sign-in.title")}</h1>
+          <h1 className="text-2xl font-semibold">{t("auth.sign_in.title")}</h1>
         </div>
         <SignInForm onSubmitData={onSubmit} error={actionData?.error} />
         <Separator />
         <p className="flex flex-col space-y-4 px-8 text-center text-sm text-muted-foreground">
-          <UnderlinedLink to="/auth/forgot-password">
-            {t("auth.sign-in.forgot-password")}
+          <UnderlinedLink to="/auth/forgot_password">
+            {t("auth.sign_in.forgot_password")}
           </UnderlinedLink>
         </p>
         <Separator />
         <p className="flex flex-row justify-center text-sm text-muted-foreground">
-          {t("auth.sign-in.have-no-account")}
+          {t("auth.sign_in.have_no_account")}
           <UnderlinedLink to="/account/sign-up">
-            {t("auth.sign-in.sign-up")}
+            {t("auth.sign_in.sign_up")}
           </UnderlinedLink>
         </p>
       </div>

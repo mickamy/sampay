@@ -37,12 +37,12 @@ export const loader: LoaderFunction = async ({ request }) => {
       case "completed":
         return redirect("/admin");
       default:
-        throw new Response(null, { status: 500 });
+        throw new Error(`unknown step: ${step}`);
     }
   })
     .then((it) => {
       if (it.isRight()) {
-        throw new Response(null, { status: 500 });
+        throw new Error("unexpected right");
       }
       return it;
     })

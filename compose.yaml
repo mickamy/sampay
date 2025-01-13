@@ -27,7 +27,7 @@ services:
       PUBLIC_API_BASE_URL: http://api:8080
       PUBLIC_BUCKET_NAME: sampay-public
       SESSION_SECRET: secret
-    command: npm run dev
+    command: sh -c "npm ci && npm run dev"
     volumes:
       - ./frontend:/src:delegated
       - ./log:/var/log:delegated
@@ -94,6 +94,17 @@ services:
       default:
         ipv4_address: 10.0.2.20
 
+  cloudfront:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./cloudfront/nginx.conf:/etc/nginx/nginx.conf
+      - ./cloudfront/default.conf:/etc/nginx/conf.d/default.conf
+    dns:
+      - 10.0.2.20
+    networks:
+      default:
 
 networks:
   default:
