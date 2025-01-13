@@ -14,10 +14,16 @@ message UserProfile {
 message UpdateUserProfileRequest {
   string name = 1 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.max_len = 64];
   optional string bio = 2;
-  optional common.v1.S3Object image = 3;
 }
 
 message UpdateUserProfileResponse {
+}
+
+message UpdateUserProfileImageRequest {
+  common.v1.S3Object image = 1;
+}
+
+message UpdateUserProfileImageResponse {
 }
 
 message DeleteUserProfileImageRequest {
@@ -28,5 +34,6 @@ message DeleteUserProfileImageResponse {
 
 service UserProfileService {
   rpc UpdateUserProfile(UpdateUserProfileRequest) returns (UpdateUserProfileResponse);
+  rpc UpdateUserProfileImage(UpdateUserProfileImageRequest) returns (UpdateUserProfileImageResponse);
   rpc DeleteUserProfileImage(DeleteUserProfileImageRequest) returns (DeleteUserProfileImageResponse);
 }
