@@ -24,7 +24,7 @@ func TestGetUser_Do(t *testing.T) {
 	db := newReadWriter(t)
 	user := userFixture.User(func(m *model.User) {
 		m.Profile = userFixture.UserProfile(func(m *model.UserProfile) {
-			m.Image = ptr.Of(commonFixture.S3Object(nil))
+			m.SetImage(ptr.Of(commonFixture.S3Object(nil)))
 		})
 		m.Links = []model.UserLink{
 			userFixture.UserLink(func(m *model.UserLink) {

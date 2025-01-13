@@ -9,9 +9,11 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
+	commonFixture "mickamy.com/sampay/internal/domain/common/fixture"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/domain/user/repository"
+	"mickamy.com/sampay/internal/lib/ptr"
 )
 
 func TestUserProfile_Create(t *testing.T) {
@@ -93,4 +95,35 @@ func TestUserProfile_Find(t *testing.T) {
 			tc.assert(t, got, err)
 		})
 	}
+}
+
+func TestUserProfile_Update(t *testing.T) {
+	t.Parallel()
+
+	// arrange
+	ctx := context.Background()
+	db := newReadWriter(t)
+	user := userFixture.User(nil)
+	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
+	m := userFixture.UserProfile(func(m *model.UserProfile) {
+		m.UserID = user.ID
+		m.Bio = nil
+		m.SetImage(ptr.Of(commonFixture.S3Object(nil)))
+	})
+	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&m).Error)
+	m.Name = "new name"
+	m.Bio = ptr.Of("new bio")
+	m.SetImage(nil)
+
+	// act
+	sut := repository.NewUserProfile(db.WriterDB())
+	err := sut.Update(ctx, &m)
+
+	// assert
+	require.NoError(t, err)
+	var got model.UserProfile
+	require.NoError(t, db.ReaderDB().WithContext(ctx).Where("user_id = ?", user.ID).First(&got).Error)
+	assert.Equal(t, m.Name, got.Name)
+	assert.Equal(t, *m.Bio, *got.Bio)
+	assert.Nil(t, got.ImageID)
 }

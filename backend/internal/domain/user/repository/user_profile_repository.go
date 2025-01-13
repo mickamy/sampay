@@ -5,10 +5,10 @@ import (
 	"errors"
 
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/domain/user/model"
+	"mickamy.com/sampay/internal/lib/ptr"
 )
 
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
@@ -47,7 +47,13 @@ func (repo *userProfile) FindBySlug(ctx context.Context, slug string, scopes ...
 }
 
 func (repo *userProfile) Update(ctx context.Context, m *model.UserProfile) error {
-	return repo.db.WithContext(ctx).Clauses(clause.Returning{}).Where("user_id = ?", m.UserID).Save(m).Error
+	return repo.db.WithContext(ctx).
+		Where("user_id = ?", m.UserID).
+		Updates(m).
+		Update("bio", ptr.NullIfZero(m.Bio)).
+		Update("image_id", ptr.NullIfZero(m.ImageID)).
+		Debug().
+		Error
 }
 
 func (repo *userProfile) WithTx(tx *database.DB) UserProfile {
