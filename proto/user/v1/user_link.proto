@@ -22,7 +22,7 @@ message UserLink {
   string uri = 3 [(buf.validate.field).string.uri = true];
   string provider_type = 4;
   UserLinkDisplayAttribute display_attribute = 5;
-  optional common.v1.S3Object qr_code = 6;
+  optional string qr_code_url = 6;
 }
 
 message ListUserLinkRequest {
