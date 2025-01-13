@@ -1,6 +1,6 @@
 import { useLoaderData } from "react-router";
+import UserProfile from "~/components/user-profile";
 import type { User } from "~/models/user/user-model";
-import AdminUserProfile from "~/routes/admin/components/admin-user-profile";
 
 export interface LoaderData {
   user: User;
@@ -12,7 +12,7 @@ export default function AdminScreen() {
   return (
     <>
       <div className="container mx-auto flex w-full flex-col items-center p-12 space-y-6 sm:w-[420px] lg:p-8">
-        <AdminUserProfile profile={user.profile} />
+        <UserProfile admin profile={user.profile} />
       </div>
     </>
   );
