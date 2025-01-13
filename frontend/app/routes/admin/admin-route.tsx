@@ -8,13 +8,14 @@ import {
 } from "react-router";
 import { userProfileSchema } from "~/components/user-profile-form";
 import { withAuthentication } from "~/lib/api/request";
-import type { APIError } from "~/lib/api/response";
-import type { Either } from "~/lib/either/either";
+import type { S3Object } from "~/models/common/s3-object-model";
 import { convertToUser } from "~/models/user/user-model";
 import AdminScreen, {
   type ActionData,
   type LoaderData,
 } from "~/routes/admin/components/admin-screen";
+import { userProfileImageSchema } from "~/routes/admin/components/form/user-profile-image-form";
+import { directUpload } from "~/services/.server/direct-upload-service";
 
 export const loader: LoaderFunction = async ({ request }) => {
   return withAuthentication({ request }, async ({ getClient }) => {
@@ -48,21 +49,19 @@ export const action: ActionFunction = async ({ request }) => {
   switch (request.method) {
     case "PUT": {
       if (request.headers.get("content-type")?.startsWith("application/json")) {
-        return handleJSONPut({ request }).then((it) => it.value);
+        return handleJSONPut({ request });
       }
       if (
         request.headers.get("content-type")?.startsWith("multipart/form-data")
       ) {
-        return handleMultipartPut({ request }).then((it) => it.value);
+        return handleMultipartPut({ request });
       }
       throw new Error("unsupported content type");
     }
   }
 };
 
-async function handleJSONPut({
-  request,
-}: { request: Request }): Promise<Either<Response, APIError>> {
+async function handleJSONPut({ request }: { request: Request }) {
   const body = await request.json();
   switch (body.type) {
     case "link":
@@ -74,12 +73,14 @@ async function handleJSONPut({
 
 async function handleMultipartPut({
   request,
-}: { request: Request }): Promise<Either<Response, APIError>> {
+}: { request: Request }): Promise<Response> {
   const formData = await request.formData();
   const type = formData.get("type");
   switch (type) {
     case "profile":
       return putProfile({ request, body: formData });
+    case "profile_image":
+      return putProfileImage({ request, body: formData });
     default:
       throw new Error(`unknown type: ${type}`);
   }
@@ -88,7 +89,7 @@ async function handleMultipartPut({
 async function putProfile({
   request,
   body,
-}: { request: Request; body: FormData }): Promise<Either<Response, APIError>> {
+}: { request: Request; body: FormData }) {
   return withAuthentication({ request }, async ({ getClient }) => {
     const { image, ...data } = userProfileSchema.parse(
       Object.fromEntries(body),
@@ -99,13 +100,55 @@ async function putProfile({
       putProfileError: undefined,
     };
     return Response.json(actionData);
-  });
+  })
+    .then((it) =>
+      it.map((error) =>
+        Response.json({
+          putProfileSuccess: false,
+          putProfileError: error,
+        }),
+      ),
+    )
+    .then((it) => it.value);
 }
 
-async function putLink({
+async function putProfileImage({
   request,
   body,
-}: { request: Request; body: unknown }): Promise<Either<Response, APIError>> {
+}: { request: Request; body: FormData }) {
+  return withAuthentication({ request }, async ({ getClient }) => {
+    const { image } = userProfileImageSchema.parse(Object.fromEntries(body));
+
+    let imageObj: S3Object | undefined;
+    if (image) {
+      imageObj = await directUpload({
+        type: "profile_image",
+        file: image,
+        getClient,
+      });
+    }
+
+    await getClient(UserProfileService).updateUserProfileImage({
+      image: imageObj,
+    });
+    const actionData: ActionData = {
+      putProfileImageSuccess: true,
+      putProfileImageError: undefined,
+    };
+    return Response.json(actionData);
+  })
+    .then((it) =>
+      it.map((error) =>
+        Response.json({
+          putProfileImageSuccess: false,
+          putProfileImageError: error,
+        }),
+      ),
+    )
+    .then((it) => it.value);
+}
+
+async function putLink({ request, body }: { request: Request; body: unknown }) {
   console.log("putLink", request, body);
   return Response.json({});
 }

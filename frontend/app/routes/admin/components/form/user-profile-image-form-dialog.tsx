@@ -51,6 +51,7 @@ export default function UserProfileImageFormDialog({
           <UserProfileImageForm
             profile={profile}
             onSubmitData={onSubmit}
+            onCancel={onClose}
             error={actionData?.putProfileImageError}
           />
         );

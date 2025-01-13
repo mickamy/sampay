@@ -47,12 +47,14 @@ export const userProfileImageSchema = z.object({
 interface Props extends HTMLAttributes<HTMLFormElement> {
   profile: UserProfile;
   onSubmitData: (data: z.infer<typeof userProfileImageSchema>) => void;
+  onCancel?: () => void;
   error?: APIError;
 }
 
 export default function UserProfileImageForm({
   profile,
   onSubmitData,
+  onCancel,
   error,
   className,
   ...props
@@ -96,7 +98,8 @@ export default function UserProfileImageForm({
     if (inputElement) {
       inputElement.value = "";
     }
-  }, [setValue]);
+    onSubmitData({ type: "profile_image" });
+  }, [setValue, onSubmitData]);
 
   const { t } = useSafeTranslation();
 
@@ -122,7 +125,7 @@ export default function UserProfileImageForm({
                   <button
                     type="button"
                     onClick={onDelete}
-                    className={cn("text-sm", underlinedLinkStyle)}
+                    className={cn("text-sm px-4 py-2", underlinedLinkStyle)}
                   >
                     {t("form.delete")}
                   </button>
@@ -154,12 +157,17 @@ export default function UserProfileImageForm({
         />
         <Spacer />
         <div className="flex flex-row space-x-2">
-          <Button variant="outline" className="w-full">
-            {t("form.cancel")}
-          </Button>
-          <Button type="button" className="w-full">
-            {t("form.upload")}
-          </Button>
+          {onCancel && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              className="w-full"
+            >
+              {t("form.cancel")}
+            </Button>
+          )}
+          <Button className="w-full">{t("form.upload")}</Button>
         </div>
       </form>
     </Form>
