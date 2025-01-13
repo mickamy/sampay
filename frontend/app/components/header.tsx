@@ -13,7 +13,7 @@ import {
 import { useSafeTranslation } from "~/lib/i18n/hooks";
 import { cn } from "~/lib/utils";
 
-interface Props extends React.HTMLAttributes<HTMLHeadElement> {
+interface Props extends HTMLAttributes<HTMLHeadElement> {
   isLoggedIn: boolean;
 }
 
