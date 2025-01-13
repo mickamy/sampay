@@ -10,11 +10,13 @@ import (
 	commonv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/common/v1"
 	userv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/user/v1"
 	"connectrpc.com/connect"
+	"github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"mickamy.com/sampay/internal/di"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
+	commonFixture "mickamy.com/sampay/internal/domain/common/fixture"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/lib/either"
@@ -240,6 +242,77 @@ func TestUserLink_UpdateUserLink(t *testing.T) {
 			connReq := connecttest.NewAuthenticatedRequest(t, ctx, req, nil, authModel.MustNewSession(user.ID), infras.KVS)
 			got, err := client.UpdateUserLink(ctx, connReq)
 
+			// assert
+			tc.assert(t, got, err)
+		})
+	}
+}
+
+func TestUserLink_UpdateUserLinkQRCode(t *testing.T) {
+	t.Parallel()
+
+	tsc := []struct {
+		name    string
+		arrange func(t *testing.T, ctx context.Context, infras di.Infras, linkID string) *userv1.UpdateUserLinkQRCodeRequest
+		assert  func(t *testing.T, got *connect.Response[userv1.UpdateUserLinkQRCodeResponse], err error)
+	}{
+		{
+			name: "success (image is nil)",
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, linkID string) *userv1.UpdateUserLinkQRCodeRequest {
+				return &userv1.UpdateUserLinkQRCodeRequest{
+					Id: linkID,
+				}
+			},
+			assert: func(t *testing.T, got *connect.Response[userv1.UpdateUserLinkQRCodeResponse], err error) {
+				require.NoError(t, err)
+				assert.Empty(t, got.Msg.String())
+			},
+		},
+		{
+			name: "success (image is not nil)",
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, linkID string) *userv1.UpdateUserLinkQRCodeRequest {
+				return &userv1.UpdateUserLinkQRCodeRequest{
+					Id: linkID,
+					QrCode: &commonv1.S3Object{
+						Bucket: gofakeit.GlobalFaker.ProductName(),
+						Key:    gofakeit.GlobalFaker.UUID(),
+					},
+				}
+			},
+			assert: func(t *testing.T, got *connect.Response[userv1.UpdateUserLinkQRCodeResponse], err error) {
+				require.NoError(t, err)
+				assert.Empty(t, got.Msg.String())
+			},
+		},
+	}
+
+	for _, tc := range tsc {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			// arrange
+			ctx := context.Background()
+			infras := di.NewInfras(newReadWriter(t), newKVS(t))
+			user := userFixture.User(func(m *userModel.User) {
+				m.Profile = userFixture.UserProfile(func(m *userModel.UserProfile) {
+					m.SetImage(ptr.Of(commonFixture.S3Object(nil)))
+				})
+				m.Links = []userModel.UserLink{
+					userFixture.UserLink(func(m *userModel.UserLink) {
+						m.SetQRCode(ptr.Of(commonFixture.S3Object(nil)))
+					}),
+				}
+			})
+			require.NoError(t, infras.Writer.DB.WithContext(ctx).Create(&user).Error)
+			req := tc.arrange(t, ctx, infras, user.Links[0].ID)
+			server := newUserLinkServer(t, infras)
+
+			// act
+			client := userv1connect.NewUserLinkServiceClient(http.DefaultClient, server.URL)
+			connReq := connecttest.NewAuthenticatedRequest(t, ctx, req, nil, authModel.MustNewSession(user.ID), infras.KVS)
+			got, err := client.UpdateUserLinkQRCode(ctx, connReq)
+ 
 			// assert
 			tc.assert(t, got, err)
 		})
