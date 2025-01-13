@@ -9,8 +9,8 @@ import (
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
-	authDTO "mickamy.com/sampay/internal/domain/auth/dto"
-	dto "mickamy.com/sampay/internal/domain/common/dto"
+	authResponse "mickamy.com/sampay/internal/domain/auth/dto/response"
+	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 	commonModel "mickamy.com/sampay/internal/domain/common/model"
 	"mickamy.com/sampay/internal/domain/registration/usecase"
 	"mickamy.com/sampay/internal/lib/contexts"
@@ -41,18 +41,18 @@ func (h *Account) SignUp(
 		localizable := new(commonModel.LocalizableError)
 		if errors.As(err, &localizable) {
 			if errors.Is(err, usecase.ErrCreateAccountEmailAlreadyExists) {
-				return nil, dto.NewBadRequest(err).
+				return nil, commonResponse.NewBadRequest(err).
 					WithFieldViolation("email", localizable.Localize(lang)).
 					AsConnectError()
 			}
-			return nil, dto.NewBadRequest(err).WithMessage(localizable.Localize(lang)).AsConnectError()
+			return nil, commonResponse.NewBadRequest(err).WithMessage(localizable.Localize(lang)).AsConnectError()
 		}
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-		return nil, dto.NewInternalError(ctx, err).AsConnectError()
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&registrationv1.SignUpResponse{
 		UserId: out.Session.UserID,
-		Tokens: authDTO.NewTokens(out.Session.Tokens),
+		Tokens: authResponse.NewTokens(out.Session.Tokens),
 	})
 	return res, nil
 }

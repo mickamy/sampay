@@ -24,6 +24,10 @@ func (m S3Object) URL() string {
 	return fmt.Sprintf("%s://%s/%s", scheme, domain, m.Key)
 }
 
+func (m S3Object) IsZero() bool {
+	return m == S3Object{}
+}
+
 func (m *S3Object) BeforeCreate(db *gorm.DB) error {
 	if m.ID == "" {
 		m.ID = ulid.New()

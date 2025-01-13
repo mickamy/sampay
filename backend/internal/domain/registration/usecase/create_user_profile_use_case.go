@@ -46,8 +46,9 @@ func (uc *createUserProfile) Do(ctx context.Context, input CreateUserProfileInpu
 			UserID: contexts.MustAuthenticatedUserID(ctx),
 			Name:   input.Name,
 			Bio:    input.Bio,
-			Image:  input.Image,
 		}
+		m.SetImage(input.Image)
+
 		if err := uc.userProfileRepo.WithTx(tx.WriterDB()).Create(ctx, &m); err != nil {
 			return fmt.Errorf("failed to persist user profile: %w", err)
 		}

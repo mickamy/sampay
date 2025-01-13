@@ -57,7 +57,7 @@ func TestUser_GetMe(t *testing.T) {
 			infras := di.NewInfras(newReadWriter(t), newKVS(t))
 			user := userFixture.User(func(m *userModel.User) {
 				m.Profile = userFixture.UserProfile(func(m *userModel.UserProfile) {
-					m.Image = ptr.Of(commonFixture.S3Object(nil))
+					m.SetImage(ptr.Of(commonFixture.S3Object(nil)))
 				})
 				m.Links = []userModel.UserLink{
 					userFixture.UserLink(nil),
@@ -135,7 +135,7 @@ func TestUser_GetUser(t *testing.T) {
 			infras := di.NewInfras(newReadWriter(t), newKVS(t))
 			user := userFixture.User(func(m *userModel.User) {
 				m.Profile = userFixture.UserProfile(func(m *userModel.UserProfile) {
-					m.Image = ptr.Of(commonFixture.S3Object(nil))
+					m.SetImage(ptr.Of(commonFixture.S3Object(nil)))
 				})
 				m.Links = []userModel.UserLink{
 					userFixture.UserLink(nil),

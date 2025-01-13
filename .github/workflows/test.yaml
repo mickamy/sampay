@@ -107,18 +107,14 @@ jobs:
             S3_PUBLIC_BUCKET_NAME=sampay-public
           EOF
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build LocalStack image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./localstack
-          tags: localstack:4.0.3
-          load: true
-
       - name: Start LocalStack
-        run: docker run -d --name localstack -p 4566:4566 -p 4510-4559:4510-4559 localstack:4.0.3
+        uses: LocalStack/setup-localstack@v0.2.3
+        with:
+          image-tag: '4.0.3'
+          install-awslocal: 'true'
+
+      - name: Execute localstack init script
+        run: ./localstack/init.sh
 
       - name: Prepare Database
         run: cd backend && make db-prepare

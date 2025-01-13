@@ -46,3 +46,35 @@ func TestMap(t *testing.T) {
 		})
 	}
 }
+
+func TestNullIfZero(t *testing.T) {
+	t.Parallel()
+
+	tcs := []struct {
+		name string
+		val  *int
+		want *int
+	}{
+		{
+			name: "val is nil",
+			val:  nil,
+			want: nil,
+		},
+		{
+			name: "val is not nil",
+			val:  ptr.Of(1),
+			want: ptr.Of(1),
+		},
+	}
+
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := ptr.NullIfZero(tc.val)
+
+			assert.Equal(t, tc.want, got)
+		})
+	}
+}

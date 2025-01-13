@@ -13,4 +13,5 @@ func Route(mux *http.ServeMux, infras di.Infras, options ...connect.HandlerOptio
 	handlers := di.InitUserHandler(infras.DB, infras.ReadWriter, infras.Writer, infras.Reader, infras.KVS)
 	mux.Handle(userv1connect.NewUserServiceHandler(handlers.User, options...))
 	mux.Handle(userv1connect.NewUserLinkServiceHandler(handlers.UserLink, options...))
+	mux.Handle(userv1connect.NewUserProfileServiceHandler(handlers.UserProfile, options...))
 }

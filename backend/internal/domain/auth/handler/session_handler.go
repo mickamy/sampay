@@ -11,9 +11,9 @@ import (
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
-	authDTO "mickamy.com/sampay/internal/domain/auth/dto"
+	authResponse "mickamy.com/sampay/internal/domain/auth/dto/response"
 	"mickamy.com/sampay/internal/domain/auth/usecase"
-	dto "mickamy.com/sampay/internal/domain/common/dto"
+	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 	"mickamy.com/sampay/internal/lib/contexts"
 	"mickamy.com/sampay/internal/misc/i18n"
 )
@@ -46,16 +46,16 @@ func (h *Session) SignIn(
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
-		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
 			return nil, localizable.AsConnectError()
 		}
 
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-		return nil, dto.NewInternalError(ctx, err).AsConnectError()
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&authv1.SignInResponse{
 		UserId: out.Session.UserID,
-		Tokens: authDTO.NewTokens(out.Session.Tokens),
+		Tokens: authResponse.NewTokens(out.Session.Tokens),
 	})
 	return res, nil
 }
@@ -71,7 +71,7 @@ func (h *Session) Refresh(
 		tknFromCookie, err := extractRefreshTokenFromCookie(req)
 		if err != nil {
 			slogger.ErrorCtx(ctx, "failed to extract refresh token from cookie", "err", err)
-			return nil, dto.NewBadRequest(err).
+			return nil, commonResponse.NewBadRequest(err).
 				WithMessage(i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "auth.usecase.error.invalid_refresh_token"})).
 				AsConnectError()
 		}
@@ -82,16 +82,16 @@ func (h *Session) Refresh(
 		RefreshToken: *tkn,
 	})
 	if err != nil {
-		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
 			return nil, localizable.AsConnectError()
 		}
 
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-		return nil, dto.NewInternalError(ctx, err).AsConnectError()
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 
 	return connect.NewResponse(&authv1.RefreshResponse{
-		Tokens: authDTO.NewTokens(out.Tokens),
+		Tokens: authResponse.NewTokens(out.Tokens),
 	}), nil
 }
 
@@ -119,14 +119,14 @@ func (h *Session) SignOut(
 	if err != nil {
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		lang := contexts.MustLanguage(ctx)
-		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
 			return nil, localizable.AsConnectError()
 		}
 
 		// do not return error if deleting tokens failed
 		if !errors.Is(err, usecase.ErrDeleteSessionDeletingTokensFailed) {
 			slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-			return nil, dto.NewInternalError(ctx, err).AsConnectError()
+			return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 		}
 	}
 

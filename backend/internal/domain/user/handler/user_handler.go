@@ -8,7 +8,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
-	dto "mickamy.com/sampay/internal/domain/common/dto"
+	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 	"mickamy.com/sampay/internal/domain/user/dto/response"
 	"mickamy.com/sampay/internal/domain/user/usecase"
 	"mickamy.com/sampay/internal/lib/contexts"
@@ -33,12 +33,12 @@ func (h User) GetMe(ctx context.Context, req *connect.Request[userv1.GetMeReques
 	out, err := h.me.Do(ctx, usecase.GetMeInput{})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
-		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
 			return nil, localizable.AsConnectError()
 		}
 
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-		return nil, dto.NewInternalError(ctx, err).AsConnectError()
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&userv1.GetMeResponse{
 		User: response.NewUser(out.User),
@@ -52,12 +52,12 @@ func (h User) GetUser(ctx context.Context, req *connect.Request[userv1.GetUserRe
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
-		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
 			return nil, localizable.AsConnectError()
 		}
 
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-		return nil, dto.NewInternalError(ctx, err).AsConnectError()
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 
 	res := connect.NewResponse(&userv1.GetUserResponse{
