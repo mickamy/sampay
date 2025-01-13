@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type HTMLAttributes, useCallback, useState } from "react";
+import type { HTMLAttributes } from "react";
 import Avatar from "~/components/avatar";
 import ErrorMessage from "~/components/error-message";
 import { FormField } from "~/components/form";
@@ -15,8 +15,8 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import useImagePreview from "~/hooks/use-image-preview";
 import type { APIError } from "~/lib/api/response";
-import { arrayBufferToString } from "~/lib/buffer";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
 import { useSafeTranslation } from "~/lib/i18n/hooks";
@@ -70,24 +70,7 @@ export default function UserProfileForm({
     error,
   });
 
-  const [imageURL, setImageURL] = useState<string | undefined>(
-    profile?.imageURL,
-  );
-  const onImageChange = useCallback((file: File | null) => {
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        let s: string;
-        if (reader.result instanceof ArrayBuffer) {
-          s = arrayBufferToString(reader.result);
-        } else {
-          s = reader.result as string;
-        }
-        setImageURL(s);
-      };
-      reader.readAsDataURL(file);
-    }
-  }, []);
+  const { imageURL, onImageChange } = useImagePreview(profile?.imageURL);
 
   const { t } = useSafeTranslation();
 

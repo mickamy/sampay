@@ -1,35 +1,33 @@
 import { useEffect } from "react";
 import Dialog from "~/components/dialog";
-import UserProfileForm, {
-  type userProfileSchema,
-} from "~/components/user-profile-form";
+import UserLinkForm, { type userLinkSchema } from "~/components/user-link-form";
 import type { APIError } from "~/lib/api/response";
 import type { z } from "~/lib/form/zod";
 import { useSafeTranslation } from "~/lib/i18n/hooks";
-import type { UserProfile } from "~/models/user/user-profile-model";
+import type { UserLink } from "~/models/user/user-link-model";
 
 export interface ActionData {
-  putProfileSuccess?: boolean;
-  putProfileError?: APIError;
+  putLinkSuccess?: boolean;
+  putLinkError?: APIError;
 }
 
 type Props = {
-  profile: UserProfile;
+  link: UserLink;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: z.infer<typeof userProfileSchema>) => void;
+  onSubmit: (data: z.infer<typeof userLinkSchema>) => void;
   actionData?: ActionData;
 };
 
-export default function UserProfileFormDialog({
-  profile,
+export default function UserLinkFormDialog({
+  link,
   isOpen,
   onClose,
   onSubmit,
   actionData,
 }: Props) {
   useEffect(() => {
-    if (actionData?.putProfileSuccess && !actionData?.putProfileError) {
+    if (actionData?.putLinkSuccess && !actionData?.putLinkError) {
       onClose();
     }
   }, [actionData, onClose]);
@@ -41,14 +39,15 @@ export default function UserProfileFormDialog({
       isOpen={isOpen}
       onClose={onClose}
       title={() => (
-        <div className="text-center">{t("admin.index.edit_profile")}</div>
+        <div className="text-center">{t("admin.index.edit_link")}</div>
       )}
       content={() => {
         return (
-          <UserProfileForm
-            profile={profile}
+          <UserLinkForm
+            link={link}
             onSubmitData={onSubmit}
-            error={actionData?.putProfileError}
+            onCancel={onClose}
+            error={actionData?.putLinkError}
           />
         );
       }}

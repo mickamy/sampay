@@ -29,6 +29,7 @@ func TestGetMe_Do(t *testing.T) {
 		m.Links = []model.UserLink{
 			userFixture.UserLink(func(m *model.UserLink) {
 				m.DisplayAttribute = userFixture.UserLinkDisplayAttribute(nil)
+				m.QRCode = ptr.Of(commonFixture.S3Object(nil))
 			}),
 		}
 	})
@@ -46,4 +47,5 @@ func TestGetMe_Do(t *testing.T) {
 	assert.NotEmpty(t, got.Profile.Image)
 	require.NotEmpty(t, got.Links)
 	assert.NotEmpty(t, got.Links[0].DisplayAttribute)
+	assert.NotEmpty(t, got.Links[0].QRCode)
 }

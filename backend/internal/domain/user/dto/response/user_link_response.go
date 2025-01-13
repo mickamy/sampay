@@ -4,6 +4,8 @@ import (
 	userv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/user/v1"
 
 	"mickamy.com/sampay/internal/domain/user/model"
+	"mickamy.com/sampay/internal/lib/operator"
+	"mickamy.com/sampay/internal/lib/ptr"
 	"mickamy.com/sampay/internal/lib/slices"
 )
 
@@ -14,6 +16,11 @@ func NewUserLink(m model.UserLink) *userv1.UserLink {
 		Uri:              m.URI,
 		ProviderType:     m.ProviderType.String(),
 		DisplayAttribute: NewDisplayAttribute(m.DisplayAttribute),
+		QrCodeUrl: operator.TernaryFunc(m.QRCode != nil, func() *string {
+			return ptr.Of(m.QRCode.URL())
+		}, func() *string {
+			return nil
+		}),
 	}
 }
 

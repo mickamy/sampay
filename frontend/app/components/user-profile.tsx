@@ -85,7 +85,7 @@ function UserProfileAvatar({ admin, src, onClick }: UserProfileAvatarProps) {
       className="relative inline-block cursor-pointer"
     >
       <Avatar src={src} className="w-24 h-24" />
-      <div className="absolute bottom-0 right-0 rounded-full shadow-lg p-2">
+      <div className="absolute bottom-0 right-0 rounded-full shadow-lg p-2 bg-white">
         <Pencil size={24} />
       </div>
     </div>

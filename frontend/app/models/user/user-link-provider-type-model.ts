@@ -16,3 +16,18 @@ export function getUserLinkProviderTypeImage(
       return "/provider/other.svg";
   }
 }
+
+export function getUserLinkProviderTypeByURI(
+  uri: string,
+): UserLinkProviderType {
+  if (uri.startsWith("kyash://")) {
+    return "kyash";
+  }
+  if (uri.startsWith("https://qr.paypay")) {
+    return "paypay";
+  }
+  if (uri.startsWith("https://www.amazon")) {
+    return "amazon";
+  }
+  return "other";
+}

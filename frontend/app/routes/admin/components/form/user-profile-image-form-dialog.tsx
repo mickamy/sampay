@@ -44,7 +44,7 @@ export default function UserProfileImageFormDialog({
       isOpen={isOpen}
       onClose={onClose}
       title={() => (
-        <div className="text-center">{t("admin.index.edit_profile")}</div>
+        <div className="text-center">{t("admin.index.edit_profile_image")}</div>
       )}
       content={() => {
         return (

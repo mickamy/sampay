@@ -10,7 +10,9 @@
   },
   "admin": {
     "index": {
-      "edit_profile": "プロフィールを編集"
+      "edit_link": "リンクを編集",
+      "edit_profile": "プロフィールを編集",
+      "edit_profile_image": "プロフィール画像を編集"
     }
   },
   "app": {
@@ -36,16 +38,21 @@
     "complete": "完了",
     "delete": "削除",
     "email": "メールアドレス",
+    "link_name": "表示名",
     "next": "次へ",
     "password": "パスワード",
     "profile_image": "プロフィール画像",
+    "qr_code": "QRコード",
     "sign_in": "ログイン",
     "sign_up": "登録する",
     "skip": "スキップ",
     "submit": "送信",
+    "update": "更新",
     "upload": "アップロード",
+    "uri": "リンク",
     "error": {
       "invalid_file_type": "ファイル形式が無効です",
+      "invalid_qr_code": "QRコードが無効です",
       "too_large_file": "ファイルサイズが大きすぎます。{{size}}以下のファイルを選択してください"
     }
   },

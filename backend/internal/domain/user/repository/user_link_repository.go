@@ -82,3 +82,8 @@ func UserLinkJoinDisplayAttribute(db *database.DB) *database.DB {
 	grm := db.Joins("DisplayAttribute").Order(`"DisplayAttribute".display_order`)
 	return &database.DB{DB: grm}
 }
+
+func UserLinkPreloadQRCode(db *database.DB) *database.DB {
+	grm := db.Preload("QRCode")
+	return &database.DB{DB: grm}
+}

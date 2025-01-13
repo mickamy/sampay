@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type HTMLAttributes, useCallback, useRef, useState } from "react";
+import { type HTMLAttributes, useCallback, useRef } from "react";
 import Avatar from "~/components/avatar";
 import Spacer from "~/components/spacer";
 import { Button } from "~/components/ui/button";
@@ -14,8 +14,8 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { underlinedLinkStyle } from "~/components/underlined-link";
+import useImagePreview from "~/hooks/use-image-preview";
 import type { APIError } from "~/lib/api/response";
-import { arrayBufferToString } from "~/lib/buffer";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
 import { useSafeTranslation } from "~/lib/i18n/hooks";
@@ -69,37 +69,20 @@ export default function UserProfileImageForm({
     error,
   });
 
-  const [imageURL, setImageURL] = useState<string | undefined>(
-    profile?.imageURL,
-  );
-  const onImageChange = useCallback((file: File | null) => {
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        let s: string;
-        if (reader.result instanceof ArrayBuffer) {
-          s = arrayBufferToString(reader.result);
-        } else {
-          s = reader.result as string;
-        }
-        setImageURL(s);
-      };
-      reader.readAsDataURL(file);
-    }
-  }, []);
+  const { imageURL, onImageChange } = useImagePreview(profile?.imageURL);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const { setValue } = form;
   const onDelete = useCallback(() => {
-    setImageURL(undefined);
+    onImageChange(null);
     setValue("image", null);
     const inputElement = inputRef.current as HTMLInputElement | null;
     if (inputElement) {
       inputElement.value = "";
     }
     onSubmitData({ type: "profile_image" });
-  }, [setValue, onSubmitData]);
+  }, [onImageChange, setValue, onSubmitData]);
 
   const { t } = useSafeTranslation();
 

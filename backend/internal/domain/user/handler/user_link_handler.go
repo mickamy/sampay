@@ -8,6 +8,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
+	commonRequest "mickamy.com/sampay/internal/domain/common/dto/request"
 	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 	"mickamy.com/sampay/internal/domain/user/dto/response"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
@@ -17,23 +18,26 @@ import (
 )
 
 type UserLink struct {
-	create usecase.CreateUserLink
-	list   usecase.ListUserLink
-	update usecase.UpdateUserLink
-	delete usecase.DeleteUserLink
+	create       usecase.CreateUserLink
+	list         usecase.ListUserLink
+	update       usecase.UpdateUserLink
+	updateQRCode usecase.UpdateUserLinkQRCode
+	delete       usecase.DeleteUserLink
 }
 
 func NewUserLink(
 	create usecase.CreateUserLink,
 	list usecase.ListUserLink,
 	update usecase.UpdateUserLink,
+	updateQRCode usecase.UpdateUserLinkQRCode,
 	delete usecase.DeleteUserLink,
 ) *UserLink {
 	return &UserLink{
-		create: create,
-		list:   list,
-		update: update,
-		delete: delete,
+		create:       create,
+		list:         list,
+		update:       update,
+		updateQRCode: updateQRCode,
+		delete:       delete,
 	}
 }
 
@@ -116,9 +120,27 @@ func (h UserLink) UpdateUserLink(ctx context.Context, req *connect.Request[userv
 	return res, nil
 }
 
-func (h UserLink) DeleteUserLink(ctx context.Context, c *connect.Request[userv1.DeleteUserLinkRequest]) (*connect.Response[userv1.DeleteUserLinkResponse], error) {
+func (h UserLink) UpdateUserLinkQRCode(ctx context.Context, req *connect.Request[userv1.UpdateUserLinkQRCodeRequest]) (*connect.Response[userv1.UpdateUserLinkQRCodeResponse], error) {
+	_, err := h.updateQRCode.Do(ctx, usecase.UpdateUserLinkQRCodeInput{
+		ID:     req.Msg.Id,
+		QRCode: commonRequest.NewS3Object(req.Msg.QrCode),
+	})
+	if err != nil {
+		lang := contexts.MustLanguage(ctx)
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
+			return nil, localizable.AsConnectError()
+		}
+
+		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
+	}
+	res := connect.NewResponse(&userv1.UpdateUserLinkQRCodeResponse{})
+	return res, nil
+}
+
+func (h UserLink) DeleteUserLink(ctx context.Context, req *connect.Request[userv1.DeleteUserLinkRequest]) (*connect.Response[userv1.DeleteUserLinkResponse], error) {
 	_, err := h.delete.Do(ctx, usecase.DeleteUserLinkInput{
-		ID: c.Msg.Id,
+		ID: req.Msg.Id,
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
