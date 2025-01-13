@@ -9,7 +9,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
-	authDTO "mickamy.com/sampay/internal/domain/auth/dto"
+	authResponse "mickamy.com/sampay/internal/domain/auth/dto/response"
 	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 	commonModel "mickamy.com/sampay/internal/domain/common/model"
 	"mickamy.com/sampay/internal/domain/registration/usecase"
@@ -52,7 +52,7 @@ func (h *Account) SignUp(
 	}
 	res := connect.NewResponse(&registrationv1.SignUpResponse{
 		UserId: out.Session.UserID,
-		Tokens: authDTO.NewTokens(out.Session.Tokens),
+		Tokens: authResponse.NewTokens(out.Session.Tokens),
 	})
 	return res, nil
 }

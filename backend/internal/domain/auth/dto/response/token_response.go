@@ -1,4 +1,4 @@
-package dto
+package response
 
 import (
 	authv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/auth/v1"

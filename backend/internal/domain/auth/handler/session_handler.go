@@ -11,7 +11,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
-	authDTO "mickamy.com/sampay/internal/domain/auth/dto"
+	authResponse "mickamy.com/sampay/internal/domain/auth/dto/response"
 	"mickamy.com/sampay/internal/domain/auth/usecase"
 	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 	"mickamy.com/sampay/internal/lib/contexts"
@@ -55,7 +55,7 @@ func (h *Session) SignIn(
 	}
 	res := connect.NewResponse(&authv1.SignInResponse{
 		UserId: out.Session.UserID,
-		Tokens: authDTO.NewTokens(out.Session.Tokens),
+		Tokens: authResponse.NewTokens(out.Session.Tokens),
 	})
 	return res, nil
 }
@@ -91,7 +91,7 @@ func (h *Session) Refresh(
 	}
 
 	return connect.NewResponse(&authv1.RefreshResponse{
-		Tokens: authDTO.NewTokens(out.Tokens),
+		Tokens: authResponse.NewTokens(out.Tokens),
 	}), nil
 }
 
