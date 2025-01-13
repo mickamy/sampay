@@ -142,6 +142,7 @@ export default function OnboardingProfileForm({
           control={form.control}
           name="bio"
           label={t("model.user.profile.bio")}
+          type="textarea"
         />
         <ErrorMessage message={form.formState.errors.root?.message} />
         <Spacer size={1} />
