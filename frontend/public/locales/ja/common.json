@@ -10,7 +10,7 @@
   },
   "admin": {
     "index": {
-      "edit_profile": "編集"
+      "edit_profile": "プロフィールを編集"
     }
   },
   "app": {
@@ -30,16 +30,20 @@
     "sign_out": "ログアウト"
   },
   "form": {
+    "cancel": "キャンセル",
     "change": "変更する",
     "choose_file": "ファイルを選択してください",
     "complete": "完了",
+    "delete": "削除",
     "email": "メールアドレス",
     "next": "次へ",
     "password": "パスワード",
+    "profile_image": "プロフィール画像",
     "sign_in": "ログイン",
     "sign_up": "登録する",
     "skip": "スキップ",
     "submit": "送信",
+    "upload": "アップロード",
     "error": {
       "invalid_file_type": "ファイル形式が無効です",
       "too_large_file": "ファイルサイズが大きすぎます。{{size}}以下のファイルを選択してください"

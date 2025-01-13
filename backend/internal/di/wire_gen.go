@@ -216,24 +216,24 @@ func InitUserUseCase(db *database.DB, readWriter *database.ReadWriter, writer *d
 	userLink := repository2.NewUserLink(db)
 	createUserLink := usecase4.NewCreateUserLink(writer, userLink)
 	deleteUserLink := usecase4.NewDeleteUserLink(writer, userLink)
-	userProfile := repository2.NewUserProfile(db)
-	s3Object := repository3.NewS3Object(db)
-	deleteUserProfileImage := usecase4.NewDeleteUserProfileImage(writer, userProfile, s3Object)
 	user := repository2.NewUser(db)
 	getMe := usecase4.NewGetMe(reader, user)
 	getUser := usecase4.NewGetUser(reader, user)
 	listUserLink := usecase4.NewListUserLink(reader, userLink)
 	updateUserLink := usecase4.NewUpdateUserLink(writer, userLink)
+	userProfile := repository2.NewUserProfile(db)
 	updateUserProfile := usecase4.NewUpdateUserProfile(writer, userProfile)
+	s3Object := repository3.NewS3Object(db)
+	updateUserProfileImage := usecase4.NewUpdateUserProfileImage(writer, userProfile, s3Object)
 	useCases := di4.UseCases{
 		CreateUserLink:         createUserLink,
 		DeleteUserLink:         deleteUserLink,
-		DeleteUserProfileImage: deleteUserProfileImage,
 		GetMe:                  getMe,
 		GetUser:                getUser,
 		ListUserLink:           listUserLink,
 		UpdateUserLink:         updateUserLink,
 		UpdateUserProfile:      updateUserProfile,
+		UpdateUserProfileImage: updateUserProfileImage,
 	}
 	return useCases
 }
@@ -252,8 +252,8 @@ func InitUserHandler(db *database.DB, readWriter *database.ReadWriter, writer *d
 	userProfile := repository2.NewUserProfile(db)
 	updateUserProfile := usecase4.NewUpdateUserProfile(writer, userProfile)
 	s3Object := repository3.NewS3Object(db)
-	deleteUserProfileImage := usecase4.NewDeleteUserProfileImage(writer, userProfile, s3Object)
-	handlerUserProfile := handler4.NewUserProfile(updateUserProfile, deleteUserProfileImage)
+	updateUserProfileImage := usecase4.NewUpdateUserProfileImage(writer, userProfile, s3Object)
+	handlerUserProfile := handler4.NewUserProfile(updateUserProfile, updateUserProfileImage)
 	handlers := di4.Handlers{
 		User:        handlerUser,
 		UserLink:    handlerUserLink,

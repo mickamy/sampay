@@ -8,7 +8,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
-	commonRequest "mickamy.com/sampay/internal/domain/common/dto/request"
+	"mickamy.com/sampay/internal/domain/common/dto/request"
 	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 	"mickamy.com/sampay/internal/domain/user/usecase"
 	"mickamy.com/sampay/internal/lib/contexts"
@@ -16,24 +16,23 @@ import (
 
 type UserProfile struct {
 	update      usecase.UpdateUserProfile
-	deleteImage usecase.DeleteUserProfileImage
+	updateImage usecase.UpdateUserProfileImage
 }
 
 func NewUserProfile(
 	update usecase.UpdateUserProfile,
-	deleteImage usecase.DeleteUserProfileImage,
+	updateImage usecase.UpdateUserProfileImage,
 ) *UserProfile {
 	return &UserProfile{
 		update:      update,
-		deleteImage: deleteImage,
+		updateImage: updateImage,
 	}
 }
 
 func (h UserProfile) UpdateUserProfile(ctx context.Context, req *connect.Request[userv1.UpdateUserProfileRequest]) (*connect.Response[userv1.UpdateUserProfileResponse], error) {
 	_, err := h.update.Do(ctx, usecase.UpdateUserProfileInput{
-		Name:  req.Msg.Name,
-		Bio:   req.Msg.Bio,
-		Image: commonRequest.NewS3Object(req.Msg.Image),
+		Name: req.Msg.Name,
+		Bio:  req.Msg.Bio,
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
@@ -48,8 +47,10 @@ func (h UserProfile) UpdateUserProfile(ctx context.Context, req *connect.Request
 	return res, nil
 }
 
-func (h UserProfile) DeleteUserProfileImage(ctx context.Context, req *connect.Request[userv1.DeleteUserProfileImageRequest]) (*connect.Response[userv1.DeleteUserProfileImageResponse], error) {
-	_, err := h.update.Do(ctx, usecase.UpdateUserProfileInput{})
+func (h UserProfile) UpdateUserProfileImage(ctx context.Context, req *connect.Request[userv1.UpdateUserProfileImageRequest]) (*connect.Response[userv1.UpdateUserProfileImageResponse], error) {
+	_, err := h.updateImage.Do(ctx, usecase.UpdateUserProfileImageInput{
+		Image: request.NewS3Object(req.Msg.Image),
+	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
 		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
@@ -59,7 +60,7 @@ func (h UserProfile) DeleteUserProfileImage(ctx context.Context, req *connect.Re
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
-	res := connect.NewResponse(&userv1.DeleteUserProfileImageResponse{})
+	res := connect.NewResponse(&userv1.UpdateUserProfileImageResponse{})
 	return res, nil
 }
 

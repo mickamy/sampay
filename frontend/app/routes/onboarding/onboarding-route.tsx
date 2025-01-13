@@ -5,11 +5,11 @@ import {
   type LoaderFunction,
   redirect,
 } from "react-router";
+import { userProfileSchema } from "~/components/user-profile-form";
 import { withAuthentication } from "~/lib/api/request";
 import type { S3Object } from "~/models/common/s3-object-model";
 import { convertToUsageCategories } from "~/models/user/usage-category-model";
 import { onboardingAttributeSchema } from "~/routes/onboarding/components/onboarding-attribute-form";
-import { onboardingProfileSchema } from "~/routes/onboarding/components/onboarding-profile-form";
 import OnboardingScreen, {
   type ActionData,
   type LoaderData,
@@ -95,7 +95,7 @@ async function submitProfile({
 }: { request: Request }): Promise<Response> {
   return withAuthentication({ request }, async ({ getClient }) => {
     const formData = Object.fromEntries(await request.formData());
-    const { image, ...data } = onboardingProfileSchema.parse(formData);
+    const { image, ...data } = userProfileSchema.parse(formData);
 
     let imageObj: S3Object | undefined;
     if (image) {

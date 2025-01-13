@@ -11,6 +11,9 @@ export default {
     "line-clamp-5",
     "line-clamp-6",
     "line-clamp-none",
+    {
+      pattern: /[w|h]-[0-9]+/,
+    },
   ],
   theme: {
     extend: {

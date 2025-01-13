@@ -5,16 +5,14 @@ import (
 	"fmt"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
-	commonModel "mickamy.com/sampay/internal/domain/common/model"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
 	"mickamy.com/sampay/internal/lib/contexts"
 )
 
 type UpdateUserProfileInput struct {
-	Name  string
-	Bio   *string
-	Image *commonModel.S3Object
+	Name string
+	Bio  *string
 }
 
 type UpdateUserProfileOutput struct {
@@ -48,8 +46,6 @@ func (uc *updateUserProfile) Do(ctx context.Context, input UpdateUserProfileInpu
 	if input.Bio != nil {
 		m.Bio = input.Bio
 	}
-	m.SetImage(input.Image)
-
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
 		if err := uc.userProfileRepo.WithTx(tx.WriterDB()).Update(ctx, &m); err != nil {
 			return fmt.Errorf("failed to update user profile: %w", err)
