@@ -3,9 +3,23 @@ syntax = "proto3";
 package user.v1;
 
 import "buf/validate/validate.proto";
+import "common/v1/direct_upload_url.proto";
 
 message UserProfile {
   string name = 2 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.max_len = 64];
   optional string bio = 3;
   optional string image_url = 4;
+}
+
+message UpdateUserProfileRequest {
+  optional string name = 1 [(buf.validate.field).string.max_len = 64];
+  optional string bio = 2;
+  optional common.v1.S3Object image = 3;
+}
+
+message UpdateUserProfileResponse {
+}
+
+service UserProfileService {
+  rpc UpdateUserProfile(UpdateUserProfileRequest) returns (UpdateUserProfileResponse);
 }
