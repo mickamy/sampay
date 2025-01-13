@@ -43,6 +43,7 @@ func TestUser_GetMe(t *testing.T) {
 				assert.NotEmpty(t, got.Msg.User.Profile)
 				require.NotEmpty(t, got.Msg.User.Links)
 				assert.NotEmpty(t, got.Msg.User.Links[0])
+				assert.NotEmpty(t, got.Msg.User.Links[0].QrCodeUrl)
 			},
 		},
 	}
@@ -60,7 +61,9 @@ func TestUser_GetMe(t *testing.T) {
 					m.SetImage(ptr.Of(commonFixture.S3Object(nil)))
 				})
 				m.Links = []userModel.UserLink{
-					userFixture.UserLink(nil),
+					userFixture.UserLink(func(m *userModel.UserLink) {
+						m.QRCode = ptr.Of(commonFixture.S3Object(nil))
+					}),
 				}
 			})
 			require.NoError(t, infras.Writer.DB.WithContext(ctx).Create(&user).Error)
@@ -100,6 +103,7 @@ func TestUser_GetUser(t *testing.T) {
 				assert.NotEmpty(t, got.Msg.User.Profile.ImageUrl)
 				require.NotEmpty(t, got.Msg.User.Links)
 				assert.NotEmpty(t, got.Msg.User.Links[0])
+				assert.NotEmpty(t, got.Msg.User.Links[0].QrCodeUrl)
 			},
 		},
 		{
@@ -138,7 +142,9 @@ func TestUser_GetUser(t *testing.T) {
 					m.SetImage(ptr.Of(commonFixture.S3Object(nil)))
 				})
 				m.Links = []userModel.UserLink{
-					userFixture.UserLink(nil),
+					userFixture.UserLink(func(m *userModel.UserLink) {
+						m.QRCode = ptr.Of(commonFixture.S3Object(nil))
+					}),
 				}
 			})
 			require.NoError(t, infras.Writer.DB.WithContext(ctx).Create(&user).Error)

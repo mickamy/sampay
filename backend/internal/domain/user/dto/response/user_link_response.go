@@ -1,11 +1,11 @@
 package response
 
 import (
-	commonv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/common/v1"
 	userv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/user/v1"
 
 	"mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/lib/operator"
+	"mickamy.com/sampay/internal/lib/ptr"
 	"mickamy.com/sampay/internal/lib/slices"
 )
 
@@ -16,12 +16,9 @@ func NewUserLink(m model.UserLink) *userv1.UserLink {
 		Uri:              m.URI,
 		ProviderType:     m.ProviderType.String(),
 		DisplayAttribute: NewDisplayAttribute(m.DisplayAttribute),
-		QrCode: operator.TernaryFunc(m.QRCode != nil, func() *commonv1.S3Object {
-			return &commonv1.S3Object{
-				Bucket: m.QRCode.Bucket,
-				Key:    m.QRCode.Key,
-			}
-		}, func() *commonv1.S3Object {
+		QrCodeUrl: operator.TernaryFunc(m.QRCode != nil, func() *string {
+			return ptr.Of(m.QRCode.URL())
+		}, func() *string {
 			return nil
 		}),
 	}
