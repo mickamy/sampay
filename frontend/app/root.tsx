@@ -66,7 +66,12 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        <title>{t("app.title")}</title>
+        <title>
+          {t(
+            "app.title",
+            "Sampay | The Only Link You Need for Peer-to-Peer Payments",
+          )}
+        </title>
       </head>
       <body>
         {children}
