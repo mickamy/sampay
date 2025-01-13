@@ -25,7 +25,7 @@ export default function AdminUserProfile({
         <ExpandableText>{profile.bio}</ExpandableText>
       </div>
       <UnderlinedLink to="/admin/edit" className="text-center underline mt-4">
-        {t("admin.index.edit-profile")}
+        {t("admin.index.edit_profile")}
       </UnderlinedLink>
     </div>
   );

@@ -62,7 +62,7 @@ export default function SignInForm({
           />
           <Spacer />
           <ErrorMessage message={form.formState.errors.root?.message} />
-          <Button className="w-full">{t("form.sign-in")}</Button>
+          <Button className="w-full">{t("form.sign_in")}</Button>
         </form>
       </Form>
     </>

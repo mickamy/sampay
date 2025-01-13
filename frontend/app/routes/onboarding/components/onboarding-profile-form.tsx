@@ -27,15 +27,15 @@ export const onboardingProfileSchema = z.object({
   image: z
     .any()
     .refine((file) => isFileLike(file), {
-      params: { i18n: "form.choose-file" },
+      params: { i18n: "form.choose_file" },
     })
     .refine((file) => file?.type?.startsWith("image/"), {
-      params: { i18n: "form.error.invalid-file-type" },
+      params: { i18n: "form.error.invalid_file_type" },
     })
     .refine((file) => file?.size <= 5 * 1024 * 1024, {
       params: {
         i18n: {
-          key: "form.error.too-large-file",
+          key: "form.error.too_large_file",
           values: { size: "5MB" },
         },
       },

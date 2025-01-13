@@ -62,7 +62,7 @@ export default function SignUpForm({
           />
           <Spacer />
           <ErrorMessage message={form.formState.errors.root?.message} />
-          <Button className="w-full">{t("form.sign-up")}</Button>
+          <Button className="w-full">{t("form.sign_up")}</Button>
         </form>
       </Form>
     </>
