@@ -20,6 +20,13 @@ message UpdateUserProfileRequest {
 message UpdateUserProfileResponse {
 }
 
+message DeleteUserProfileImageRequest {
+}
+
+message DeleteUserProfileImageResponse {
+}
+
 service UserProfileService {
   rpc UpdateUserProfile(UpdateUserProfileRequest) returns (UpdateUserProfileResponse);
+  rpc DeleteUserProfileImage(DeleteUserProfileImageRequest) returns (DeleteUserProfileImageResponse);
 }
