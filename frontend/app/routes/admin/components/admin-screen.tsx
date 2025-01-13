@@ -1,9 +1,15 @@
+import { useCallback, useState } from "react";
 import { useLoaderData } from "react-router";
 import UserLinkButtons from "~/components/user-link-buttons";
+import { userLinkSchema } from "~/components/user-link-form";
+import UserLinkFormDialog, {
+  type ActionData as UserLinkFormDialogActionData,
+} from "~/components/user-link-form-dialog";
 import UserProfile from "~/components/user-profile";
 import { userProfileSchema } from "~/components/user-profile-form";
 import useDialog from "~/hooks/use-dialog";
-import { useFormDataSubmit } from "~/hooks/use-submit";
+import { useFormDataSubmit, useJsonSubmit } from "~/hooks/use-submit";
+import type { UserLink } from "~/models/user/user-link-model";
 import type { User } from "~/models/user/user-model";
 import UserProfileFormDialog, {
   type ActionData as UserProfileFormDialogActionData,
@@ -43,6 +49,23 @@ export default function AdminScreen() {
   } = useDialog<UserProfileFormDialogActionData>();
   const submitProfileForm = useFormDataSubmit(userProfileSchema, "put");
 
+  const {
+    isDialogOpen: isLinkFormDialogOpen,
+    openDialog: openLinkFormDialog,
+    closeDialog: closeLinkFormDialog,
+    actionData: linkFormDialogActionData,
+  } = useDialog<UserLinkFormDialogActionData>();
+  const submitLinkForm = useJsonSubmit(userLinkSchema, "put");
+
+  const [linkToEdit, setLinkToEdit] = useState<UserLink | undefined>();
+  const onEdit = useCallback(
+    (link: UserLink) => {
+      setLinkToEdit(link);
+      openLinkFormDialog();
+    },
+    [openLinkFormDialog],
+  );
+
   return (
     <>
       <div className="container mx-auto flex w-full flex-col items-center p-12 space-y-6 sm:w-[420px] lg:p-8">
@@ -52,7 +75,7 @@ export default function AdminScreen() {
           onClickAvatar={openProfileImageFormDialog}
           onClickEdit={openProfileFormDialog}
         />
-        <UserLinkButtons links={user.links} />
+        <UserLinkButtons admin links={user.links} onEdit={onEdit} />
         <UserProfileImageFormDialog
           profile={user.profile}
           isOpen={isProfileImageFormDialogOpen}
@@ -66,6 +89,14 @@ export default function AdminScreen() {
           onClose={closeProfileFormDialog}
           onSubmit={submitProfileForm}
           actionData={profileFormDialogActionData}
+        />
+        <UserLinkFormDialog
+          /* biome-ignore lint: style/noNonNullAssertion */
+          link={linkToEdit!}
+          isOpen={isLinkFormDialogOpen}
+          onClose={closeLinkFormDialog}
+          onSubmit={submitLinkForm}
+          actionData={linkFormDialogActionData}
         />
       </div>
     </>
