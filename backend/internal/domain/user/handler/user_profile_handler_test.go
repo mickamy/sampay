@@ -11,6 +11,7 @@ import (
 	userv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/user/v1"
 	"connectrpc.com/connect"
 	"github.com/brianvoe/gofakeit/v7"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"mickamy.com/sampay/internal/di"
@@ -36,10 +37,6 @@ func TestUserProfile_UpdateUserProfile(t *testing.T) {
 				return &userv1.UpdateUserProfileRequest{
 					Name: "name",
 					Bio:  ptr.Of("bio"),
-					Image: &commonv1.S3Object{
-						Bucket: gofakeit.GlobalFaker.Username(),
-						Key:    gofakeit.GlobalFaker.UUID(),
-					},
 				}
 			},
 			assert: func(t *testing.T, got *connect.Response[userv1.UpdateUserProfileResponse], err error) {
@@ -76,21 +73,37 @@ func TestUserProfile_UpdateUserProfile(t *testing.T) {
 	}
 }
 
-func TestUserProfile_DeleteUserProfileImage(t *testing.T) {
+func TestUserProfile_UpdateUserProfileImage(t *testing.T) {
 	t.Parallel()
 
 	tsc := []struct {
 		name    string
-		arrange func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *userv1.DeleteUserProfileImageRequest
-		assert  func(t *testing.T, got *connect.Response[userv1.DeleteUserProfileImageResponse], err error)
+		arrange func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *userv1.UpdateUserProfileImageRequest
+		assert  func(t *testing.T, got *connect.Response[userv1.UpdateUserProfileImageResponse], err error)
 	}{
 		{
-			name: "success",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *userv1.DeleteUserProfileImageRequest {
-				return &userv1.DeleteUserProfileImageRequest{}
+			name: "success (image is nil)",
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *userv1.UpdateUserProfileImageRequest {
+				return &userv1.UpdateUserProfileImageRequest{}
 			},
-			assert: func(t *testing.T, got *connect.Response[userv1.DeleteUserProfileImageResponse], err error) {
+			assert: func(t *testing.T, got *connect.Response[userv1.UpdateUserProfileImageResponse], err error) {
 				require.NoError(t, err)
+				assert.Empty(t, got.Msg.String())
+			},
+		},
+		{
+			name: "success (image is not nil)",
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *userv1.UpdateUserProfileImageRequest {
+				return &userv1.UpdateUserProfileImageRequest{
+					Image: &commonv1.S3Object{
+						Bucket: gofakeit.GlobalFaker.ProductName(),
+						Key:    gofakeit.GlobalFaker.UUID(),
+					},
+				}
+			},
+			assert: func(t *testing.T, got *connect.Response[userv1.UpdateUserProfileImageResponse], err error) {
+				require.NoError(t, err)
+				assert.Empty(t, got.Msg.String())
 			},
 		},
 	}
@@ -115,7 +128,7 @@ func TestUserProfile_DeleteUserProfileImage(t *testing.T) {
 			// act
 			client := userv1connect.NewUserProfileServiceClient(http.DefaultClient, server.URL)
 			connReq := connecttest.NewAuthenticatedRequest(t, ctx, req, nil, authModel.MustNewSession(user.ID), infras.KVS)
-			got, err := client.DeleteUserProfileImage(ctx, connReq)
+			got, err := client.UpdateUserProfileImage(ctx, connReq)
 
 			// assert
 			tc.assert(t, got, err)
