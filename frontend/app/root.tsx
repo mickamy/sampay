@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { type ReactNode, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Links,
@@ -50,7 +50,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   return data;
 };
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout({ children }: { children: ReactNode }) {
   const { locale, ENV } = useLoaderData<LoaderData>();
   const { i18n, t } = useTranslation();
   useEffect(() => {
