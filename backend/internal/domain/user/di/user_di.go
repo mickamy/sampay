@@ -32,6 +32,7 @@ type UseCases struct {
 	usecase.GetUser
 	usecase.ListUserLink
 	usecase.UpdateUserLink
+	usecase.UpdateUserProfile
 }
 
 //lint:ignore U1000 used by wire
@@ -42,6 +43,7 @@ var UseCaseSet = wire.NewSet(
 	usecase.NewGetUser,
 	usecase.NewListUserLink,
 	usecase.NewUpdateUserLink,
+	usecase.NewUpdateUserProfile,
 )
 
 type Handlers struct {
