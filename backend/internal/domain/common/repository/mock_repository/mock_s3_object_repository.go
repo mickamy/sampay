@@ -43,6 +43,20 @@ func (m *MockS3Object) EXPECT() *MockS3ObjectMockRecorder {
 	return m.recorder
 }
 
+// Delete mocks base method.
+func (m *MockS3Object) Delete(ctx context.Context, id string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Delete", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Delete indicates an expected call of Delete.
+func (mr *MockS3ObjectMockRecorder) Delete(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockS3Object)(nil).Delete), ctx, id)
+}
+
 // Upsert mocks base method.
 func (m_2 *MockS3Object) Upsert(ctx context.Context, m *model.S3Object) error {
 	m_2.ctrl.T.Helper()

@@ -14,53 +14,46 @@ import (
 	"mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/domain/user/usecase"
 	"mickamy.com/sampay/internal/lib/contexts"
-	"mickamy.com/sampay/internal/lib/ptr"
 )
 
-func TestUpdateUserProfile_Do(t *testing.T) {
+func TestDeleteUserProfileImage_Do(t *testing.T) {
 	t.Parallel()
 
 	tcs := []struct {
 		name    string
-		arrange func(t *testing.T, ctx context.Context, writer *database.Writer) usecase.UpdateUserProfileInput
-		assert  func(t *testing.T, ctx context.Context, reader *database.Reader, got usecase.UpdateUserProfileOutput, err error)
+		arrange func(t *testing.T, ctx context.Context, writer *database.Writer) usecase.DeleteUserProfileImageInput
+		assert  func(t *testing.T, ctx context.Context, reader *database.Reader, got usecase.DeleteUserProfileImageOutput, err error)
 	}{
 		{
-			name: "success (bio and image are nil)",
-			arrange: func(t *testing.T, ctx context.Context, writer *database.Writer) usecase.UpdateUserProfileInput {
-				return usecase.UpdateUserProfileInput{
-					Name:  "updated-name",
-					Bio:   nil,
-					Image: nil,
-				}
+			name: "success (image is nil)",
+			arrange: func(t *testing.T, ctx context.Context, writer *database.Writer) usecase.DeleteUserProfileImageInput {
+				return usecase.DeleteUserProfileImageInput{}
 			},
-			assert: func(t *testing.T, ctx context.Context, reader *database.Reader, got usecase.UpdateUserProfileOutput, err error) {
+			assert: func(t *testing.T, ctx context.Context, reader *database.Reader, got usecase.DeleteUserProfileImageOutput, err error) {
 				require.NoError(t, err)
 				assert.Empty(t, got)
 				var updated model.UserProfile
 				require.NoError(t, reader.WithContext(ctx).Where("user_id = ?", contexts.MustAuthenticatedUserID(ctx)).First(&updated).Error)
-				assert.Equal(t, "updated-name", updated.Name)
-				assert.Empty(t, updated.Bio)
-				assert.Empty(t, updated.ImageID)
+				assert.Nil(t, updated.ImageID)
 			},
 		},
 		{
-			name: "success (bio and image are not nil)",
-			arrange: func(t *testing.T, ctx context.Context, writer *database.Writer) usecase.UpdateUserProfileInput {
-				return usecase.UpdateUserProfileInput{
-					Name:  "updated-name",
-					Bio:   ptr.Of("updated-bio"),
-					Image: ptr.Of(commonFixture.S3Object(nil)),
-				}
+			name: "success (image is not nil)",
+			arrange: func(t *testing.T, ctx context.Context, writer *database.Writer) usecase.DeleteUserProfileImageInput {
+				obj := commonFixture.S3Object(nil)
+				require.NoError(t, writer.WithContext(ctx).Create(&obj).Error)
+				require.NoError(t, writer.WithContext(ctx).Updates(&model.UserProfile{
+					UserID:  contexts.MustAuthenticatedUserID(ctx),
+					ImageID: &obj.ID,
+				}).Error)
+				return usecase.DeleteUserProfileImageInput{}
 			},
-			assert: func(t *testing.T, ctx context.Context, reader *database.Reader, got usecase.UpdateUserProfileOutput, err error) {
+			assert: func(t *testing.T, ctx context.Context, reader *database.Reader, got usecase.DeleteUserProfileImageOutput, err error) {
 				require.NoError(t, err)
 				assert.Empty(t, got)
 				var updated model.UserProfile
 				require.NoError(t, reader.WithContext(ctx).Where("user_id = ?", contexts.MustAuthenticatedUserID(ctx)).First(&updated).Error)
-				assert.Equal(t, "updated-name", updated.Name)
-				assert.Equal(t, "updated-bio", *updated.Bio)
-				assert.NotEmpty(t, updated.ImageID)
+				assert.Nil(t, updated.ImageID)
 			},
 		},
 	}
@@ -83,7 +76,7 @@ func TestUpdateUserProfile_Do(t *testing.T) {
 			input := tc.arrange(t, ctx, db.Writer())
 
 			// act
-			sut := di.InitUserUseCase(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).UpdateUserProfile
+			sut := di.InitUserUseCase(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).DeleteUserProfileImage
 			got, err := sut.Do(ctx, input)
 
 			var updated model.UserProfile

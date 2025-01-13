@@ -53,6 +53,14 @@ func InitAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *
 	return auth.Handlers{}
 }
 
+func InitCommonRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) common.Repositories {
+	wire.Build(
+		common.RepositorySet,
+		wire.Struct(new(common.Repositories), "*"),
+	)
+	return common.Repositories{}
+}
+
 func InitCommonUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) common.UseCases {
 	wire.Build(
 		common.UseCaseSet,
@@ -116,6 +124,7 @@ func InitUserRepositories(db *database.DB, readWriter *database.ReadWriter, writ
 func InitUserUseCase(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) user.UseCases {
 	wire.Build(
 		user.UseCaseSet,
+		common.RepositorySet,
 		user.RepositorySet,
 		wire.Struct(new(user.UseCases), "*"),
 	)

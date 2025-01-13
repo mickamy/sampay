@@ -57,6 +57,26 @@ func (mr *MockUserProfileMockRecorder) Create(ctx, m any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUserProfile)(nil).Create), ctx, m)
 }
 
+// Find mocks base method.
+func (m *MockUserProfile) Find(ctx context.Context, id string, scopes ...database.Scope) (*model.UserProfile, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{ctx, id}
+	for _, a := range scopes {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Find", varargs...)
+	ret0, _ := ret[0].(*model.UserProfile)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Find indicates an expected call of Find.
+func (mr *MockUserProfileMockRecorder) Find(ctx, id any, scopes ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]any{ctx, id}, scopes...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockUserProfile)(nil).Find), varargs...)
+}
+
 // FindBySlug mocks base method.
 func (m *MockUserProfile) FindBySlug(ctx context.Context, slug string, scopes ...database.Scope) (*model.UserProfile, error) {
 	m.ctrl.T.Helper()

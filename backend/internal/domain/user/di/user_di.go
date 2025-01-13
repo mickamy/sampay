@@ -28,6 +28,7 @@ var RepositorySet = wire.NewSet(
 type UseCases struct {
 	usecase.CreateUserLink
 	usecase.DeleteUserLink
+	usecase.DeleteUserProfileImage
 	usecase.GetMe
 	usecase.GetUser
 	usecase.ListUserLink
@@ -39,6 +40,7 @@ type UseCases struct {
 var UseCaseSet = wire.NewSet(
 	usecase.NewCreateUserLink,
 	usecase.NewDeleteUserLink,
+	usecase.NewDeleteUserProfileImage,
 	usecase.NewGetMe,
 	usecase.NewGetUser,
 	usecase.NewListUserLink,
