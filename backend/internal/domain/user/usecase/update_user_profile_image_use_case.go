@@ -52,15 +52,17 @@ func (uc *updateUserProfileImage) Do(ctx context.Context, input UpdateUserProfil
 			return fmt.Errorf("user profile not found: user_id=[%s]", userID)
 		}
 
-		if m.ImageID != nil {
-			if err := uc.s3Repo.WithTx(tx.WriterDB()).Delete(ctx, *m.ImageID); err != nil {
-				return fmt.Errorf("failed to delete s3 object: %w", err)
-			}
-		}
+		oldImageID := m.ImageID
 
 		m.SetImage(input.Image)
 		if err := uc.userProfileRepo.WithTx(tx.WriterDB()).Update(ctx, m); err != nil {
 			return fmt.Errorf("failed to update user profile: %w", err)
+		}
+
+		if oldImageID != nil {
+			if err := uc.s3Repo.WithTx(tx.WriterDB()).Delete(ctx, *oldImageID); err != nil {
+				return fmt.Errorf("failed to delete s3 object: %w", err)
+			}
 		}
 		return nil
 	}); err != nil {
