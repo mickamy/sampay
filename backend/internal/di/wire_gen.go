@@ -249,9 +249,15 @@ func InitUserHandler(db *database.DB, readWriter *database.ReadWriter, writer *d
 	updateUserLink := usecase4.NewUpdateUserLink(writer, userLink)
 	deleteUserLink := usecase4.NewDeleteUserLink(writer, userLink)
 	handlerUserLink := handler4.NewUserLink(createUserLink, listUserLink, updateUserLink, deleteUserLink)
+	userProfile := repository2.NewUserProfile(db)
+	updateUserProfile := usecase4.NewUpdateUserProfile(writer, userProfile)
+	s3Object := repository3.NewS3Object(db)
+	deleteUserProfileImage := usecase4.NewDeleteUserProfileImage(writer, userProfile, s3Object)
+	handlerUserProfile := handler4.NewUserProfile(updateUserProfile, deleteUserProfileImage)
 	handlers := di4.Handlers{
-		User:     handlerUser,
-		UserLink: handlerUserLink,
+		User:        handlerUser,
+		UserLink:    handlerUserLink,
+		UserProfile: handlerUserProfile,
 	}
 	return handlers
 }

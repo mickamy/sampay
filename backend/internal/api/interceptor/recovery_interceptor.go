@@ -6,6 +6,8 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
+
+	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 )
 
 func Recovery() connect.UnaryInterceptorFunc {
@@ -17,7 +19,7 @@ func Recovery() connect.UnaryInterceptorFunc {
 			defer func() {
 				if r := recover(); r != nil {
 					slogger.ErrorCtx(ctx, "recovered from panic", "err", r, "stack", string(debug.Stack()))
-					err = dto.NewInternalError(ctx, r.(error)).AsConnectError()
+					err = commonResponse.NewInternalError(ctx, r.(error)).AsConnectError()
 				}
 			}()
 
