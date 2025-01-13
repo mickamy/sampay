@@ -9,7 +9,8 @@ import (
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
-	dto "mickamy.com/sampay/internal/domain/common/dto"
+	commonRequest "mickamy.com/sampay/internal/domain/common/dto/request"
+	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 	"mickamy.com/sampay/internal/domain/common/usecase"
 	"mickamy.com/sampay/internal/lib/contexts"
 	"mickamy.com/sampay/internal/misc/i18n"
@@ -32,9 +33,9 @@ func (h *DirectUploadURL) CreateDirectUploadURL(
 	req *connect.Request[commonv1.CreateDirectUploadURLRequest],
 ) (*connect.Response[commonv1.CreateDirectUploadURLResponse], error) {
 	lang := contexts.MustLanguage(ctx)
-	obj := dto.NewS3Object(req.Msg.S3Object)
+	obj := commonRequest.NewS3Object(req.Msg.S3Object)
 	if obj == nil {
-		return nil, dto.NewBadRequest(errors.New("invalid s3 object")).
+		return nil, commonResponse.NewBadRequest(errors.New("invalid s3 object")).
 			WithMessage(i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "common.handler.direct_upload_url.error.invalid_s3_object"})).
 			AsConnectError()
 	}
@@ -42,12 +43,12 @@ func (h *DirectUploadURL) CreateDirectUploadURL(
 		S3Object: *obj,
 	})
 	if err != nil {
-		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
 			return nil, localizable.AsConnectError()
 		}
 
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-		return nil, dto.NewInternalError(ctx, err).AsConnectError()
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&commonv1.CreateDirectUploadURLResponse{
 		Url: out.URL,

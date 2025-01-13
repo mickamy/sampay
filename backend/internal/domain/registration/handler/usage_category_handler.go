@@ -8,7 +8,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
-	dto "mickamy.com/sampay/internal/domain/common/dto"
+	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 	"mickamy.com/sampay/internal/domain/registration/model"
 	"mickamy.com/sampay/internal/domain/registration/usecase"
 	"mickamy.com/sampay/internal/lib/contexts"
@@ -34,12 +34,12 @@ func (h *UsageCategory) ListUsageCategories(
 	out, err := h.list.Do(ctx, usecase.ListUsageCategoriesInput{})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
-		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
 			return nil, localizable.AsConnectError()
 		}
 
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-		return nil, dto.NewInternalError(ctx, err).AsConnectError()
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&registrationv1.ListUsageCategoriesResponse{
 		Categories: slices.Map(out.Categories, func(c model.UsageCategory) *registrationv1.UsageCategory {

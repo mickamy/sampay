@@ -8,7 +8,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
-	dto "mickamy.com/sampay/internal/domain/common/dto"
+	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 	"mickamy.com/sampay/internal/domain/user/dto/response"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/domain/user/usecase"
@@ -41,7 +41,7 @@ func (h UserLink) CreateUserLink(ctx context.Context, req *connect.Request[userv
 	lang := contexts.MustLanguage(ctx)
 	providerType, err := userModel.NewLinkProviderType(req.Msg.ProviderType)
 	if err != nil {
-		return nil, dto.NewBadRequest(err, dto.FieldViolation{
+		return nil, commonResponse.NewBadRequest(err, commonResponse.FieldViolation{
 			Field:        "provider_type",
 			Descriptions: []string{i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "user.handler.user_link.error.invalid_provider_type"})},
 		}).AsConnectError()
@@ -53,12 +53,12 @@ func (h UserLink) CreateUserLink(ctx context.Context, req *connect.Request[userv
 		Name:         req.Msg.Name,
 	})
 	if err != nil {
-		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
 			return nil, localizable.AsConnectError()
 		}
 
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-		return nil, dto.NewInternalError(ctx, err).AsConnectError()
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&userv1.CreateUserLinkResponse{})
 	return res, nil
@@ -70,12 +70,12 @@ func (h UserLink) ListUserLink(ctx context.Context, req *connect.Request[userv1.
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
-		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
 			return nil, localizable.AsConnectError()
 		}
 
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-		return nil, dto.NewInternalError(ctx, err).AsConnectError()
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&userv1.ListUserLinkResponse{
 		Links: response.NewUserLinks(out.Links),
@@ -89,7 +89,7 @@ func (h UserLink) UpdateUserLink(ctx context.Context, req *connect.Request[userv
 	if req.Msg.ProviderType != nil {
 		pt, err := userModel.NewLinkProviderType(*req.Msg.ProviderType)
 		if err != nil {
-			return nil, dto.NewBadRequest(err, dto.FieldViolation{
+			return nil, commonResponse.NewBadRequest(err, commonResponse.FieldViolation{
 				Field:        "provider_type",
 				Descriptions: []string{i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "user.handler.user_link.error.invalid_provider_type"})},
 			}).AsConnectError()
@@ -105,12 +105,12 @@ func (h UserLink) UpdateUserLink(ctx context.Context, req *connect.Request[userv
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
-		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
 			return nil, localizable.AsConnectError()
 		}
 
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-		return nil, dto.NewInternalError(ctx, err).AsConnectError()
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&userv1.UpdateUserLinkResponse{})
 	return res, nil
@@ -122,12 +122,12 @@ func (h UserLink) DeleteUserLink(ctx context.Context, c *connect.Request[userv1.
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
-		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
 			return nil, localizable.AsConnectError()
 		}
 
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-		return nil, dto.NewInternalError(ctx, err).AsConnectError()
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&userv1.DeleteUserLinkResponse{})
 	return res, nil

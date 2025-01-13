@@ -1,4 +1,4 @@
-package response
+package request
 
 import (
 	commonv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/common/v1"

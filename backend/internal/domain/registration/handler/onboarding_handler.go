@@ -8,7 +8,8 @@ import (
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
-	dto "mickamy.com/sampay/internal/domain/common/dto"
+	commonRequest "mickamy.com/sampay/internal/domain/common/dto/request"
+	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 	"mickamy.com/sampay/internal/domain/registration/usecase"
 	"mickamy.com/sampay/internal/lib/contexts"
 )
@@ -38,12 +39,12 @@ func (h *Onboarding) GetOnboardingStep(
 	out, err := h.getStep.Do(ctx, usecase.GetOnboardingStepInput{})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
-		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
 			return nil, localizable.AsConnectError()
 		}
 
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-		return nil, dto.NewInternalError(ctx, err).AsConnectError()
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&registrationv1.GetOnboardingStepResponse{
 		Step: out.Step.String(),
@@ -60,12 +61,12 @@ func (h *Onboarding) CreateUserAttribute(
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
-		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
 			return nil, localizable.AsConnectError()
 		}
 
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-		return nil, dto.NewInternalError(ctx, err).AsConnectError()
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&registrationv1.CreateUserAttributeResponse{})
 	return res, nil
@@ -78,16 +79,16 @@ func (h *Onboarding) CreateUserProfile(
 	_, err := h.createProfile.Do(ctx, usecase.CreateUserProfileInput{
 		Name:  req.Msg.Name,
 		Bio:   req.Msg.Bio,
-		Image: dto.NewS3Object(req.Msg.Image),
+		Image: commonRequest.NewS3Object(req.Msg.Image),
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
-		if localizable := dto.ParseLocalizableError(lang, err); localizable != nil {
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
 			return nil, localizable.AsConnectError()
 		}
 
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
-		return nil, dto.NewInternalError(ctx, err).AsConnectError()
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&registrationv1.CreateUserProfileResponse{})
 	return res, nil

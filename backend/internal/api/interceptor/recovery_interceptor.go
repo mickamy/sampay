@@ -6,8 +6,6 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
-
-	dto "mickamy.com/sampay/internal/domain/common/dto"
 )
 
 func Recovery() connect.UnaryInterceptorFunc {
