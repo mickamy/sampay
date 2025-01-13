@@ -7,9 +7,9 @@ import type { UserLinkProviderType } from "~/models/user/user-link-provider-type
 
 export interface UserLink {
   id: string;
-  provider_type: UserLinkProviderType;
+  providerType: UserLinkProviderType;
   uri: string;
-  display_attribute: UserLinkDisplayAttribute;
+  displayAttribute: UserLinkDisplayAttribute;
 }
 
 export function convertToUserLink(pb: UserLinkPB): UserLink {
@@ -18,8 +18,12 @@ export function convertToUserLink(pb: UserLinkPB): UserLink {
   }
   return {
     id: pb.id,
-    provider_type: pb.providerType,
+    providerType: pb.providerType,
     uri: pb.uri,
-    display_attribute: convertToUserLinkDisplayAttributes(pb.displayAttribute),
+    displayAttribute: convertToUserLinkDisplayAttributes(pb.displayAttribute),
   };
+}
+
+export function convertToUserLinks(pbs: UserLinkPB[]): UserLink[] {
+  return pbs.map(convertToUserLink);
 }
