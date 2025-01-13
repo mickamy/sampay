@@ -11,9 +11,10 @@ export default {
     "line-clamp-5",
     "line-clamp-6",
     "line-clamp-none",
-    {
-      pattern: /[w|h]-[0-9]+/,
-    },
+    "relative",
+    "absolute",
+    { pattern: /[w|h]-[0-9]+/ },
+    { pattern: /(left|top|right|bottom)-[0-9]+/ },
   ],
   theme: {
     extend: {

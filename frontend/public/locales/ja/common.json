@@ -52,6 +52,7 @@
     "uri": "リンク",
     "error": {
       "invalid_file_type": "ファイル形式が無効です",
+      "invalid_qr_code": "QRコードが無効です",
       "too_large_file": "ファイルサイズが大きすぎます。{{size}}以下のファイルを選択してください"
     }
   },

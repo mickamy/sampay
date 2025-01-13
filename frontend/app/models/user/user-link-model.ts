@@ -10,6 +10,7 @@ export interface UserLink {
   providerType: UserLinkProviderType;
   uri: string;
   displayAttribute: UserLinkDisplayAttribute;
+  qrCodeURL?: string;
 }
 
 export function convertToUserLink(pb: UserLinkPB): UserLink {
@@ -21,6 +22,7 @@ export function convertToUserLink(pb: UserLinkPB): UserLink {
     providerType: pb.providerType,
     uri: pb.uri,
     displayAttribute: convertToUserLinkDisplayAttributes(pb.displayAttribute),
+    qrCodeURL: pb.qrCodeUrl,
   };
 }
 
