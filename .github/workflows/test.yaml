@@ -98,7 +98,7 @@ jobs:
             REDIS_URL=redis://:password@localhost:6379/0
           
             JWT_SIGNING_SECRET=secret
-  
+          
             AWS_REGION=ap-northeast-1
             AWS_ACCESS_KEY_ID=test
             AWS_ACCESS_KEY_SECRET=test
@@ -106,6 +106,19 @@ jobs:
             LOCALSTACK_ENDPOINT=http://localhost:4566
             S3_PUBLIC_BUCKET_NAME=sampay-public
           EOF
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build LocalStack image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./localstack
+          tags: localstack:4.0.3
+          load: true
+
+      - name: Start LocalStack
+        run: docker run -d --name localstack -p 4566:4566 -p 4510-4559:4510-4559 localstack:4.0.3
 
       - name: Prepare Database
         run: cd backend && make db-prepare

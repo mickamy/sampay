@@ -7,7 +7,7 @@ import (
 )
 
 type Libs struct {
-	s3.Client
+	S3 s3.Client
 }
 
 //lint:ignore U1000 used by wire

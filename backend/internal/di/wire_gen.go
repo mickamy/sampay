@@ -67,7 +67,7 @@ func InitLibs() Libs {
 	awsConfig := config.AWS()
 	client := s3.New(awsConfig)
 	libs := Libs{
-		Client: client,
+		S3: client,
 	}
 	return libs
 }

@@ -74,7 +74,9 @@ services:
       retries: 30
 
   localstack:
-    image: localstack/localstack:4.0.3
+    build:
+      context: ./localstack
+      dockerfile: Dockerfile
     ports:
       - "127.0.0.1:4566:4566"
       - "127.0.0.1:4510-4559:4510-4559"
@@ -83,7 +85,6 @@ services:
       - DEBUG=1
       - LS_LOG=error
       - HOSTNAME_EXTERNAL=localstack
-      - DEFAULT_REGION=ap-northeast-1
     volumes:
       - ./localstack/volume:/var/lib/localstack
       - /var/run/docker.sock:/var/run/docker.sock

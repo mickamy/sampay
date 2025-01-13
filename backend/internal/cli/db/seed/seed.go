@@ -11,6 +11,7 @@ func Do(ctx context.Context, writer *database.Writer, env config.Env) error {
 	funcs := []func(context.Context, *database.Writer, config.Env) error{
 		seedUsageCategory,
 		seedUserLinkProvider,
+		seedUser,
 	}
 
 	for _, f := range funcs {
