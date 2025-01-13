@@ -1,7 +1,7 @@
 import React, { type HTMLAttributes } from "react";
 import Avatar from "~/components/avatar";
 import ExpandableText from "~/components/expandable-text";
-import UnderlinedLink from "~/components/underlined-link";
+import { underlinedLinkStyle } from "~/components/underlined-link";
 import { useSafeTranslation } from "~/lib/i18n/hooks";
 import { cn } from "~/lib/utils";
 import type { UserProfile as UserProfileModel } from "~/models/user/user-profile-model";
@@ -9,15 +9,21 @@ import type { UserProfile as UserProfileModel } from "~/models/user/user-profile
 interface Props extends HTMLAttributes<HTMLDivElement> {
   admin?: boolean;
   profile: UserProfileModel;
+  onClickEdit?: () => void;
 }
 
 export default function UserProfile({
   admin = false,
   profile,
   className,
+  onClickEdit,
   ...props
 }: Props) {
   const { t } = useSafeTranslation();
+
+  if (admin && !onClickEdit) {
+    throw new Error("onClickEdit is required when admin is true");
+  }
 
   return (
     <div className={cn("flex flex-col space-y-2", className)} {...props}>
@@ -27,9 +33,13 @@ export default function UserProfile({
         <ExpandableText>{profile.bio}</ExpandableText>
       </div>
       {admin && (
-        <UnderlinedLink to="/admin/edit" className="text-center underline mt-4">
+        <button
+          type="button"
+          onClick={onClickEdit}
+          className={cn("text-center underline mt-4", underlinedLinkStyle)}
+        >
           {t("admin.index.edit_profile")}
-        </UnderlinedLink>
+        </button>
       )}
     </div>
   );

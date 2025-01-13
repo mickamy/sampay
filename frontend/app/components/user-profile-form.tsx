@@ -21,8 +21,9 @@ import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
 import { useSafeTranslation } from "~/lib/i18n/hooks";
 import { isFileLike } from "~/lib/polyfill/file";
+import type { UserProfile } from "~/models/user/user-profile-model";
 
-export const onboardingProfileSchema = z.object({
+export const userProfileSchema = z.object({
   type: z.enum(["profile"]),
   image: z
     .any()
@@ -46,27 +47,32 @@ export const onboardingProfileSchema = z.object({
 });
 
 interface Props extends HTMLAttributes<HTMLFormElement> {
-  onSubmitData: (data: z.infer<typeof onboardingProfileSchema>) => void;
+  profile?: UserProfile;
+  onSubmitData: (data: z.infer<typeof userProfileSchema>) => void;
   error?: APIError;
 }
 
-export default function OnboardingProfileForm({
+export default function UserProfileForm({
+  profile,
   onSubmitData,
   error,
   ...props
 }: Props) {
-  const form = useFormWithAPIError<z.infer<typeof onboardingProfileSchema>>({
+  const form = useFormWithAPIError<z.infer<typeof userProfileSchema>>({
     props: {
-      resolver: zodResolver(onboardingProfileSchema),
+      resolver: zodResolver(userProfileSchema),
       defaultValues: {
         type: "profile",
-        name: "",
+        name: profile?.name,
+        bio: profile?.bio,
       },
     },
     error,
   });
 
-  const [imageURL, setImageURL] = useState<string | undefined>();
+  const [imageURL, setImageURL] = useState<string | undefined>(
+    profile?.imageURL,
+  );
   const onImageChange = useCallback((file: File | null) => {
     if (file) {
       const reader = new FileReader();
@@ -92,9 +98,6 @@ export default function OnboardingProfileForm({
         className="w-full space-y-4"
         {...props}
       >
-        <div className="font-bold justify-self-center">
-          {t("onboarding.profile.title")}
-        </div>
         <BaseFormField
           control={form.control}
           name="image"

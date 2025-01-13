@@ -44,12 +44,10 @@ func seedUser(ctx context.Context, writer *database.Writer, env config.Env) erro
 			},
 			Profile: userModel.UserProfile{
 				Name: "Tetsuro Mikami",
-				Bio: ptr.Of(`
-Hello, I'm Tetsuro Mikami.
+				Bio: ptr.Of(`Hello, I'm Tetsuro Mikami.
 I'm a software engineer with over 10 years of experience in developing scalable web applications.
 I specialize in Go, SQL, and cloud infrastructure.
-In my free time, I enjoy contributing to open-source projects and exploring new technologies.
-`),
+In my free time, I enjoy contributing to open-source projects and exploring new technologies.`),
 				ImageID: &imgObj.ID,
 			},
 		}
