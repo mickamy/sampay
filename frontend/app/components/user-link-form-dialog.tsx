@@ -38,10 +38,10 @@ export default function UserLinkFormDialog({
     <Dialog
       isOpen={isOpen}
       onClose={onClose}
-      title={() => (
-        <div className="text-center">{t("admin.index.edit_link")}</div>
-      )}
-      content={() => {
+      dialogTitle={() => t("admin.index.edit_link")}
+      dialogDescription={() => t("admin.index.edit_link_description")}
+      descriptionHidden
+      dialogContent={() => {
         return (
           <UserLinkForm
             link={link}
@@ -51,7 +51,8 @@ export default function UserLinkFormDialog({
           />
         );
       }}
-      footer={() => null}
+      dialogFooter={() => null}
+      aria-describedby={t("admin.index.edit_link")}
       className="max-h-[80vh] overflow-y-scroll"
     />
   );

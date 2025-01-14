@@ -102,7 +102,6 @@ export default function UserLinkForm({
     let isCancelled = false;
 
     if (!qrCode) {
-      setValue("provider_type", "other");
       return;
     }
 

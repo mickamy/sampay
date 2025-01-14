@@ -11,6 +11,7 @@
   "admin": {
     "index": {
       "edit_link": "リンクを編集",
+      "edit_link_description": "リンクの情報を編集",
       "edit_profile": "プロフィールを編集",
       "edit_profile_image": "プロフィール画像を編集"
     }
