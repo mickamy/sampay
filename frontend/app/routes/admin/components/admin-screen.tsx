@@ -69,7 +69,7 @@ export default function AdminScreen() {
 
   return (
     <>
-      <div className="container mx-auto flex w-full flex-col items-center p-12 space-y-6 sm:w-[420px] lg:p-8">
+      <div className="container mx-auto flex flex-col items-center p-12 space-y-6 min-w-[375px] max-w-[600px] lg:p-8">
         <UserProfile
           admin
           profile={user.profile}
