@@ -7,7 +7,6 @@ import {
   type LoaderFunction,
   redirect,
 } from "react-router";
-import { userLinkSchema } from "~/components/user-link-form";
 import { userProfileSchema } from "~/components/user-profile-form";
 import { withAuthentication } from "~/lib/api/request";
 import type { S3Object } from "~/models/common/s3-object-model";
@@ -16,6 +15,7 @@ import AdminScreen, {
   type ActionData,
   type LoaderData,
 } from "~/routes/admin/components/admin-screen";
+import { userLinkSchema } from "~/routes/admin/components/form/user-link-form";
 import { userProfileImageSchema } from "~/routes/admin/components/form/user-profile-image-form";
 import { directUpload } from "~/services/.server/direct-upload-service";
 

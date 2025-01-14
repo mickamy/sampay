@@ -35,8 +35,9 @@ export default function UserLinkButton({
       <div className={cn("", className)} {...props}>
         <Button
           variant="outline"
+          size="lg"
           onClick={onClickEdit}
-          className="flex flex-row w-full h-12 px-0"
+          className="flex flex-row w-full px-0"
         >
           <ButtonContent link={link} />
         </Button>

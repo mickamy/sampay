@@ -1,16 +1,20 @@
 import { useCallback, useState } from "react";
 import { useLoaderData } from "react-router";
 import UserLinkButtons from "~/components/user-link-buttons";
-import { userLinkSchema } from "~/components/user-link-form";
-import UserLinkFormDialog, {
-  type ActionData as UserLinkFormDialogActionData,
-} from "~/components/user-link-form-dialog";
 import UserProfile from "~/components/user-profile";
 import { userProfileSchema } from "~/components/user-profile-form";
 import useDialog from "~/hooks/use-dialog";
 import { useFormDataSubmit } from "~/hooks/use-submit";
 import type { UserLink } from "~/models/user/user-link-model";
 import type { User } from "~/models/user/user-model";
+import AddLinkButton from "~/routes/admin/components/add-link-button";
+import AddUserLinkFormDialog, {
+  type ActionData as PostUserLinkActionData,
+} from "~/routes/admin/components/form/add-user-link-form-dialog";
+import EditUserLinkFormDialog, {
+  type ActionData as PutUserLinkFormDialogActionData,
+} from "~/routes/admin/components/form/edit-user-link-form-dialog";
+import { userLinkSchema } from "~/routes/admin/components/form/user-link-form";
 import UserProfileFormDialog, {
   type ActionData as UserProfileFormDialogActionData,
 } from "~/routes/admin/components/form/user-profile-form-dialog";
@@ -24,12 +28,21 @@ export interface LoaderData {
 }
 
 export interface ActionData
-  extends UserProfileFormDialogActionData,
+  extends PostUserLinkActionData,
+    UserProfileFormDialogActionData,
     UserProfileImageFormDialogActionData,
-    UserLinkFormDialogActionData {}
+    PutUserLinkFormDialogActionData {}
 
 export default function AdminScreen() {
   const { user } = useLoaderData<LoaderData>();
+
+  const {
+    isDialogOpen: isAddLinkFormDialogOpen,
+    openDialog: openAddLinkFormDialog,
+    closeDialog: closeAddLinkFormDialog,
+    actionData: addLinkFormDialogActionData,
+  } = useDialog<PostUserLinkActionData>();
+  const submitAddLinkForm = useFormDataSubmit(userLinkSchema, "post");
 
   const {
     isDialogOpen: isProfileImageFormDialogOpen,
@@ -51,20 +64,20 @@ export default function AdminScreen() {
   const submitProfileForm = useFormDataSubmit(userProfileSchema, "put");
 
   const {
-    isDialogOpen: isLinkFormDialogOpen,
-    openDialog: openLinkFormDialog,
-    closeDialog: closeLinkFormDialog,
-    actionData: linkFormDialogActionData,
-  } = useDialog<UserLinkFormDialogActionData>();
+    isDialogOpen: isEditLinkFormDialogOpen,
+    openDialog: openEditLinkFormDialog,
+    closeDialog: closeEditLinkFormDialog,
+    actionData: editLinkFormDialogActionData,
+  } = useDialog<PutUserLinkFormDialogActionData>();
   const submitLinkForm = useFormDataSubmit(userLinkSchema, "put");
 
   const [linkToEdit, setLinkToEdit] = useState<UserLink | undefined>();
   const onEdit = useCallback(
     (link: UserLink) => {
       setLinkToEdit(link);
-      openLinkFormDialog();
+      openEditLinkFormDialog();
     },
-    [openLinkFormDialog],
+    [openEditLinkFormDialog],
   );
 
   return (
@@ -76,7 +89,14 @@ export default function AdminScreen() {
           onClickAvatar={openProfileImageFormDialog}
           onClickEdit={openProfileFormDialog}
         />
+        <AddLinkButton onClick={openAddLinkFormDialog} />
         <UserLinkButtons admin links={user.links} onEdit={onEdit} />
+        <AddUserLinkFormDialog
+          isOpen={isAddLinkFormDialogOpen}
+          onClose={closeAddLinkFormDialog}
+          onSubmit={submitAddLinkForm}
+          actionData={addLinkFormDialogActionData}
+        />
         <UserProfileImageFormDialog
           profile={user.profile}
           isOpen={isProfileImageFormDialogOpen}
@@ -91,13 +111,13 @@ export default function AdminScreen() {
           onSubmit={submitProfileForm}
           actionData={profileFormDialogActionData}
         />
-        <UserLinkFormDialog
+        <EditUserLinkFormDialog
           /* biome-ignore lint: style/noNonNullAssertion */
           link={linkToEdit!}
-          isOpen={isLinkFormDialogOpen}
-          onClose={closeLinkFormDialog}
+          isOpen={isEditLinkFormDialogOpen}
+          onClose={closeEditLinkFormDialog}
           onSubmit={submitLinkForm}
-          actionData={linkFormDialogActionData}
+          actionData={editLinkFormDialogActionData}
         />
       </div>
     </>

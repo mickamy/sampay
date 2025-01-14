@@ -10,6 +10,8 @@
   },
   "admin": {
     "index": {
+      "add_link": "リンクを追加",
+      "add_link_description": "新しいリンクを追加してください",
       "edit_link": "リンクを編集",
       "edit_link_description": "リンクの情報を編集してください",
       "edit_profile": "プロフィールを編集",
