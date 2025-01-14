@@ -157,6 +157,8 @@ async function putLink({
   return withAuthentication({ request }, async ({ getClient }) => {
     const { qr_code, ...data } = userLinkSchema.parse(Object.fromEntries(body));
 
+    const client = getClient(UserLinkService);
+
     let imageObj: S3Object | undefined;
     if (qr_code) {
       imageObj = await directUpload({
@@ -164,13 +166,11 @@ async function putLink({
         file: qr_code,
         getClient,
       });
+      client.updateUserLinkQRCode({
+        id: data.id,
+        qrCode: imageObj,
+      });
     }
-
-    const client = getClient(UserLinkService);
-    client.updateUserLinkQRCode({
-      id: data.id,
-      qrCode: imageObj,
-    });
 
     await client.updateUserLink({
       id: data.id,

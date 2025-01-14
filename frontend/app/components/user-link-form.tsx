@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type HTMLAttributes, useCallback, useEffect } from "react";
 import Avatar from "~/components/avatar";
+import ErrorMessage from "~/components/error-message";
 import { FormField } from "~/components/form";
 import Spacer from "~/components/spacer";
 import { Button } from "~/components/ui/button";
@@ -109,7 +110,8 @@ export default function UserLinkForm({
       .then((uri) => {
         logger.debug({ uri }, "parsed qr code");
         if (!isCancelled) {
-          setValue("provider_type", getUserLinkProviderTypeByURI(uri));
+          const type = getUserLinkProviderTypeByURI(uri);
+          setValue("provider_type", type);
           clearErrors("qr_code");
         }
       })
@@ -176,7 +178,14 @@ export default function UserLinkForm({
           type="text"
           label={t("form.link_name")}
         />
-        <Spacer />
+        {form.formState.errors.root ? (
+          <ErrorMessage
+            message={form.formState.errors.root?.message}
+            className="min-h-4"
+          />
+        ) : (
+          <Spacer />
+        )}
         <div className="flex flex-row space-x-2">
           {onCancel && (
             <Button
