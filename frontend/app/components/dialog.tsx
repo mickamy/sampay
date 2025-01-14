@@ -1,4 +1,5 @@
 import {
+  type HTMLAttributes,
   type ReactNode,
   useCallback,
   useEffect,
@@ -6,6 +7,7 @@ import {
   useState,
 } from "react";
 
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Button } from "~/components/ui/button";
 import {
   Dialog as DialogCmp,
@@ -17,26 +19,30 @@ import {
 } from "~/components/ui/dialog";
 import { cn } from "~/lib/utils";
 
-interface Props {
+interface Props extends HTMLAttributes<HTMLDivElement> {
   isOpen: boolean;
   onClose: () => void;
-  title?: () => ReactNode;
-  description?: () => ReactNode;
-  content?: () => ReactNode;
-  footer?: (handleClose: () => void) => ReactNode;
+  dialogTitle?: () => ReactNode;
+  titleHidden?: boolean;
+  dialogDescription?: () => ReactNode;
+  descriptionHidden?: boolean;
+  dialogContent?: () => ReactNode;
+  dialogFooter?: (handleClose: () => void) => ReactNode;
   hideCloseButton?: boolean;
-  className?: string;
 }
 
 export default function Dialog({
   isOpen,
   onClose,
-  title,
-  description,
-  content,
-  footer,
+  dialogTitle,
+  titleHidden = false,
+  dialogDescription,
+  descriptionHidden = false,
+  dialogContent,
+  dialogFooter,
   hideCloseButton,
   className,
+  ...props
 }: Props) {
   const [isVisible, setIsVisible] = useState(isOpen);
 
@@ -50,41 +56,56 @@ export default function Dialog({
   }, [onClose]);
 
   const renderedTitle = useMemo(() => {
-    if (!title) {
+    if (!dialogTitle) {
       return null;
     }
-    return <DialogTitle>{title()}</DialogTitle>;
-  }, [title]);
+    if (titleHidden) {
+      return (
+        <VisuallyHidden>
+          <DialogTitle>{dialogTitle()}</DialogTitle>
+        </VisuallyHidden>
+      );
+    }
+    return <DialogTitle>{dialogTitle()}</DialogTitle>;
+  }, [dialogTitle, titleHidden]);
 
   const renderedDescription = useMemo(() => {
-    if (!description) {
+    if (!dialogDescription) {
       return null;
     }
-    return <DialogDescription>{description()}</DialogDescription>;
-  }, [description]);
+    if (descriptionHidden) {
+      return (
+        <VisuallyHidden>
+          <DialogDescription>{dialogDescription()}</DialogDescription>
+        </VisuallyHidden>
+      );
+    }
+    return <DialogDescription>{dialogDescription()}</DialogDescription>;
+  }, [dialogDescription, descriptionHidden]);
 
   const renderedFooter = useMemo(() => {
-    return footer ? (
-      footer(handleClose)
+    return dialogFooter ? (
+      dialogFooter(handleClose)
     ) : (
       <Button onClick={handleClose} className="w-full">
         OK
       </Button>
     );
-  }, [footer, handleClose]);
+  }, [dialogFooter, handleClose]);
 
   return (
     <DialogCmp open={isVisible} onOpenChange={handleClose}>
       <DialogContent
         className={cn(hideCloseButton && "[&>button]:hidden", className)}
+        {...props}
       >
-        {title || description ? (
+        {dialogTitle || dialogDescription ? (
           <DialogHeader>
             {renderedTitle}
             {renderedDescription}
           </DialogHeader>
         ) : null}
-        {content?.()}
+        {dialogContent?.()}
         <DialogFooter className="sm:justify-center">
           {renderedFooter}
         </DialogFooter>

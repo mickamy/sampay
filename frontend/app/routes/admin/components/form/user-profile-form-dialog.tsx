@@ -40,10 +40,10 @@ export default function UserProfileFormDialog({
     <Dialog
       isOpen={isOpen}
       onClose={onClose}
-      title={() => (
+      dialogTitle={() => (
         <div className="text-center">{t("admin.index.edit_profile")}</div>
       )}
-      content={() => {
+      dialogContent={() => {
         return (
           <UserProfileForm
             profile={profile}
@@ -52,7 +52,7 @@ export default function UserProfileFormDialog({
           />
         );
       }}
-      footer={() => null}
+      dialogFooter={() => null}
       className="max-h-[80vh] overflow-y-scroll"
     />
   );
