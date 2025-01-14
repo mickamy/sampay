@@ -81,45 +81,43 @@ export default function AdminScreen() {
   );
 
   return (
-    <>
-      <div className="container mx-auto flex flex-col items-center p-12 space-y-6 min-w-[375px] max-w-[600px] lg:p-8">
-        <UserProfile
-          admin
-          profile={user.profile}
-          onClickAvatar={openProfileImageFormDialog}
-          onClickEdit={openProfileFormDialog}
-        />
-        <AddLinkButton onClick={openAddLinkFormDialog} />
-        <UserLinkButtons admin links={user.links} onEdit={onEdit} />
-        <AddUserLinkFormDialog
-          isOpen={isAddLinkFormDialogOpen}
-          onClose={closeAddLinkFormDialog}
-          onSubmit={submitAddLinkForm}
-          actionData={addLinkFormDialogActionData}
-        />
-        <UserProfileImageFormDialog
-          profile={user.profile}
-          isOpen={isProfileImageFormDialogOpen}
-          onClose={closeProfileImageFormDialog}
-          onSubmit={submitProfileImageForm}
-          actionData={profileImageFormDialogActionData}
-        />
-        <UserProfileFormDialog
-          profile={user.profile}
-          isOpen={isProfileFormDialogOpen}
-          onClose={closeProfileFormDialog}
-          onSubmit={submitProfileForm}
-          actionData={profileFormDialogActionData}
-        />
-        <EditUserLinkFormDialog
-          /* biome-ignore lint: style/noNonNullAssertion */
-          link={linkToEdit!}
-          isOpen={isEditLinkFormDialogOpen}
-          onClose={closeEditLinkFormDialog}
-          onSubmit={submitLinkForm}
-          actionData={editLinkFormDialogActionData}
-        />
-      </div>
-    </>
+    <div className="container mx-auto flex flex-col items-center p-12 space-y-6 min-w-[375px] max-w-[600px] lg:p-8">
+      <UserProfile
+        admin
+        profile={user.profile}
+        onClickAvatar={openProfileImageFormDialog}
+        onClickEdit={openProfileFormDialog}
+      />
+      <AddLinkButton onClick={openAddLinkFormDialog} />
+      <UserLinkButtons admin links={user.links} onEdit={onEdit} />
+      <AddUserLinkFormDialog
+        isOpen={isAddLinkFormDialogOpen}
+        onClose={closeAddLinkFormDialog}
+        onSubmit={submitAddLinkForm}
+        actionData={addLinkFormDialogActionData}
+      />
+      <UserProfileImageFormDialog
+        profile={user.profile}
+        isOpen={isProfileImageFormDialogOpen}
+        onClose={closeProfileImageFormDialog}
+        onSubmit={submitProfileImageForm}
+        actionData={profileImageFormDialogActionData}
+      />
+      <UserProfileFormDialog
+        profile={user.profile}
+        isOpen={isProfileFormDialogOpen}
+        onClose={closeProfileFormDialog}
+        onSubmit={submitProfileForm}
+        actionData={profileFormDialogActionData}
+      />
+      <EditUserLinkFormDialog
+        /* biome-ignore lint: style/noNonNullAssertion */
+        link={linkToEdit!}
+        isOpen={isEditLinkFormDialogOpen}
+        onClose={closeEditLinkFormDialog}
+        onSubmit={submitLinkForm}
+        actionData={editLinkFormDialogActionData}
+      />
+    </div>
   );
 }
