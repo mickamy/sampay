@@ -18,7 +18,6 @@ import type { APIError } from "~/lib/api/response";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
 import { useSafeTranslation } from "~/lib/i18n/hooks";
-import logger from "~/lib/logger";
 import { isFileLike } from "~/lib/polyfill/file";
 import { parseQRCode } from "~/lib/polyfill/image/index.client";
 import type { UserLink } from "~/models/user/user-link-model";
@@ -101,6 +100,7 @@ export default function UserLinkForm({
   );
 
   const qrCode = form.watch("qr_code");
+  const uri = form.watch("uri");
   const { setValue, clearErrors, setError } = form;
   const { t } = useSafeTranslation();
   useEffect(() => {
@@ -111,16 +111,17 @@ export default function UserLinkForm({
     }
 
     parseQRCode(qrCode)
-      .then((uri) => {
-        logger.debug({ uri }, "parsed qr code");
+      .then((parsedURI) => {
         if (!isCancelled) {
-          const type = getUserLinkProviderTypeByURI(uri);
+          const type = getUserLinkProviderTypeByURI(parsedURI);
           setValue("provider_type", type);
           clearErrors("qr_code");
         }
+        if (!uri) {
+          setValue("uri", parsedURI);
+        }
       })
       .catch((e) => {
-        logger.warn({ error: e }, "failed to parse qr code");
         if (!isCancelled) {
           setError("qr_code", {
             type: "invalid",
@@ -133,16 +134,19 @@ export default function UserLinkForm({
     return () => {
       isCancelled = true;
     };
-  }, [t, qrCode, setValue, setError, clearErrors]);
+  }, [t, qrCode, uri, setValue, setError, clearErrors]);
 
-  const uri = form.watch("uri");
+  const name = form.watch("name");
   useEffect(() => {
     if (!uri) {
       return;
     }
     const type = getUserLinkProviderTypeByURI(uri);
     setValue("provider_type", type);
-  }, [uri, setValue]);
+    if (!name) {
+      setValue("name", type);
+    }
+  }, [uri, name, setValue]);
 
   return (
     <Form {...form}>
