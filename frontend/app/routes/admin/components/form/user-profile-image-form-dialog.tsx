@@ -43,10 +43,12 @@ export default function UserProfileImageFormDialog({
     <Dialog
       isOpen={isOpen}
       onClose={onClose}
-      title={() => (
+      dialogTitle={() => (
         <div className="text-center">{t("admin.index.edit_profile_image")}</div>
       )}
-      content={() => {
+      dialogDescription={() => t("admin.index.edit_profile_image_description")}
+      descriptionHidden
+      dialogContent={() => {
         return (
           <UserProfileImageForm
             profile={profile}
@@ -56,7 +58,7 @@ export default function UserProfileImageFormDialog({
           />
         );
       }}
-      footer={() => null}
+      dialogFooter={() => null}
       className="max-h-[80vh] overflow-y-scroll"
     />
   );

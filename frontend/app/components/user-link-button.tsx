@@ -1,4 +1,3 @@
-import { Pencil } from "lucide-react";
 import { type HTMLAttributes, useCallback } from "react";
 import { Link } from "react-router";
 import Image from "~/components/image";
@@ -36,17 +35,11 @@ export default function UserLinkButton({
       <div className={cn("", className)} {...props}>
         <Button
           variant="outline"
-          className="relative flex flex-row w-full h-12 px-0 cursor-auto hover:bg-background"
+          size="lg"
+          onClick={onClickEdit}
+          className="flex flex-row w-full px-0"
         >
           <ButtonContent link={link} />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClickEdit}
-            className="absolute right-0"
-          >
-            <Pencil size={24} className="" />
-          </Button>
         </Button>
       </div>
     );

@@ -10,9 +10,14 @@
   },
   "admin": {
     "index": {
+      "add_link": "リンクを追加",
+      "add_link_description": "新しいリンクを追加してください",
       "edit_link": "リンクを編集",
+      "edit_link_description": "リンクの情報を編集してください",
       "edit_profile": "プロフィールを編集",
-      "edit_profile_image": "プロフィール画像を編集"
+      "edit_profile_description": "プロフィールを編集してください",
+      "edit_profile_image": "プロフィール画像を編集",
+      "edit_profile_image_description": "プロフィール画像を編集してください"
     }
   },
   "app": {
@@ -33,6 +38,7 @@
   },
   "form": {
     "cancel": "キャンセル",
+    "create": "作成",
     "change": "変更する",
     "choose_file": "ファイルを選択してください",
     "complete": "完了",

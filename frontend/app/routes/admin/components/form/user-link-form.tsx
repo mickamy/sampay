@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type HTMLAttributes, useCallback, useEffect } from "react";
 import Avatar from "~/components/avatar";
+import ErrorMessage from "~/components/error-message";
 import { FormField } from "~/components/form";
 import Spacer from "~/components/spacer";
 import { Button } from "~/components/ui/button";
@@ -17,7 +18,6 @@ import type { APIError } from "~/lib/api/response";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
 import { useSafeTranslation } from "~/lib/i18n/hooks";
-import logger from "~/lib/logger";
 import { isFileLike } from "~/lib/polyfill/file";
 import { parseQRCode } from "~/lib/polyfill/image/index.client";
 import type { UserLink } from "~/models/user/user-link-model";
@@ -26,8 +26,10 @@ import {
   getUserLinkProviderTypeByURI,
 } from "~/models/user/user-link-provider-type-model";
 
+type mode = "post" | "put";
+
 export const userLinkSchema = z.object({
-  type: z.enum(["link"]),
+  type: z.enum(["post_link", "put_link"]),
   id: z.string().length(26).optional(),
   qr_code: z
     .any()
@@ -52,6 +54,7 @@ export const userLinkSchema = z.object({
 });
 
 interface Props extends HTMLAttributes<HTMLFormElement> {
+  mode: mode;
   link?: UserLink;
   onSubmitData: (data: z.infer<typeof userLinkSchema>) => void;
   onCancel?: () => void;
@@ -59,6 +62,7 @@ interface Props extends HTMLAttributes<HTMLFormElement> {
 }
 
 export default function UserLinkForm({
+  mode,
   link,
   onSubmitData,
   onCancel,
@@ -70,7 +74,7 @@ export default function UserLinkForm({
     props: {
       resolver: zodResolver(userLinkSchema),
       defaultValues: {
-        type: "link",
+        type: mode === "post" ? "post_link" : "put_link",
         id: link?.id,
         provider_type: link?.providerType,
         uri: link?.uri,
@@ -96,26 +100,28 @@ export default function UserLinkForm({
   );
 
   const qrCode = form.watch("qr_code");
+  const uri = form.watch("uri");
   const { setValue, clearErrors, setError } = form;
   const { t } = useSafeTranslation();
   useEffect(() => {
     let isCancelled = false;
 
     if (!qrCode) {
-      setValue("provider_type", "other");
       return;
     }
 
     parseQRCode(qrCode)
-      .then((uri) => {
-        logger.debug({ uri }, "parsed qr code");
+      .then((parsedURI) => {
         if (!isCancelled) {
-          setValue("provider_type", getUserLinkProviderTypeByURI(uri));
+          const type = getUserLinkProviderTypeByURI(parsedURI);
+          setValue("provider_type", type);
           clearErrors("qr_code");
+        }
+        if (!uri) {
+          setValue("uri", parsedURI);
         }
       })
       .catch((e) => {
-        logger.warn({ error: e }, "failed to parse qr code");
         if (!isCancelled) {
           setError("qr_code", {
             type: "invalid",
@@ -128,7 +134,19 @@ export default function UserLinkForm({
     return () => {
       isCancelled = true;
     };
-  }, [t, qrCode, setValue, setError, clearErrors]);
+  }, [t, qrCode, uri, setValue, setError, clearErrors]);
+
+  const name = form.watch("name");
+  useEffect(() => {
+    if (!uri) {
+      return;
+    }
+    const type = getUserLinkProviderTypeByURI(uri);
+    setValue("provider_type", type);
+    if (!name) {
+      setValue("name", type);
+    }
+  }, [uri, name, setValue]);
 
   return (
     <Form {...form}>
@@ -177,7 +195,14 @@ export default function UserLinkForm({
           type="text"
           label={t("form.link_name")}
         />
-        <Spacer />
+        {form.formState.errors.root ? (
+          <ErrorMessage
+            message={form.formState.errors.root?.message}
+            className="min-h-4"
+          />
+        ) : (
+          <Spacer />
+        )}
         <div className="flex flex-row space-x-2">
           {onCancel && (
             <Button
@@ -189,7 +214,9 @@ export default function UserLinkForm({
               {t("form.cancel")}
             </Button>
           )}
-          <Button className="w-full">{t("form.update")}</Button>
+          <Button className="w-full">
+            {mode === "post" ? t("form.create") : t("form.update")}
+          </Button>
         </div>
       </form>
     </Form>

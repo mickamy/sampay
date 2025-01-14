@@ -1,35 +1,35 @@
 import { useEffect } from "react";
 import Dialog from "~/components/dialog";
-import UserProfileForm, {
-  type userProfileSchema,
-} from "~/components/user-profile-form";
 import type { APIError } from "~/lib/api/response";
 import type { z } from "~/lib/form/zod";
 import { useSafeTranslation } from "~/lib/i18n/hooks";
-import type { UserProfile } from "~/models/user/user-profile-model";
+import type { UserLink } from "~/models/user/user-link-model";
+import UserLinkForm, {
+  type userLinkSchema,
+} from "~/routes/admin/components/form/user-link-form";
 
 export interface ActionData {
-  putProfileSuccess?: boolean;
-  putProfileError?: APIError;
+  putLinkSuccess?: boolean;
+  putLinkError?: APIError;
 }
 
 type Props = {
-  profile: UserProfile;
+  link: UserLink;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: z.infer<typeof userProfileSchema>) => void;
+  onSubmit: (data: z.infer<typeof userLinkSchema>) => void;
   actionData?: ActionData;
 };
 
-export default function UserProfileFormDialog({
-  profile,
+export default function EditUserLinkFormDialog({
+  link,
   isOpen,
   onClose,
   onSubmit,
   actionData,
 }: Props) {
   useEffect(() => {
-    if (actionData?.putProfileSuccess && !actionData?.putProfileError) {
+    if (actionData?.putLinkSuccess && !actionData?.putLinkError) {
       onClose();
     }
   }, [actionData, onClose]);
@@ -40,21 +40,22 @@ export default function UserProfileFormDialog({
     <Dialog
       isOpen={isOpen}
       onClose={onClose}
-      dialogTitle={() => (
-        <div className="text-center">{t("admin.index.edit_profile")}</div>
-      )}
-      dialogDescription={() => t("admin.index.edit_profile_description")}
+      dialogTitle={() => t("admin.index.edit_link")}
+      dialogDescription={() => t("admin.index.edit_link_description")}
       descriptionHidden
       dialogContent={() => {
         return (
-          <UserProfileForm
-            profile={profile}
+          <UserLinkForm
+            mode="put"
+            link={link}
             onSubmitData={onSubmit}
-            error={actionData?.putProfileError}
+            onCancel={onClose}
+            error={actionData?.putLinkError}
           />
         );
       }}
       dialogFooter={() => null}
+      aria-describedby={t("admin.index.edit_link")}
       className="max-h-[80vh] overflow-y-scroll"
     />
   );

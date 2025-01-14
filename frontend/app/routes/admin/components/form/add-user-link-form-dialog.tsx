@@ -1,33 +1,32 @@
 import { useEffect } from "react";
 import Dialog from "~/components/dialog";
-import UserLinkForm, { type userLinkSchema } from "~/components/user-link-form";
 import type { APIError } from "~/lib/api/response";
 import type { z } from "~/lib/form/zod";
 import { useSafeTranslation } from "~/lib/i18n/hooks";
-import type { UserLink } from "~/models/user/user-link-model";
+import UserLinkForm, {
+  type userLinkSchema,
+} from "~/routes/admin/components/form/user-link-form";
 
 export interface ActionData {
-  putLinkSuccess?: boolean;
-  putLinkError?: APIError;
+  postLinkSuccess?: boolean;
+  postLinkError?: APIError;
 }
 
 type Props = {
-  link: UserLink;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: z.infer<typeof userLinkSchema>) => void;
   actionData?: ActionData;
 };
 
-export default function UserLinkFormDialog({
-  link,
+export default function AddUserLinkFormDialog({
   isOpen,
   onClose,
   onSubmit,
   actionData,
 }: Props) {
   useEffect(() => {
-    if (actionData?.putLinkSuccess && !actionData?.putLinkError) {
+    if (actionData?.postLinkSuccess && !actionData?.postLinkError) {
       onClose();
     }
   }, [actionData, onClose]);
@@ -38,20 +37,21 @@ export default function UserLinkFormDialog({
     <Dialog
       isOpen={isOpen}
       onClose={onClose}
-      title={() => (
-        <div className="text-center">{t("admin.index.edit_link")}</div>
-      )}
-      content={() => {
+      dialogTitle={() => t("admin.index.add_link")}
+      dialogDescription={() => t("admin.index.add_link_description")}
+      descriptionHidden
+      dialogContent={() => {
         return (
           <UserLinkForm
-            link={link}
+            mode="post"
             onSubmitData={onSubmit}
             onCancel={onClose}
-            error={actionData?.putLinkError}
+            error={actionData?.postLinkError}
           />
         );
       }}
-      footer={() => null}
+      dialogFooter={() => null}
+      aria-describedby={t("admin.index.edit_link")}
       className="max-h-[80vh] overflow-y-scroll"
     />
   );
