@@ -65,7 +65,6 @@ export async function parseQRCode(file: File): Promise<string> {
         const decoded = jsQR(pixels, width, height);
 
         if (decoded) {
-          console.log("decoded successfully", decoded.data);
           return resolve(decoded.data);
         }
 

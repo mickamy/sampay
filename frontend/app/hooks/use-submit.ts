@@ -26,7 +26,6 @@ export function useFormDataSubmit<T extends z.ZodTypeAny>(
   return useCallback(
     (values: z.infer<typeof schema>) => {
       const formData = new FormData();
-
       for (const [key, value] of Object.entries(values)) {
         if (value instanceof File) {
           formData.append(key, value);

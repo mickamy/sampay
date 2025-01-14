@@ -49,6 +49,16 @@ export default function Admin() {
 
 export const action: ActionFunction = async ({ request }) => {
   switch (request.method) {
+    case "POST": {
+      if (
+        request.headers.get("content-type")?.startsWith("multipart/form-data")
+      ) {
+        return handleMultipartPost({ request });
+      }
+      throw new Error(
+        `unsupported content type: ${request.headers.get("content-type")}`,
+      );
+    }
     case "PUT": {
       if (request.headers.get("content-type")?.startsWith("application/json")) {
         return handleJSONPut({ request });
@@ -58,10 +68,28 @@ export const action: ActionFunction = async ({ request }) => {
       ) {
         return handleMultipartPut({ request });
       }
-      throw new Error("unsupported content type");
+      throw new Error(
+        `unsupported content type: ${request.headers.get("content-type")}`,
+      );
+    }
+    default: {
+      throw new Error(`unsupported method: ${request.method}`);
     }
   }
 };
+
+async function handleMultipartPost({
+  request,
+}: { request: Request }): Promise<Response> {
+  const body = await request.formData();
+  const type = body.get("type");
+  switch (type) {
+    case "post_link":
+      return postLink({ request, body });
+    default:
+      throw new Error(`unknown type: ${type}`);
+  }
+}
 
 async function handleJSONPut({ request }: { request: Request }) {
   const body = await request.json();
@@ -81,7 +109,7 @@ async function handleMultipartPut({
       return putProfile({ request, body });
     case "profile_image":
       return putProfileImage({ request, body });
-    case "link":
+    case "put_link":
       return putLink({ request, body });
     default:
       throw new Error(`unknown type: ${type}`);
@@ -150,7 +178,7 @@ async function putProfileImage({
     .then((it) => it.value);
 }
 
-async function putLink({
+async function postLink({
   request,
   body,
 }: { request: Request; body: FormData }) {
@@ -162,6 +190,49 @@ async function putLink({
     let imageObj: S3Object | undefined;
     if (qr_code) {
       imageObj = await directUpload({
+        type: "qr_code",
+        file: qr_code,
+        getClient,
+      });
+    }
+
+    await client.createUserLink({
+      providerType: data.provider_type,
+      uri: data.uri,
+      name: data.name,
+      qrCode: imageObj,
+    });
+    const actionData: ActionData = {
+      postLinkSuccess: true,
+      postLinkError: undefined,
+    };
+    return Response.json(actionData);
+  })
+    .then((it) =>
+      it.map((error) =>
+        Response.json({
+          postLinkSuccess: false,
+          postLinkError: error,
+        }),
+      ),
+    )
+    .then((it) => {
+      console.log("it", it);
+      return it.value;
+    });
+}
+
+async function putLink({
+  request,
+  body,
+}: { request: Request; body: FormData }) {
+  return withAuthentication({ request }, async ({ getClient }) => {
+    const { qr_code, ...data } = userLinkSchema.parse(Object.fromEntries(body));
+
+    const client = getClient(UserLinkService);
+
+    if (qr_code) {
+      const imageObj = await directUpload({
         type: "qr_code",
         file: qr_code,
         getClient,

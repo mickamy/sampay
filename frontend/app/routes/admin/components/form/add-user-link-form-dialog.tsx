@@ -43,6 +43,7 @@ export default function AddUserLinkFormDialog({
       dialogContent={() => {
         return (
           <UserLinkForm
+            mode="post"
             onSubmitData={onSubmit}
             onCancel={onClose}
             error={actionData?.postLinkError}

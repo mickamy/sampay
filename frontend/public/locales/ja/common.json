@@ -38,6 +38,7 @@
   },
   "form": {
     "cancel": "キャンセル",
+    "create": "作成",
     "change": "変更する",
     "choose_file": "ファイルを選択してください",
     "complete": "完了",

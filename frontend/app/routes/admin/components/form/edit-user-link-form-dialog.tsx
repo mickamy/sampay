@@ -46,6 +46,7 @@ export default function EditUserLinkFormDialog({
       dialogContent={() => {
         return (
           <UserLinkForm
+            mode="put"
             link={link}
             onSubmitData={onSubmit}
             onCancel={onClose}

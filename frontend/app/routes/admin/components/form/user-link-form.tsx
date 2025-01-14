@@ -27,8 +27,10 @@ import {
   getUserLinkProviderTypeByURI,
 } from "~/models/user/user-link-provider-type-model";
 
+type mode = "post" | "put";
+
 export const userLinkSchema = z.object({
-  type: z.enum(["link"]),
+  type: z.enum(["post_link", "put_link"]),
   id: z.string().length(26).optional(),
   qr_code: z
     .any()
@@ -53,6 +55,7 @@ export const userLinkSchema = z.object({
 });
 
 interface Props extends HTMLAttributes<HTMLFormElement> {
+  mode: mode;
   link?: UserLink;
   onSubmitData: (data: z.infer<typeof userLinkSchema>) => void;
   onCancel?: () => void;
@@ -60,6 +63,7 @@ interface Props extends HTMLAttributes<HTMLFormElement> {
 }
 
 export default function UserLinkForm({
+  mode,
   link,
   onSubmitData,
   onCancel,
@@ -71,7 +75,7 @@ export default function UserLinkForm({
     props: {
       resolver: zodResolver(userLinkSchema),
       defaultValues: {
-        type: "link",
+        type: mode === "post" ? "post_link" : "put_link",
         id: link?.id,
         provider_type: link?.providerType,
         uri: link?.uri,
@@ -130,6 +134,15 @@ export default function UserLinkForm({
       isCancelled = true;
     };
   }, [t, qrCode, setValue, setError, clearErrors]);
+
+  const uri = form.watch("uri");
+  useEffect(() => {
+    if (!uri) {
+      return;
+    }
+    const type = getUserLinkProviderTypeByURI(uri);
+    setValue("provider_type", type);
+  }, [uri, setValue]);
 
   return (
     <Form {...form}>
@@ -197,7 +210,9 @@ export default function UserLinkForm({
               {t("form.cancel")}
             </Button>
           )}
-          <Button className="w-full">{t("form.update")}</Button>
+          <Button className="w-full">
+            {mode === "post" ? t("form.create") : t("form.update")}
+          </Button>
         </div>
       </form>
     </Form>
