@@ -46,6 +46,8 @@ export default function UserProfileImageFormDialog({
       dialogTitle={() => (
         <div className="text-center">{t("admin.index.edit_profile_image")}</div>
       )}
+      dialogDescription={() => t("admin.index.edit_profile_image_description")}
+      descriptionHidden
       dialogContent={() => {
         return (
           <UserProfileImageForm

@@ -43,6 +43,8 @@ export default function UserProfileFormDialog({
       dialogTitle={() => (
         <div className="text-center">{t("admin.index.edit_profile")}</div>
       )}
+      dialogDescription={() => t("admin.index.edit_profile_description")}
+      descriptionHidden
       dialogContent={() => {
         return (
           <UserProfileForm
