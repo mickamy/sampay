@@ -10,6 +10,7 @@ import {
   isRouteErrorResponse,
   useLoaderData,
 } from "react-router";
+import { Toaster } from "~/components/ui/sonner";
 import i18nServer from "~/lib/i18n/index.server";
 import logger from "~/lib/logger";
 import type { Route } from "./+types/root";
@@ -83,6 +84,7 @@ export function Layout({ children }: { children: ReactNode }) {
         />
         <ScrollRestoration />
         <Scripts />
+        <Toaster />
       </body>
     </html>
   );

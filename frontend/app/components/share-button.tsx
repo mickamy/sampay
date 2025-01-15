@@ -1,5 +1,6 @@
 import { Share } from "lucide-react";
 import { type HTMLAttributes, useCallback } from "react";
+import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
@@ -22,7 +23,7 @@ export default function ShareButton({ url, className, ...props }: Props) {
   const copyToClipboard = useCallback(() => {
     navigator.clipboard
       .writeText(url)
-      .then(() => alert(t("components.share_button.copied")));
+      .then(() => toast(t("components.share_button.copied")));
   }, [t, url]);
 
   const shareToTwitter = useCallback(() => {

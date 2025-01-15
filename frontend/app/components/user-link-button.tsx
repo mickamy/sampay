@@ -1,4 +1,5 @@
 import { type HTMLAttributes, useCallback } from "react";
+import { toast } from "sonner";
 import Image from "~/components/image";
 import Spacer from "~/components/spacer";
 import { Button, buttonVariants } from "~/components/ui/button";
@@ -56,7 +57,7 @@ export default function UserLinkButton({
   const copyToClipboard = useCallback(() => {
     navigator.clipboard
       .writeText(link.uri)
-      .then(() => alert(t("components.user_link_button.copied_to_clipboard")));
+      .then(() => toast(t("components.user_link_button.copied_to_clipboard")));
   }, [t, link.uri]);
 
   const openURI = useCallback(() => {
