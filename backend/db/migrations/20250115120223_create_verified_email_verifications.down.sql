@@ -1,0 +1,1 @@
+DROP TABLE verified_email_verifications;
