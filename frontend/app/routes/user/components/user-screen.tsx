@@ -13,7 +13,7 @@ export interface LoaderData {
 export default function UserScreen() {
   const { user, url } = useLoaderData<LoaderData>();
   return (
-    <div className="container mx-auto flex flex-col items-center py-6 min-w-[375px] max-w-[600px] lg:p-4">
+    <div className="container mx-auto flex flex-col items-center p-6 min-w-[375px] max-w-[600px] lg:p-4">
       <div className="flex justify-end w-full">
         <ShareButton url={url} />
       </div>

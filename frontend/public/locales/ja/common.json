@@ -33,7 +33,7 @@
   },
   "components": {
     "share_button": {
-      "label": "リンクを共有",
+      "label": "このページのリンクを共有",
       "copy": "クリップボードにコピー",
       "copied": "コピーしました",
       "other": "その他",
