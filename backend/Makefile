@@ -40,8 +40,9 @@ install-mod: ## Install go modules
 	go mod tidy
 
 update-mod: ## Update go modules
-	go get -u
+	go get -u ./...
 	go mod tidy
+	go generate ./... # Run generate after updating modules for some packages are dropped on go mod tidy
 
 db-create: ## Create the database
 	PACKAGE_ROOT=$$(pwd) go run ./cmd/db/create/main.go
