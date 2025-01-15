@@ -31,6 +31,17 @@
       "sign_up": "新規登録"
     }
   },
+  "components": {
+    "share_button": {
+      "label": "リンクを共有",
+      "copy": "クリップボードにコピー",
+      "copied": "コピーしました",
+      "other": "その他",
+      "twitter": "Twitter",
+      "facebook": "Facebook",
+      "line": "LINE"
+    }
+  },
   "header": {
     "sign_in": "ログイン",
     "sign_up": "新規登録",

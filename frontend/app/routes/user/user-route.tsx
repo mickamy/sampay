@@ -13,7 +13,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     if (!user) {
       throw new Error("user not found");
     }
-    const data: LoaderData = { user: convertToUser(user) };
+    const data: LoaderData = { user: convertToUser(user), url: request.url };
     return Response.json(data);
   }).then((it) => it.value);
 };
