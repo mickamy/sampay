@@ -31,6 +31,24 @@
       "sign_up": "新規登録"
     }
   },
+  "components": {
+    "share_button": {
+      "label": "このページのリンクを共有",
+      "copy": "クリップボードにコピー",
+      "copied": "コピーしました",
+      "other": "その他",
+      "twitter": "Twitter",
+      "facebook": "Facebook",
+      "line": "LINE"
+    },
+    "user_link_button": {
+      "select_method": "リンクを開く方法を選択してください",
+      "copy_to_clipboard": "クリップボードにコピー",
+      "copied_to_clipboard": "コピーしました",
+      "open_uri": "リンクを開く",
+      "open_qr_code": "QR コードを開く"
+    }
+  },
   "header": {
     "sign_in": "ログイン",
     "sign_up": "新規登録",

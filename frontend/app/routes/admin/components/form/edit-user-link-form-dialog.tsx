@@ -56,7 +56,6 @@ export default function EditUserLinkFormDialog({
       }}
       dialogFooter={() => null}
       aria-describedby={t("admin.index.edit_link")}
-      className="max-h-[80vh] overflow-y-scroll"
     />
   );
 }

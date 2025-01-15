@@ -31,7 +31,9 @@ export const loader: LoaderFunction = async ({ request }) => {
       throw new Error("user not found");
     }
 
-    const data: LoaderData = { user: convertToUser(user) };
+    const url = new URL(request.url);
+    url.pathname = `/u/${user.slug}`;
+    const data: LoaderData = { user: convertToUser(user), url: url.toString() };
     return Response.json(data);
   })
     .then((it) => {

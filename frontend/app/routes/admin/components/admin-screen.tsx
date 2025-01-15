@@ -1,5 +1,7 @@
 import { useCallback, useState } from "react";
 import { useLoaderData } from "react-router";
+import ShareButton from "~/components/share-button";
+import Spacer from "~/components/spacer";
 import UserLinkButtons from "~/components/user-link-buttons";
 import UserProfile from "~/components/user-profile";
 import { userProfileSchema } from "~/components/user-profile-form";
@@ -25,6 +27,7 @@ import UserProfileImageFormDialog, {
 
 export interface LoaderData {
   user: User;
+  url: string;
 }
 
 export interface ActionData
@@ -34,7 +37,7 @@ export interface ActionData
     PutUserLinkFormDialogActionData {}
 
 export default function AdminScreen() {
-  const { user } = useLoaderData<LoaderData>();
+  const { user, url } = useLoaderData<LoaderData>();
 
   const {
     isDialogOpen: isAddLinkFormDialogOpen,
@@ -81,45 +84,49 @@ export default function AdminScreen() {
   );
 
   return (
-    <>
-      <div className="container mx-auto flex flex-col items-center p-12 space-y-6 min-w-[375px] max-w-[600px] lg:p-8">
-        <UserProfile
-          admin
-          profile={user.profile}
-          onClickAvatar={openProfileImageFormDialog}
-          onClickEdit={openProfileFormDialog}
-        />
-        <AddLinkButton onClick={openAddLinkFormDialog} />
-        <UserLinkButtons admin links={user.links} onEdit={onEdit} />
-        <AddUserLinkFormDialog
-          isOpen={isAddLinkFormDialogOpen}
-          onClose={closeAddLinkFormDialog}
-          onSubmit={submitAddLinkForm}
-          actionData={addLinkFormDialogActionData}
-        />
-        <UserProfileImageFormDialog
-          profile={user.profile}
-          isOpen={isProfileImageFormDialogOpen}
-          onClose={closeProfileImageFormDialog}
-          onSubmit={submitProfileImageForm}
-          actionData={profileImageFormDialogActionData}
-        />
-        <UserProfileFormDialog
-          profile={user.profile}
-          isOpen={isProfileFormDialogOpen}
-          onClose={closeProfileFormDialog}
-          onSubmit={submitProfileForm}
-          actionData={profileFormDialogActionData}
-        />
-        <EditUserLinkFormDialog
-          /* biome-ignore lint: style/noNonNullAssertion */
-          link={linkToEdit!}
-          isOpen={isEditLinkFormDialogOpen}
-          onClose={closeEditLinkFormDialog}
-          onSubmit={submitLinkForm}
-          actionData={editLinkFormDialogActionData}
-        />
+    <div className="container mx-auto flex flex-col items-center p-6 min-w-[375px] max-w-[600px] lg:p-4">
+      <div className="flex justify-end w-full">
+        <ShareButton url={url} />
       </div>
-    </>
+      <UserProfile
+        admin
+        profile={user.profile}
+        onClickAvatar={openProfileImageFormDialog}
+        onClickEdit={openProfileFormDialog}
+      />
+      <Spacer size={6} />
+      <AddLinkButton onClick={openAddLinkFormDialog} />
+      <Spacer size={6} />
+      <UserLinkButtons admin links={user.links} onEdit={onEdit} />
+      <AddUserLinkFormDialog
+        isOpen={isAddLinkFormDialogOpen}
+        onClose={closeAddLinkFormDialog}
+        onSubmit={submitAddLinkForm}
+        actionData={addLinkFormDialogActionData}
+      />
+      <UserProfileImageFormDialog
+        profile={user.profile}
+        isOpen={isProfileImageFormDialogOpen}
+        onClose={closeProfileImageFormDialog}
+        onSubmit={submitProfileImageForm}
+        actionData={profileImageFormDialogActionData}
+      />
+      <UserProfileFormDialog
+        profile={user.profile}
+        isOpen={isProfileFormDialogOpen}
+        onClose={closeProfileFormDialog}
+        onSubmit={submitProfileForm}
+        actionData={profileFormDialogActionData}
+      />
+      <EditUserLinkFormDialog
+        /* biome-ignore lint: style/noNonNullAssertion */
+        link={linkToEdit!}
+        isOpen={isEditLinkFormDialogOpen}
+        onClose={closeEditLinkFormDialog}
+        onSubmit={submitLinkForm}
+        actionData={editLinkFormDialogActionData}
+      />
+      <Spacer size={20} />
+    </div>
   );
 }

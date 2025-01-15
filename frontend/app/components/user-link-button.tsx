@@ -1,8 +1,15 @@
 import { type HTMLAttributes, useCallback } from "react";
-import { Link } from "react-router";
+import { toast } from "sonner";
 import Image from "~/components/image";
 import Spacer from "~/components/spacer";
-import { Button } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import { useSafeTranslation } from "~/lib/i18n/hooks";
 import { cn } from "~/lib/utils";
 import type { UserLink } from "~/models/user/user-link-model";
 import { getUserLinkProviderTypeImage } from "~/models/user/user-link-provider-type-model";
@@ -30,6 +37,8 @@ export default function UserLinkButton({
     }
   }, [admin, link, onEdit]);
 
+  const { t } = useSafeTranslation();
+
   if (admin) {
     return (
       <div className={cn("", className)} {...props}>
@@ -45,13 +54,45 @@ export default function UserLinkButton({
     );
   }
 
+  const copyToClipboard = useCallback(() => {
+    navigator.clipboard
+      .writeText(link.uri)
+      .then(() => toast(t("components.user_link_button.copied_to_clipboard")));
+  }, [t, link.uri]);
+
+  const openURI = useCallback(() => {
+    window.open(link.uri, "_blank");
+  }, [link.uri]);
+
+  const openQRCode = useCallback(() => {
+    window.open(link.qrCodeURL, "_blank");
+  }, [link.qrCodeURL]);
+
   return (
     <div className={cn("", className)} {...props}>
-      <Link to={link.uri.toString()} target="_blank" rel="noopener noreferrer">
-        <Button variant="outline" className="flex flex-row w-full h-12 px-0">
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          className={cn(
+            "w-full",
+            buttonVariants({ variant: "outline", size: "lg" }),
+          )}
+        >
           <ButtonContent link={link} />
-        </Button>
-      </Link>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem onClick={copyToClipboard}>
+            {t("components.user_link_button.copy_to_clipboard")}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={openURI}>
+            {t("components.user_link_button.open_uri")}
+          </DropdownMenuItem>
+          {link.qrCodeURL && (
+            <DropdownMenuItem onClick={openQRCode}>
+              {t("components.user_link_button.open_qr_code")}
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

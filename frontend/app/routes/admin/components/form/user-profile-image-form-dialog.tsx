@@ -59,7 +59,6 @@ export default function UserProfileImageFormDialog({
         );
       }}
       dialogFooter={() => null}
-      className="max-h-[80vh] overflow-y-scroll"
     />
   );
 }

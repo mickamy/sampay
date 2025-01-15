@@ -10,6 +10,7 @@ import {
   isRouteErrorResponse,
   useLoaderData,
 } from "react-router";
+import { Toaster } from "~/components/ui/sonner";
 import i18nServer from "~/lib/i18n/index.server";
 import logger from "~/lib/logger";
 import type { Route } from "./+types/root";
@@ -31,6 +32,7 @@ export const links: Route.LinksFunction = () => [
 
 interface LoaderData {
   locale: string;
+  title: string;
   ENV: {
     PUBLIC_API_BASE_URL: string;
   };
@@ -41,8 +43,15 @@ export const loader: LoaderFunction = async ({ request }) => {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   }
   const locale = await i18nServer.getLocale(request);
+
+  const t = await i18nServer.getFixedT(request, "common", {
+    fallbackLng: "en",
+  });
+  const title = t("app.title");
+
   const data: LoaderData = {
     locale,
+    title,
     ENV: {
       PUBLIC_API_BASE_URL: process.env.PUBLIC_API_BASE_URL,
     },
@@ -51,7 +60,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export function Layout({ children }: { children: ReactNode }) {
-  const { locale, ENV } = useLoaderData<LoaderData>();
+  const { locale, title, ENV } = useLoaderData<LoaderData>();
   const { i18n, t } = useTranslation();
   useEffect(() => {
     if (i18n.language !== locale) {
@@ -66,12 +75,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        <title>
-          {t(
-            "app.title",
-            "Sampay | The Only Link You Need for Peer-to-Peer Payments",
-          )}
-        </title>
+        <title>{title}</title>
       </head>
       <body>
         {children}
@@ -83,6 +87,7 @@ export function Layout({ children }: { children: ReactNode }) {
         />
         <ScrollRestoration />
         <Scripts />
+        <Toaster />
       </body>
     </html>
   );
