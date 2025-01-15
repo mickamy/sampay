@@ -1,7 +1,7 @@
 import { Share } from "lucide-react";
 import { type HTMLAttributes, useCallback } from "react";
 import { toast } from "sonner";
-import { Button } from "~/components/ui/button";
+import { buttonVariants } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -52,14 +52,12 @@ export default function ShareButton({ url, className, ...props }: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn("rounded-full [&_svg]:size-8 shadow-lg", className)}
-          {...props}
-        >
-          <Share className="p-1" />
-        </Button>
+        <Share
+          className={cn(
+            buttonVariants({ variant: "ghost", size: "icon" }),
+            "rounded-full shadow-lg p-2",
+          )}
+        />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuLabel>
