@@ -4,6 +4,7 @@
 	install-build \
 	install-dev \
 	install-mod \
+	update-mod \
 	db-create \
 	db-migrate \
 	db-seed \
@@ -36,6 +37,10 @@ install-dev: ## Install development dependencies
 	go install go.uber.org/mock/mockgen@latest
 
 install-mod: ## Install go modules
+	go mod tidy
+
+update-mod: ## Update go modules
+	go get -u
 	go mod tidy
 
 db-create: ## Create the database
