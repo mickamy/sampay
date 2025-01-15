@@ -9,11 +9,13 @@ import (
 )
 
 type Repositories struct {
+	repository.EmailVerification
 	repository.UsageCategory
 }
 
 //lint:ignore U1000 used by wire
 var RepositorySet = wire.NewSet(
+	repository.NewEmailVerification,
 	repository.NewUsageCategory,
 )
 
