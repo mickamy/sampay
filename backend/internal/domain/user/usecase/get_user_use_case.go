@@ -14,7 +14,7 @@ import (
 
 var (
 	ErrGetUserNotFound = commonModel.NewLocalizableError(errors.New("user not found")).
-		WithMessages(i18n.Config{MessageID: "user.usecase.get_user.error.not_found"})
+		WithMessages(i18n.Config{MessageID: i18n.UserUsecaseGet_userErrorNot_found})
 )
 
 type GetUserInput struct {

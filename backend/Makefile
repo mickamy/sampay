@@ -4,6 +4,7 @@
 	install-build \
 	install-dev \
 	install-mod \
+	update-mod \
 	db-create \
 	db-migrate \
 	db-seed \
@@ -34,9 +35,16 @@ install-dev: ## Install development dependencies
 	go install github.com/kisielk/errcheck@latest
 	go install github.com/google/wire/cmd/wire@latest
 	go install go.uber.org/mock/mockgen@latest
+	go install github.com/a-h/templ/cmd/templ@latest
+	go install golang.org/x/tools/cmd/stringer@latest
 
 install-mod: ## Install go modules
 	go mod tidy
+
+update-mod: ## Update go modules
+	go get -u ./...
+	go mod tidy
+	go generate ./... # Run generate after updating modules for some packages are dropped on go mod tidy
 
 db-create: ## Create the database
 	PACKAGE_ROOT=$$(pwd) go run ./cmd/db/create/main.go
@@ -60,6 +68,8 @@ gen: ## Generate all files
 	@echo "Generating files"
 	find ./ -type d -name "mock_*" -exec rm -r {} +
 	go generate ./...
+	templ generate
+	gofmt -s -w .
 
 wire: ## Generate wire files
 	wire ./...

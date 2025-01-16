@@ -21,7 +21,7 @@ func I18N() connect.UnaryInterceptorFunc {
 
 			tag, _, err := txtlang.ParseAcceptLanguage(header)
 			if err != nil || len(tag) == 0 {
-				slogger.ErrorCtx(ctx, "failed to parse accept language tag", "err", err, "Accept-Language", header)
+				slogger.WarnCtx(ctx, "failed to parse accept language tag", "err", err, "Accept-Language", header)
 				ctx = contexts.SetLanguage(ctx, language.Japanese)
 				return next(ctx, req)
 			}

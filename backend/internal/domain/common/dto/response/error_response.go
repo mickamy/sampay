@@ -42,7 +42,7 @@ func ParseLocalizableErrorCtx(ctx context.Context, err error) *Error {
 }
 
 func NewInternalError(ctx context.Context, err error) *Error {
-	message := i18n.MustLocalizeMessageCtx(ctx, i18n.Config{MessageID: "common.handler.error.internal"})
+	message := i18n.MustLocalizeMessageCtx(ctx, i18n.Config{MessageID: i18n.CommonHandlerErrorInternal})
 	return NewError(connect.CodeInternal, err).WithMessage(message)
 }
 
@@ -63,6 +63,10 @@ func (m *Error) WithFieldViolation(field string, description ...string) *Error {
 		Descriptions: description,
 	})
 	return m
+}
+
+func (m *Error) AsFieldViolations(field string) *Error {
+	return m.WithFieldViolation(field, m.Message.Message).WithMessage("")
 }
 
 func (m *Error) AsConnectError() *connect.Error {

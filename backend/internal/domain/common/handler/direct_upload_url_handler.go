@@ -36,7 +36,7 @@ func (h *DirectUploadURL) CreateDirectUploadURL(
 	obj := commonRequest.NewS3Object(req.Msg.S3Object)
 	if obj == nil {
 		return nil, commonResponse.NewBadRequest(errors.New("invalid s3 object")).
-			WithMessage(i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "common.handler.direct_upload_url.error.invalid_s3_object"})).
+			WithMessage(i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.CommonHandlerDirect_upload_urlErrorInvalid_s3_object})).
 			AsConnectError()
 	}
 	out, err := h.create.Do(ctx, usecase.CreateDirectUploadURLInput{

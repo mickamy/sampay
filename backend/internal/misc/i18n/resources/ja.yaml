@@ -13,8 +13,17 @@ common:
         invalid_s3_object: '無効なS3オブジェクトです。'
 registration:
   usecase:
-    error:
-      email_already_exists: 'このメールアドレスは既に登録されています。'
+    common:
+      error:
+        email_already_exists: 'このメールアドレスは既に登録されています。'
+    verify_email:
+      error:
+        invalid_token: '無効なトークンです。'
+  email:
+    request_email_verification:
+      title: 'メールアドレスの確認'
+      header: 'メールアドレスの確認'
+      body: '以下のリンクをクリックしてメールアドレスを確認してください。'
 user:
   model:
     user_attribute:

@@ -12,6 +12,7 @@ import (
 	common "mickamy.com/sampay/internal/domain/common/di"
 	registration "mickamy.com/sampay/internal/domain/registration/di"
 	user "mickamy.com/sampay/internal/domain/user/di"
+	"mickamy.com/sampay/internal/job"
 )
 
 func InitInfras() (Infras, error) {
@@ -22,6 +23,35 @@ func InitInfras() (Infras, error) {
 func InitLibs() Libs {
 	wire.Build(libSet, configSet, wire.Struct(new(Libs), "*"))
 	return Libs{}
+}
+
+func InitJobs() job.Jobs {
+	wire.Build(
+		jobSet,
+		configSet,
+		libSet,
+		wire.Struct(new(job.Jobs), "*"),
+	)
+	return job.Jobs{}
+}
+
+func InitProducers() Producers {
+	wire.Build(
+		producerSet,
+		configSet,
+		wire.Struct(new(Producers), "*"),
+	)
+	return Producers{}
+}
+
+func InitConsumers() Consumers {
+	wire.Build(
+		consumerSet,
+		configSet,
+		InitJobs,
+		wire.Struct(new(Consumers), "*"),
+	)
+	return Consumers{}
 }
 
 func InitAuthRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) auth.Repositories {
@@ -93,6 +123,8 @@ func InitRegistrationRepositories(db *database.DB, readWriter *database.ReadWrit
 func InitRegistrationUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) registration.UseCases {
 	wire.Build(
 		registration.UseCaseSet,
+		configSet,
+		producerSet,
 		auth.RepositorySet,
 		user.RepositorySet,
 		registration.RepositorySet,
@@ -105,6 +137,8 @@ func InitRegistrationHandlers(db *database.DB, readWriter *database.ReadWriter, 
 	wire.Build(
 		registration.HandlerSet,
 		registration.UseCaseSet,
+		configSet,
+		producerSet,
 		auth.RepositorySet,
 		user.RepositorySet,
 		registration.RepositorySet,

@@ -73,7 +73,7 @@ func TestAccount_SignUp(t *testing.T) {
 					require.Len(t, errMsg.FieldViolations, 1)
 					require.Equal(t, "email", errMsg.FieldViolations[0].Field)
 					require.Len(t, errMsg.FieldViolations[0].Descriptions, 1)
-					require.Equal(t, i18n.MustJapaneseMessage(i18n.Config{MessageID: "registration.usecase.error.email_already_exists"}), errMsg.FieldViolations[0].Descriptions[0])
+					require.Equal(t, i18n.MustJapaneseMessage(i18n.Config{MessageID: i18n.RegistrationUsecaseCommonErrorEmail_already_exists}), errMsg.FieldViolations[0].Descriptions[0])
 				} else {
 					require.Failf(t, "unexpected detail type", "got=%T", detail)
 				}

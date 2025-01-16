@@ -6,6 +6,7 @@
 	down-v \
 	install \
 	ci \
+	push-proto \
 	help \
 
 build: ## Build the docker images
@@ -30,6 +31,12 @@ install: ## Install all dependencies
 ci:
 	cd backend && make ci
 	cd frontend && make ci
+
+push-proto:
+	buf lint ./proto
+	buf push ./proto
+	cd backend && make update-mod
+	cd frontend && npm update @buf/mickamy_sampay.bufbuild_es
 
 help: ## Display a list of available Makefile targets with their descriptions
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \

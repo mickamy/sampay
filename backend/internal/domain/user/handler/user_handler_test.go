@@ -121,7 +121,7 @@ func TestUser_GetUser(t *testing.T) {
 				require.Len(t, connErr.Details(), 1)
 				detail := either.Must(connErr.Details()[0].Value())
 				if errMsg, ok := detail.(*commonv1.ErrorMessage); ok {
-					require.Equal(t, i18n.MustJapaneseMessage(i18n.Config{MessageID: "user.usecase.get_user.error.not_found"}), errMsg.Message)
+					require.Equal(t, i18n.MustJapaneseMessage(i18n.Config{MessageID: i18n.UserUsecaseGet_userErrorNot_found}), errMsg.Message)
 				} else {
 					require.Failf(t, "unexpected detail type", "got=%T", detail)
 				}

@@ -6,6 +6,9 @@ services:
       args:
         MAIN_GO_FILE: /src/cmd/api/main.go
         BIN_NAME: api
+        GH_PAT: ${GH_PAT}
+    environment:
+      - GH_PAT=${GH_PAT}
     env_file:
       - .env.docker
     volumes:
@@ -81,7 +84,7 @@ services:
       - "127.0.0.1:4566:4566"
       - "127.0.0.1:4510-4559:4510-4559"
     environment:
-      - SERVICES=s3
+      - SERVICES=s3,sqs
       - DEBUG=1
       - LS_LOG=error
       - HOSTNAME_EXTERNAL=localstack
@@ -104,6 +107,19 @@ services:
       - ./cloudfront/default.conf:/etc/nginx/conf.d/default.conf
     dns:
       - 10.0.2.20
+    networks:
+      default:
+
+  ses:
+    build:
+      context: ./ses
+    ports:
+      - "8005:8005"
+    environment:
+      AWS_SES_ACCOUNT: '{"SendQuota":{"Max24HourSend":1000000,"MaxSendRate":250,"SentLast24Hours":0}}'
+    depends_on:
+      localstack:
+        condition: service_healthy
     networks:
       default:
 

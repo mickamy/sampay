@@ -176,6 +176,62 @@ func TestAuthentication_ListByUserID(t *testing.T) {
 	}
 }
 
+func TestAuthentication_ExistsByTypeAndIdentifier(t *testing.T) {
+	t.Parallel()
+
+	tcs := []struct {
+		name    string
+		arrange func(t *testing.T, ctx context.Context, db *database.DB) (authModel.AuthenticationType, string)
+		assert  func(t *testing.T, got bool, err error)
+	}{
+		{
+			name: "exists",
+			arrange: func(t *testing.T, ctx context.Context, db *database.DB) (authModel.AuthenticationType, string) {
+				user := userFixture.User(nil)
+				require.NoError(t, db.WithContext(ctx).Create(&user).Error)
+				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
+					m.UserID = user.ID
+				})
+				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
+				return auth.Type, auth.Identifier
+			},
+			assert: func(t *testing.T, got bool, err error) {
+				require.NoError(t, err)
+				assert.True(t, got)
+			},
+		},
+		{
+			name: "not exists",
+			arrange: func(t *testing.T, ctx context.Context, db *database.DB) (authModel.AuthenticationType, string) {
+				return authModel.AuthenticationTypeEmailPassword, gofakeit.GlobalFaker.Email()
+			},
+			assert: func(t *testing.T, got bool, err error) {
+				require.NoError(t, err)
+				assert.False(t, got)
+			},
+		},
+	}
+
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			// arrange
+			ctx := context.Background()
+			db := newReadWriter(t)
+			authType, identifier := tc.arrange(t, ctx, db.WriterDB())
+
+			// act
+			sut := repository.NewAuthentication(db.WriterDB())
+			got, err := sut.ExistsByTypeAndIdentifier(ctx, authType, identifier)
+
+			// assert
+			tc.assert(t, got, err)
+		})
+	}
+}
+
 func TestAuthentication_Update(t *testing.T) {
 	t.Parallel()
 

@@ -47,7 +47,7 @@ func (h UserLink) CreateUserLink(ctx context.Context, req *connect.Request[userv
 	if err != nil {
 		return nil, commonResponse.NewBadRequest(err, commonResponse.FieldViolation{
 			Field:        "provider_type",
-			Descriptions: []string{i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "user.handler.user_link.error.invalid_provider_type"})},
+			Descriptions: []string{i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.UserHandlerUser_linkErrorInvalid_provider_type})},
 		}).AsConnectError()
 	}
 
@@ -95,7 +95,7 @@ func (h UserLink) UpdateUserLink(ctx context.Context, req *connect.Request[userv
 		if err != nil {
 			return nil, commonResponse.NewBadRequest(err, commonResponse.FieldViolation{
 				Field:        "provider_type",
-				Descriptions: []string{i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: "user.handler.user_link.error.invalid_provider_type"})},
+				Descriptions: []string{i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.UserHandlerUser_linkErrorInvalid_provider_type})},
 			}).AsConnectError()
 		}
 		providerType = &pt

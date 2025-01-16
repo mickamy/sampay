@@ -1,3 +1,4 @@
+//go:generate go run ./generate.go
 package i18n
 
 import (
@@ -26,7 +27,7 @@ func init() {
 type Config struct {
 	// MessageID is the id of the message to lookup.
 	// This field is ignored if DefaultMessage is set.
-	MessageID string
+	MessageID MessageID
 
 	// TemplateData is the data passed when executing the message's template.
 	// If TemplateData is nil and PluralCount is not nil, then the message template
@@ -39,7 +40,7 @@ type Config struct {
 
 func (cfg Config) convert() *i18n.LocalizeConfig {
 	return &i18n.LocalizeConfig{
-		MessageID:    cfg.MessageID,
+		MessageID:    cfg.MessageID.String(),
 		TemplateData: cfg.TemplateData,
 		PluralCount:  cfg.PluralCount,
 	}

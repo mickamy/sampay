@@ -3,12 +3,18 @@ package config
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/caarlos0/env/v11"
 )
 
 type AuthConfig struct {
-	SigningSecret string `env:"JWT_SIGNING_SECRET"`
+	EmailVerificationExpiresIn int    `env:"EMAIL_VERIFICATION_EXPIRES_IN" envDefault:"86400"` // seconds
+	SigningSecret              string `env:"JWT_SIGNING_SECRET"`
+}
+
+func (c AuthConfig) EmailVerificationExpiresInDuration() time.Duration {
+	return time.Duration(c.EmailVerificationExpiresIn) * time.Second
 }
 
 func (c AuthConfig) SigningSecretBytes() []byte {
