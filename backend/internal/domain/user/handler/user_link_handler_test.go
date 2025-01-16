@@ -73,7 +73,7 @@ func TestUserLink_CreateUserLink(t *testing.T) {
 					require.Len(t, errMsg.FieldViolations, 1)
 					require.Equal(t, "provider_type", errMsg.FieldViolations[0].Field)
 					require.Len(t, errMsg.FieldViolations[0].Descriptions, 1)
-					require.Equal(t, i18n.MustJapaneseMessage(i18n.Config{MessageID: "user.handler.user_link.error.invalid_provider_type"}), errMsg.FieldViolations[0].Descriptions[0])
+					require.Equal(t, i18n.MustJapaneseMessage(i18n.Config{MessageID: i18n.UserHandlerUser_linkErrorInvalid_provider_type}), errMsg.FieldViolations[0].Descriptions[0])
 				} else {
 					require.Failf(t, "unexpected detail type", "got=%T", detail)
 				}
@@ -216,7 +216,7 @@ func TestUserLink_UpdateUserLink(t *testing.T) {
 					require.Len(t, errMsg.FieldViolations, 1)
 					require.Equal(t, "provider_type", errMsg.FieldViolations[0].Field)
 					require.Len(t, errMsg.FieldViolations[0].Descriptions, 1)
-					require.Equal(t, i18n.MustJapaneseMessage(i18n.Config{MessageID: "user.handler.user_link.error.invalid_provider_type"}), errMsg.FieldViolations[0].Descriptions[0])
+					require.Equal(t, i18n.MustJapaneseMessage(i18n.Config{MessageID: i18n.UserHandlerUser_linkErrorInvalid_provider_type}), errMsg.FieldViolations[0].Descriptions[0])
 				} else {
 					require.Failf(t, "unexpected detail type", "got=%T", detail)
 				}

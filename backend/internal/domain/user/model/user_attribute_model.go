@@ -14,7 +14,7 @@ import (
 var (
 	ErrUserAttributeDuplicated = commonModel.NewLocalizableError(
 		errors.New("user attribute already exists"),
-	).WithMessages(i18n.Config{MessageID: "user.model.user_attribute.error.duplicated"})
+	).WithMessages(i18n.Config{MessageID: i18n.UserModelUser_attributeErrorDuplicated})
 )
 
 type UserAttribute struct {

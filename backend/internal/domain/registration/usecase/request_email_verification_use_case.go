@@ -19,7 +19,7 @@ import (
 var (
 	ErrRequestEmailVerificationEmailAlreadyExists = commonModel.
 		NewLocalizableError(errors.New("email already exists")).
-		WithMessages(i18n.Config{MessageID: "registration.usecase.common.error.email_already_exists"})
+		WithMessages(i18n.Config{MessageID: i18n.RegistrationUsecaseCommonErrorEmail_already_exists})
 )
 
 type RequestEmailVerificationInput struct {

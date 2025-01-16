@@ -60,7 +60,7 @@ func TestSession_SignIn(t *testing.T) {
 				require.Len(t, connErr.Details(), 1)
 				detail := either.Must(connErr.Details()[0].Value())
 				if errMsg, ok := detail.(*commonv1.ErrorMessage); ok {
-					expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: "common.handler.direct_upload_url.error.invalid_s3_object"})
+					expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: i18n.CommonHandlerDirect_upload_urlErrorInvalid_s3_object})
 					assert.Equal(t, expectedMsg, errMsg.Message)
 				} else {
 					require.Failf(t, "unexpected detail type", "got=%T", detail)
