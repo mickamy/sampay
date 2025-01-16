@@ -24,6 +24,7 @@ type Authentication interface {
 	FindByKey(ctx context.Context, key AuthenticationKey, scopes ...database.Scope) (*model.Authentication, error)
 	FindByTypeAndIdentifier(ctx context.Context, authType model.AuthenticationType, identifier string, scopes ...database.Scope) (*model.Authentication, error)
 	ListByUserID(ctx context.Context, userID string, scopes ...database.Scope) ([]model.Authentication, error)
+	ExistsByTypeAndIdentifier(ctx context.Context, authenticationType model.AuthenticationType, identifier string) (bool, error)
 	Update(ctx context.Context, m *model.Authentication) error
 	WithTx(tx *database.DB) Authentication
 }
@@ -77,6 +78,17 @@ func (repo *authentication) ListByUserID(ctx context.Context, userID string, sco
 		return nil, err
 	}
 	return ms, nil
+}
+
+func (repo *authentication) ExistsByTypeAndIdentifier(ctx context.Context, authenticationType model.AuthenticationType, identifier string) (bool, error) {
+	var existingID string
+	err := repo.db.WithContext(ctx).
+		Model(&model.Authentication{}).
+		Where("type = ? AND identifier = ?", authenticationType, identifier).
+		Limit(1).
+		Pluck("id", &existingID).
+		Error
+	return existingID != "", err
 }
 
 func (repo *authentication) Update(ctx context.Context, m *model.Authentication) error {

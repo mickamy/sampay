@@ -165,12 +165,15 @@ func InitRegistrationUseCases(db *database.DB, readWriter *database.ReadWriter, 
 	getOnboardingStep := usecase3.NewGetOnboardingStep(reader, user)
 	usageCategory := repository4.NewUsageCategory(db)
 	listUsageCategories := usecase3.NewListUsageCategories(reader, usageCategory)
+	emailVerification := repository4.NewEmailVerification(db)
+	requestEmailVerification := usecase3.NewRequestEmailVerification(writer, authentication, emailVerification)
 	useCases := di3.UseCases{
-		CreateAccount:       createAccount,
-		CreateUserAttribute: createUserAttribute,
-		CreateUserProfile:   createUserProfile,
-		GetOnboardingStep:   getOnboardingStep,
-		ListUsageCategories: listUsageCategories,
+		CreateAccount:            createAccount,
+		CreateUserAttribute:      createUserAttribute,
+		CreateUserProfile:        createUserProfile,
+		GetOnboardingStep:        getOnboardingStep,
+		ListUsageCategories:      listUsageCategories,
+		RequestEmailVerification: requestEmailVerification,
 	}
 	return useCases
 }

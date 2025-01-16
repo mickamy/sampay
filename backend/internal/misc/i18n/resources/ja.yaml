@@ -13,8 +13,9 @@ common:
         invalid_s3_object: '無効なS3オブジェクトです。'
 registration:
   usecase:
-    error:
-      email_already_exists: 'このメールアドレスは既に登録されています。'
+    common:
+      error:
+        email_already_exists: 'このメールアドレスは既に登録されています。'
 user:
   model:
     user_attribute:
