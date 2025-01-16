@@ -114,6 +114,8 @@ jobs:
             SES_ENDPOINT=http://localhost:8005
             SQS_WORKER_URL=http://localhost:4566/000000000000/sampay-worker
             SQS_WORKER_DLQ_URL=http://localhost:4566/000000000000/sampay-worker-dlq
+
+            EMAIL_FROM=no-reply@sampay.link
           EOF
 
       - name: Start LocalStack

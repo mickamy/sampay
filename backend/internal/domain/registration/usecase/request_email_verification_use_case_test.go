@@ -13,6 +13,7 @@ import (
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	"mickamy.com/sampay/internal/domain/registration/usecase"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
+	"mickamy.com/sampay/internal/lib/contexts"
 )
 
 func TestRequestEmailVerification_Do(t *testing.T) {
@@ -60,6 +61,7 @@ func TestRequestEmailVerification_Do(t *testing.T) {
 
 			// arrange
 			ctx := context.Background()
+			ctx = contexts.SetLanguage(ctx, "ja")
 			db := newReadWriter(t)
 			tc.arrange(t, ctx, db.WriterDB())
 
