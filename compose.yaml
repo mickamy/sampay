@@ -6,6 +6,9 @@ services:
       args:
         MAIN_GO_FILE: /src/cmd/api/main.go
         BIN_NAME: api
+        GH_PAT: ${GH_PAT}
+    environment:
+      - GH_PAT=${GH_PAT}
     env_file:
       - .env.docker
     volumes:

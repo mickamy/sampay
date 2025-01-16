@@ -2,6 +2,9 @@ ARG GO_VERSION=1.23.4
 
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}
 
+ARG GH_PAT
+RUN git config --global url."https://${GH_PAT}@github.com/".insteadOf "https://github.com/"
+
 ARG MAIN_GO_FILE
 ENV MAIN_GO_FILE=$MAIN_GO_FILE
 ARG BIN_NAME
