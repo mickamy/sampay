@@ -98,10 +98,12 @@ jobs:
           
             # for golang-migrate/migrate
             POSTGRESQL_URL=$DATABASE_WRITER_URL
-          
+
             REDIS_URL=redis://:password@localhost:6379/0
           
             JWT_SIGNING_SECRET=secret
+
+            FRONTEND_BASE_URL=http://localhost:5173
           
             AWS_REGION=ap-northeast-1
             AWS_ACCESS_KEY_ID=test
