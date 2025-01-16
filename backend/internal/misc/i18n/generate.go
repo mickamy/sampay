@@ -11,12 +11,15 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-//go:embed resources/ja.yaml
-var japanese []byte
-
 func main() {
+	file, err := os.Open("resources/ja.yaml")
+	if err != nil {
+		log.Fatalf("failed to open file: %v", err)
+	}
+	defer file.Close()
+
 	var messages map[string]any
-	decoder := yaml.NewDecoder(japanese)
+	decoder := yaml.NewDecoder(file)
 	if err := decoder.Decode(&messages); err != nil {
 		log.Fatalf("failed to decode YAML: %v", err)
 	}

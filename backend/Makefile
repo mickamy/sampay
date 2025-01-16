@@ -35,6 +35,7 @@ install-dev: ## Install development dependencies
 	go install github.com/kisielk/errcheck@latest
 	go install github.com/google/wire/cmd/wire@latest
 	go install go.uber.org/mock/mockgen@latest
+	go install github.com/a-h/templ/cmd/templ@latest
 
 install-mod: ## Install go modules
 	go mod tidy
@@ -66,6 +67,7 @@ gen: ## Generate all files
 	@echo "Generating files"
 	find ./ -type d -name "mock_*" -exec rm -r {} +
 	go generate ./...
+	templ generate
 
 wire: ## Generate wire files
 	wire ./...

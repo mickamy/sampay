@@ -1,0 +1,18 @@
+package registrationtempl
+
+import (
+    "mickamy.com/sampay/internal/misc/i18n"
+    "mickamy.com/sampay/internal/lib/language"
+)
+
+templ RequestEmailVerification(lang language.Type, url string) {
+    {{ header := i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.RegistrationEmailRequest_email_verificationHeader}) }}
+    {{ body := i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.RegistrationEmailRequest_email_verificationBody}) }}
+    <html lang={ lang.Tag().String() }>
+        <body>
+            <h1>{ header }</h1>
+            <p>{ body }</p>
+            <a href={ templ.URL(url) }>{ url }</a>
+        </body>
+    </html>
+}

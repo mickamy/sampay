@@ -16,6 +16,10 @@ registration:
     common:
       error:
         email_already_exists: 'このメールアドレスは既に登録されています。'
+  email:
+    request_email_verification:
+      header: 'メールアドレスの確認'
+      body: '以下のリンクをクリックしてメールアドレスを確認してください。'
 user:
   model:
     user_attribute:
