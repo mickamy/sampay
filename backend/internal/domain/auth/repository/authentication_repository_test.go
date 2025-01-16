@@ -195,6 +195,10 @@ func TestAuthentication_ExistsByTypeAndIdentifier(t *testing.T) {
 				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
 				return auth.Type, auth.Identifier
 			},
+			assert: func(t *testing.T, got bool, err error) {
+				require.NoError(t, err)
+				assert.True(t, got)
+			},
 		},
 		{
 			name: "not exists",
