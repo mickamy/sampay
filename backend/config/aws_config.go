@@ -8,13 +8,15 @@ import (
 )
 
 type AWSConfig struct {
-	AccessKeyID        string `env:"AWS_ACCESS_KEY_ID"`
-	AccessKeySecret    string `env:"AWS_ACCESS_KEY_SECRET"`
-	CloudFrontDomain   string `env:"CLOUDFRONT_DOMAIN"`
-	LocalstackEndpoint string `env:"LOCALSTACK_ENDPOINT"`
-	Region             string `env:"AWS_REGION"`
-	S3PublicBucket     string `env:"S3_PUBLIC_BUCKET_NAME"`
-	SESEndpoint        string `env:"SES_ENDPOINT"`
+	AccessKeyID                 string `env:"AWS_ACCESS_KEY_ID"`
+	AccessKeySecret             string `env:"AWS_ACCESS_KEY_SECRET"`
+	CloudFrontDomain            string `env:"CLOUDFRONT_DOMAIN"`
+	LocalstackEndpoint          string `env:"LOCALSTACK_ENDPOINT"`
+	Region                      string `env:"AWS_REGION"`
+	S3PublicBucket              string `env:"S3_PUBLIC_BUCKET_NAME"`
+	SESEndpoint                 string `env:"SES_ENDPOINT"`
+	SQSWorkerURL                string `env:"SQS_WORKER_URL"`
+	SQSWorkerDeadLetterQueueURL string `env:"SQS_WORKER_DLQ_URL"`
 }
 
 var (
