@@ -57,6 +57,21 @@ func (mr *MockAuthenticationMockRecorder) Create(ctx, m any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockAuthentication)(nil).Create), ctx, m)
 }
 
+// ExistsByTypeAndIdentifier mocks base method.
+func (m *MockAuthentication) ExistsByTypeAndIdentifier(ctx context.Context, authenticationType model.AuthenticationType, identifier string) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExistsByTypeAndIdentifier", ctx, authenticationType, identifier)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ExistsByTypeAndIdentifier indicates an expected call of ExistsByTypeAndIdentifier.
+func (mr *MockAuthenticationMockRecorder) ExistsByTypeAndIdentifier(ctx, authenticationType, identifier any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExistsByTypeAndIdentifier", reflect.TypeOf((*MockAuthentication)(nil).ExistsByTypeAndIdentifier), ctx, authenticationType, identifier)
+}
+
 // FindByKey mocks base method.
 func (m *MockAuthentication) FindByKey(ctx context.Context, key repository.AuthenticationKey, scopes ...database.Scope) (*model.Authentication, error) {
 	m.ctrl.T.Helper()
