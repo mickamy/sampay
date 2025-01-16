@@ -1,10 +1,14 @@
 package usecase
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/mickamy/go-sqs-worker/message"
+	"github.com/mickamy/go-sqs-worker/producer"
 
 	"mickamy.com/sampay/config"
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
@@ -13,7 +17,10 @@ import (
 	commonModel "mickamy.com/sampay/internal/domain/common/model"
 	registrationModel "mickamy.com/sampay/internal/domain/registration/model"
 	registrationRepository "mickamy.com/sampay/internal/domain/registration/repository"
+	"mickamy.com/sampay/internal/job"
+	"mickamy.com/sampay/internal/lib/contexts"
 	"mickamy.com/sampay/internal/misc/i18n"
+	registrationtempl "mickamy.com/sampay/templ/email/registration"
 )
 
 var (
@@ -39,17 +46,20 @@ type RequestEmailVerification interface {
 
 type requestEmailVerification struct {
 	writer                *database.Writer
+	producer              *producer.Producer
 	authenticationRepo    authRepository.Authentication
 	emailVerificationRepo registrationRepository.EmailVerification
 }
 
 func NewRequestEmailVerification(
 	writer *database.Writer,
+	producer *producer.Producer,
 	authenticationRepo authRepository.Authentication,
 	emailVerificationRepo registrationRepository.EmailVerification,
 ) RequestEmailVerification {
 	return &requestEmailVerification{
 		writer:                writer,
+		producer:              producer,
 		authenticationRepo:    authenticationRepo,
 		emailVerificationRepo: emailVerificationRepo,
 	}
@@ -73,7 +83,23 @@ func (uc *requestEmailVerification) Do(ctx context.Context, input RequestEmailVe
 			return fmt.Errorf("failed to create email verification: %w", err)
 		}
 
-		// TODO: send email asynchronously
+		lang := contexts.MustLanguage(ctx)
+		body := new(bytes.Buffer)
+		if err := registrationtempl.RequestEmailVerification(lang, m.Requested.URL()).Render(ctx, body); err != nil {
+			return fmt.Errorf("failed to render email verification template: %w", err)
+		}
+		msg, err := message.New(ctx, job.SendEmailJob.String(), job.SendEmailPayload{
+			From:    config.Email().From,
+			To:      m.Email,
+			Subject: i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.RegistrationEmailRequest_email_verificationTitle}),
+			Body:    body.String(),
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create worker message: %w", err)
+		}
+		if err := uc.producer.Do(ctx, msg); err != nil {
+			return fmt.Errorf("failed to enqueue job: %w", err)
+		}
 
 		return nil
 	}); err != nil {
