@@ -110,6 +110,19 @@ services:
     networks:
       default:
 
+  ses:
+    build:
+      context: ./ses
+    ports:
+      - "8005:8005"
+    environment:
+      AWS_SES_ACCOUNT: '{"SendQuota":{"Max24HourSend":1000000,"MaxSendRate":250,"SentLast24Hours":0}}'
+    depends_on:
+      localstack:
+        condition: service_healthy
+    networks:
+      default:
+
 networks:
   default:
     ipam:

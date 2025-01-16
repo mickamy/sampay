@@ -109,6 +109,7 @@ jobs:
             CLOUDFRONT_DOMAIN=localhost
             LOCALSTACK_ENDPOINT=http://localhost:4566
             S3_PUBLIC_BUCKET_NAME=sampay-public
+            SES_ENDPOINT=http://localhost:8005
           EOF
 
       - name: Start LocalStack
@@ -119,6 +120,13 @@ jobs:
 
       - name: Execute localstack init script
         run: ./localstack/init.sh
+
+      - name: Build Local SES image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./ses
+          tags: ses:latest
+          load: true
 
       - name: Prepare Database
         run: cd backend && make db-prepare
