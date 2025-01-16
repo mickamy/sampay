@@ -9,13 +9,13 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[first-0]
-	_ = x[SendEmailType-1]
+	_ = x[SendEmailJob-1]
 	_ = x[last-2]
 }
 
-const _Type_name = "firstSendEmailTypelast"
+const _Type_name = "firstSendEmailJoblast"
 
-var _Type_index = [...]uint8{0, 5, 18, 22}
+var _Type_index = [...]uint8{0, 5, 17, 21}
 
 func (i Type) String() string {
 	if i < 0 || i >= Type(len(_Type_index)-1) {
