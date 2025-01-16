@@ -65,6 +65,10 @@ func (m *Error) WithFieldViolation(field string, description ...string) *Error {
 	return m
 }
 
+func (m *Error) AsFieldViolations(field string) *Error {
+	return m.WithFieldViolation(field, m.Message.Message).WithMessage("")
+}
+
 func (m *Error) AsConnectError() *connect.Error {
 	conErr := connect.NewError(m.Code, m.Err)
 	if !m.Message.IsZero() {

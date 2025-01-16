@@ -42,6 +42,7 @@ var UseCaseSet = wire.NewSet(
 
 type Handlers struct {
 	*handler.Account
+	*handler.EmailVerification
 	*handler.Onboarding
 	*handler.UsageCategory
 }
@@ -49,6 +50,7 @@ type Handlers struct {
 //lint:ignore U1000 used by wire
 var HandlerSet = wire.NewSet(
 	handler.NewAccount,
+	handler.NewEmailVerification,
 	handler.NewOnboarding,
 	handler.NewUsageCategory,
 )

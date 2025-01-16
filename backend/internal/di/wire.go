@@ -137,6 +137,8 @@ func InitRegistrationHandlers(db *database.DB, readWriter *database.ReadWriter, 
 	wire.Build(
 		registration.HandlerSet,
 		registration.UseCaseSet,
+		configSet,
+		producerSet,
 		auth.RepositorySet,
 		user.RepositorySet,
 		registration.RepositorySet,

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/registration/v1/registrationv1connect"
 	registrationv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/registration/v1"
@@ -36,6 +37,9 @@ func (h *EmailVerification) RequestVerification(
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
 		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
+			if errors.Is(err, usecase.ErrRequestEmailVerificationEmailAlreadyExists) {
+				return nil, localizable.AsFieldViolations("token").AsConnectError()
+			}
 			return nil, localizable.AsConnectError()
 		}
 
