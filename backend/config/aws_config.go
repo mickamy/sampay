@@ -14,6 +14,7 @@ type AWSConfig struct {
 	LocalstackEndpoint string `env:"LOCALSTACK_ENDPOINT"`
 	Region             string `env:"AWS_REGION"`
 	S3PublicBucket     string `env:"S3_PUBLIC_BUCKET_NAME"`
+	SESEndpoint        string `env:"SES_ENDPOINT"`
 }
 
 var (
