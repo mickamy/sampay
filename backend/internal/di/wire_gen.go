@@ -210,6 +210,7 @@ func InitRegistrationUseCases(db *database.DB, readWriter *database.ReadWriter, 
 	producer := provideProducer(producerConfig, client)
 	emailVerification := repository4.NewEmailVerification(db)
 	requestEmailVerification := usecase3.NewRequestEmailVerification(writer, producer, authentication, emailVerification)
+	verifyEmail := usecase3.NewVerifyEmail(writer, producer, authentication, emailVerification)
 	useCases := di3.UseCases{
 		CreateAccount:            createAccount,
 		CreateUserAttribute:      createUserAttribute,
@@ -217,6 +218,7 @@ func InitRegistrationUseCases(db *database.DB, readWriter *database.ReadWriter, 
 		GetOnboardingStep:        getOnboardingStep,
 		ListUsageCategories:      listUsageCategories,
 		RequestEmailVerification: requestEmailVerification,
+		VerifyEmail:              verifyEmail,
 	}
 	return useCases
 }

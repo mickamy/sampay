@@ -26,6 +26,7 @@ type UseCases struct {
 	usecase.GetOnboardingStep
 	usecase.ListUsageCategories
 	usecase.RequestEmailVerification
+	usecase.VerifyEmail
 }
 
 //lint:ignore U1000 used by wire
@@ -36,6 +37,7 @@ var UseCaseSet = wire.NewSet(
 	usecase.NewGetOnboardingStep,
 	usecase.NewListUsageCategories,
 	usecase.NewRequestEmailVerification,
+	usecase.NewVerifyEmail,
 )
 
 type Handlers struct {

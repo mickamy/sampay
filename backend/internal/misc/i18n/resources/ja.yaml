@@ -16,6 +16,9 @@ registration:
     common:
       error:
         email_already_exists: 'このメールアドレスは既に登録されています。'
+    verify_email:
+      error:
+        invalid_token: '無効なトークンです。'
   email:
     request_email_verification:
       title: 'メールアドレスの確認'
