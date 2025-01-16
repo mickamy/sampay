@@ -36,6 +36,7 @@ install-dev: ## Install development dependencies
 	go install github.com/google/wire/cmd/wire@latest
 	go install go.uber.org/mock/mockgen@latest
 	go install github.com/a-h/templ/cmd/templ@latest
+	go install golang.org/x/tools/cmd/stringer@latest
 
 install-mod: ## Install go modules
 	go mod tidy
