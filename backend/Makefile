@@ -69,6 +69,7 @@ gen: ## Generate all files
 	find ./ -type d -name "mock_*" -exec rm -r {} +
 	go generate ./...
 	templ generate
+	gofmt -s -w .
 
 wire: ## Generate wire files
 	wire ./...
