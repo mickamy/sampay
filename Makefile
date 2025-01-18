@@ -28,11 +28,11 @@ install: ## Install all dependencies
 	cd backend && make install
 	cd frontend && make install
 
-ci:
+ci: ## Run the CI pipeline
 	cd backend && make ci
 	cd frontend && make ci
 
-push-proto:
+push-proto: ## Push the proto files to the registry
 	buf lint ./proto
 	buf push ./proto
 	cd backend && make update-mod
