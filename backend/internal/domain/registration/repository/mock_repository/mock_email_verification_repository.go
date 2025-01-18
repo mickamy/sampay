@@ -77,44 +77,24 @@ func (mr *MockEmailVerificationMockRecorder) FindByEmail(ctx, email any, scope .
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByEmail", reflect.TypeOf((*MockEmailVerification)(nil).FindByEmail), varargs...)
 }
 
-// FindByEmailAndToken mocks base method.
-func (m *MockEmailVerification) FindByEmailAndToken(ctx context.Context, email, token string, scope ...database.Scope) (*model.EmailVerification, error) {
+// FindByEmailAndPinCode mocks base method.
+func (m *MockEmailVerification) FindByEmailAndPinCode(ctx context.Context, email, token string, scope ...database.Scope) (*model.EmailVerification, error) {
 	m.ctrl.T.Helper()
 	varargs := []any{ctx, email, token}
 	for _, a := range scope {
 		varargs = append(varargs, a)
 	}
-	ret := m.ctrl.Call(m, "FindByEmailAndToken", varargs...)
+	ret := m.ctrl.Call(m, "FindByEmailAndPinCode", varargs...)
 	ret0, _ := ret[0].(*model.EmailVerification)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// FindByEmailAndToken indicates an expected call of FindByEmailAndToken.
-func (mr *MockEmailVerificationMockRecorder) FindByEmailAndToken(ctx, email, token any, scope ...any) *gomock.Call {
+// FindByEmailAndPinCode indicates an expected call of FindByEmailAndPinCode.
+func (mr *MockEmailVerificationMockRecorder) FindByEmailAndPinCode(ctx, email, token any, scope ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]any{ctx, email, token}, scope...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByEmailAndToken", reflect.TypeOf((*MockEmailVerification)(nil).FindByEmailAndToken), varargs...)
-}
-
-// FindByToken mocks base method.
-func (m *MockEmailVerification) FindByToken(ctx context.Context, token string, scope ...database.Scope) (*model.EmailVerification, error) {
-	m.ctrl.T.Helper()
-	varargs := []any{ctx, token}
-	for _, a := range scope {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "FindByToken", varargs...)
-	ret0, _ := ret[0].(*model.EmailVerification)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindByToken indicates an expected call of FindByToken.
-func (mr *MockEmailVerificationMockRecorder) FindByToken(ctx, token any, scope ...any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{ctx, token}, scope...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByToken", reflect.TypeOf((*MockEmailVerification)(nil).FindByToken), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByEmailAndPinCode", reflect.TypeOf((*MockEmailVerification)(nil).FindByEmailAndPinCode), varargs...)
 }
 
 // Update mocks base method.

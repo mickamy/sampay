@@ -16,12 +16,13 @@ import (
 
 var (
 	ErrVerifyEmailInvalidToken = commonModel.
-		NewLocalizableError(errors.New("invalid token")).
-		WithMessages(i18n.Config{MessageID: i18n.RegistrationUsecaseVerify_emailErrorInvalid_token})
+		NewLocalizableError(errors.New("invalid pin code")).
+		WithMessages(i18n.Config{MessageID: i18n.RegistrationUsecaseVerify_emailErrorInvalid_pin_code})
 )
 
 type VerifyEmailInput struct {
-	Token string
+	Email   string
+	PINCode string
 }
 
 type VerifyEmailOutput struct {
@@ -56,9 +57,10 @@ func NewVerifyEmail(
 func (uc *verifyEmail) Do(ctx context.Context, input VerifyEmailInput) (VerifyEmailOutput, error) {
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
 		var err error
-		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByToken(
+		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByEmailAndPinCode(
 			ctx,
-			input.Token,
+			input.Email,
+			input.PINCode,
 			registrationRepository.EmailVerificationJoinRequested,
 			registrationRepository.EmailVerificationPreloadVerified,
 			registrationRepository.EmailVerificationNotConsumed,

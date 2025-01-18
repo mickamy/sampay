@@ -21,9 +21,11 @@ type EmailVerification struct {
 
 func NewEmailVerification(
 	request usecase.RequestEmailVerification,
+	verify usecase.VerifyEmail,
 ) *EmailVerification {
 	return &EmailVerification{
 		request: request,
+		verify:  verify,
 	}
 }
 
@@ -31,14 +33,14 @@ func (h *EmailVerification) RequestVerification(
 	ctx context.Context,
 	req *connect.Request[registrationv1.RequestVerificationRequest],
 ) (*connect.Response[registrationv1.RequestVerificationResponse], error) {
-	out, err := h.request.Do(ctx, usecase.RequestEmailVerificationInput{
+	_, err := h.request.Do(ctx, usecase.RequestEmailVerificationInput{
 		Email: req.Msg.Email,
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
 		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
 			if errors.Is(err, usecase.ErrRequestEmailVerificationEmailAlreadyExists) {
-				return nil, localizable.AsFieldViolations("token").AsConnectError()
+				return nil, localizable.AsFieldViolations("email").AsConnectError()
 			}
 			return nil, localizable.AsConnectError()
 		}
@@ -46,9 +48,7 @@ func (h *EmailVerification) RequestVerification(
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
-	res := connect.NewResponse(&registrationv1.RequestVerificationResponse{
-		Token: out.Token,
-	})
+	res := connect.NewResponse(&registrationv1.RequestVerificationResponse{})
 	return res, nil
 }
 
@@ -57,11 +57,15 @@ func (h *EmailVerification) VerifyEmail(
 	req *connect.Request[registrationv1.VerifyEmailRequest],
 ) (*connect.Response[registrationv1.VerifyEmailResponse], error) {
 	_, err := h.verify.Do(ctx, usecase.VerifyEmailInput{
-		Token: req.Msg.Token,
+		Email:   req.Msg.Email,
+		PINCode: req.Msg.PinCode,
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
 		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
+			if errors.Is(err, usecase.ErrVerifyEmailInvalidToken) {
+				return nil, localizable.AsFieldViolations("pin_code").AsConnectError()
+			}
 			return nil, localizable.AsConnectError()
 		}
 

@@ -48,13 +48,13 @@ func (m *EmailVerification) Request(expiresIn time.Duration) error {
 	if m.IsRequested() {
 		return nil
 	}
-	token, err := random.NewString(32)
+	pin, err := random.NewPinCode(6)
 	if err != nil {
-		return fmt.Errorf("failed to generate token: %w", err)
+		return fmt.Errorf("failed to generate pin code: %w", err)
 	}
 	now := time.Now()
 	m.Requested = &RequestedEmailVerification{
-		Token:       token,
+		PINCode:     pin,
 		RequestedAt: now,
 		ExpiresAt:   now.Add(expiresIn),
 	}

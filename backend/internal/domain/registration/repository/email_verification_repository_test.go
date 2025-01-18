@@ -93,69 +93,11 @@ func TestEmailVerification_FindByEmail(t *testing.T) {
 	}
 }
 
-func TestEmailVerification_FindByToken(t *testing.T) {
-	t.Parallel()
-
-	token := either.Must(random.NewString(32))
-
-	tcs := []struct {
-		name    string
-		arrange func(t *testing.T, ctx context.Context, db *database.DB)
-		assert  func(t *testing.T, got *model.EmailVerification, err error)
-	}{
-		{
-			name: "found",
-			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
-				m := fixture.EmailVerificationRequested(func(m *model.EmailVerification) {
-					m.Requested.Token = token
-				})
-				require.NoError(t, db.WithContext(ctx).Create(&m).Error)
-			},
-			assert: func(t *testing.T, got *model.EmailVerification, err error) {
-				require.NoError(t, err)
-				require.NotNil(t, got)
-				assert.NotEmpty(t, got.ID)
-				assert.NotEmpty(t, got.Email)
-				assert.NotEmpty(t, got.CreatedAt)
-			},
-		}, {
-			name: "not found",
-			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
-				m := fixture.EmailVerification(nil)
-				require.NoError(t, db.WithContext(ctx).Create(&m).Error)
-			},
-			assert: func(t *testing.T, got *model.EmailVerification, err error) {
-				require.NoError(t, err)
-				assert.Nil(t, got)
-			},
-		},
-	}
-
-	for _, tc := range tcs {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-
-			// arrange
-			ctx := context.Background()
-			db := newReadWriter(t)
-			tc.arrange(t, ctx, db.WriterDB())
-
-			// act
-			sut := repository.NewEmailVerification(db.WriterDB())
-			got, err := sut.FindByToken(ctx, token)
-
-			// assert
-			tc.assert(t, got, err)
-		})
-	}
-}
-
-func TestEmailVerification_FindByEmailAndToken(t *testing.T) {
+func TestEmailVerification_FindByEmailAndPinCode(t *testing.T) {
 	t.Parallel()
 
 	email := gofakeit.GlobalFaker.Email()
-	token := either.Must(random.NewString(32))
+	pin := either.Must(random.NewPinCode(6))
 
 	tcs := []struct {
 		name    string
@@ -167,7 +109,7 @@ func TestEmailVerification_FindByEmailAndToken(t *testing.T) {
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := fixture.EmailVerificationRequested(func(m *model.EmailVerification) {
 					m.Email = email
-					m.Requested.Token = token
+					m.Requested.PINCode = pin
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&m).Error)
 			},
@@ -205,7 +147,7 @@ func TestEmailVerification_FindByEmailAndToken(t *testing.T) {
 
 			// act
 			sut := repository.NewEmailVerification(db.WriterDB())
-			got, err := sut.FindByEmailAndToken(ctx, email, token)
+			got, err := sut.FindByEmailAndPinCode(ctx, email, pin)
 
 			// assert
 			tc.assert(t, got, err)

@@ -5,6 +5,8 @@ auth:
       invalid_refresh_token: 'リフレッシュトークンが無効です。'
       invalid_access_refresh_token: "認証情報が無効です。"
 common:
+  format:
+    minute: '{{.Minute}}分'
   handler:
     error:
       internal: 'ただいまアクセスが集中しております。しばらくしてから再度お試しください。'
@@ -18,12 +20,19 @@ registration:
         email_already_exists: 'このメールアドレスは既に登録されています。'
     verify_email:
       error:
-        invalid_token: '無効なトークンです。'
+        invalid_pin_code: '無効な PIN コードです。'
   email:
     request_email_verification:
-      title: 'メールアドレスの確認'
-      header: 'メールアドレスの確認'
-      body: '以下のリンクをクリックしてメールアドレスを確認してください。'
+      title: '確認コードの発行'
+      header: 'メール路銀の確認コードが発行されました。'
+      body: '
+      表示されている画面に確認コードを入力してください。
+      
+      {{.Code}}
+      
+      有効期限は発行から{{.ExpiresInMinute}}です。
+      このメールに心当たりがない場合は、無視していただいて構いません。
+      '
 user:
   model:
     user_attribute:

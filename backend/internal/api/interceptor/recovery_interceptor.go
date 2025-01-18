@@ -2,11 +2,13 @@ package interceptor
 
 import (
 	"context"
+	"fmt"
 	"runtime/debug"
 
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
+	"mickamy.com/sampay/config"
 	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 )
 
@@ -18,7 +20,11 @@ func Recovery() connect.UnaryInterceptorFunc {
 		) (res connect.AnyResponse, err error) {
 			defer func() {
 				if r := recover(); r != nil {
-					slogger.ErrorCtx(ctx, "recovered from panic", "err", r, "stack", string(debug.Stack()))
+					stack := string(debug.Stack())
+					slogger.ErrorCtx(ctx, "recovered from panic", "err", r, "stack", stack)
+					if config.Common().Env == config.Development {
+						fmt.Println(stack)
+					}
 					err = commonResponse.NewInternalError(ctx, r.(error)).AsConnectError()
 				}
 			}()

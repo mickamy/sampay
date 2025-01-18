@@ -4,11 +4,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"mickamy.com/sampay/internal/lib/random"
 )
 
-func Test_NewString(t *testing.T) {
+func TestNewString(t *testing.T) {
 	t.Parallel()
 
 	// arrange
@@ -18,11 +19,11 @@ func Test_NewString(t *testing.T) {
 	got, err := random.NewString(length)
 
 	// assert
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, got, length*2)
 }
 
-func Test_NewBytes(t *testing.T) {
+func TestNewBytes(t *testing.T) {
 	t.Parallel()
 
 	// arrange
@@ -32,6 +33,17 @@ func Test_NewBytes(t *testing.T) {
 	got, err := random.NewBytes(length)
 
 	// assert
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, got, length)
+}
+
+func TestNewPinCode(t *testing.T) {
+	t.Parallel()
+
+	// act
+	got, err := random.NewPinCode(6)
+
+	// assert
+	require.NoError(t, err)
+	assert.Len(t, got, 6)
 }

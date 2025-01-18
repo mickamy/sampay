@@ -7,17 +7,18 @@ type MessageID string
 func (id MessageID) String() string { return string(id) }
 
 const (
+	AuthUsecaseErrorInvalid_access_refresh_token         MessageID = "auth.usecase.error.invalid_access_refresh_token"
 	AuthUsecaseErrorInvalid_email_password               MessageID = "auth.usecase.error.invalid_email_password"
 	AuthUsecaseErrorInvalid_refresh_token                MessageID = "auth.usecase.error.invalid_refresh_token"
-	AuthUsecaseErrorInvalid_access_refresh_token         MessageID = "auth.usecase.error.invalid_access_refresh_token"
-	CommonHandlerErrorInternal                           MessageID = "common.handler.error.internal"
+	CommonFormatMinute                                   MessageID = "common.format.minute"
 	CommonHandlerDirect_upload_urlErrorInvalid_s3_object MessageID = "common.handler.direct_upload_url.error.invalid_s3_object"
-	RegistrationUsecaseCommonErrorEmail_already_exists   MessageID = "registration.usecase.common.error.email_already_exists"
-	RegistrationUsecaseVerify_emailErrorInvalid_token    MessageID = "registration.usecase.verify_email.error.invalid_token"
-	RegistrationEmailRequest_email_verificationTitle     MessageID = "registration.email.request_email_verification.title"
-	RegistrationEmailRequest_email_verificationHeader    MessageID = "registration.email.request_email_verification.header"
+	CommonHandlerErrorInternal                           MessageID = "common.handler.error.internal"
 	RegistrationEmailRequest_email_verificationBody      MessageID = "registration.email.request_email_verification.body"
-	UserModelUser_attributeErrorDuplicated               MessageID = "user.model.user_attribute.error.duplicated"
+	RegistrationEmailRequest_email_verificationHeader    MessageID = "registration.email.request_email_verification.header"
+	RegistrationEmailRequest_email_verificationTitle     MessageID = "registration.email.request_email_verification.title"
+	RegistrationUsecaseCommonErrorEmail_already_exists   MessageID = "registration.usecase.common.error.email_already_exists"
+	RegistrationUsecaseVerify_emailErrorInvalid_pin_code MessageID = "registration.usecase.verify_email.error.invalid_pin_code"
 	UserHandlerUser_linkErrorInvalid_provider_type       MessageID = "user.handler.user_link.error.invalid_provider_type"
+	UserModelUser_attributeErrorDuplicated               MessageID = "user.model.user_attribute.error.duplicated"
 	UserUsecaseGet_userErrorNot_found                    MessageID = "user.usecase.get_user.error.not_found"
 )
