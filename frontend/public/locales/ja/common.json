@@ -6,7 +6,8 @@
       "privacy": "プライバシーポリシー",
       "have_account": "すでにアカウントをお持ちの方は",
       "sign_in": "ログイン",
-      "verify_email_sent_dialog_title": "確認メールを送信しました"
+      "verification_dialog_title": "確認メールを送信しました",
+      "verification_dialog_content": "{{email}} に確認コードが送信されました。<br/>次のフィールドに入力してください。"
     }
   },
   "admin": {

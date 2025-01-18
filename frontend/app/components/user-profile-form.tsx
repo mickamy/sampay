@@ -21,6 +21,7 @@ import type { APIError } from "~/lib/api/response";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
 import { isFileLike } from "~/lib/polyfill/file";
+import { cn } from "~/lib/utils";
 import type { UserProfile } from "~/models/user/user-profile-model";
 
 export const userProfileSchema = z.object({
@@ -56,6 +57,7 @@ export default function UserProfileForm({
   profile,
   onSubmitData,
   error,
+  className,
   ...props
 }: Props) {
   const form = useFormWithAPIError<z.infer<typeof userProfileSchema>>({
@@ -78,7 +80,7 @@ export default function UserProfileForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmitData)}
-        className="w-full space-y-4"
+        className={cn("w-full space-y-4", className)}
         {...props}
       >
         <BaseFormField

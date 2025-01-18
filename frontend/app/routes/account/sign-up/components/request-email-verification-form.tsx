@@ -12,7 +12,7 @@ import type { APIError } from "~/lib/api/response";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
 import { cn } from "~/lib/utils";
-import VerificationEmailSentDialog from "~/routes/account/sign-up/components/verification-email-sent-dialog";
+import VerificationDialog from "~/routes/account/sign-up/components/verification-dialog";
 
 export const requestEmailVerificationSchema = z.object({
   email: z.string().email(),
@@ -75,6 +75,12 @@ export default function RequestEmailVerificationForm({
     [onSubmitDataProps],
   );
 
+  useEffect(() => {
+    if (actionData?.requestEmailVerificationError) {
+      setIsSubmitting(false);
+    }
+  }, [actionData?.requestEmailVerificationError]);
+
   const { t } = useTranslation();
 
   return (
@@ -99,7 +105,7 @@ export default function RequestEmailVerificationForm({
           </LoadableButton>
         </form>
       </Form>
-      <VerificationEmailSentDialog
+      <VerificationDialog
         email={form.watch("email")}
         isOpen={isSentDialogOpen}
         onClose={onCloseSentDialog}
