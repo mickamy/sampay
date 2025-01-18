@@ -6,7 +6,7 @@ import { useJsonSubmit } from "~/hooks/use-submit";
 import type { APIError } from "~/lib/api/response";
 import type { z } from "~/lib/form/zod";
 import { useSafeTranslation } from "~/lib/i18n/hooks";
-import { authSignUpSchema } from "~/routes/account/sign-up/components/sign-up-form";
+import { requestEmailVerificationSchema } from "~/routes/account/sign-up/components/request-email-verification-form";
 import SignInForm from "~/routes/auth/sign-in/components/sign-in-form";
 
 export interface ActionData {
@@ -16,9 +16,9 @@ export interface ActionData {
 export default function SignInScreen() {
   const actionData = useActionData<ActionData>();
 
-  const submit = useJsonSubmit(authSignUpSchema);
+  const submit = useJsonSubmit(requestEmailVerificationSchema);
   const onSubmit = useCallback(
-    (data: z.infer<typeof authSignUpSchema>) => {
+    (data: z.infer<typeof requestEmailVerificationSchema>) => {
       submit(data);
     },
     [submit],
