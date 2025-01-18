@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useActionData, useLoaderData } from "react-router";
 import UserProfileForm, {
   userProfileSchema,
@@ -6,7 +7,6 @@ import UserProfileForm, {
 import { useFormDataSubmit, useJsonSubmit } from "~/hooks/use-submit";
 import type { APIError } from "~/lib/api/response";
 import type { z } from "~/lib/form/zod";
-import { useSafeTranslation } from "~/lib/i18n/hooks";
 import type { OnboardingStep } from "~/models/onboarding/onboarding-step";
 import type { UsageCategory } from "~/models/user/usage-category-model";
 import OnboardingAttributeForm, {
@@ -46,7 +46,7 @@ export default function OnboardingScreen() {
     throw new Error("categories is required");
   }
 
-  const { t } = useSafeTranslation();
+  const { t } = useTranslation();
 
   return (
     <div className="flex flex-col items-center justify-center h-screen w-[320px] mx-auto">

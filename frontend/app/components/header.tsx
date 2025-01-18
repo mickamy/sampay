@@ -1,6 +1,7 @@
 import { Menu, X } from "lucide-react";
 import type React from "react";
 import { type HTMLAttributes, useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Form, Link } from "react-router";
 import BrandLogo from "~/components/brand-logo";
 import { Button } from "~/components/ui/button";
@@ -10,7 +11,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { useSafeTranslation } from "~/lib/i18n/hooks";
 import { cn } from "~/lib/utils";
 
 interface Props extends HTMLAttributes<HTMLHeadElement> {
@@ -52,7 +52,7 @@ function Navigation({ isLoggedIn, className, ...props }: NavigationProps) {
     setIsOpen(false);
   }, []);
 
-  const { t } = useSafeTranslation();
+  const { t } = useTranslation();
 
   if (!isLoggedIn) {
     return (

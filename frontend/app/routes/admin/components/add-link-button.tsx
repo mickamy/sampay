@@ -1,13 +1,13 @@
 import type { HTMLAttributes } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "~/components/ui/button";
-import { useSafeTranslation } from "~/lib/i18n/hooks";
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
   onClick: () => void;
 }
 
 export default function AddLinkButton({ onClick, ...props }: Props) {
-  const { t } = useSafeTranslation();
+  const { t } = useTranslation();
   return (
     <Button
       variant="default"

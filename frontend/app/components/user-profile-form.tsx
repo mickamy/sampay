@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { HTMLAttributes } from "react";
+import { useTranslation } from "react-i18next";
 import Avatar from "~/components/avatar";
 import ErrorMessage from "~/components/error-message";
 import { FormField } from "~/components/form";
@@ -19,7 +20,6 @@ import useImagePreview from "~/hooks/use-image-preview";
 import type { APIError } from "~/lib/api/response";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
-import { useSafeTranslation } from "~/lib/i18n/hooks";
 import { isFileLike } from "~/lib/polyfill/file";
 import type { UserProfile } from "~/models/user/user-profile-model";
 
@@ -72,7 +72,7 @@ export default function UserProfileForm({
 
   const { imageURL, onImageChange } = useImagePreview(profile?.imageURL);
 
-  const { t } = useSafeTranslation();
+  const { t } = useTranslation();
 
   return (
     <Form {...form}>

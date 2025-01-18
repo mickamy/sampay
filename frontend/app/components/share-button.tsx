@@ -1,5 +1,6 @@
 import { Share } from "lucide-react";
 import { type HTMLAttributes, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { buttonVariants } from "~/components/ui/button";
 import {
@@ -10,7 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { useSafeTranslation } from "~/lib/i18n/hooks";
 import { cn } from "~/lib/utils";
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
@@ -18,7 +18,7 @@ interface Props extends HTMLAttributes<HTMLButtonElement> {
 }
 
 export default function ShareButton({ url, className, ...props }: Props) {
-  const { t } = useSafeTranslation();
+  const { t } = useTranslation();
 
   const copyToClipboard = useCallback(() => {
     navigator.clipboard

@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type HTMLAttributes, useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Avatar from "~/components/avatar";
 import ErrorMessage from "~/components/error-message";
 import { FormField } from "~/components/form";
@@ -17,7 +18,6 @@ import useImagePreview from "~/hooks/use-image-preview";
 import type { APIError } from "~/lib/api/response";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
-import { useSafeTranslation } from "~/lib/i18n/hooks";
 import { isFileLike } from "~/lib/polyfill/file";
 import { parseQRCode } from "~/lib/polyfill/image/index.client";
 import type { UserLink } from "~/models/user/user-link-model";
@@ -102,7 +102,7 @@ export default function UserLinkForm({
   const qrCode = form.watch("qr_code");
   const uri = form.watch("uri");
   const { setValue, clearErrors, setError } = form;
-  const { t } = useSafeTranslation();
+  const { t } = useTranslation();
   useEffect(() => {
     let isCancelled = false;
 

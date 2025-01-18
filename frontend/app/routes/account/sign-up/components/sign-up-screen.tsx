@@ -1,8 +1,8 @@
+import { useTranslation } from "react-i18next";
 import { useActionData } from "react-router";
 import { Separator } from "~/components/ui/separator";
 import UnderlinedLink from "~/components/underlined-link";
 import { useJsonSubmit } from "~/hooks/use-submit";
-import { useSafeTranslation } from "~/lib/i18n/hooks";
 import RequestEmailVerificationForm, {
   type ActionData as RequestEmailVerificationActionData,
   requestEmailVerificationSchema,
@@ -13,7 +13,7 @@ export interface ActionData extends RequestEmailVerificationActionData {}
 export default function SignUpScreen() {
   const actionData = useActionData<ActionData>();
   const submit = useJsonSubmit(requestEmailVerificationSchema);
-  const { t } = useSafeTranslation();
+  const { t } = useTranslation();
 
   return (
     <>

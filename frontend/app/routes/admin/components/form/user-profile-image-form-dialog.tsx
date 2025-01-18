@@ -1,8 +1,8 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Dialog from "~/components/dialog";
 import type { APIError } from "~/lib/api/response";
 import type { z } from "~/lib/form/zod";
-import { useSafeTranslation } from "~/lib/i18n/hooks";
 import type { UserProfile } from "~/models/user/user-profile-model";
 import UserProfileImageForm, {
   type userProfileImageSchema,
@@ -37,7 +37,7 @@ export default function UserProfileImageFormDialog({
     }
   }, [actionData, onClose]);
 
-  const { t } = useSafeTranslation();
+  const { t } = useTranslation();
 
   return (
     <Dialog

@@ -1,11 +1,11 @@
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useActionData } from "react-router";
 import { Separator } from "~/components/ui/separator";
 import UnderlinedLink from "~/components/underlined-link";
 import { useJsonSubmit } from "~/hooks/use-submit";
 import type { APIError } from "~/lib/api/response";
 import type { z } from "~/lib/form/zod";
-import { useSafeTranslation } from "~/lib/i18n/hooks";
 import { requestEmailVerificationSchema } from "~/routes/account/sign-up/components/request-email-verification-form";
 import SignInForm from "~/routes/auth/sign-in/components/sign-in-form";
 
@@ -24,7 +24,7 @@ export default function SignInScreen() {
     [submit],
   );
 
-  const { t } = useSafeTranslation();
+  const { t } = useTranslation();
 
   return (
     <>

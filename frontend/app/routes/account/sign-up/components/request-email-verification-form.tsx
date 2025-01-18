@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type HTMLAttributes, useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import ErrorMessage from "~/components/error-message";
 import { FormField } from "~/components/form";
@@ -10,7 +11,6 @@ import useDialog from "~/hooks/use-dialog";
 import type { APIError } from "~/lib/api/response";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
-import { useSafeTranslation } from "~/lib/i18n/hooks";
 import { cn } from "~/lib/utils";
 import VerificationEmailSentDialog from "~/routes/account/sign-up/components/verification-email-sent-dialog";
 
@@ -75,7 +75,7 @@ export default function RequestEmailVerificationForm({
     [onSubmitDataProps],
   );
 
-  const { t } = useSafeTranslation();
+  const { t } = useTranslation();
 
   return (
     <>
