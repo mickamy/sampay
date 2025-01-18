@@ -35,7 +35,7 @@ async function initializeSession() {
   }
   return createCookieSessionStorage({
     cookie: {
-      name: "__authenticated_session",
+      name: "__sampay_authenticated_session",
       httpOnly: true,
       maxAge: 14 * DAY,
       path: "/",
