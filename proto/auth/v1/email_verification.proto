@@ -10,10 +10,11 @@ message RequestVerificationRequest {
 }
 
 message RequestVerificationResponse {
+  string token = 1 [(buf.validate.field).string.len = 64];
 }
 
 message VerifyEmailRequest {
-  string email = 1 [(buf.validate.field).string.email = true];
+  string token = 1 [(buf.validate.field).string.len = 64];
   string pin_code = 2 [(buf.validate.field).string.len = 6];
 }
 
