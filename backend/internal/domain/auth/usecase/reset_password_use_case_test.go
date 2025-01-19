@@ -26,13 +26,18 @@ func TestResetPassword_Do(t *testing.T) {
 
 	tcs := []struct {
 		name    string
-		arrange func(t *testing.T, ctx context.Context, db *database.Writer)
+		arrange func(t *testing.T, ctx context.Context, db *database.Writer, userID string)
 		assert  func(t *testing.T, got usecase.ResetPasswordOutput, err error)
 	}{
 		{
 			name: "success",
-			arrange: func(t *testing.T, ctx context.Context, db *database.Writer) {
+			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, userID string) {
+				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
+					m.UserID = userID
+				})
+				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
 				verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+					m.Email = auth.Identifier
 					m.Verified.Token = token
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&verification).Error)
@@ -44,8 +49,13 @@ func TestResetPassword_Do(t *testing.T) {
 		},
 		{
 			name: "invalid token",
-			arrange: func(t *testing.T, ctx context.Context, db *database.Writer) {
+			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, userID string) {
+				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
+					m.UserID = userID
+				})
+				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
 				verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+					m.Email = auth.Identifier
 					m.Verified.Token = either.Must(random.NewString(32))
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&verification).Error)
@@ -57,8 +67,13 @@ func TestResetPassword_Do(t *testing.T) {
 		},
 		{
 			name: "already consumed",
-			arrange: func(t *testing.T, ctx context.Context, db *database.Writer) {
+			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, userID string) {
+				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
+					m.UserID = userID
+				})
+				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
 				verification := authFixture.EmailVerificationConsumed(func(m *authModel.EmailVerification) {
+					m.Email = auth.Identifier
 					m.Verified.Token = token
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&verification).Error)
@@ -68,6 +83,19 @@ func TestResetPassword_Do(t *testing.T) {
 				assert.ErrorContains(t, err, "email verification already consumed")
 			},
 		},
+		{
+			name: "authentication not found",
+			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, userID string) {
+				verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+					m.Verified.Token = token
+				})
+				require.NoError(t, db.WithContext(ctx).Create(&verification).Error)
+			},
+			assert: func(t *testing.T, got usecase.ResetPasswordOutput, err error) {
+				require.Error(t, err)
+				assert.ErrorContains(t, err, "authentication not found")
+			},
+		},
 	}
 
 	for _, tc := range tcs {
@@ -75,19 +103,22 @@ func TestResetPassword_Do(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
+			// arrange
 			ctx := context.Background()
 			db := newReadWriter(t)
 			user := userFixture.User(nil)
 			require.NoError(t, db.Writer().WithContext(ctx).Create(&user).Error)
 			ctx = contexts.SetAuthenticatedUserID(ctx, user.ID)
-			tc.arrange(t, ctx, db.Writer())
+			tc.arrange(t, ctx, db.Writer(), user.ID)
 
+			// act
 			sut := di.InitAuthUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).ResetPassword
 			got, err := sut.Do(ctx, usecase.ResetPasswordInput{
 				Token:    token,
 				Password: gofakeit.Password(true, true, true, false, false, 12),
 			})
 
+			// assert
 			tc.assert(t, got, err)
 		})
 	}

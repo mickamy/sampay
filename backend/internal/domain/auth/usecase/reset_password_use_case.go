@@ -75,7 +75,7 @@ func (uc *resetPassword) Do(ctx context.Context, input ResetPasswordInput) (Rese
 			return fmt.Errorf("failed to find authentication: %w", err)
 		}
 		if auth == nil {
-			return errors.New("authentication model not found: %w")
+			return errors.New("authentication not found")
 		}
 
 		if err := auth.ResetPassword(input.Password); err != nil {
