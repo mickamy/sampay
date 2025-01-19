@@ -20,7 +20,7 @@
 	ci \
 	help \
 
-sha1 := $(shell git rev-parse HEAD)
+buf-sha1 := $(buf registry sdk version --module=buf.build/gen/go/mickamy/sampay/connectrpc/go --plugin=buf.build/protocolbuffers/go)
 
 build: ## Build the application
 	go build -o ./build/api ./cmd/api/main.go
@@ -51,8 +51,8 @@ update-mod: ## Update go modules
 	gofmt -s -w .
 
 pull-buf: ## Pull the buf packages
-	go get -u buf.build/gen/go/mickamy/sampay/connectrpc/go@$(sha1)
-	go get -u buf.build/gen/go/mickamy/sampay/protocolbuffers/go@$(sha1)
+	go get -u buf.build/gen/go/mickamy/sampay/connectrpc/go@$(buf-sha1)
+	go get -u buf.build/gen/go/mickamy/sampay/protocolbuffers/go@$(buf-sha1)
 
 db-create: ## Create the database
 	PACKAGE_ROOT=$$(pwd) go run ./cmd/db/create/main.go
