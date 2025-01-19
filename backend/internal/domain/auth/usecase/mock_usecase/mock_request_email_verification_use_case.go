@@ -14,7 +14,7 @@ import (
 	reflect "reflect"
 
 	gomock "go.uber.org/mock/gomock"
-	usecase "mickamy.com/sampay/internal/domain/registration/usecase"
+	usecase "mickamy.com/sampay/internal/domain/auth/usecase"
 )
 
 // MockRequestEmailVerification is a mock of RequestEmailVerification interface.

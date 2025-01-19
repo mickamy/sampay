@@ -7,6 +7,7 @@ func (s OnboardingStep) String() string {
 }
 
 const (
+	OnboardingStepPassword  OnboardingStep = "password"
 	OnboardingStepAttribute OnboardingStep = "attribute"
 	OnboardingStepProfile   OnboardingStep = "profile"
 	OnboardingStepCompleted OnboardingStep = "completed"

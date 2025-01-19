@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 
-	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/registration/v1/registrationv1connect"
-	registrationv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/registration/v1"
+	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/auth/v1/authv1connect"
+	authv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/auth/v1"
 	"github.com/bufbuild/connect-go"
 	"github.com/mickamy/slogger"
 
+	authResponse "mickamy.com/sampay/internal/domain/auth/dto/response"
+	"mickamy.com/sampay/internal/domain/auth/usecase"
 	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
-	"mickamy.com/sampay/internal/domain/registration/usecase"
 	"mickamy.com/sampay/internal/lib/contexts"
 )
 
@@ -31,9 +32,9 @@ func NewEmailVerification(
 
 func (h *EmailVerification) RequestVerification(
 	ctx context.Context,
-	req *connect.Request[registrationv1.RequestVerificationRequest],
-) (*connect.Response[registrationv1.RequestVerificationResponse], error) {
-	_, err := h.request.Do(ctx, usecase.RequestEmailVerificationInput{
+	req *connect.Request[authv1.RequestVerificationRequest],
+) (*connect.Response[authv1.RequestVerificationResponse], error) {
+	out, err := h.request.Do(ctx, usecase.RequestEmailVerificationInput{
 		Email: req.Msg.Email,
 	})
 	if err != nil {
@@ -48,16 +49,18 @@ func (h *EmailVerification) RequestVerification(
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
-	res := connect.NewResponse(&registrationv1.RequestVerificationResponse{})
+	res := connect.NewResponse(&authv1.RequestVerificationResponse{
+		Token: out.Token,
+	})
 	return res, nil
 }
 
 func (h *EmailVerification) VerifyEmail(
 	ctx context.Context,
-	req *connect.Request[registrationv1.VerifyEmailRequest],
-) (*connect.Response[registrationv1.VerifyEmailResponse], error) {
-	got, err := h.verify.Do(ctx, usecase.VerifyEmailInput{
-		Email:   req.Msg.Email,
+	req *connect.Request[authv1.VerifyEmailRequest],
+) (*connect.Response[authv1.VerifyEmailResponse], error) {
+	out, err := h.verify.Do(ctx, usecase.VerifyEmailInput{
+		Token:   req.Msg.Token,
 		PINCode: req.Msg.PinCode,
 	})
 	if err != nil {
@@ -72,10 +75,11 @@ func (h *EmailVerification) VerifyEmail(
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
-	res := connect.NewResponse(&registrationv1.VerifyEmailResponse{
-		Token: got.Token,
+	res := connect.NewResponse(&authv1.VerifyEmailResponse{
+		Session: authResponse.NewTokens(out.Session.Tokens),
+		Token:   out.Token,
 	})
 	return res, nil
 }
 
-var _ registrationv1connect.EmailVerificationServiceHandler = (*EmailVerification)(nil)
+var _ authv1connect.EmailVerificationServiceHandler = (*EmailVerification)(nil)

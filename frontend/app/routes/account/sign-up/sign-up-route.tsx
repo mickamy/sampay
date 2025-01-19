@@ -1,4 +1,4 @@
-import { EmailVerificationService } from "@buf/mickamy_sampay.bufbuild_es/registration/v1/email_verification_pb";
+import { EmailVerificationService } from "@buf/mickamy_sampay.bufbuild_es/auth/v1/email_verification_pb";
 import { ConnectError } from "@connectrpc/connect";
 import {
   type ActionFunction,
@@ -8,11 +8,14 @@ import {
 import { getClient } from "~/lib/api/client";
 import { convertToAPIError } from "~/lib/api/response";
 import {
-  destroyAnonymousSession,
-  getAnonymousSession,
-  setAnonymousSession,
-} from "~/lib/cookie/anonymous.server";
-import { isLoggedIn } from "~/lib/cookie/authenticated.server";
+  isLoggedIn,
+  setAuthenticatedSession,
+} from "~/lib/cookie/authenticated.server";
+import {
+  getRegistrationSession,
+  setRegistrationSession,
+} from "~/lib/cookie/registration.server";
+import { convertTokensToSession } from "~/models/auth/session-model";
 import { requestEmailVerificationSchema } from "~/routes/account/sign-up/components/request-email-verification-form";
 import SignUpScreen, {
   type ActionData,
@@ -57,7 +60,7 @@ async function requestVerification({
 }: { request: Request; body: unknown }): Promise<Response> {
   try {
     const { email } = requestEmailVerificationSchema.parse(body);
-    await getClient({
+    const { token } = await getClient({
       service: EmailVerificationService,
       request,
     }).requestVerification({
@@ -67,7 +70,7 @@ async function requestVerification({
     const actionData: ActionData = { requestVerificationSuccess: true };
     return Response.json(actionData, {
       headers: {
-        "set-cookie": await setAnonymousSession({ email }),
+        "set-cookie": await setRegistrationSession({ request_token: token }),
       },
     });
   } catch (e) {
@@ -87,19 +90,30 @@ async function verifyEmail({
 }: { request: Request; body: unknown }): Promise<Response> {
   try {
     const { pin_code } = verifyEmailSchema.parse(body);
-    await getClient({
+    const { session, token } = await getClient({
       service: EmailVerificationService,
       request,
     }).verifyEmail({
-      email: (await getAnonymousSession(request))?.email,
+      token: (await getRegistrationSession(request))?.request_token,
       pinCode: pin_code,
     });
 
-    const actionData: ActionData = { verifySuccess: true };
-    return Response.json(actionData, {
-      headers: {
-        "set-cookie": await destroyAnonymousSession(request),
-      },
+    if (!session || !session.access || !session.refresh) {
+      throw new Error("no session returned from verify email");
+    }
+    const tokens = convertTokensToSession(session);
+    if (!tokens) {
+      throw new Error("failed to convert tokens to session");
+    }
+
+    const headers = new Headers();
+    headers.append("set-cookie", await setAuthenticatedSession(tokens));
+    headers.append(
+      "set-cookie",
+      await setRegistrationSession({ verify_token: token }),
+    );
+    return redirect("/onboarding", {
+      headers,
     });
   } catch (e) {
     if (e instanceof ConnectError) {

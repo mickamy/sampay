@@ -65,6 +65,8 @@ func InitAuthRepositories(db *database.DB, readWriter *database.ReadWriter, writ
 func InitAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) auth.UseCases {
 	wire.Build(
 		auth.UseCaseSet,
+		configSet,
+		producerSet,
 		auth.RepositorySet,
 		user.RepositorySet,
 		wire.Struct(new(auth.UseCases), "*"),
@@ -75,6 +77,8 @@ func InitAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *
 func InitAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) auth.Handlers {
 	wire.Build(
 		auth.HandlerSet,
+		configSet,
+		producerSet,
 		auth.UseCaseSet,
 		auth.RepositorySet,
 		user.RepositorySet,
@@ -123,8 +127,6 @@ func InitRegistrationRepositories(db *database.DB, readWriter *database.ReadWrit
 func InitRegistrationUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) registration.UseCases {
 	wire.Build(
 		registration.UseCaseSet,
-		configSet,
-		producerSet,
 		auth.RepositorySet,
 		user.RepositorySet,
 		registration.RepositorySet,
@@ -137,8 +139,6 @@ func InitRegistrationHandlers(db *database.DB, readWriter *database.ReadWriter, 
 	wire.Build(
 		registration.HandlerSet,
 		registration.UseCaseSet,
-		configSet,
-		producerSet,
 		auth.RepositorySet,
 		user.RepositorySet,
 		registration.RepositorySet,

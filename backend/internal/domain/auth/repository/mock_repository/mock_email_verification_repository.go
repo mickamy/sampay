@@ -15,8 +15,8 @@ import (
 
 	gomock "go.uber.org/mock/gomock"
 	database "mickamy.com/sampay/internal/cli/infra/storage/database"
-	model "mickamy.com/sampay/internal/domain/registration/model"
-	repository "mickamy.com/sampay/internal/domain/registration/repository"
+	model "mickamy.com/sampay/internal/domain/auth/model"
+	repository "mickamy.com/sampay/internal/domain/auth/repository"
 )
 
 // MockEmailVerification is a mock of EmailVerification interface.
@@ -77,24 +77,44 @@ func (mr *MockEmailVerificationMockRecorder) FindByEmail(ctx, email any, scope .
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByEmail", reflect.TypeOf((*MockEmailVerification)(nil).FindByEmail), varargs...)
 }
 
-// FindByEmailAndPinCode mocks base method.
-func (m *MockEmailVerification) FindByEmailAndPinCode(ctx context.Context, email, token string, scope ...database.Scope) (*model.EmailVerification, error) {
+// FindByRequestedTokenAndPinCode mocks base method.
+func (m *MockEmailVerification) FindByRequestedTokenAndPinCode(ctx context.Context, token, pinCode string, scope ...database.Scope) (*model.EmailVerification, error) {
 	m.ctrl.T.Helper()
-	varargs := []any{ctx, email, token}
+	varargs := []any{ctx, token, pinCode}
 	for _, a := range scope {
 		varargs = append(varargs, a)
 	}
-	ret := m.ctrl.Call(m, "FindByEmailAndPinCode", varargs...)
+	ret := m.ctrl.Call(m, "FindByRequestedTokenAndPinCode", varargs...)
 	ret0, _ := ret[0].(*model.EmailVerification)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// FindByEmailAndPinCode indicates an expected call of FindByEmailAndPinCode.
-func (mr *MockEmailVerificationMockRecorder) FindByEmailAndPinCode(ctx, email, token any, scope ...any) *gomock.Call {
+// FindByRequestedTokenAndPinCode indicates an expected call of FindByRequestedTokenAndPinCode.
+func (mr *MockEmailVerificationMockRecorder) FindByRequestedTokenAndPinCode(ctx, token, pinCode any, scope ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{ctx, email, token}, scope...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByEmailAndPinCode", reflect.TypeOf((*MockEmailVerification)(nil).FindByEmailAndPinCode), varargs...)
+	varargs := append([]any{ctx, token, pinCode}, scope...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByRequestedTokenAndPinCode", reflect.TypeOf((*MockEmailVerification)(nil).FindByRequestedTokenAndPinCode), varargs...)
+}
+
+// FindByVerifiedToken mocks base method.
+func (m *MockEmailVerification) FindByVerifiedToken(ctx context.Context, token string, scope ...database.Scope) (*model.EmailVerification, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{ctx, token}
+	for _, a := range scope {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "FindByVerifiedToken", varargs...)
+	ret0, _ := ret[0].(*model.EmailVerification)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByVerifiedToken indicates an expected call of FindByVerifiedToken.
+func (mr *MockEmailVerificationMockRecorder) FindByVerifiedToken(ctx, token any, scope ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]any{ctx, token}, scope...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByVerifiedToken", reflect.TypeOf((*MockEmailVerification)(nil).FindByVerifiedToken), varargs...)
 }
 
 // Update mocks base method.

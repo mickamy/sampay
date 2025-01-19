@@ -7,18 +7,74 @@ type MessageID string
 func (id MessageID) String() string { return string(id) }
 
 const (
-	AuthUsecaseErrorInvalid_access_refresh_token         MessageID = "auth.usecase.error.invalid_access_refresh_token"
-	AuthUsecaseErrorInvalid_email_password               MessageID = "auth.usecase.error.invalid_email_password"
-	AuthUsecaseErrorInvalid_refresh_token                MessageID = "auth.usecase.error.invalid_refresh_token"
-	CommonFormatMinute                                   MessageID = "common.format.minute"
+	/*
+		メールアドレスまたはパスワードが正しくありません。
+	*/
+	AuthUsecaseCreate_sessionInvalid_email_password MessageID = "auth.usecase.create_session.invalid_email_password"
+	/*
+		認証情報が無効です。
+	*/
+	AuthUsecaseDelete_sessionInvalid_access_refresh_token MessageID = "auth.usecase.delete_session.invalid_access_refresh_token"
+	/*
+		リフレッシュトークンが無効です。
+	*/
+	AuthUsecaseRefresh_sessionInvalid_refresh_token MessageID = "auth.usecase.refresh_session.invalid_refresh_token"
+	/*
+		メールログインの確認コードが発行されました。
+		表示されている画面に確認コードを入力してください。
+
+		{{.Code}}
+
+		有効期限は発行から{{.ExpiresInMinute}}です。
+		このメールに心当たりがない場合は、無視していただいて構いません。
+	*/
+	AuthUsecaseRequest_email_verificationBody MessageID = "auth.usecase.request_email_verification.body"
+	/*
+		メール路銀の確認コードが発行されました。
+	*/
+	AuthUsecaseRequest_email_verificationHeader MessageID = "auth.usecase.request_email_verification.header"
+	/*
+		確認コードの発行
+	*/
+	AuthUsecaseRequest_email_verificationTitle MessageID = "auth.usecase.request_email_verification.title"
+	/*
+		{{.Minute}}分
+	*/
+	CommonFormatMinute MessageID = "common.format.minute"
+	/*
+		無効なS3オブジェクトです。
+	*/
 	CommonHandlerDirect_upload_urlErrorInvalid_s3_object MessageID = "common.handler.direct_upload_url.error.invalid_s3_object"
-	CommonHandlerErrorInternal                           MessageID = "common.handler.error.internal"
-	RegistrationEmailRequest_email_verificationBody      MessageID = "registration.email.request_email_verification.body"
-	RegistrationEmailRequest_email_verificationHeader    MessageID = "registration.email.request_email_verification.header"
-	RegistrationEmailRequest_email_verificationTitle     MessageID = "registration.email.request_email_verification.title"
-	RegistrationUsecaseCommonErrorEmail_already_exists   MessageID = "registration.usecase.common.error.email_already_exists"
+	/*
+		ただいまアクセスが集中しております。しばらくしてから再度お試しください。
+	*/
+	CommonHandlerErrorInternal MessageID = "common.handler.error.internal"
+	/*
+		このメールアドレスは既に登録されています。
+	*/
+	RegistrationUsecaseCommonErrorEmail_already_exists MessageID = "registration.usecase.common.error.email_already_exists"
+	/*
+		再度メールアドレス認証を行ってください
+	*/
+	RegistrationUsecaseCreate_passwordErrorEmail_verification_already_consumed MessageID = "registration.usecase.create_password.error.email_verification_already_consumed"
+	/*
+		無効なメールアドレス認証トークンです。
+	*/
+	RegistrationUsecaseCreate_passwordErrorEmail_verification_invalid_token MessageID = "registration.usecase.create_password.error.email_verification_invalid_token"
+	/*
+		無効な PIN コードです。
+	*/
 	RegistrationUsecaseVerify_emailErrorInvalid_pin_code MessageID = "registration.usecase.verify_email.error.invalid_pin_code"
-	UserHandlerUser_linkErrorInvalid_provider_type       MessageID = "user.handler.user_link.error.invalid_provider_type"
-	UserModelUser_attributeErrorDuplicated               MessageID = "user.model.user_attribute.error.duplicated"
-	UserUsecaseGet_userErrorNot_found                    MessageID = "user.usecase.get_user.error.not_found"
+	/*
+		無効なリンク提供業者です。
+	*/
+	UserHandlerUser_linkErrorInvalid_provider_type MessageID = "user.handler.user_link.error.invalid_provider_type"
+	/*
+		既に登録済みです。
+	*/
+	UserModelUser_attributeErrorDuplicated MessageID = "user.model.user_attribute.error.duplicated"
+	/*
+		ユーザーが見つかりません。
+	*/
+	UserUsecaseGet_userErrorNot_found MessageID = "user.usecase.get_user.error.not_found"
 )

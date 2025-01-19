@@ -63,6 +63,12 @@ func makeConstants(data map[string]any, prefix string, output *strings.Builder) 
 
 		switch v := data[key].(type) {
 		case string:
+			lines := strings.Split(v, "\n")
+			fmt.Fprint(output, "\t/*\n")
+			for _, line := range lines {
+				fmt.Fprintf(output, "\t%s\n", line)
+			}
+			fmt.Fprintf(output, "\t\t*/\n")
 			fmt.Fprintf(output, "\t%s MessageID = \"%s\"\n", constName, fullKey)
 		case map[string]any:
 			makeConstants(v, fullKey, output)

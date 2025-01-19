@@ -25,7 +25,7 @@ import { cn } from "~/lib/utils";
 import type { UserProfile } from "~/models/user/user-profile-model";
 
 export const userProfileSchema = z.object({
-  type: z.enum(["profile"]),
+  intent: z.enum(["profile"]),
   image: z
     .any()
     .refine((file) => isFileLike(file), {
@@ -64,7 +64,7 @@ export default function UserProfileForm({
     props: {
       resolver: zodResolver(userProfileSchema),
       defaultValues: {
-        type: "profile",
+        intent: "profile",
         name: profile?.name,
         bio: profile?.bio,
       },

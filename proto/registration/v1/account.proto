@@ -7,7 +7,7 @@ import "auth/v1/common.proto";
 
 message SignUpRequest {
   string email = 1 [(buf.validate.field).string.email = true];
-  string password = 2 [(buf.validate.field).string.min_len = 8, (buf.validate.field).string.max_len = 72];
+  string password = 2 [(buf.validate.field).string.min_len = 8, (buf.validate.field).string.max_len = 64];
 }
 
 message SignUpResponse {

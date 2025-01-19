@@ -109,16 +109,16 @@ func (repo *user) WithTx(tx *database.DB) User {
 	return &user{db: tx}
 }
 
-func UserPreloadAttribute(tx *database.DB) *database.DB {
-	return &database.DB{DB: tx.Preload("Attribute")}
+func UserJoinAttribute(tx *database.DB) *database.DB {
+	return &database.DB{DB: tx.Joins("Attribute")}
 }
 
-func UserPreloadProfile(tx *database.DB) *database.DB {
-	return &database.DB{DB: tx.Preload("Profile")}
+func UserJoinProfile(tx *database.DB) *database.DB {
+	return &database.DB{DB: tx.Joins("Profile")}
 }
 
-func UserPreloadProfileAndImage(tx *database.DB) *database.DB {
-	return &database.DB{DB: tx.Preload("Profile.Image")}
+func UserJoinProfileAndImage(tx *database.DB) *database.DB {
+	return &database.DB{DB: tx.Joins("Profile.Image")}
 }
 
 func UserPreloadLinksQRCodeAndDisplayAttributes(tx *database.DB) *database.DB {

@@ -7,7 +7,7 @@ import (
 	"github.com/brianvoe/gofakeit/v7"
 
 	"mickamy.com/sampay/config"
-	"mickamy.com/sampay/internal/domain/registration/model"
+	"mickamy.com/sampay/internal/domain/auth/model"
 )
 
 func EmailVerification(setter func(m *model.EmailVerification)) model.EmailVerification {

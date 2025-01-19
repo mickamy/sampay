@@ -84,12 +84,12 @@ async function handleMultipartPost({
   request,
 }: { request: Request }): Promise<Response> {
   const body = await request.formData();
-  const type = body.get("type");
-  switch (type) {
+  const intent = body.get("intent");
+  switch (intent) {
     case "post_link":
       return postLink({ request, body });
     default:
-      throw new Error(`unknown type: ${type}`);
+      throw new Error(`unknown type: ${intent}`);
   }
 }
 
@@ -105,8 +105,8 @@ async function handleMultipartPut({
   request,
 }: { request: Request }): Promise<Response> {
   const body = await request.formData();
-  const type = body.get("type");
-  switch (type) {
+  const intent = body.get("intent");
+  switch (intent) {
     case "profile":
       return putProfile({ request, body });
     case "profile_image":
@@ -114,7 +114,7 @@ async function handleMultipartPut({
     case "put_link":
       return putLink({ request, body });
     default:
-      throw new Error(`unknown type: ${type}`);
+      throw new Error(`unknown intent: ${intent}`);
   }
 }
 

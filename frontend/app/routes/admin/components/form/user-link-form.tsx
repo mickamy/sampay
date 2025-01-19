@@ -29,7 +29,7 @@ import {
 type mode = "post" | "put";
 
 export const userLinkSchema = z.object({
-  type: z.enum(["post_link", "put_link"]),
+  intent: z.enum(["post_link", "put_link"]),
   id: z.string().length(26).optional(),
   qr_code: z
     .any()
@@ -74,7 +74,7 @@ export default function UserLinkForm({
     props: {
       resolver: zodResolver(userLinkSchema),
       defaultValues: {
-        type: mode === "post" ? "post_link" : "put_link",
+        intent: mode === "post" ? "post_link" : "put_link",
         id: link?.id,
         provider_type: link?.providerType,
         uri: link?.uri,

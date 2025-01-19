@@ -13,8 +13,6 @@ import (
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	authRepository "mickamy.com/sampay/internal/domain/auth/repository"
 	commonModel "mickamy.com/sampay/internal/domain/common/model"
-	registrationModel "mickamy.com/sampay/internal/domain/registration/model"
-	registrationRepository "mickamy.com/sampay/internal/domain/registration/repository"
 	"mickamy.com/sampay/internal/job"
 	"mickamy.com/sampay/internal/lib/contexts"
 	"mickamy.com/sampay/internal/misc/i18n"
@@ -32,6 +30,7 @@ type RequestEmailVerificationInput struct {
 }
 
 type RequestEmailVerificationOutput struct {
+	Token string
 }
 
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
@@ -43,14 +42,14 @@ type requestEmailVerification struct {
 	writer                *database.Writer
 	producer              *producer.Producer
 	authenticationRepo    authRepository.Authentication
-	emailVerificationRepo registrationRepository.EmailVerification
+	emailVerificationRepo authRepository.EmailVerification
 }
 
 func NewRequestEmailVerification(
 	writer *database.Writer,
 	producer *producer.Producer,
 	authenticationRepo authRepository.Authentication,
-	emailVerificationRepo registrationRepository.EmailVerification,
+	emailVerificationRepo authRepository.EmailVerification,
 ) RequestEmailVerification {
 	return &requestEmailVerification{
 		writer:                writer,
@@ -61,7 +60,7 @@ func NewRequestEmailVerification(
 }
 
 func (uc *requestEmailVerification) Do(ctx context.Context, input RequestEmailVerificationInput) (RequestEmailVerificationOutput, error) {
-	m := registrationModel.EmailVerification{Email: input.Email}
+	m := authModel.EmailVerification{Email: input.Email}
 	cfg := config.Auth()
 	if err := m.Request(cfg.EmailVerificationExpiresInDuration()); err != nil {
 		return RequestEmailVerificationOutput{}, fmt.Errorf("failed to request email verification: %w", err)
@@ -81,14 +80,14 @@ func (uc *requestEmailVerification) Do(ctx context.Context, input RequestEmailVe
 
 		lang := contexts.MustLanguage(ctx)
 		minute := i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.CommonFormatMinute, TemplateData: map[string]int{"Minute": cfg.EmailVerificationExpiresInMinute()}})
-		body := i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.RegistrationEmailRequest_email_verificationBody, TemplateData: map[string]string{
+		body := i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.AuthUsecaseRequest_email_verificationBody, TemplateData: map[string]string{
 			"ExpiresInMinute": minute,
 			"Code":            m.Requested.PINCode,
 		}})
 		msg, err := message.New(ctx, job.SendEmailJob.String(), job.SendEmailPayload{
 			From:    config.Email().From,
 			To:      m.Email,
-			Subject: i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.RegistrationEmailRequest_email_verificationTitle}),
+			Subject: i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.AuthUsecaseRequest_email_verificationTitle}),
 			Body:    body,
 		})
 		if err != nil {
@@ -102,5 +101,5 @@ func (uc *requestEmailVerification) Do(ctx context.Context, input RequestEmailVe
 	}); err != nil {
 		return RequestEmailVerificationOutput{}, err
 	}
-	return RequestEmailVerificationOutput{}, nil
+	return RequestEmailVerificationOutput{Token: m.Requested.Token}, nil
 }

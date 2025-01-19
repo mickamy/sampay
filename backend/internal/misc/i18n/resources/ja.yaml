@@ -1,9 +1,22 @@
 auth:
   usecase:
-    error:
+    create_session:
       invalid_email_password: 'メールアドレスまたはパスワードが正しくありません。'
+    refresh_session:
       invalid_refresh_token: 'リフレッシュトークンが無効です。'
+    delete_session:
       invalid_access_refresh_token: "認証情報が無効です。"
+    request_email_verification:
+      title: '確認コードの発行'
+      header: 'メール路銀の確認コードが発行されました。'
+      body: |-
+        メールログインの確認コードが発行されました。
+        表示されている画面に確認コードを入力してください。
+        
+        {{.Code}}
+        
+        有効期限は発行から{{.ExpiresInMinute}}です。
+        このメールに心当たりがない場合は、無視していただいて構いません。
 common:
   format:
     minute: '{{.Minute}}分'
@@ -21,18 +34,10 @@ registration:
     verify_email:
       error:
         invalid_pin_code: '無効な PIN コードです。'
-  email:
-    request_email_verification:
-      title: '確認コードの発行'
-      header: 'メール路銀の確認コードが発行されました。'
-      body: |-
-        メールログインの確認コードが発行されました。
-        表示されている画面に確認コードを入力してください。
-      
-        {{.Code}}
-      
-        有効期限は発行から{{.ExpiresInMinute}}です。
-        このメールに心当たりがない場合は、無視していただいて構いません。
+    create_password:
+      error:
+        email_verification_invalid_token: '無効なメールアドレス認証トークンです。'
+        email_verification_already_consumed: '再度メールアドレス認証を行ってください'
 user:
   model:
     user_attribute:

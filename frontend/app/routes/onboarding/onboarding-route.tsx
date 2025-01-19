@@ -7,9 +7,14 @@ import {
 } from "react-router";
 import { userProfileSchema } from "~/components/user-profile-form";
 import { withAuthentication } from "~/lib/api/request";
+import {
+  destroyRegistrationSession,
+  getRegistrationSession,
+} from "~/lib/cookie/registration.server";
 import type { S3Object } from "~/models/common/s3-object-model";
 import { convertToUsageCategories } from "~/models/user/usage-category-model";
 import { onboardingAttributeSchema } from "~/routes/onboarding/components/onboarding-attribute-form";
+import { onboardingPasswordSchema } from "~/routes/onboarding/components/onboarding-password-form";
 import OnboardingScreen, {
   type ActionData,
   type LoaderData,
@@ -20,6 +25,10 @@ export const loader: LoaderFunction = async ({ request }) => {
   return withAuthentication({ request }, async ({ getClient }) => {
     const { step } = await getClient(OnboardingService).getOnboardingStep({});
     switch (step) {
+      case "password": {
+        const data: LoaderData = { step };
+        return Response.json(data);
+      }
       case "attribute": {
         const { categories } = await getClient(
           UsageCategoryService,
@@ -57,7 +66,15 @@ export const action: ActionFunction = async ({ request }) => {
   switch (request.method) {
     case "POST": {
       if (request.headers.get("content-type")?.startsWith("application/json")) {
-        return submitAttribute({ request });
+        const body = await request.json();
+        switch (body.intent) {
+          case "password":
+            return submitPassword({ request, body });
+          case "attribute":
+            return submitAttribute({ request, body });
+          default:
+            throw new Error(`unknown intent: ${body.intent}`);
+        }
       }
       if (
         request.headers.get("content-type")?.startsWith("multipart/form-data")
@@ -71,11 +88,37 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 
+async function submitPassword({
+  request,
+  body,
+}: { request: Request; body: unknown }): Promise<Response> {
+  return withAuthentication({ request }, async ({ getClient }) => {
+    const { password } = onboardingPasswordSchema.parse(body);
+    await getClient(OnboardingService).createPassword({
+      token: (await getRegistrationSession(request))?.verify_token,
+      password,
+    });
+    return redirect("/onboarding", {
+      headers: {
+        "set-cookie": await destroyRegistrationSession(request),
+      },
+    });
+  })
+    .then((res) => {
+      return res.map((error) => {
+        const data: ActionData = { error };
+        return Response.json(data);
+      });
+    })
+    .then((it) => it.value);
+}
+
 async function submitAttribute({
   request,
-}: { request: Request }): Promise<Response> {
+  body,
+}: { request: Request; body: unknown }): Promise<Response> {
   return withAuthentication({ request }, async ({ getClient }) => {
-    const { category } = onboardingAttributeSchema.parse(await request.json());
+    const { category } = onboardingAttributeSchema.parse(body);
     await getClient(OnboardingService).createUserAttribute({
       categoryType: category,
     });

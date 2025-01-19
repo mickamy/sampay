@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 
 	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/registration/v1/registrationv1connect"
 	registrationv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/registration/v1"
@@ -16,17 +17,20 @@ import (
 
 type Onboarding struct {
 	getStep         usecase.GetOnboardingStep
+	createPassword  usecase.CreatePassword
 	createAttribute usecase.CreateUserAttribute
 	createProfile   usecase.CreateUserProfile
 }
 
 func NewOnboarding(
 	getStep usecase.GetOnboardingStep,
+	createPassword usecase.CreatePassword,
 	createAttribute usecase.CreateUserAttribute,
 	createProfile usecase.CreateUserProfile,
 ) *Onboarding {
 	return &Onboarding{
 		getStep:         getStep,
+		createPassword:  createPassword,
 		createAttribute: createAttribute,
 		createProfile:   createProfile,
 	}
@@ -49,6 +53,31 @@ func (h *Onboarding) GetOnboardingStep(
 	res := connect.NewResponse(&registrationv1.GetOnboardingStepResponse{
 		Step: out.Step.String(),
 	})
+	return res, nil
+}
+
+func (h *Onboarding) CreatePassword(
+	ctx context.Context,
+	req *connect.Request[registrationv1.CreatePasswordRequest],
+) (*connect.Response[registrationv1.CreatePasswordResponse], error) {
+	_, err := h.createPassword.Do(ctx, usecase.CreatePasswordInput{
+		Token:    req.Msg.Token,
+		Password: req.Msg.Password,
+	})
+	if err != nil {
+		lang := contexts.MustLanguage(ctx)
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
+			if errors.Is(err, usecase.ErrCreatePasswordEmailVerificationInvalidToken) || errors.Is(err, usecase.ErrCreatePasswordEmailVerificationAlreadyConsumed) {
+				return nil, localizable.AsFieldViolations("token").AsConnectError()
+			}
+
+			return nil, localizable.AsConnectError()
+		}
+
+		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
+	}
+	res := connect.NewResponse(&registrationv1.CreatePasswordResponse{})
 	return res, nil
 }
 

@@ -8,9 +8,11 @@ import (
 	"github.com/mickamy/go-sqs-worker/producer"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
+	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	authRepository "mickamy.com/sampay/internal/domain/auth/repository"
 	commonModel "mickamy.com/sampay/internal/domain/common/model"
-	registrationRepository "mickamy.com/sampay/internal/domain/registration/repository"
+	userModel "mickamy.com/sampay/internal/domain/user/model"
+	userRepository "mickamy.com/sampay/internal/domain/user/repository"
 	"mickamy.com/sampay/internal/misc/i18n"
 )
 
@@ -21,12 +23,13 @@ var (
 )
 
 type VerifyEmailInput struct {
-	Email   string
+	Token   string
 	PINCode string
 }
 
 type VerifyEmailOutput struct {
-	Token string
+	Session authModel.Session
+	Token   string
 }
 
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
@@ -37,35 +40,38 @@ type VerifyEmail interface {
 type verifyEmail struct {
 	writer                *database.Writer
 	producer              *producer.Producer
-	authenticationRepo    authRepository.Authentication
-	emailVerificationRepo registrationRepository.EmailVerification
+	emailVerificationRepo authRepository.EmailVerification
+	userRepo              userRepository.User
+	sessionRepo           authRepository.Session
 }
 
 func NewVerifyEmail(
 	writer *database.Writer,
 	producer *producer.Producer,
-	authenticationRepo authRepository.Authentication,
-	emailVerificationRepo registrationRepository.EmailVerification,
+	emailVerificationRepo authRepository.EmailVerification,
+	userRepo userRepository.User,
+	sessionRepo authRepository.Session,
 ) VerifyEmail {
 	return &verifyEmail{
 		writer:                writer,
 		producer:              producer,
-		authenticationRepo:    authenticationRepo,
 		emailVerificationRepo: emailVerificationRepo,
+		userRepo:              userRepo,
+		sessionRepo:           sessionRepo,
 	}
 }
 
 func (uc *verifyEmail) Do(ctx context.Context, input VerifyEmailInput) (VerifyEmailOutput, error) {
+	var session authModel.Session
 	var token string
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
 		var err error
-		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByEmailAndPinCode(
+		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByRequestedTokenAndPinCode(
 			ctx,
-			input.Email,
+			input.Token,
 			input.PINCode,
-			registrationRepository.EmailVerificationJoinRequested,
-			registrationRepository.EmailVerificationPreloadVerified,
-			registrationRepository.EmailVerificationNotConsumed,
+			authRepository.EmailVerificationJoinVerified,
+			authRepository.EmailVerificationNotConsumed,
 		)
 		if err != nil {
 			return fmt.Errorf("failed to find email verification: %w", err)
@@ -86,10 +92,24 @@ func (uc *verifyEmail) Do(ctx context.Context, input VerifyEmailInput) (VerifyEm
 
 		token = verification.Verified.Token
 
+		user := userModel.User{}
+		if err := uc.userRepo.WithTx(tx.WriterDB()).Create(ctx, &user); err != nil {
+			return fmt.Errorf("failed to create user: %w", err)
+		}
+
+		session, err = authModel.NewSession(user.ID)
+		if err != nil {
+			return fmt.Errorf("failed to create session: %w", err)
+		}
+
+		if err := uc.sessionRepo.Create(ctx, session); err != nil {
+			return fmt.Errorf("failed to persist session: %w", err)
+		}
+
 		return nil
 	}); err != nil {
 		return VerifyEmailOutput{}, err
 	}
 
-	return VerifyEmailOutput{Token: token}, nil
+	return VerifyEmailOutput{Session: session, Token: token}, nil
 }

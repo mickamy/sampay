@@ -1,23 +1,26 @@
 syntax = "proto3";
 
-package registration.v1;
+package auth.v1;
 
 import "buf/validate/validate.proto";
+import "auth/v1/common.proto";
 
 message RequestVerificationRequest {
   string email = 1 [(buf.validate.field).string.email = true];
 }
 
 message RequestVerificationResponse {
+  string token = 1 [(buf.validate.field).string.len = 64];
 }
 
 message VerifyEmailRequest {
-  string email = 1 [(buf.validate.field).string.email = true];
+  string token = 1 [(buf.validate.field).string.len = 64];
   string pin_code = 2 [(buf.validate.field).string.len = 6];
 }
 
 message VerifyEmailResponse {
-  string token = 1 [(buf.validate.field).string.len = 64];
+  auth.v1.Tokens session = 1;
+  string token = 2 [(buf.validate.field).string.len = 64];
 }
 
 service EmailVerificationService {
