@@ -82,7 +82,12 @@ func (m *EmailVerification) Verify() error {
 	if now.After(m.Requested.ExpiresAt) {
 		return ErrEmailVerificationTokenExpired
 	}
+	token, err := random.NewString(32)
+	if err != nil {
+		return fmt.Errorf("failed to generate token: %w", err)
+	}
 	m.Verified = &VerifiedEmailVerification{
+		Token:      token,
 		VerifiedAt: now,
 	}
 	return nil
