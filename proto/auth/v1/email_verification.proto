@@ -9,7 +9,7 @@ message RequestVerificationRequest {
   enum IntentType {
     INTENT_TYPE_UNSPECIFIED = 0;
     INTENT_TYPE_SIGN_UP = 1;
-    INTENT_TYPE_PASSWORD_RESET = 2;
+    INTENT_TYPE_RESET_PASSWORD = 2;
   }
 
   IntentType intent_type = 1 [(buf.validate.field).enum.defined_only = true];
