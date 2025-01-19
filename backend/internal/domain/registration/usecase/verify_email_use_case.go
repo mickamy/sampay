@@ -63,8 +63,8 @@ func (uc *verifyEmail) Do(ctx context.Context, input VerifyEmailInput) (VerifyEm
 			ctx,
 			input.Email,
 			input.PINCode,
-			registrationRepository.EmailVerificationJoinRequested,
-			registrationRepository.EmailVerificationPreloadVerified,
+			registrationRepository.EmailVerificationInnerJoinRequested,
+			registrationRepository.EmailVerificationJoinVerified,
 			registrationRepository.EmailVerificationNotConsumed,
 		)
 		if err != nil {

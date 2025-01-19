@@ -68,16 +68,12 @@ func (repo *emailVerification) WithTx(tx *database.DB) EmailVerification {
 	return &emailVerification{db: tx}
 }
 
-func EmailVerificationJoinRequested(db *database.DB) *database.DB {
-	return &database.DB{DB: db.Joins("Requested")}
+func EmailVerificationInnerJoinRequested(db *database.DB) *database.DB {
+	return &database.DB{DB: db.InnerJoins("Requested")}
 }
 
 func EmailVerificationJoinVerified(db *database.DB) *database.DB {
 	return &database.DB{DB: db.Joins("Verified")}
-}
-
-func EmailVerificationPreloadVerified(db *database.DB) *database.DB {
-	return &database.DB{DB: db.Preload("Verified")}
 }
 
 func EmailVerificationNotVerified(db *database.DB) *database.DB {
