@@ -9,6 +9,8 @@ import (
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/di"
+	authFixture "mickamy.com/sampay/internal/domain/auth/fixture"
+	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	registrationModel "mickamy.com/sampay/internal/domain/registration/model"
 	"mickamy.com/sampay/internal/domain/registration/usecase"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
@@ -30,12 +32,29 @@ func TestGetOnboardingStep_Do(t *testing.T) {
 			},
 			assert: func(t *testing.T, got usecase.GetOnboardingStepOutput, err error) {
 				require.NoError(t, err)
+				assert.Equal(t, registrationModel.OnboardingStepPassword, got.Step)
+			},
+		},
+		{
+			name: "user has authentication",
+			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, userID string) {
+				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
+					m.UserID = userID
+				})
+				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
+			},
+			assert: func(t *testing.T, got usecase.GetOnboardingStepOutput, err error) {
+				require.NoError(t, err)
 				assert.Equal(t, registrationModel.OnboardingStepAttribute, got.Step)
 			},
 		},
 		{
-			name: "user has attribute",
+			name: "user has authentication and attribute",
 			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, userID string) {
+				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
+					m.UserID = userID
+				})
+				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
 				attribute := userFixture.UserAttribute(func(m *model.UserAttribute) {
 					m.UserID = userID
 				})
@@ -47,8 +66,12 @@ func TestGetOnboardingStep_Do(t *testing.T) {
 			},
 		},
 		{
-			name: "user has profile",
+			name: "user has authentication and profile",
 			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, userID string) {
+				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
+					m.UserID = userID
+				})
+				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
 				profile := userFixture.UserProfile(func(m *model.UserProfile) {
 					m.UserID = userID
 				})
@@ -60,8 +83,12 @@ func TestGetOnboardingStep_Do(t *testing.T) {
 			},
 		},
 		{
-			name: "user has attribute and profile",
+			name: "user has authentication, attribute and profile",
 			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, userID string) {
+				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
+					m.UserID = userID
+				})
+				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
 				attribute := userFixture.UserAttribute(func(m *model.UserAttribute) {
 					m.UserID = userID
 				})

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
+	authRepository "mickamy.com/sampay/internal/domain/auth/repository"
 	registrationModel "mickamy.com/sampay/internal/domain/registration/model"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
 	"mickamy.com/sampay/internal/lib/contexts"
@@ -24,15 +25,18 @@ type GetOnboardingStep interface {
 
 type getOnboardingStep struct {
 	reader   *database.Reader
+	authRepo authRepository.Authentication
 	userRepo userRepository.User
 }
 
 func NewGetOnboardingStep(
 	reader *database.Reader,
+	authRepo authRepository.Authentication,
 	userRepo userRepository.User,
 ) GetOnboardingStep {
 	return &getOnboardingStep{
 		reader:   reader,
+		authRepo: authRepo,
 		userRepo: userRepo,
 	}
 }
@@ -41,9 +45,19 @@ func (uc *getOnboardingStep) Do(ctx context.Context, input GetOnboardingStepInpu
 	var step registrationModel.OnboardingStep
 
 	if err := uc.reader.ReaderTransaction(ctx, func(tx database.ReaderTransactional) error {
-		user, err := uc.userRepo.WithTx(tx.ReaderDB()).Get(ctx, contexts.MustAuthenticatedUserID(ctx), userRepository.UserJoinAttribute, userRepository.UserJoinProfile)
+		id := contexts.MustAuthenticatedUserID(ctx)
+		auths, err := uc.authRepo.WithTx(tx.ReaderDB()).ListByUserID(ctx, id)
 		if err != nil {
 			return fmt.Errorf("failed to find user: %w", err)
+		}
+		if len(auths) == 0 {
+			step = registrationModel.OnboardingStepPassword
+			return nil
+		}
+
+		user, err := uc.userRepo.WithTx(tx.ReaderDB()).Get(ctx, id, userRepository.UserJoinAttribute, userRepository.UserJoinProfile)
+		if err != nil {
+			return fmt.Errorf("failed to get user with attribute and profile: %w", err)
 		}
 
 		if user.Attribute.IsZero() {
