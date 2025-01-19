@@ -15,6 +15,7 @@ type EmailVerification interface {
 	Create(ctx context.Context, m *model.EmailVerification) error
 	FindByEmail(ctx context.Context, email string, scope ...database.Scope) (*model.EmailVerification, error)
 	FindByEmailAndPinCode(ctx context.Context, email, token string, scope ...database.Scope) (*model.EmailVerification, error)
+	FindByVerifiedToken(ctx context.Context, token string, scope ...database.Scope) (*model.EmailVerification, error)
 	Update(ctx context.Context, m *model.EmailVerification) error
 	WithTx(tx *database.DB) EmailVerification
 }
@@ -60,6 +61,21 @@ func (repo *emailVerification) FindByEmailAndPinCode(ctx context.Context, email,
 	return &m, err
 }
 
+func (repo *emailVerification) FindByVerifiedToken(ctx context.Context, token string, scopes ...database.Scope) (*model.EmailVerification, error) {
+	var m model.EmailVerification
+	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
+		InnerJoins("Verified").
+		First(&m, `"Verified".token = ?`, token).
+		Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &m, err
+}
+
 func (repo *emailVerification) Update(ctx context.Context, m *model.EmailVerification) error {
 	return repo.db.WithContext(ctx).Save(m).Error
 }
@@ -78,13 +94,6 @@ func EmailVerificationJoinVerified(db *database.DB) *database.DB {
 
 func EmailVerificationJoinConsumed(db *database.DB) *database.DB {
 	return &database.DB{DB: db.Joins("Consumed")}
-}
-
-func EmailVerificationNotVerified(db *database.DB) *database.DB {
-	return &database.DB{DB: db.
-		Joins("LEFT OUTER JOIN verified_email_verifications verified ON email_verifications.id = verified.email_verification_id").
-		Where("verified.email_verification_id IS NULL"),
-	}
 }
 
 func EmailVerificationNotConsumed(db *database.DB) *database.DB {

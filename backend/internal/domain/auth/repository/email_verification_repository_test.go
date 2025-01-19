@@ -155,6 +155,64 @@ func TestEmailVerification_FindByEmailAndPinCode(t *testing.T) {
 	}
 }
 
+func TestEmailVerification_FindByVerifiedToken(t *testing.T) {
+	t.Parallel()
+
+	token := either.Must(random.NewString(32))
+
+	tcs := []struct {
+		name    string
+		arrange func(t *testing.T, ctx context.Context, db *database.DB)
+		assert  func(t *testing.T, got *model.EmailVerification, err error)
+	}{
+		{
+			name: "found",
+			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
+				m := fixture.EmailVerificationVerified(func(m *model.EmailVerification) {
+					m.Verified.Token = token
+				})
+				require.NoError(t, db.WithContext(ctx).Create(&m).Error)
+			},
+			assert: func(t *testing.T, got *model.EmailVerification, err error) {
+				require.NoError(t, err)
+				require.NotNil(t, got)
+				assert.NotEmpty(t, got.ID)
+				assert.NotEmpty(t, got.Email)
+				assert.NotEmpty(t, got.CreatedAt)
+			},
+		}, {
+			name: "not found",
+			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
+				m := fixture.EmailVerification(nil)
+				require.NoError(t, db.WithContext(ctx).Create(&m).Error)
+			},
+			assert: func(t *testing.T, got *model.EmailVerification, err error) {
+				require.NoError(t, err)
+				assert.Nil(t, got)
+			},
+		},
+	}
+
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			// arrange
+			ctx := context.Background()
+			db := newReadWriter(t)
+			tc.arrange(t, ctx, db.WriterDB())
+
+			// act
+			sut := repository.NewEmailVerification(db.WriterDB())
+			got, err := sut.FindByVerifiedToken(ctx, token)
+
+			// assert
+			tc.assert(t, got, err)
+		})
+	}
+}
+
 func TestEmailVerification_Update(t *testing.T) {
 	t.Parallel()
 

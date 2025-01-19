@@ -19,7 +19,7 @@ var (
 )
 
 type CreatePasswordInput struct {
-	Email    string
+	Token    string
 	Password string
 }
 
@@ -51,7 +51,7 @@ func NewCreatePassword(
 
 func (uc *createPassword) Do(ctx context.Context, input CreatePasswordInput) (CreatePasswordOutput, error) {
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
-		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByEmail(ctx, input.Email, authRepository.EmailVerificationJoinVerified, authRepository.EmailVerificationJoinConsumed)
+		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByVerifiedToken(ctx, input.Token, authRepository.EmailVerificationInnerJoinRequested, authRepository.EmailVerificationJoinConsumed)
 		if err != nil {
 			return fmt.Errorf("failed to find email verification: %w", err)
 		}
@@ -62,7 +62,14 @@ func (uc *createPassword) Do(ctx context.Context, input CreatePasswordInput) (Cr
 			return ErrCreatePasswordEmailVerificationAlreadyConsumed
 		}
 
-		m, err := authModel.NewAuthenticationEmailPassword(contexts.MustAuthenticatedUserID(ctx), input.Email, input.Password)
+		if err := verification.Consume(); err != nil {
+			return fmt.Errorf("failed to consume email verification: %w", err)
+		}
+		if err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).Update(ctx, verification); err != nil {
+			return fmt.Errorf("failed to update email verification: %w", err)
+		}
+
+		m, err := authModel.NewAuthenticationEmailPassword(contexts.MustAuthenticatedUserID(ctx), verification.Email, input.Password)
 		if err != nil {
 			return fmt.Errorf("failed to create authentication model: %w", err)
 		}

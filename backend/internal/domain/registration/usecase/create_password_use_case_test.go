@@ -29,7 +29,7 @@ func TestCreatePassword_Do(t *testing.T) {
 	// act
 	sut := di.InitRegistrationUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).CreatePassword
 	_, err := sut.Do(ctx, usecase.CreatePasswordInput{
-		Email:    verification.Email,
+		Token:    verification.Verified.Token,
 		Password: gofakeit.Password(true, true, true, false, false, 12),
 	})
 

@@ -97,6 +97,26 @@ func (mr *MockEmailVerificationMockRecorder) FindByEmailAndPinCode(ctx, email, t
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByEmailAndPinCode", reflect.TypeOf((*MockEmailVerification)(nil).FindByEmailAndPinCode), varargs...)
 }
 
+// FindByVerifiedToken mocks base method.
+func (m *MockEmailVerification) FindByVerifiedToken(ctx context.Context, token string, scope ...database.Scope) (*model.EmailVerification, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{ctx, token}
+	for _, a := range scope {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "FindByVerifiedToken", varargs...)
+	ret0, _ := ret[0].(*model.EmailVerification)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByVerifiedToken indicates an expected call of FindByVerifiedToken.
+func (mr *MockEmailVerificationMockRecorder) FindByVerifiedToken(ctx, token any, scope ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]any{ctx, token}, scope...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByVerifiedToken", reflect.TypeOf((*MockEmailVerification)(nil).FindByVerifiedToken), varargs...)
+}
+
 // Update mocks base method.
 func (m_2 *MockEmailVerification) Update(ctx context.Context, m *model.EmailVerification) error {
 	m_2.ctrl.T.Helper()

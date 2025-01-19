@@ -135,11 +135,11 @@ func TestOnboarding_CreateUserPassword(t *testing.T) {
 		{
 			name: "success",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreatePasswordRequest {
-				verification := authFixture.EmailVerification(nil)
+				verification := authFixture.EmailVerificationVerified(nil)
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
 
 				return &registrationv1.CreatePasswordRequest{
-					Email:    verification.Email,
+					Token:    verification.Verified.Token,
 					Password: gofakeit.Password(true, true, true, false, false, 12),
 				}
 			},
