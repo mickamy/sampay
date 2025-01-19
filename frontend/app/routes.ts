@@ -15,5 +15,7 @@ export default [
   ]),
   route("admin", "routes/admin/admin-route.tsx"),
   route("onboarding", "routes/onboarding/onboarding-route.tsx"),
+  route("privacy", "routes/static/privacy-route.tsx"),
+  route("terms", "routes/static/terms-route.tsx"),
   route("u/:slug", "routes/user/user-route.tsx"),
 ] satisfies RouteConfig;
