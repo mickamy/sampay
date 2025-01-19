@@ -22,6 +22,7 @@ import {
   setAuthenticatedSession,
 } from "~/lib/cookie/authenticated.server";
 import { type Either, Left, Right } from "~/lib/either/either";
+import logger from "~/lib/logger";
 import { convertTokensToSession } from "~/models/auth/session-model";
 
 export async function authenticate(
@@ -76,6 +77,7 @@ export async function withAuthentication(
       }
       return new Right(convertToAPIError(e));
     }
+    logger.error({ error: e }, "unexpected error");
     throw e;
   }
 }

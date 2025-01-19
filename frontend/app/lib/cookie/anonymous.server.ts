@@ -72,7 +72,8 @@ async function destroySession(
 }
 
 export type AnonymousSession = {
-  email: string;
+  request_token?: string;
+  verify_token?: string;
 };
 
 export async function getAnonymousSession(
