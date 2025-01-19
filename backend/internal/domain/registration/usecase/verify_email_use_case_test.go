@@ -101,19 +101,6 @@ func TestVerifyEmail_Do(t *testing.T) {
 				assert.Empty(t, got)
 			},
 		},
-		{
-			name: "pin code consumed",
-			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
-				m := registrationFixture.EmailVerificationConsumed(func(m *registrationModel.EmailVerification) {
-					m.Email = email
-					m.Requested.PINCode = pin
-				})
-				assert.NoError(t, db.WithContext(ctx).Create(&m).Error)
-			},
-			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
-				assert.ErrorIs(t, err, usecase.ErrVerifyEmailInvalidToken)
-			},
-		},
 	}
 
 	for _, tc := range tcs {

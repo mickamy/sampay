@@ -49,17 +49,3 @@ func EmailVerificationVerified(setter func(m *model.EmailVerification)) model.Em
 
 	return m
 }
-
-func EmailVerificationConsumed(setter func(m *model.EmailVerification)) model.EmailVerification {
-	m := EmailVerificationVerified(func(m *model.EmailVerification) {
-		if err := m.Consume(); err != nil {
-			log.Fatal(fmt.Errorf("failed to consume email verification: %w", err))
-		}
-	})
-
-	if setter != nil {
-		setter(&m)
-	}
-
-	return m
-}

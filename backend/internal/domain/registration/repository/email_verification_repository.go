@@ -82,10 +82,3 @@ func EmailVerificationNotVerified(db *database.DB) *database.DB {
 		Where("verified.email_verification_id IS NULL"),
 	}
 }
-
-func EmailVerificationNotConsumed(db *database.DB) *database.DB {
-	return &database.DB{DB: db.
-		Joins("LEFT OUTER JOIN consumed_email_verifications consumed ON email_verifications.id = consumed.email_verification_id").
-		Where("consumed.email_verification_id IS NULL"),
-	}
-}

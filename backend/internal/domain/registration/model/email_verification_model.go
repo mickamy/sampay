@@ -17,7 +17,6 @@ var (
 	ErrEmailVerificationRequested    = errors.New("email verification requested")
 	ErrEmailVerificationNotVerified  = errors.New("email verification not verified")
 	ErrEmailVerificationVerified     = errors.New("email verification verified")
-	ErrEmailVerificationConsumed     = errors.New("email verification consumed")
 )
 
 type EmailVerification struct {
@@ -27,7 +26,6 @@ type EmailVerification struct {
 
 	Requested *RequestedEmailVerification
 	Verified  *VerifiedEmailVerification
-	Consumed  *ConsumedEmailVerification
 }
 
 func (m *EmailVerification) BeforeCreate(tx *gorm.DB) error {
@@ -39,9 +37,6 @@ func (m *EmailVerification) BeforeCreate(tx *gorm.DB) error {
 }
 
 func (m *EmailVerification) Request(expiresIn time.Duration) error {
-	if m.IsConsumed() {
-		return ErrEmailVerificationConsumed
-	}
 	if m.IsVerified() {
 		return ErrEmailVerificationVerified
 	}
@@ -69,9 +64,6 @@ func (m EmailVerification) IsRequested() bool {
 }
 
 func (m *EmailVerification) Verify() error {
-	if m.IsConsumed() {
-		return ErrEmailVerificationConsumed
-	}
 	if m.IsVerified() {
 		return nil
 	}
@@ -98,27 +90,4 @@ func (m EmailVerification) IsVerified() bool {
 		return false
 	}
 	return !m.Verified.VerifiedAt.IsZero()
-}
-
-func (m *EmailVerification) Consume() error {
-	if m.IsConsumed() {
-		return nil
-	}
-	if !m.IsRequested() {
-		return ErrEmailVerificationNotRequested
-	}
-	if !m.IsVerified() {
-		return ErrEmailVerificationNotVerified
-	}
-	m.Consumed = &ConsumedEmailVerification{
-		ConsumedAt: time.Now(),
-	}
-	return nil
-}
-
-func (m EmailVerification) IsConsumed() bool {
-	if m.Consumed == nil {
-		return false
-	}
-	return !m.Consumed.ConsumedAt.IsZero()
 }
