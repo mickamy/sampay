@@ -9,6 +9,7 @@ import (
 	"github.com/bufbuild/connect-go"
 	"github.com/mickamy/slogger"
 
+	authResponse "mickamy.com/sampay/internal/domain/auth/dto/response"
 	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 	"mickamy.com/sampay/internal/domain/registration/usecase"
 	"mickamy.com/sampay/internal/lib/contexts"
@@ -73,7 +74,7 @@ func (h *EmailVerification) VerifyEmail(
 		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&registrationv1.VerifyEmailResponse{
-		Token: got.Token,
+		Tokens: authResponse.NewTokens(got.Session.Tokens),
 	})
 	return res, nil
 }

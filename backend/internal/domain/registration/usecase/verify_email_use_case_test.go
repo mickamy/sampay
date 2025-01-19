@@ -40,7 +40,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
 				require.NoError(t, err)
-				assert.NotEmpty(t, got.Token)
+				assert.NotEmpty(t, got.Session)
 			},
 		},
 		{
@@ -84,7 +84,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
 				require.NoError(t, err)
-				assert.NotEmpty(t, got.Token)
+				assert.NotEmpty(t, got.Session)
 			},
 		},
 		{
