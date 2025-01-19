@@ -8,13 +8,13 @@ import {
 import { getClient } from "~/lib/api/client";
 import { convertToAPIError } from "~/lib/api/response";
 import {
-  getAnonymousSession,
-  setAnonymousSession,
-} from "~/lib/cookie/anonymous.server";
-import {
   isLoggedIn,
   setAuthenticatedSession,
 } from "~/lib/cookie/authenticated.server";
+import {
+  getRegistrationSession,
+  setRegistrationSession,
+} from "~/lib/cookie/registration.server";
 import { convertTokensToSession } from "~/models/auth/session-model";
 import { requestEmailVerificationSchema } from "~/routes/account/sign-up/components/request-email-verification-form";
 import SignUpScreen, {
@@ -70,7 +70,7 @@ async function requestVerification({
     const actionData: ActionData = { requestVerificationSuccess: true };
     return Response.json(actionData, {
       headers: {
-        "set-cookie": await setAnonymousSession({ request_token: token }),
+        "set-cookie": await setRegistrationSession({ request_token: token }),
       },
     });
   } catch (e) {
@@ -94,7 +94,7 @@ async function verifyEmail({
       service: EmailVerificationService,
       request,
     }).verifyEmail({
-      token: (await getAnonymousSession(request))?.request_token,
+      token: (await getRegistrationSession(request))?.request_token,
       pinCode: pin_code,
     });
 
@@ -110,7 +110,7 @@ async function verifyEmail({
     headers.append("set-cookie", await setAuthenticatedSession(tokens));
     headers.append(
       "set-cookie",
-      await setAnonymousSession({ verify_token: token }),
+      await setRegistrationSession({ verify_token: token }),
     );
     return redirect("/onboarding", {
       headers,

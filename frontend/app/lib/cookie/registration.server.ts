@@ -35,7 +35,7 @@ async function initializeSession() {
   }
   return createCookieSessionStorage({
     cookie: {
-      name: "__sampay_anonymous_session",
+      name: "__sampay_registration_session",
       httpOnly: true,
       maxAge: 14 * DAY,
       path: "/",
@@ -71,28 +71,28 @@ async function destroySession(
   return destroySession(session, options);
 }
 
-export type AnonymousSession = {
+export type RegistrationSession = {
   request_token?: string;
   verify_token?: string;
 };
 
-export async function getAnonymousSession(
+export async function getRegistrationSession(
   request: Request,
-): Promise<AnonymousSession | null> {
+): Promise<RegistrationSession | null> {
   const s = await getSession(request.headers.get("cookie"));
   return s.get("sessions");
 }
 
-export async function setAnonymousSession(
-  session: AnonymousSession,
+export async function setRegistrationSession(
+  session: RegistrationSession,
 ): Promise<string> {
   const s = await getSession(null);
   s.set("sessions", session);
   return commitSession(s);
 }
 
-export async function destroyAnonymousSession(request: Request) {
-  const s = await getAnonymousSession(request);
+export async function destroyRegistrationSession(request: Request) {
+  const s = await getRegistrationSession(request);
   if (s == null) {
     throw new Error("session not found");
   }
