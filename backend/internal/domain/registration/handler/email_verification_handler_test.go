@@ -67,7 +67,7 @@ func TestEmailVerification_RequestVerification(t *testing.T) {
 				detail := either.Must(connErr.Details()[0].Value())
 				if errMsg, ok := detail.(*commonv1.BadRequestError); ok {
 					require.Len(t, errMsg.FieldViolations, 1)
-					require.Equal(t, "token", errMsg.FieldViolations[0].Field)
+					require.Equal(t, "email", errMsg.FieldViolations[0].Field)
 					require.Len(t, errMsg.FieldViolations[0].Descriptions, 1)
 					require.Equal(t, i18n.MustJapaneseMessage(i18n.Config{MessageID: i18n.RegistrationUsecaseCommonErrorEmail_already_exists}), errMsg.FieldViolations[0].Descriptions[0])
 				} else {
