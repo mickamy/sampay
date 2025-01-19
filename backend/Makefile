@@ -20,8 +20,6 @@
 	ci \
 	help \
 
-buf-sha1 := $(buf registry sdk version --module=buf.build/gen/go/mickamy/sampay/connectrpc/go --plugin=buf.build/protocolbuffers/go)
-
 build: ## Build the application
 	go build -o ./build/api ./cmd/api/main.go
 
@@ -51,8 +49,13 @@ update-mod: ## Update go modules
 	gofmt -s -w .
 
 pull-buf: ## Pull the buf packages
-	go get -u buf.build/gen/go/mickamy/sampay/connectrpc/go@$(buf-sha1)
-	go get -u buf.build/gen/go/mickamy/sampay/protocolbuffers/go@$(buf-sha1)
+	@set -e; \
+	buf_version=$$(buf registry sdk version --module=buf.build/mickamy/sampay --plugin=buf.build/connectrpc/go); \
+	echo "Using buf version: $$buf_version"; \
+	go get -u buf.build/gen/go/mickamy/sampay/connectrpc/go@$$buf_version; \
+	buf_version=$$(buf registry sdk version --module=buf.build/mickamy/sampay --plugin=buf.build/protocolbuffers/go); \
+	echo "Using buf version: $$buf_version"; \
+	go get -u buf.build/gen/go/mickamy/sampay/protocolbuffers/go@$$buf_version;
 
 db-create: ## Create the database
 	PACKAGE_ROOT=$$(pwd) go run ./cmd/db/create/main.go
