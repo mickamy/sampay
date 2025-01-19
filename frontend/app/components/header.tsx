@@ -22,7 +22,7 @@ export default function Header({ isLoggedIn, ...props }: Props) {
   return (
     <header
       className={cn(
-        "sticky top-0 z-10 border-b flex h-16 items-center bg-white mx-2 sm:mx-4",
+        "sticky top-0 z-10 border-b flex h-16 items-center bg-white px-2 sm:px-4",
         props.className,
       )}
       {...props}

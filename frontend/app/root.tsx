@@ -61,7 +61,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export function Layout({ children }: { children: ReactNode }) {
   const { locale, title, ENV } = useLoaderData<LoaderData>();
-  const { i18n, t } = useTranslation();
+  const { i18n, ready } = useTranslation();
   useEffect(() => {
     if (i18n.language !== locale) {
       i18n.changeLanguage(locale);
@@ -78,7 +78,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <title>{title}</title>
       </head>
       <body>
-        {children}
+        {ready ? children : null}
         <script
           // biome-ignore lint: suspicious/no-dangerously-set-inner-html
           dangerouslySetInnerHTML={{
