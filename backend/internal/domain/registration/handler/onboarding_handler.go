@@ -16,17 +16,20 @@ import (
 
 type Onboarding struct {
 	getStep         usecase.GetOnboardingStep
+	createPassword  usecase.CreatePassword
 	createAttribute usecase.CreateUserAttribute
 	createProfile   usecase.CreateUserProfile
 }
 
 func NewOnboarding(
 	getStep usecase.GetOnboardingStep,
+	createPassword usecase.CreatePassword,
 	createAttribute usecase.CreateUserAttribute,
 	createProfile usecase.CreateUserProfile,
 ) *Onboarding {
 	return &Onboarding{
 		getStep:         getStep,
+		createPassword:  createPassword,
 		createAttribute: createAttribute,
 		createProfile:   createProfile,
 	}
@@ -49,6 +52,27 @@ func (h *Onboarding) GetOnboardingStep(
 	res := connect.NewResponse(&registrationv1.GetOnboardingStepResponse{
 		Step: out.Step.String(),
 	})
+	return res, nil
+}
+
+func (h *Onboarding) CreatePassword(
+	ctx context.Context,
+	req *connect.Request[registrationv1.CreatePasswordRequest],
+) (*connect.Response[registrationv1.CreatePasswordResponse], error) {
+	_, err := h.createPassword.Do(ctx, usecase.CreatePasswordInput{
+		Email:    req.Msg.Email,
+		Password: req.Msg.Password,
+	})
+	if err != nil {
+		lang := contexts.MustLanguage(ctx)
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
+			return nil, localizable.AsConnectError()
+		}
+
+		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
+	}
+	res := connect.NewResponse(&registrationv1.CreatePasswordResponse{})
 	return res, nil
 }
 
