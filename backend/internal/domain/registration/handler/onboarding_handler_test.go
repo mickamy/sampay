@@ -15,6 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"mickamy.com/sampay/internal/di"
+	authFixture "mickamy.com/sampay/internal/domain/auth/fixture"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	registrationModel "mickamy.com/sampay/internal/domain/registration/model"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
@@ -34,8 +35,22 @@ func TestOnboarding_GetOnboardingStep(t *testing.T) {
 		assert  func(t *testing.T, got *connect.Response[registrationv1.GetOnboardingStepResponse], err error)
 	}{
 		{
+			name: "success (password)",
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.GetOnboardingStepRequest {
+				return &registrationv1.GetOnboardingStepRequest{}
+			},
+			assert: func(t *testing.T, got *connect.Response[registrationv1.GetOnboardingStepResponse], err error) {
+				require.NoError(t, err)
+				require.Equal(t, registrationModel.OnboardingStepPassword.String(), got.Msg.Step)
+			},
+		},
+		{
 			name: "success (attribute)",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.GetOnboardingStepRequest {
+				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
+					m.UserID = userID
+				})
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&auth).Error)
 				return &registrationv1.GetOnboardingStepRequest{}
 			},
 			assert: func(t *testing.T, got *connect.Response[registrationv1.GetOnboardingStepResponse], err error) {
@@ -46,6 +61,10 @@ func TestOnboarding_GetOnboardingStep(t *testing.T) {
 		{
 			name: "success (profile)",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.GetOnboardingStepRequest {
+				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
+					m.UserID = userID
+				})
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&auth).Error)
 				attr := userFixture.UserAttribute(func(m *model.UserAttribute) {
 					m.UserID = userID
 				})
@@ -60,6 +79,10 @@ func TestOnboarding_GetOnboardingStep(t *testing.T) {
 		{
 			name: "success (complete)",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.GetOnboardingStepRequest {
+				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
+					m.UserID = userID
+				})
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&auth).Error)
 				attr := userFixture.UserAttribute(func(m *model.UserAttribute) {
 					m.UserID = userID
 				})
@@ -94,6 +117,52 @@ func TestOnboarding_GetOnboardingStep(t *testing.T) {
 			client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, server.URL)
 			connReq := connecttest.NewAuthenticatedRequest(t, ctx, req, nil, authModel.MustNewSession(user.ID), infras.KVS)
 			got, err := client.GetOnboardingStep(ctx, connReq)
+
+			// assert
+			tc.assert(t, got, err)
+		})
+	}
+}
+
+func TestOnboarding_CreateUserPassword(t *testing.T) {
+	t.Parallel()
+
+	tsc := []struct {
+		name    string
+		arrange func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreatePasswordRequest
+		assert  func(t *testing.T, got *connect.Response[registrationv1.CreatePasswordResponse], err error)
+	}{
+		{
+			name: "success",
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreatePasswordRequest {
+				return &registrationv1.CreatePasswordRequest{
+					Email:    gofakeit.GlobalFaker.Email(),
+					Password: gofakeit.Password(true, true, true, false, false, 12),
+				}
+			},
+			assert: func(t *testing.T, got *connect.Response[registrationv1.CreatePasswordResponse], err error) {
+				require.NoError(t, err)
+			},
+		},
+	}
+
+	for _, tc := range tsc {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			// arrange
+			ctx := context.Background()
+			infras := di.NewInfras(newReadWriter(t), newKVS(t))
+			user := userFixture.User(nil)
+			require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
+			req := tc.arrange(t, ctx, infras, user.ID)
+			server := newOnboardingServer(t, infras)
+
+			// act
+			client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, server.URL)
+			connReq := connecttest.NewAuthenticatedRequest(t, ctx, req, nil, authModel.MustNewSession(user.ID), infras.KVS)
+			got, err := client.CreatePassword(ctx, connReq)
 
 			// assert
 			tc.assert(t, got, err)

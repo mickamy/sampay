@@ -119,7 +119,7 @@ func TestEmailVerification_VerifyEmail(t *testing.T) {
 			},
 			assert: func(t *testing.T, got *connect.Response[registrationv1.VerifyEmailResponse], err error) {
 				require.NoError(t, err)
-				assert.NotEmpty(t, got.Msg.Token)
+				assert.NotEmpty(t, got.Msg.Tokens)
 			},
 		},
 		{
