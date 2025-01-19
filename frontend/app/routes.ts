@@ -6,7 +6,7 @@ import {
 } from "@react-router/dev/routes";
 
 export default [
-  index("routes/index.tsx"),
+  index("routes/static/landing-page-route.tsx"),
 
   route("account/sign-up", "routes/account/sign-up/sign-up-route.tsx"),
   ...prefix("auth", [
