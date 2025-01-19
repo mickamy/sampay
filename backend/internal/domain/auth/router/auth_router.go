@@ -3,8 +3,8 @@ package router
 import (
 	"net/http"
 
-	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/auth/v1/authv1connect"
-	"github.com/bufbuild/connect-go"
+	"buf.build/gen/go/mickamy/sampay/connectrpc/go/auth/v1/authv1connect"
+	"connectrpc.com/connect"
 
 	"mickamy.com/sampay/internal/di"
 )

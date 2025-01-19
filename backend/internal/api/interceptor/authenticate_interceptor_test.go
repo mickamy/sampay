@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/test/v1/testv1connect"
+	"buf.build/gen/go/mickamy/sampay/connectrpc/go/test/v1/testv1connect"
 	testv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/test/v1"
-	"github.com/bufbuild/connect-go"
+	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

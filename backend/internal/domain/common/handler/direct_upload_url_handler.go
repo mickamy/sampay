@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/common/v1/commonv1connect"
+	"buf.build/gen/go/mickamy/sampay/connectrpc/go/common/v1/commonv1connect"
 	commonv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/common/v1"
-	"github.com/bufbuild/connect-go"
+	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
 	commonRequest "mickamy.com/sampay/internal/domain/common/dto/request"
