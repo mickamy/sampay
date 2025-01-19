@@ -17,6 +17,10 @@ auth:
         
         有効期限は発行から{{.ExpiresInMinute}}です。
         このメールに心当たりがない場合は、無視していただいて構いません。
+    reset_password:
+      error:
+        email_verification_invalid_token: '無効なメールアドレス認証トークンです。'
+        email_verification_already_consumed: '再度メールアドレス認証を行ってください'
 common:
   format:
     minute: '{{.Minute}}分'

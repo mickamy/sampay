@@ -27,6 +27,7 @@ type UseCases struct {
 	usecase.DeleteSession
 	usecase.RefreshSession
 	usecase.RequestEmailVerification
+	usecase.ResetPassword
 	usecase.VerifyEmail
 }
 
@@ -36,17 +37,20 @@ var UseCaseSet = wire.NewSet(
 	usecase.NewCreateSession,
 	usecase.NewDeleteSession,
 	usecase.NewRefreshSession,
+	usecase.NewResetPassword,
 	usecase.NewRequestEmailVerification,
 	usecase.NewVerifyEmail,
 )
 
 type Handlers struct {
-	*handler.Session
 	*handler.EmailVerification
+	*handler.PasswordReset
+	*handler.Session
 }
 
 //lint:ignore U1000 used by wire
 var HandlerSet = wire.NewSet(
-	handler.NewSession,
 	handler.NewEmailVerification,
+	handler.NewPasswordReset,
+	handler.NewSession,
 )

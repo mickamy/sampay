@@ -138,6 +138,7 @@ func InitAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *
 	producer := provideProducer(producerConfig, client)
 	emailVerification := repository.NewEmailVerification(db)
 	requestEmailVerification := usecase.NewRequestEmailVerification(writer, producer, authentication, emailVerification)
+	resetPassword := usecase.NewResetPassword(writer, emailVerification, authentication)
 	verifyEmail := usecase.NewVerifyEmail(writer, producer, emailVerification, user, session)
 	useCases := di.UseCases{
 		AuthenticateUser:         authenticateUser,
@@ -145,31 +146,35 @@ func InitAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *
 		DeleteSession:            deleteSession,
 		RefreshSession:           refreshSession,
 		RequestEmailVerification: requestEmailVerification,
+		ResetPassword:            resetPassword,
 		VerifyEmail:              verifyEmail,
 	}
 	return useCases
 }
 
 func InitAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di.Handlers {
-	authentication := repository.NewAuthentication(db)
-	session := repository.NewSession(kvs2)
-	user := repository2.NewUser(db)
-	createSession := usecase.NewCreateSession(reader, authentication, session, user)
-	refreshSession := usecase.NewRefreshSession(session)
-	deleteSession := usecase.NewDeleteSession(session)
-	handlerSession := handler.NewSession(createSession, refreshSession, deleteSession)
 	awsConfig := config.AWS()
 	kvsConfig := config.KVS()
 	producerConfig := provideProducerConfig(awsConfig, kvsConfig)
 	client := provideSQSClient(awsConfig)
 	producer := provideProducer(producerConfig, client)
+	authentication := repository.NewAuthentication(db)
 	emailVerification := repository.NewEmailVerification(db)
 	requestEmailVerification := usecase.NewRequestEmailVerification(writer, producer, authentication, emailVerification)
+	user := repository2.NewUser(db)
+	session := repository.NewSession(kvs2)
 	verifyEmail := usecase.NewVerifyEmail(writer, producer, emailVerification, user, session)
 	handlerEmailVerification := handler.NewEmailVerification(requestEmailVerification, verifyEmail)
+	resetPassword := usecase.NewResetPassword(writer, emailVerification, authentication)
+	passwordReset := handler.NewPasswordReset(resetPassword)
+	createSession := usecase.NewCreateSession(reader, authentication, session, user)
+	refreshSession := usecase.NewRefreshSession(session)
+	deleteSession := usecase.NewDeleteSession(session)
+	handlerSession := handler.NewSession(createSession, refreshSession, deleteSession)
 	handlers := di.Handlers{
-		Session:           handlerSession,
 		EmailVerification: handlerEmailVerification,
+		PasswordReset:     passwordReset,
+		Session:           handlerSession,
 	}
 	return handlers
 }

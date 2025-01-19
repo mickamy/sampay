@@ -54,6 +54,15 @@ func (m Authentication) AuthenticateByEmailAndPassword(email string, password st
 	return passwd.Verify(password, m.Secret)
 }
 
+func (m Authentication) ResetPassword(password string) error {
+	hash, err := passwd.New(password, 16)
+	if err != nil {
+		return fmt.Errorf("failed to hash password: %w", err)
+	}
+	m.Secret = hash
+	return nil
+}
+
 func (m *Authentication) BeforeCreate(tx *gorm.DB) error {
 	if m.ID == "" {
 		m.ID = ulid.New()

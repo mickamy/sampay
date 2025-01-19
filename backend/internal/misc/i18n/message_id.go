@@ -38,6 +38,14 @@ const (
 	*/
 	AuthUsecaseRequest_email_verificationTitle MessageID = "auth.usecase.request_email_verification.title"
 	/*
+		再度メールアドレス認証を行ってください
+	*/
+	AuthUsecaseReset_passwordErrorEmail_verification_already_consumed MessageID = "auth.usecase.reset_password.error.email_verification_already_consumed"
+	/*
+		無効なメールアドレス認証トークンです。
+	*/
+	AuthUsecaseReset_passwordErrorEmail_verification_invalid_token MessageID = "auth.usecase.reset_password.error.email_verification_invalid_token"
+	/*
 		{{.Minute}}分
 	*/
 	CommonFormatMinute MessageID = "common.format.minute"
