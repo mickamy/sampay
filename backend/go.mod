@@ -3,8 +3,8 @@ module mickamy.com/sampay
 go 1.23.4
 
 require (
-	buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250118042620-bfae480c1a64.1
-	buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.3-20250118042620-bfae480c1a64.1
+	buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250119010848-1639cbd59f25.1
+	buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.3-20250119010848-1639cbd59f25.1
 	connectrpc.com/connect v1.18.1
 	github.com/DATA-DOG/go-txdb v0.2.0
 	github.com/alicebob/miniredis/v2 v2.34.0
