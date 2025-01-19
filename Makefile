@@ -35,7 +35,7 @@ ci: ## Run the CI pipeline
 push-proto: ## Push the proto files to the registry
 	buf lint ./proto
 	buf push ./proto
-	cd backend && make update-mod
+	cd backend && make pull-buf
 	cd frontend && npm update @buf/mickamy_sampay.bufbuild_es
 
 help: ## Display a list of available Makefile targets with their descriptions

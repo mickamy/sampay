@@ -5,6 +5,7 @@
 	install-dev \
 	install-mod \
 	update-mod \
+	pull-buf \
 	db-create \
 	db-migrate \
 	db-seed \
@@ -18,6 +19,8 @@
 	test \
 	ci \
 	help \
+
+sha1 := $(shell git rev-parse HEAD)
 
 build: ## Build the application
 	go build -o ./build/api ./cmd/api/main.go
@@ -42,12 +45,14 @@ install-mod: ## Install go modules
 	go mod tidy
 
 update-mod: ## Update go modules
-	go get -u buf.build/gen/go/mickamy/sampay/connectrpc/go@latest
-	go get -u buf.build/gen/go/mickamy/sampay/protocolbuffers/go@latest
 	go get -u ./...
 	go mod tidy
 	go generate ./... # Run generate after updating modules for some packages are dropped on go mod tidy
 	gofmt -s -w .
+
+pull-buf: ## Pull the buf packages
+	go get -u buf.build/gen/go/mickamy/sampay/connectrpc/go@$(sha1)
+	go get -u buf.build/gen/go/mickamy/sampay/protocolbuffers/go@$(sha1)
 
 db-create: ## Create the database
 	PACKAGE_ROOT=$$(pwd) go run ./cmd/db/create/main.go
