@@ -2,8 +2,12 @@ buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.3-2024112718024
 buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.3-20241127180247-a33202765966.1/go.mod h1:6VPKM8zbmgf9qsmkmKeH49a36Vtmidw3rG53B5mTenc=
 buf.build/gen/go/mickamy/sampay/bufbuild/connect-go v1.10.0-20250119052855-7bc0897379ec.2 h1:3M47/Egw3BoY0evKlW6pAzyTAaSEjrj+6ggBV+LLSGE=
 buf.build/gen/go/mickamy/sampay/bufbuild/connect-go v1.10.0-20250119052855-7bc0897379ec.2/go.mod h1:mXRAbyaLKC+YNsw7z0uEjITsRYcfGwXwVx7m1qf+YzU=
+buf.build/gen/go/mickamy/sampay/bufbuild/connect-go v1.10.0-20250119130147-583093380e37.2 h1:gB1artkZI56mbFVvgIagQAwxvYDwGoGGthW0Vz4L4aA=
+buf.build/gen/go/mickamy/sampay/bufbuild/connect-go v1.10.0-20250119130147-583093380e37.2/go.mod h1:dfIduY/sCnXaqrC0iSzomrm9wlLRQn5DcFy5Dhdyxz4=
 buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.3-20250119061239-437a21775bde.1 h1:BAZOf0jDUNRZb5+A2KhVUK2wVRXC64a1/7QXpg7mJiA=
 buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.3-20250119061239-437a21775bde.1/go.mod h1:DlOMlNuL3zq1js5ZpRbGbZh84A2tX6NOSSNzMF/oYTI=
+buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.3-20250119130147-583093380e37.1 h1:IrZkEjZbSsADJvC+pOCde2KmoWsZG7dYYBHog+v4498=
+buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.3-20250119130147-583093380e37.1/go.mod h1:DlOMlNuL3zq1js5ZpRbGbZh84A2tX6NOSSNzMF/oYTI=
 dario.cat/mergo v1.0.1 h1:Ra4+bf83h2ztPIQYNP99R6m+Y7KfnARDfID+a+vLl4s=
 dario.cat/mergo v1.0.1/go.mod h1:uNxQE+84aUszobStD9th8a29P2fMDhsBdgRYvZOxGmk=
 filippo.io/edwards25519 v1.1.0 h1:FNf4tywRC1HmFuKW5xopWpigGjJKiJSV0Cqo0cJWDaA=

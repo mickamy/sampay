@@ -5,18 +5,18 @@ package registration.v1;
 import "buf/validate/validate.proto";
 import "common/v1/direct_upload_url.proto";
 
+message GetOnboardingStepRequest {}
+
+message GetOnboardingStepResponse {
+  string step = 1 [(buf.validate.field).string.min_len = 1];
+}
+
 message CreatePasswordRequest {
   string token = 1 [(buf.validate.field).string.len = 64];
   string password = 2 [(buf.validate.field).string.min_len = 8, (buf.validate.field).string.max_len = 64];
 }
 
 message CreatePasswordResponse {}
-
-message GetOnboardingStepRequest {}
-
-message GetOnboardingStepResponse {
-  string step = 1 [(buf.validate.field).string.min_len = 1];
-}
 
 message CreateUserAttributeRequest {
   string category_type = 1 [(buf.validate.field).string.min_len = 1];
@@ -36,8 +36,8 @@ message CreateUserProfileRequest {
 message CreateUserProfileResponse {}
 
 service OnboardingService {
-  rpc CreatePassword(CreatePasswordRequest) returns (CreatePasswordResponse) {}
   rpc GetOnboardingStep(GetOnboardingStepRequest) returns (GetOnboardingStepResponse) {}
+  rpc CreatePassword(CreatePasswordRequest) returns (CreatePasswordResponse) {}
   rpc CreateUserAttribute(CreateUserAttributeRequest) returns (CreateUserAttributeResponse) {}
   rpc CreateUserProfile(CreateUserProfileRequest) returns (CreateUserProfileResponse) {}
 }
