@@ -25,14 +25,14 @@ registration:
     request_email_verification:
       title: '確認コードの発行'
       header: 'メール路銀の確認コードが発行されました。'
-      body: '
-      表示されている画面に確認コードを入力してください。
+      body: |-
+        メールログインの確認コードが発行されました。
+        表示されている画面に確認コードを入力してください。
       
-      {{.Code}}
+        {{.Code}}
       
-      有効期限は発行から{{.ExpiresInMinute}}です。
-      このメールに心当たりがない場合は、無視していただいて構いません。
-      '
+        有効期限は発行から{{.ExpiresInMinute}}です。
+        このメールに心当たりがない場合は、無視していただいて構いません。
 user:
   model:
     user_attribute:
