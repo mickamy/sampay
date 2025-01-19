@@ -4,15 +4,22 @@ import { Separator } from "~/components/ui/separator";
 import UnderlinedLink from "~/components/underlined-link";
 import { useJsonSubmit } from "~/hooks/use-submit";
 import RequestEmailVerificationForm, {
-  type ActionData as RequestEmailVerificationActionData,
+  type ActionData as RequestEmailVerificationFormActionData,
   requestEmailVerificationSchema,
 } from "~/routes/account/sign-up/components/request-email-verification-form";
+import {
+  type ActionData as VerifyEmailFormActionData,
+  verifyEmailSchema,
+} from "~/routes/account/sign-up/components/verify-email-form";
 
-export interface ActionData extends RequestEmailVerificationActionData {}
+export interface ActionData
+  extends RequestEmailVerificationFormActionData,
+    VerifyEmailFormActionData {}
 
 export default function SignUpScreen() {
   const actionData = useActionData<ActionData>();
-  const submit = useJsonSubmit(requestEmailVerificationSchema);
+  const request = useJsonSubmit(requestEmailVerificationSchema);
+  const verify = useJsonSubmit(verifyEmailSchema);
   const { t } = useTranslation();
 
   return (
@@ -24,7 +31,8 @@ export default function SignUpScreen() {
           </h1>
         </div>
         <RequestEmailVerificationForm
-          onSubmitData={submit}
+          onRequestVerification={request}
+          onVerifyEmail={verify}
           actionData={actionData}
         />
         <p className="flex flex-col space-y-4 px-8 text-center text-sm text-muted-foreground">

@@ -11,17 +11,23 @@ import { z } from "~/lib/form/zod";
 import { cn } from "~/lib/utils";
 
 export const verifyEmailSchema = z.object({
-  code: z.string().length(6),
+  intent: z.enum(["verify"]),
+  pin_code: z.string().length(6),
 });
+
+export interface ActionData {
+  verifySuccess?: boolean;
+  verifyError?: APIError;
+}
 
 interface Props extends HTMLAttributes<HTMLFormElement> {
   onSubmitData: (data: z.infer<typeof verifyEmailSchema>) => void;
-  error?: APIError;
+  actionData?: ActionData;
 }
 
-export default function PINCodeForm({
+export default function VerifyEmailForm({
   onSubmitData,
-  error,
+  actionData,
   className,
   ...props
 }: Props) {
@@ -29,10 +35,11 @@ export default function PINCodeForm({
     props: {
       resolver: zodResolver(verifyEmailSchema),
       defaultValues: {
-        code: "",
+        intent: "verify",
+        pin_code: "",
       },
     },
-    error,
+    error: actionData?.verifyError,
   });
 
   const { t } = useTranslation();
@@ -49,7 +56,7 @@ export default function PINCodeForm({
       >
         <FormField
           control={form.control}
-          name="code"
+          name="pin_code"
           inputClassName="w-40 justify-self-center text-center"
         />
         <ErrorMessage message={form.formState.errors.root?.message} />

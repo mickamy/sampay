@@ -1,17 +1,14 @@
 import { Mail } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Dialog from "~/components/dialog";
-import type { APIError } from "~/lib/api/response";
 import { sanitizeHTML } from "~/lib/dom";
 import type { z } from "~/lib/form/zod";
-import PINCodeForm, {
+import VerifyEmailForm, {
+  type ActionData as VerifyEmailFormActionData,
   type verifyEmailSchema,
-} from "~/routes/account/sign-up/components/pin-code-form";
+} from "~/routes/account/sign-up/components/verify-email-form";
 
-export interface ActionData {
-  verifyEmailSuccess?: boolean;
-  verifyEmailError?: APIError;
-}
+export interface ActionData extends VerifyEmailFormActionData {}
 
 interface Props {
   email: string;
@@ -29,6 +26,8 @@ export default function VerificationDialog({
   actionData,
 }: Props) {
   const { t } = useTranslation();
+
+  console.log("actionData", actionData);
 
   return (
     <Dialog
@@ -57,9 +56,9 @@ export default function VerificationDialog({
               }}
             />
           </p>
-          <PINCodeForm
+          <VerifyEmailForm
             onSubmitData={onVerifyEmail}
-            error={actionData?.verifyEmailError}
+            actionData={actionData}
           />
         </div>
       )}

@@ -12,16 +12,20 @@ import type { APIError } from "~/lib/api/response";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
 import { cn } from "~/lib/utils";
-import type { verifyEmailSchema } from "~/routes/account/sign-up/components/pin-code-form";
 import VerificationDialog from "~/routes/account/sign-up/components/verification-dialog";
+import type {
+  ActionData as VerifyEmailFormActionData,
+  verifyEmailSchema,
+} from "~/routes/account/sign-up/components/verify-email-form";
 
 export const requestEmailVerificationSchema = z.object({
+  intent: z.enum(["request"]),
   email: z.string().email(),
 });
 
-export interface ActionData {
-  requestEmailVerificationSuccess?: boolean;
-  requestEmailVerificationError?: APIError;
+export interface ActionData extends VerifyEmailFormActionData {
+  requestVerificationSuccess?: boolean;
+  requestVerificationError?: APIError;
 }
 
 interface Props extends HTMLAttributes<HTMLFormElement> {
@@ -45,10 +49,11 @@ export default function RequestEmailVerificationForm({
     props: {
       resolver: zodResolver(requestEmailVerificationSchema),
       defaultValues: {
+        intent: "request",
         email: "",
       },
     },
-    error: actionData?.requestEmailVerificationError,
+    error: actionData?.requestVerificationError,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,11 +71,11 @@ export default function RequestEmailVerificationForm({
   }, [closeSentDialog, navigate]);
 
   useEffect(() => {
-    if (actionData?.requestEmailVerificationSuccess) {
+    if (actionData?.requestVerificationSuccess) {
       openSentDialog();
     }
     setIsSubmitting(false);
-  }, [actionData?.requestEmailVerificationSuccess, openSentDialog]);
+  }, [actionData?.requestVerificationSuccess, openSentDialog]);
 
   const onSubmitData = useCallback(
     (data: z.infer<typeof requestEmailVerificationSchema>) => {
@@ -81,10 +86,10 @@ export default function RequestEmailVerificationForm({
   );
 
   useEffect(() => {
-    if (actionData?.requestEmailVerificationError) {
+    if (actionData?.requestVerificationError) {
       setIsSubmitting(false);
     }
-  }, [actionData?.requestEmailVerificationError]);
+  }, [actionData?.requestVerificationError]);
 
   const { t } = useTranslation();
 
@@ -115,6 +120,7 @@ export default function RequestEmailVerificationForm({
         isOpen={isSentDialogOpen}
         onClose={onCloseSentDialog}
         onVerifyEmail={onVerifyEmail}
+        actionData={actionData}
       />
     </>
   );

@@ -7,11 +7,17 @@ import {
 } from "react-router";
 import { getClient } from "~/lib/api/client";
 import { convertToAPIError } from "~/lib/api/response";
+import {
+  destroyAnonymousSession,
+  getAnonymousSession,
+  setAnonymousSession,
+} from "~/lib/cookie/anonymous.server";
 import { isLoggedIn } from "~/lib/cookie/authenticated.server";
 import { requestEmailVerificationSchema } from "~/routes/account/sign-up/components/request-email-verification-form";
 import SignUpScreen, {
   type ActionData,
 } from "~/routes/account/sign-up/components/sign-up-screen";
+import { verifyEmailSchema } from "~/routes/account/sign-up/components/verify-email-form";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const loggedIn = await isLoggedIn(request);
@@ -28,8 +34,16 @@ export default function SignUp() {
 export const action: ActionFunction = async ({ request }) => {
   if (request.headers.get("Content-Type") === "application/json") {
     switch (request.method) {
-      case "POST":
-        return requestEmailVerification({ request });
+      case "POST": {
+        const body = await request.json();
+        switch (body.intent) {
+          case "request":
+            return requestVerification({ request, body });
+          case "verify":
+            return verifyEmail({ request, body });
+        }
+        throw new Response(null, { status: 405 });
+      }
       default:
         throw new Response(null, { status: 405 });
     }
@@ -37,13 +51,12 @@ export const action: ActionFunction = async ({ request }) => {
   throw new Response(null, { status: 415 });
 };
 
-async function requestEmailVerification({
+async function requestVerification({
   request,
-}: { request: Request }): Promise<Response> {
+  body,
+}: { request: Request; body: unknown }): Promise<Response> {
   try {
-    const { email } = requestEmailVerificationSchema.parse(
-      await request.json(),
-    );
+    const { email } = requestEmailVerificationSchema.parse(body);
     await getClient({
       service: EmailVerificationService,
       request,
@@ -51,12 +64,47 @@ async function requestEmailVerification({
       email,
     });
 
-    const actionData: ActionData = { requestEmailVerificationSuccess: true };
-    return Response.json(actionData);
+    const actionData: ActionData = { requestVerificationSuccess: true };
+    return Response.json(actionData, {
+      headers: {
+        "set-cookie": await setAnonymousSession({ email }),
+      },
+    });
   } catch (e) {
     if (e instanceof ConnectError) {
       const data: ActionData = {
-        requestEmailVerificationError: convertToAPIError(e),
+        requestVerificationError: convertToAPIError(e),
+      };
+      return Response.json(data);
+    }
+    throw e;
+  }
+}
+
+async function verifyEmail({
+  request,
+  body,
+}: { request: Request; body: unknown }): Promise<Response> {
+  try {
+    const { pin_code } = verifyEmailSchema.parse(body);
+    await getClient({
+      service: EmailVerificationService,
+      request,
+    }).verifyEmail({
+      email: (await getAnonymousSession(request))?.email,
+      pinCode: pin_code,
+    });
+
+    const actionData: ActionData = { verifySuccess: true };
+    return Response.json(actionData, {
+      headers: {
+        "set-cookie": await destroyAnonymousSession(request),
+      },
+    });
+  } catch (e) {
+    if (e instanceof ConnectError) {
+      const data: ActionData = {
+        verifyError: convertToAPIError(e),
       };
       return Response.json(data);
     }
