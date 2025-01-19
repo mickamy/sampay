@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"buf.build/gen/go/mickamy/sampay/connectrpc/go/common/v1/commonv1connect"
+	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/common/v1/commonv1connect"
 	commonv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/common/v1"
 	"connectrpc.com/connect"
 	"github.com/brianvoe/gofakeit/v7"

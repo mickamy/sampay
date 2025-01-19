@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	"buf.build/gen/go/mickamy/sampay/connectrpc/go/user/v1/userv1connect"
+	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/user/v1/userv1connect"
 	userv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/user/v1"
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"strings"
 
-	"buf.build/gen/go/mickamy/sampay/connectrpc/go/auth/v1/authv1connect"
-	"buf.build/gen/go/mickamy/sampay/connectrpc/go/registration/v1/registrationv1connect"
+	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/auth/v1/authv1connect"
+	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/registration/v1/registrationv1connect"
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
