@@ -23,7 +23,7 @@ var (
 )
 
 type VerifyEmailInput struct {
-	Email   string
+	Token   string
 	PINCode string
 }
 
@@ -64,11 +64,10 @@ func (uc *verifyEmail) Do(ctx context.Context, input VerifyEmailInput) (VerifyEm
 	var session authModel.Session
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
 		var err error
-		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByEmailAndPinCode(
+		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByRequestedTokenAndPinCode(
 			ctx,
-			input.Email,
+			input.Token,
 			input.PINCode,
-			authRepository.EmailVerificationInnerJoinRequested,
 			authRepository.EmailVerificationJoinVerified,
 			authRepository.EmailVerificationNotConsumed,
 		)

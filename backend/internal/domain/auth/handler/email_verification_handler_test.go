@@ -41,7 +41,7 @@ func TestEmailVerification_RequestVerification(t *testing.T) {
 			},
 			assert: func(t *testing.T, got *connect.Response[authv1.RequestVerificationResponse], err error) {
 				require.NoError(t, err)
-				assert.Empty(t, got.Msg.String())
+				assert.NotEmpty(t, got.Msg.Token)
 			},
 		},
 		{
@@ -112,7 +112,7 @@ func TestEmailVerification_VerifyEmail(t *testing.T) {
 				request := authFixture.EmailVerificationRequested(nil)
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&request).Error)
 				return &authv1.VerifyEmailRequest{
-					Email:   request.Email,
+					Token:   request.Requested.Token,
 					PinCode: request.Requested.PINCode,
 				}
 			},
@@ -127,7 +127,7 @@ func TestEmailVerification_VerifyEmail(t *testing.T) {
 				request := authFixture.EmailVerificationRequested(nil)
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&request).Error)
 				return &authv1.VerifyEmailRequest{
-					Email:   request.Email,
+					Token:   request.Requested.Token,
 					PinCode: either.Must(random.NewPinCode(6)),
 				}
 			},

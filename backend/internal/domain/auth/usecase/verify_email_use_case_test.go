@@ -128,7 +128,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 
 			// act
 			sut := di.InitAuthUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).VerifyEmail
-			got, err := sut.Do(ctx, usecase.VerifyEmailInput{Email: email, PINCode: pin})
+			got, err := sut.Do(ctx, usecase.VerifyEmailInput{Token: email, PINCode: pin})
 
 			// assert
 			tc.assert(t, got, err)

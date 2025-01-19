@@ -40,7 +40,7 @@ func TestRequestEmailVerification_Do(t *testing.T) {
 			},
 			assert: func(t *testing.T, got usecase.RequestEmailVerificationOutput, err error) {
 				require.ErrorIs(t, err, usecase.ErrRequestEmailVerificationEmailAlreadyExists)
-				assert.Empty(t, got)
+				assert.NotEmpty(t, got.Token)
 			},
 		},
 		{

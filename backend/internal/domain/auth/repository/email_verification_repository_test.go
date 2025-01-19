@@ -93,10 +93,10 @@ func TestEmailVerification_FindByEmail(t *testing.T) {
 	}
 }
 
-func TestEmailVerification_FindByEmailAndPinCode(t *testing.T) {
+func TestEmailVerification_FindByRequestedTokenAndPinCode(t *testing.T) {
 	t.Parallel()
 
-	email := gofakeit.GlobalFaker.Email()
+	token := either.Must(random.NewString(32))
 	pin := either.Must(random.NewPinCode(6))
 
 	tcs := []struct {
@@ -108,7 +108,7 @@ func TestEmailVerification_FindByEmailAndPinCode(t *testing.T) {
 			name: "found",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := fixture.EmailVerificationRequested(func(m *model.EmailVerification) {
-					m.Email = email
+					m.Requested.Token = token
 					m.Requested.PINCode = pin
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&m).Error)
@@ -121,10 +121,22 @@ func TestEmailVerification_FindByEmailAndPinCode(t *testing.T) {
 				assert.NotEmpty(t, got.CreatedAt)
 			},
 		}, {
-			name: "not found",
+			name: "not found (pin code is different)",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := fixture.EmailVerification(func(m *model.EmailVerification) {
-					m.Email = email
+					m.Requested.Token = token
+				})
+				require.NoError(t, db.WithContext(ctx).Create(&m).Error)
+			},
+			assert: func(t *testing.T, got *model.EmailVerification, err error) {
+				require.NoError(t, err)
+				assert.Nil(t, got)
+			},
+		}, {
+			name: "not found (token is different)",
+			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
+				m := fixture.EmailVerification(func(m *model.EmailVerification) {
+					m.Requested.PINCode = pin
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&m).Error)
 			},
@@ -147,7 +159,7 @@ func TestEmailVerification_FindByEmailAndPinCode(t *testing.T) {
 
 			// act
 			sut := repository.NewEmailVerification(db.WriterDB())
-			got, err := sut.FindByEmailAndPinCode(ctx, email, pin)
+			got, err := sut.FindByRequestedTokenAndPinCode(ctx, token, pin)
 
 			// assert
 			tc.assert(t, got, err)

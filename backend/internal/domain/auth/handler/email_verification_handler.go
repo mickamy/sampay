@@ -34,7 +34,7 @@ func (h *EmailVerification) RequestVerification(
 	ctx context.Context,
 	req *connect.Request[authv1.RequestVerificationRequest],
 ) (*connect.Response[authv1.RequestVerificationResponse], error) {
-	_, err := h.request.Do(ctx, usecase.RequestEmailVerificationInput{
+	out, err := h.request.Do(ctx, usecase.RequestEmailVerificationInput{
 		Email: req.Msg.Email,
 	})
 	if err != nil {
@@ -49,7 +49,9 @@ func (h *EmailVerification) RequestVerification(
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
-	res := connect.NewResponse(&authv1.RequestVerificationResponse{})
+	res := connect.NewResponse(&authv1.RequestVerificationResponse{
+		Token: out.Token,
+	})
 	return res, nil
 }
 
@@ -58,7 +60,7 @@ func (h *EmailVerification) VerifyEmail(
 	req *connect.Request[authv1.VerifyEmailRequest],
 ) (*connect.Response[authv1.VerifyEmailResponse], error) {
 	got, err := h.verify.Do(ctx, usecase.VerifyEmailInput{
-		Email:   req.Msg.Email,
+		Token:   req.Msg.Token,
 		PINCode: req.Msg.PinCode,
 	})
 	if err != nil {

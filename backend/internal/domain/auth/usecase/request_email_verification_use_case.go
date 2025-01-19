@@ -30,6 +30,7 @@ type RequestEmailVerificationInput struct {
 }
 
 type RequestEmailVerificationOutput struct {
+	Token string
 }
 
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
@@ -100,5 +101,5 @@ func (uc *requestEmailVerification) Do(ctx context.Context, input RequestEmailVe
 	}); err != nil {
 		return RequestEmailVerificationOutput{}, err
 	}
-	return RequestEmailVerificationOutput{}, nil
+	return RequestEmailVerificationOutput{Token: m.Requested.Token}, nil
 }

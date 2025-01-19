@@ -14,7 +14,7 @@ import (
 type EmailVerification interface {
 	Create(ctx context.Context, m *model.EmailVerification) error
 	FindByEmail(ctx context.Context, email string, scope ...database.Scope) (*model.EmailVerification, error)
-	FindByEmailAndPinCode(ctx context.Context, email, token string, scope ...database.Scope) (*model.EmailVerification, error)
+	FindByRequestedTokenAndPinCode(ctx context.Context, token, pinCode string, scope ...database.Scope) (*model.EmailVerification, error)
 	FindByVerifiedToken(ctx context.Context, token string, scope ...database.Scope) (*model.EmailVerification, error)
 	Update(ctx context.Context, m *model.EmailVerification) error
 	WithTx(tx *database.DB) EmailVerification
@@ -46,11 +46,11 @@ func (repo *emailVerification) FindByEmail(ctx context.Context, email string, sc
 	return &m, err
 }
 
-func (repo *emailVerification) FindByEmailAndPinCode(ctx context.Context, email, pinCode string, scopes ...database.Scope) (*model.EmailVerification, error) {
+func (repo *emailVerification) FindByRequestedTokenAndPinCode(ctx context.Context, token, pinCode string, scopes ...database.Scope) (*model.EmailVerification, error) {
 	var m model.EmailVerification
 	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
-		Joins("Requested").
-		First(&m, `email = ? AND "Requested".pin_code = ?`, email, pinCode).
+		InnerJoins("Requested").
+		First(&m, `"Requested".token = ? AND "Requested".pin_code = ?`, token, pinCode).
 		Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
