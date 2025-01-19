@@ -2,12 +2,21 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	authRepository "mickamy.com/sampay/internal/domain/auth/repository"
+	commonModel "mickamy.com/sampay/internal/domain/common/model"
+	registrationRepository "mickamy.com/sampay/internal/domain/registration/repository"
 	"mickamy.com/sampay/internal/lib/contexts"
+	"mickamy.com/sampay/internal/misc/i18n"
+)
+
+var (
+	ErrCreatePasswordEmailVerificationAlreadyConsumed = commonModel.NewLocalizableError(errors.New("email verification already consumed")).
+		WithMessages(i18n.Config{MessageID: i18n.RegistrationUsecaseCreate_passwordErrorEmail_verification_already_consumed})
 )
 
 type CreatePasswordInput struct {
@@ -24,22 +33,36 @@ type CreatePassword interface {
 }
 
 type createPassword struct {
-	writer             *database.Writer
-	authenticationRepo authRepository.Authentication
+	writer                *database.Writer
+	emailVerificationRepo registrationRepository.EmailVerification
+	authenticationRepo    authRepository.Authentication
 }
 
 func NewCreatePassword(
 	writer *database.Writer,
+	emailVerificationRepo registrationRepository.EmailVerification,
 	authenticationRepo authRepository.Authentication,
 ) CreatePassword {
 	return &createPassword{
-		writer:             writer,
-		authenticationRepo: authenticationRepo,
+		writer:                writer,
+		emailVerificationRepo: emailVerificationRepo,
+		authenticationRepo:    authenticationRepo,
 	}
 }
 
 func (uc *createPassword) Do(ctx context.Context, input CreatePasswordInput) (CreatePasswordOutput, error) {
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
+		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByEmail(ctx, input.Email, registrationRepository.EmailVerificationJoinVerified, registrationRepository.EmailVerificationJoinConsumed)
+		if err != nil {
+			return fmt.Errorf("failed to find email verification: %w", err)
+		}
+		if verification == nil {
+			return fmt.Errorf("email verification not found: %w", ErrCreatePasswordEmailVerificationAlreadyConsumed)
+		}
+		if verification.IsConsumed() {
+			return ErrCreatePasswordEmailVerificationAlreadyConsumed
+		}
+
 		m, err := authModel.NewAuthenticationEmailPassword(contexts.MustAuthenticatedUserID(ctx), input.Email, input.Password)
 		if err != nil {
 			return fmt.Errorf("failed to create authentication model: %w", err)

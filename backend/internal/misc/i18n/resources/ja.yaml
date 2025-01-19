@@ -21,6 +21,9 @@ registration:
     verify_email:
       error:
         invalid_pin_code: '無効な PIN コードです。'
+    create_password:
+      error:
+        email_verification_already_consumed: '再度メールアドレス認証を行ってください'
   email:
     request_email_verification:
       title: '確認コードの発行'
