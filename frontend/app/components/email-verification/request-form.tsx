@@ -111,7 +111,7 @@ export default function RequestEmailVerificationForm({
           <Spacer />
           <ErrorMessage message={form.formState.errors.root?.message} />
           <LoadableButton isLoading={isSubmitting} className="w-full">
-            {t("form.sign_up")}
+            {t("components.email_verification.request_form.submit")}
           </LoadableButton>
         </form>
       </Form>

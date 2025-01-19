@@ -36,9 +36,14 @@
     }
   },
   "components": {
-    "email_verification_dialog": {
-      "title": "確認メールを送信しました",
-      "content": "{{email}} に確認コードが送信されました。<br/>次のフィールドに入力してください。"
+    "email_verification": {
+      "dialog": {
+        "title": "確認メールを送信しました",
+        "content": "{{email}} に確認コードが送信されました。<br/>次のフィールドに入力してください。"
+      },
+      "request_form": {
+        "submit": "確認コードを送信"
+      }
     },
     "share_button": {
       "label": "このページのリンクを共有",

@@ -1,37 +1,24 @@
 import { EmailVerificationService } from "@buf/mickamy_sampay.bufbuild_es/auth/v1/email_verification_pb";
+import { PasswordResetService } from "@buf/mickamy_sampay.bufbuild_es/auth/v1/password_reset_pb";
 import { ConnectError } from "@connectrpc/connect";
-import {
-  type ActionFunction,
-  type LoaderFunction,
-  redirect,
-} from "react-router";
+import { type ActionFunction, redirect } from "react-router";
 import { requestEmailVerificationSchema } from "~/components/email-verification/request-form";
 import { verifyEmailSchema } from "~/components/email-verification/verify-form";
 import { getClient } from "~/lib/api/client";
 import { convertToAPIError } from "~/lib/api/response";
 import {
-  isLoggedIn,
-  setAuthenticatedSession,
-} from "~/lib/cookie/authenticated.server";
-import {
+  destroyRegistrationSession,
   getRegistrationSession,
   setRegistrationSession,
 } from "~/lib/cookie/registration.server";
 import { convertTokensToSession } from "~/models/auth/session-model";
-import SignUpScreen, {
+import { resetPasswordSchema } from "~/routes/auth/reset-password/components/reset-password-form";
+import ResetPasswordScreen, {
   type ActionData,
-} from "~/routes/account/sign-up/components/sign-up-screen";
+} from "~/routes/auth/reset-password/components/reset-password-screen";
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const loggedIn = await isLoggedIn(request);
-  if (loggedIn) {
-    return redirect("/admin");
-  }
-  return null;
-};
-
-export default function SignUp() {
-  return <SignUpScreen />;
+export default function ResetPassword() {
+  return <ResetPasswordScreen />;
 }
 
 export const action: ActionFunction = async ({ request }) => {
@@ -44,6 +31,8 @@ export const action: ActionFunction = async ({ request }) => {
             return requestVerification({ request, body });
           case "verify_email":
             return verifyEmail({ request, body });
+          case "reset_password":
+            return reset({ request });
         }
         throw new Response(null, { status: 405 });
       }
@@ -107,19 +96,40 @@ async function verifyEmail({
     }
 
     const headers = new Headers();
-    headers.append("set-cookie", await setAuthenticatedSession(tokens));
     headers.append(
       "set-cookie",
       await setRegistrationSession({ verify_token: token }),
     );
-    return redirect("/onboarding", {
-      headers,
-    });
+    const data: ActionData = { verifySuccess: true };
+    return Response.json(data, { headers });
   } catch (e) {
     if (e instanceof ConnectError) {
       const data: ActionData = {
         verifyError: convertToAPIError(e),
       };
+      return Response.json(data);
+    }
+    throw e;
+  }
+}
+
+async function reset({ request }: { request: Request }): Promise<Response> {
+  try {
+    const { new_password } = resetPasswordSchema.parse(await request.json());
+    await getClient({
+      service: PasswordResetService,
+      request,
+    }).resetPassword({
+      token: (await getRegistrationSession(request))?.verify_token,
+      newPassword: new_password,
+    });
+
+    const headers = new Headers();
+    headers.append("Set-Cookie", await destroyRegistrationSession(request));
+    return redirect("/auth/sign-in", { headers });
+  } catch (e) {
+    if (e instanceof ConnectError) {
+      const data: ActionData = { error: convertToAPIError(e) };
       return Response.json(data);
     }
     throw e;

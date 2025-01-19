@@ -11,7 +11,7 @@ import { z } from "~/lib/form/zod";
 import { cn } from "~/lib/utils";
 
 export const verifyEmailSchema = z.object({
-  intent: z.enum(["verify"]),
+  intent: z.enum(["verify_email"]),
   pin_code: z.string().length(6),
 });
 
@@ -35,7 +35,7 @@ export default function VerifyEmailForm({
     props: {
       resolver: zodResolver(verifyEmailSchema),
       defaultValues: {
-        intent: "verify",
+        intent: "verify_email",
         pin_code: "",
       },
     },

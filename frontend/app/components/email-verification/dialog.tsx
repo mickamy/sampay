@@ -33,7 +33,7 @@ export default function VerifyEmailDialog({
       onClose={onClose}
       dialogTitle={() => (
         <div className="text-center">
-          {t("components.email_verification_dialog.title")}
+          {t("components.email_verification.dialog.title")}
         </div>
       )}
       dialogDescription={() => (
@@ -47,7 +47,7 @@ export default function VerifyEmailDialog({
             <span
               // biome-ignore lint: suspicious/no-dangerously-set-inner-html
               dangerouslySetInnerHTML={{
-                __html: t("components.email_verification_dialog.content", {
+                __html: t("components.email_verification.dialog.content", {
                   email: sanitizeHTML(`<code>${email}</code>`),
                   interpolation: { escapeValue: false },
                 }),
