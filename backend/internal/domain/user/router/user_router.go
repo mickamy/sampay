@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/user/v1/userv1connect"
-	"connectrpc.com/connect"
+	"github.com/bufbuild/connect-go"
 
 	"mickamy.com/sampay/internal/di"
 )

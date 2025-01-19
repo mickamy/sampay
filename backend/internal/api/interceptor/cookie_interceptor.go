@@ -6,7 +6,7 @@ import (
 	"time"
 
 	authv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/auth/v1"
-	"connectrpc.com/connect"
+	"github.com/bufbuild/connect-go"
 )
 
 func Cookie() connect.UnaryInterceptorFunc {

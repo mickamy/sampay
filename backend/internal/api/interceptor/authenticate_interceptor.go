@@ -7,7 +7,7 @@ import (
 
 	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/auth/v1/authv1connect"
 	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/registration/v1/registrationv1connect"
-	"connectrpc.com/connect"
+	"github.com/bufbuild/connect-go"
 	"github.com/mickamy/slogger"
 
 	"mickamy.com/sampay/internal/domain/auth/usecase"

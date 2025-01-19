@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"runtime/debug"
 
-	"connectrpc.com/connect"
+	"github.com/bufbuild/connect-go"
 	"github.com/mickamy/slogger"
 
 	"mickamy.com/sampay/config"

@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"connectrpc.com/connect"
+	"github.com/bufbuild/connect-go"
 
 	"mickamy.com/sampay/internal/api/interceptor"
 	"mickamy.com/sampay/internal/di"

@@ -5,7 +5,7 @@ import (
 
 	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/user/v1/userv1connect"
 	userv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/user/v1"
-	"connectrpc.com/connect"
+	"github.com/bufbuild/connect-go"
 	"github.com/mickamy/slogger"
 
 	commonRequest "mickamy.com/sampay/internal/domain/common/dto/request"
