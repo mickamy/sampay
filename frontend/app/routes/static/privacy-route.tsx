@@ -22,7 +22,7 @@ export default function PrivacyRoute() {
   const { md } = useLoaderData<LoaderData>();
 
   return (
-    <div className="prose p-6 sm:p-12">
+    <div className="w-full mx-auto prose p-6 sm:p-12">
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{md}</ReactMarkdown>
     </div>
   );

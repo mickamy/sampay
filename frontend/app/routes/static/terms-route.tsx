@@ -13,7 +13,7 @@ export const loader: LoaderFunction = async () => {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
-  const file = path.resolve(__dirname, "./.server/privacy.md");
+  const file = path.resolve(__dirname, "./.server/terms.md");
   const md = await readFile(file, "utf-8");
   return { md };
 };
@@ -22,7 +22,7 @@ export default function TermsRoute() {
   const { md } = useLoaderData<LoaderData>();
 
   return (
-    <div className="prose p-6 sm:p-12">
+    <div className="w-full mx-auto prose p-6 sm:p-12">
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{md}</ReactMarkdown>
     </div>
   );
