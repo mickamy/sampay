@@ -25,8 +25,9 @@ var (
 )
 
 type RequestEmailVerificationInput struct {
-	Email    string
-	Password string
+	IntentType authModel.EmailVerificationIntentType
+	Email      string
+	Password   string
 }
 
 type RequestEmailVerificationOutput struct {
@@ -66,12 +67,14 @@ func (uc *requestEmailVerification) Do(ctx context.Context, input RequestEmailVe
 		return RequestEmailVerificationOutput{}, fmt.Errorf("failed to request email verification: %w", err)
 	}
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
-		exists, err := uc.authenticationRepo.WithTx(tx.WriterDB()).ExistsByTypeAndIdentifier(ctx, authModel.AuthenticationTypeEmailPassword, m.Email)
-		if err != nil {
-			return fmt.Errorf("failed to check email existence: %w", err)
-		}
-		if exists {
-			return errors.Join(ErrRequestEmailVerificationEmailAlreadyExists, fmt.Errorf("email=[%s]", m.Email))
+		if input.IntentType == authModel.EmailVerificationIntentTypeSignUp {
+			exists, err := uc.authenticationRepo.WithTx(tx.WriterDB()).ExistsByTypeAndIdentifier(ctx, authModel.AuthenticationTypeEmailPassword, m.Email)
+			if err != nil {
+				return fmt.Errorf("failed to check email existence: %w", err)
+			}
+			if exists {
+				return errors.Join(ErrRequestEmailVerificationEmailAlreadyExists, fmt.Errorf("email=[%s]", m.Email))
+			}
 		}
 
 		if err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).Create(ctx, &m); err != nil {
