@@ -12,6 +12,7 @@ import type { APIError } from "~/lib/api/response";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
 import { cn } from "~/lib/utils";
+import type { verifyEmailSchema } from "~/routes/account/sign-up/components/pin-code-form";
 import VerificationDialog from "~/routes/account/sign-up/components/verification-dialog";
 
 export const requestEmailVerificationSchema = z.object({
@@ -24,12 +25,16 @@ export interface ActionData {
 }
 
 interface Props extends HTMLAttributes<HTMLFormElement> {
-  onSubmitData: (data: z.infer<typeof requestEmailVerificationSchema>) => void;
+  onRequestVerification: (
+    data: z.infer<typeof requestEmailVerificationSchema>,
+  ) => void;
+  onVerifyEmail: (data: z.infer<typeof verifyEmailSchema>) => void;
   actionData?: ActionData;
 }
 
 export default function RequestEmailVerificationForm({
-  onSubmitData: onSubmitDataProps,
+  onRequestVerification: onSubmitDataProps,
+  onVerifyEmail,
   actionData,
   className,
   ...props
@@ -109,6 +114,7 @@ export default function RequestEmailVerificationForm({
         email={form.watch("email")}
         isOpen={isSentDialogOpen}
         onClose={onCloseSentDialog}
+        onVerifyEmail={onVerifyEmail}
       />
     </>
   );

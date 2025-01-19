@@ -5,7 +5,7 @@ import type { APIError } from "~/lib/api/response";
 import { sanitizeHTML } from "~/lib/dom";
 import type { z } from "~/lib/form/zod";
 import PINCodeForm, {
-  type pinCodeSchema,
+  type verifyEmailSchema,
 } from "~/routes/account/sign-up/components/pin-code-form";
 
 export interface ActionData {
@@ -17,7 +17,7 @@ interface Props {
   email: string;
   isOpen: boolean;
   onClose: () => void;
-  onPINCodeSubmit: (data: z.infer<typeof pinCodeSchema>) => void;
+  onVerifyEmail: (data: z.infer<typeof verifyEmailSchema>) => void;
   actionData?: ActionData;
 }
 
@@ -25,7 +25,7 @@ export default function VerificationDialog({
   email,
   isOpen,
   onClose,
-  onPINCodeSubmit,
+  onVerifyEmail,
   actionData,
 }: Props) {
   const { t } = useTranslation();
@@ -58,7 +58,7 @@ export default function VerificationDialog({
             />
           </p>
           <PINCodeForm
-            onSubmitData={onPINCodeSubmit}
+            onSubmitData={onVerifyEmail}
             error={actionData?.verifyEmailError}
           />
         </div>

@@ -10,12 +10,12 @@ import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
 import { cn } from "~/lib/utils";
 
-export const pinCodeSchema = z.object({
+export const verifyEmailSchema = z.object({
   code: z.string().length(6),
 });
 
 interface Props extends HTMLAttributes<HTMLFormElement> {
-  onSubmitData: (data: z.infer<typeof pinCodeSchema>) => void;
+  onSubmitData: (data: z.infer<typeof verifyEmailSchema>) => void;
   error?: APIError;
 }
 
@@ -25,9 +25,9 @@ export default function PINCodeForm({
   className,
   ...props
 }: Props) {
-  const form = useFormWithAPIError<z.infer<typeof pinCodeSchema>>({
+  const form = useFormWithAPIError<z.infer<typeof verifyEmailSchema>>({
     props: {
-      resolver: zodResolver(pinCodeSchema),
+      resolver: zodResolver(verifyEmailSchema),
       defaultValues: {
         code: "",
       },
@@ -50,7 +50,7 @@ export default function PINCodeForm({
         <FormField
           control={form.control}
           name="code"
-          inputClassName="w-40 justify-self-center"
+          inputClassName="w-40 justify-self-center text-center"
         />
         <ErrorMessage message={form.formState.errors.root?.message} />
         <Button className="w-full">{t("form.submit")}</Button>
