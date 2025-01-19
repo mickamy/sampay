@@ -3,6 +3,7 @@ syntax = "proto3";
 package registration.v1;
 
 import "buf/validate/validate.proto";
+import "auth/v1/common.proto";
 
 message RequestVerificationRequest {
   string email = 1 [(buf.validate.field).string.email = true];
@@ -17,7 +18,7 @@ message VerifyEmailRequest {
 }
 
 message VerifyEmailResponse {
-  string token = 1 [(buf.validate.field).string.len = 64];
+  auth.v1.Tokens tokens = 1;
 }
 
 service EmailVerificationService {
