@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package registration.v1;
+package auth.v1;
 
 import "buf/validate/validate.proto";
 import "auth/v1/common.proto";
