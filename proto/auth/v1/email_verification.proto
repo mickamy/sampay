@@ -6,7 +6,14 @@ import "buf/validate/validate.proto";
 import "auth/v1/common.proto";
 
 message RequestVerificationRequest {
-  string email = 1 [(buf.validate.field).string.email = true];
+  enum IntentType {
+    INTENT_TYPE_UNSPECIFIED = 0;
+    INTENT_TYPE_SIGN_UP = 1;
+    INTENT_TYPE_PASSWORD_RESET = 2;
+  }
+
+  IntentType intent_type = 1 [(buf.validate.field).enum.defined_only = true];
+  string email = 2 [(buf.validate.field).string.email = true];
 }
 
 message RequestVerificationResponse {
