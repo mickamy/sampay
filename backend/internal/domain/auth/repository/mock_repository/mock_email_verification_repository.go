@@ -15,8 +15,8 @@ import (
 
 	gomock "go.uber.org/mock/gomock"
 	database "mickamy.com/sampay/internal/cli/infra/storage/database"
-	model "mickamy.com/sampay/internal/domain/registration/model"
-	repository "mickamy.com/sampay/internal/domain/registration/repository"
+	model "mickamy.com/sampay/internal/domain/auth/model"
+	repository "mickamy.com/sampay/internal/domain/auth/repository"
 )
 
 // MockEmailVerification is a mock of EmailVerification interface.

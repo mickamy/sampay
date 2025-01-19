@@ -12,7 +12,7 @@ import (
 	"mickamy.com/sampay/internal/di"
 	authFixture "mickamy.com/sampay/internal/domain/auth/fixture"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
-	"mickamy.com/sampay/internal/domain/registration/usecase"
+	"mickamy.com/sampay/internal/domain/auth/usecase"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/lib/contexts"
 )
@@ -66,7 +66,7 @@ func TestRequestEmailVerification_Do(t *testing.T) {
 			tc.arrange(t, ctx, db.WriterDB())
 
 			// act
-			sut := di.InitRegistrationUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).RequestEmailVerification
+			sut := di.InitAuthUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).RequestEmailVerification
 			got, err := sut.Do(ctx, usecase.RequestEmailVerificationInput{
 				Email: email,
 			})

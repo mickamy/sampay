@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"mickamy.com/sampay/internal/di"
-	registrationFixture "mickamy.com/sampay/internal/domain/registration/fixture"
+	authFixture "mickamy.com/sampay/internal/domain/auth/fixture"
 	"mickamy.com/sampay/internal/domain/registration/usecase"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/lib/contexts"
@@ -23,7 +23,7 @@ func TestCreatePassword_Do(t *testing.T) {
 	user := userFixture.User(nil)
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
 	ctx = contexts.SetAuthenticatedUserID(ctx, user.ID)
-	verification := registrationFixture.EmailVerificationVerified(nil)
+	verification := authFixture.EmailVerificationVerified(nil)
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&verification).Error)
 
 	// act

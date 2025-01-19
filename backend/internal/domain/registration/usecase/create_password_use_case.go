@@ -9,7 +9,6 @@ import (
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	authRepository "mickamy.com/sampay/internal/domain/auth/repository"
 	commonModel "mickamy.com/sampay/internal/domain/common/model"
-	registrationRepository "mickamy.com/sampay/internal/domain/registration/repository"
 	"mickamy.com/sampay/internal/lib/contexts"
 	"mickamy.com/sampay/internal/misc/i18n"
 )
@@ -34,13 +33,13 @@ type CreatePassword interface {
 
 type createPassword struct {
 	writer                *database.Writer
-	emailVerificationRepo registrationRepository.EmailVerification
+	emailVerificationRepo authRepository.EmailVerification
 	authenticationRepo    authRepository.Authentication
 }
 
 func NewCreatePassword(
 	writer *database.Writer,
-	emailVerificationRepo registrationRepository.EmailVerification,
+	emailVerificationRepo authRepository.EmailVerification,
 	authenticationRepo authRepository.Authentication,
 ) CreatePassword {
 	return &createPassword{
@@ -52,7 +51,7 @@ func NewCreatePassword(
 
 func (uc *createPassword) Do(ctx context.Context, input CreatePasswordInput) (CreatePasswordOutput, error) {
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
-		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByEmail(ctx, input.Email, registrationRepository.EmailVerificationJoinVerified, registrationRepository.EmailVerificationJoinConsumed)
+		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByEmail(ctx, input.Email, authRepository.EmailVerificationJoinVerified, authRepository.EmailVerificationJoinConsumed)
 		if err != nil {
 			return fmt.Errorf("failed to find email verification: %w", err)
 		}

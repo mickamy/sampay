@@ -10,9 +10,9 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
-	"mickamy.com/sampay/internal/domain/registration/fixture"
-	"mickamy.com/sampay/internal/domain/registration/model"
-	"mickamy.com/sampay/internal/domain/registration/repository"
+	"mickamy.com/sampay/internal/domain/auth/fixture"
+	"mickamy.com/sampay/internal/domain/auth/model"
+	"mickamy.com/sampay/internal/domain/auth/repository"
 	"mickamy.com/sampay/internal/lib/either"
 	"mickamy.com/sampay/internal/lib/random"
 )

@@ -17,7 +17,6 @@ import (
 	"mickamy.com/sampay/internal/di"
 	authFixture "mickamy.com/sampay/internal/domain/auth/fixture"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
-	registrationFixture "mickamy.com/sampay/internal/domain/registration/fixture"
 	registrationModel "mickamy.com/sampay/internal/domain/registration/model"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/domain/user/model"
@@ -136,7 +135,7 @@ func TestOnboarding_CreateUserPassword(t *testing.T) {
 		{
 			name: "success",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreatePasswordRequest {
-				verification := registrationFixture.EmailVerification(nil)
+				verification := authFixture.EmailVerification(nil)
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
 
 				return &registrationv1.CreatePasswordRequest{

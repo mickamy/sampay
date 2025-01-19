@@ -9,13 +9,11 @@ import (
 )
 
 type Repositories struct {
-	repository.EmailVerification
 	repository.UsageCategory
 }
 
 //lint:ignore U1000 used by wire
 var RepositorySet = wire.NewSet(
-	repository.NewEmailVerification,
 	repository.NewUsageCategory,
 )
 
@@ -26,8 +24,6 @@ type UseCases struct {
 	usecase.CreateUserProfile
 	usecase.GetOnboardingStep
 	usecase.ListUsageCategories
-	usecase.RequestEmailVerification
-	usecase.VerifyEmail
 }
 
 //lint:ignore U1000 used by wire
@@ -38,13 +34,10 @@ var UseCaseSet = wire.NewSet(
 	usecase.NewCreateUserProfile,
 	usecase.NewGetOnboardingStep,
 	usecase.NewListUsageCategories,
-	usecase.NewRequestEmailVerification,
-	usecase.NewVerifyEmail,
 )
 
 type Handlers struct {
 	*handler.Account
-	*handler.EmailVerification
 	*handler.Onboarding
 	*handler.UsageCategory
 }
@@ -52,7 +45,6 @@ type Handlers struct {
 //lint:ignore U1000 used by wire
 var HandlerSet = wire.NewSet(
 	handler.NewAccount,
-	handler.NewEmailVerification,
 	handler.NewOnboarding,
 	handler.NewUsageCategory,
 )

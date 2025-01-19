@@ -19,11 +19,11 @@ var (
 )
 
 var authSkippingProcedures = []string{
+	authv1connect.EmailVerificationServiceRequestVerificationProcedure,
+	authv1connect.EmailVerificationServiceVerifyEmailProcedure,
 	authv1connect.SessionServiceSignInProcedure,
 	authv1connect.SessionServiceRefreshProcedure,
 	registrationv1connect.AccountServiceSignUpProcedure,
-	registrationv1connect.EmailVerificationServiceRequestVerificationProcedure,
-	registrationv1connect.EmailVerificationServiceVerifyEmailProcedure,
 }
 
 func skipper(req connect.AnyRequest) bool {

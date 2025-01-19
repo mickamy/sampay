@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"mickamy.com/sampay/config"
-	"mickamy.com/sampay/internal/domain/registration/fixture"
-	"mickamy.com/sampay/internal/domain/registration/model"
+	"mickamy.com/sampay/internal/domain/auth/fixture"
+	"mickamy.com/sampay/internal/domain/auth/model"
 )
 
 func TestEmailVerification_IsRequested(t *testing.T) {

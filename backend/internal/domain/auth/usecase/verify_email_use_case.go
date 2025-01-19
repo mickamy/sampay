@@ -11,7 +11,6 @@ import (
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	authRepository "mickamy.com/sampay/internal/domain/auth/repository"
 	commonModel "mickamy.com/sampay/internal/domain/common/model"
-	registrationRepository "mickamy.com/sampay/internal/domain/registration/repository"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
 	"mickamy.com/sampay/internal/misc/i18n"
@@ -40,7 +39,7 @@ type VerifyEmail interface {
 type verifyEmail struct {
 	writer                *database.Writer
 	producer              *producer.Producer
-	emailVerificationRepo registrationRepository.EmailVerification
+	emailVerificationRepo authRepository.EmailVerification
 	userRepo              userRepository.User
 	sessionRepo           authRepository.Session
 }
@@ -48,7 +47,7 @@ type verifyEmail struct {
 func NewVerifyEmail(
 	writer *database.Writer,
 	producer *producer.Producer,
-	emailVerificationRepo registrationRepository.EmailVerification,
+	emailVerificationRepo authRepository.EmailVerification,
 	userRepo userRepository.User,
 	sessionRepo authRepository.Session,
 ) VerifyEmail {
@@ -69,9 +68,9 @@ func (uc *verifyEmail) Do(ctx context.Context, input VerifyEmailInput) (VerifyEm
 			ctx,
 			input.Email,
 			input.PINCode,
-			registrationRepository.EmailVerificationInnerJoinRequested,
-			registrationRepository.EmailVerificationJoinVerified,
-			registrationRepository.EmailVerificationNotConsumed,
+			authRepository.EmailVerificationInnerJoinRequested,
+			authRepository.EmailVerificationJoinVerified,
+			authRepository.EmailVerificationNotConsumed,
 		)
 		if err != nil {
 			return fmt.Errorf("failed to find email verification: %w", err)

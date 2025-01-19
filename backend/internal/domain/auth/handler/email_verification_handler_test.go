@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/registration/v1/registrationv1connect"
+	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/auth/v1/authv1connect"
+	authv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/auth/v1"
 	commonv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/common/v1"
-	registrationv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/registration/v1"
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/bufbuild/connect-go"
 	"github.com/stretchr/testify/assert"
@@ -17,7 +17,6 @@ import (
 	"mickamy.com/sampay/internal/di"
 	authFixture "mickamy.com/sampay/internal/domain/auth/fixture"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
-	registrationFixture "mickamy.com/sampay/internal/domain/registration/fixture"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/lib/either"
 	"mickamy.com/sampay/internal/lib/random"
@@ -30,35 +29,35 @@ func TestEmailVerification_RequestVerification(t *testing.T) {
 
 	tsc := []struct {
 		name    string
-		arrange func(t *testing.T, ctx context.Context, infras di.Infras) *registrationv1.RequestVerificationRequest
-		assert  func(t *testing.T, got *connect.Response[registrationv1.RequestVerificationResponse], err error)
+		arrange func(t *testing.T, ctx context.Context, infras di.Infras) *authv1.RequestVerificationRequest
+		assert  func(t *testing.T, got *connect.Response[authv1.RequestVerificationResponse], err error)
 	}{
 		{
 			name: "success",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *registrationv1.RequestVerificationRequest {
-				return &registrationv1.RequestVerificationRequest{
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *authv1.RequestVerificationRequest {
+				return &authv1.RequestVerificationRequest{
 					Email: gofakeit.GlobalFaker.Email(),
 				}
 			},
-			assert: func(t *testing.T, got *connect.Response[registrationv1.RequestVerificationResponse], err error) {
+			assert: func(t *testing.T, got *connect.Response[authv1.RequestVerificationResponse], err error) {
 				require.NoError(t, err)
 				assert.Empty(t, got.Msg.String())
 			},
 		},
 		{
 			name: "email already exists",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *registrationv1.RequestVerificationRequest {
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *authv1.RequestVerificationRequest {
 				user := userFixture.User(nil)
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
 					m.UserID = user.ID
 				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&auth).Error)
-				return &registrationv1.RequestVerificationRequest{
+				return &authv1.RequestVerificationRequest{
 					Email: auth.Identifier,
 				}
 			},
-			assert: func(t *testing.T, got *connect.Response[registrationv1.RequestVerificationResponse], err error) {
+			assert: func(t *testing.T, got *connect.Response[authv1.RequestVerificationResponse], err error) {
 				require.Error(t, err)
 				assert.Equalf(t, connect.CodeInvalidArgument, connect.CodeOf(err), "code=%s", connect.CodeOf(err).String())
 				connErr := new(connect.Error)
@@ -89,7 +88,7 @@ func TestEmailVerification_RequestVerification(t *testing.T) {
 			server := newEmailVerificationServer(t, infras)
 
 			// act
-			client := registrationv1connect.NewEmailVerificationServiceClient(http.DefaultClient, server.URL)
+			client := authv1connect.NewEmailVerificationServiceClient(http.DefaultClient, server.URL)
 			connReq := connecttest.NewRequest(t, ctx, req, nil)
 			got, err := client.RequestVerification(ctx, connReq)
 
@@ -104,35 +103,35 @@ func TestEmailVerification_VerifyEmail(t *testing.T) {
 
 	tsc := []struct {
 		name    string
-		arrange func(t *testing.T, ctx context.Context, infras di.Infras) *registrationv1.VerifyEmailRequest
-		assert  func(t *testing.T, got *connect.Response[registrationv1.VerifyEmailResponse], err error)
+		arrange func(t *testing.T, ctx context.Context, infras di.Infras) *authv1.VerifyEmailRequest
+		assert  func(t *testing.T, got *connect.Response[authv1.VerifyEmailResponse], err error)
 	}{
 		{
 			name: "success",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *registrationv1.VerifyEmailRequest {
-				request := registrationFixture.EmailVerificationRequested(nil)
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *authv1.VerifyEmailRequest {
+				request := authFixture.EmailVerificationRequested(nil)
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&request).Error)
-				return &registrationv1.VerifyEmailRequest{
+				return &authv1.VerifyEmailRequest{
 					Email:   request.Email,
 					PinCode: request.Requested.PINCode,
 				}
 			},
-			assert: func(t *testing.T, got *connect.Response[registrationv1.VerifyEmailResponse], err error) {
+			assert: func(t *testing.T, got *connect.Response[authv1.VerifyEmailResponse], err error) {
 				require.NoError(t, err)
 				assert.NotEmpty(t, got.Msg.Tokens)
 			},
 		},
 		{
 			name: "invalid token",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *registrationv1.VerifyEmailRequest {
-				request := registrationFixture.EmailVerificationRequested(nil)
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *authv1.VerifyEmailRequest {
+				request := authFixture.EmailVerificationRequested(nil)
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&request).Error)
-				return &registrationv1.VerifyEmailRequest{
+				return &authv1.VerifyEmailRequest{
 					Email:   request.Email,
 					PinCode: either.Must(random.NewPinCode(6)),
 				}
 			},
-			assert: func(t *testing.T, got *connect.Response[registrationv1.VerifyEmailResponse], err error) {
+			assert: func(t *testing.T, got *connect.Response[authv1.VerifyEmailResponse], err error) {
 				require.Error(t, err)
 				assert.Equalf(t, connect.CodeInvalidArgument, connect.CodeOf(err), "code=%s", connect.CodeOf(err).String())
 				connErr := new(connect.Error)
@@ -163,7 +162,7 @@ func TestEmailVerification_VerifyEmail(t *testing.T) {
 			server := newEmailVerificationServer(t, infras)
 
 			// act
-			client := registrationv1connect.NewEmailVerificationServiceClient(http.DefaultClient, server.URL)
+			client := authv1connect.NewEmailVerificationServiceClient(http.DefaultClient, server.URL)
 			connReq := connecttest.NewRequest(t, ctx, req, nil)
 			got, err := client.VerifyEmail(ctx, connReq)
 
@@ -175,7 +174,7 @@ func TestEmailVerification_VerifyEmail(t *testing.T) {
 
 func newEmailVerificationServer(t *testing.T, infras di.Infras) *httptest.Server {
 	return connecttest.NewServer(t, infras, func(interceptors []connect.Interceptor) (string, http.Handler) {
-		h := di.InitRegistrationHandlers(infras.Writer.DB, infras.ReadWriter, infras.Writer, infras.Reader, infras.KVS).EmailVerification
-		return registrationv1connect.NewEmailVerificationServiceHandler(h, connect.WithInterceptors(interceptors...))
+		h := di.InitAuthHandlers(infras.Writer.DB, infras.ReadWriter, infras.Writer, infras.Reader, infras.KVS).EmailVerification
+		return authv1connect.NewEmailVerificationServiceHandler(h, connect.WithInterceptors(interceptors...))
 	})
 }

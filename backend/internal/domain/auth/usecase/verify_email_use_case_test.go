@@ -11,9 +11,9 @@ import (
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/di"
-	registrationFixture "mickamy.com/sampay/internal/domain/registration/fixture"
-	registrationModel "mickamy.com/sampay/internal/domain/registration/model"
-	"mickamy.com/sampay/internal/domain/registration/usecase"
+	authFixture "mickamy.com/sampay/internal/domain/auth/fixture"
+	authModel "mickamy.com/sampay/internal/domain/auth/model"
+	"mickamy.com/sampay/internal/domain/auth/usecase"
 	"mickamy.com/sampay/internal/lib/either"
 	"mickamy.com/sampay/internal/lib/random"
 )
@@ -32,7 +32,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 		{
 			name: "success",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
-				m := registrationFixture.EmailVerificationRequested(func(m *registrationModel.EmailVerification) {
+				m := authFixture.EmailVerificationRequested(func(m *authModel.EmailVerification) {
 					m.Email = email
 					m.Requested.PINCode = pin
 				})
@@ -46,7 +46,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 		{
 			name: "different email",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
-				m := registrationFixture.EmailVerificationRequested(func(m *registrationModel.EmailVerification) {
+				m := authFixture.EmailVerificationRequested(func(m *authModel.EmailVerification) {
 					m.Email = email + "different"
 					m.Requested.PINCode = pin
 				})
@@ -59,7 +59,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 		{
 			name: "pin code expired",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
-				m := registrationFixture.EmailVerificationRequested(func(m *registrationModel.EmailVerification) {
+				m := authFixture.EmailVerificationRequested(func(m *authModel.EmailVerification) {
 					m.Email = email
 					m.Requested.PINCode = pin
 					m.Requested.ExpiresAt = time.Now().Add(-time.Second)
@@ -67,7 +67,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 				assert.NoError(t, db.WithContext(ctx).Create(&m).Error)
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
-				assert.ErrorIs(t, err, registrationModel.ErrEmailVerificationTokenExpired)
+				assert.ErrorIs(t, err, authModel.ErrEmailVerificationTokenExpired)
 				assert.ErrorContains(t, err, "failed to verify email verification")
 				assert.Empty(t, got)
 			},
@@ -75,7 +75,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 		{
 			name: "pin code not expired",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
-				m := registrationFixture.EmailVerificationRequested(func(m *registrationModel.EmailVerification) {
+				m := authFixture.EmailVerificationRequested(func(m *authModel.EmailVerification) {
 					m.Email = email
 					m.Requested.PINCode = pin
 					m.Requested.ExpiresAt = time.Now().Add(5 * time.Second)
@@ -90,7 +90,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 		{
 			name: "pin code verified",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
-				m := registrationFixture.EmailVerificationVerified(func(m *registrationModel.EmailVerification) {
+				m := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
 					m.Email = email
 					m.Requested.PINCode = pin
 				})
@@ -104,7 +104,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 		{
 			name: "pin code consumed",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
-				m := registrationFixture.EmailVerificationConsumed(func(m *registrationModel.EmailVerification) {
+				m := authFixture.EmailVerificationConsumed(func(m *authModel.EmailVerification) {
 					m.Email = email
 					m.Requested.PINCode = pin
 				})
@@ -127,7 +127,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 			tc.arrange(t, ctx, db.WriterDB())
 
 			// act
-			sut := di.InitRegistrationUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).VerifyEmail
+			sut := di.InitAuthUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).VerifyEmail
 			got, err := sut.Do(ctx, usecase.VerifyEmailInput{Email: email, PINCode: pin})
 
 			// assert
