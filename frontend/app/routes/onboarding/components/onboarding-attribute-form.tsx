@@ -22,7 +22,7 @@ import {
 } from "~/models/user/usage-category-model";
 
 export const onboardingAttributeSchema = z.object({
-  type: z.enum(["attribute"]),
+  intent: z.enum(["attribute"]),
   category: z.enum(UsageCategoryTypes),
 });
 
@@ -42,7 +42,7 @@ export default function OnboardingAttributeForm({
     props: {
       resolver: zodResolver(onboardingAttributeSchema),
       defaultValues: {
-        type: "attribute",
+        intent: "attribute",
       },
     },
     error,

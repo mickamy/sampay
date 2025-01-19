@@ -24,7 +24,7 @@ import { cn } from "~/lib/utils";
 import type { UserProfile } from "~/models/user/user-profile-model";
 
 export const userProfileImageSchema = z.object({
-  type: z.enum(["profile_image"]),
+  intent: z.enum(["profile_image"]),
   image: z
     .any()
     .refine((file) => isFileLike(file), {
@@ -63,7 +63,7 @@ export default function UserProfileImageForm({
     props: {
       resolver: zodResolver(userProfileImageSchema),
       defaultValues: {
-        type: "profile_image",
+        intent: "profile_image",
       },
     },
     error,
@@ -81,7 +81,7 @@ export default function UserProfileImageForm({
     if (inputElement) {
       inputElement.value = "";
     }
-    onSubmitData({ type: "profile_image" });
+    onSubmitData({ intent: "profile_image" });
   }, [onImageChange, setValue, onSubmitData]);
 
   const { t } = useTranslation();
