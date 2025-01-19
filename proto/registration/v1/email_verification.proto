@@ -17,6 +17,7 @@ message VerifyEmailRequest {
 }
 
 message VerifyEmailResponse {
+  string token = 1 [(buf.validate.field).string.len = 64];
 }
 
 service EmailVerificationService {
