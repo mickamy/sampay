@@ -14,8 +14,10 @@ import (
 )
 
 var (
+	ErrCreatePasswordEmailVerificationInvalidToken = commonModel.NewLocalizableError(errors.New("invalid email verification token")).
+							WithMessages(i18n.Config{MessageID: i18n.RegistrationUsecaseCreate_passwordErrorEmail_verification_invalid_token})
 	ErrCreatePasswordEmailVerificationAlreadyConsumed = commonModel.NewLocalizableError(errors.New("email verification already consumed")).
-		WithMessages(i18n.Config{MessageID: i18n.RegistrationUsecaseCreate_passwordErrorEmail_verification_already_consumed})
+								WithMessages(i18n.Config{MessageID: i18n.RegistrationUsecaseCreate_passwordErrorEmail_verification_already_consumed})
 )
 
 type CreatePasswordInput struct {
@@ -56,7 +58,7 @@ func (uc *createPassword) Do(ctx context.Context, input CreatePasswordInput) (Cr
 			return fmt.Errorf("failed to find email verification: %w", err)
 		}
 		if verification == nil {
-			return fmt.Errorf("email verification not found: %w", ErrCreatePasswordEmailVerificationAlreadyConsumed)
+			return fmt.Errorf("email verification not found: %w", ErrCreatePasswordEmailVerificationInvalidToken)
 		}
 		if verification.IsConsumed() {
 			return ErrCreatePasswordEmailVerificationAlreadyConsumed

@@ -18,6 +18,7 @@ const (
 	RegistrationEmailRequest_email_verificationTitle                           MessageID = "registration.email.request_email_verification.title"
 	RegistrationUsecaseCommonErrorEmail_already_exists                         MessageID = "registration.usecase.common.error.email_already_exists"
 	RegistrationUsecaseCreate_passwordErrorEmail_verification_already_consumed MessageID = "registration.usecase.create_password.error.email_verification_already_consumed"
+	RegistrationUsecaseCreate_passwordErrorEmail_verification_invalid_token    MessageID = "registration.usecase.create_password.error.email_verification_invalid_token"
 	RegistrationUsecaseVerify_emailErrorInvalid_pin_code                       MessageID = "registration.usecase.verify_email.error.invalid_pin_code"
 	UserHandlerUser_linkErrorInvalid_provider_type                             MessageID = "user.handler.user_link.error.invalid_provider_type"
 	UserModelUser_attributeErrorDuplicated                                     MessageID = "user.model.user_attribute.error.duplicated"

@@ -147,6 +147,90 @@ func TestOnboarding_CreateUserPassword(t *testing.T) {
 				require.NoError(t, err)
 			},
 		},
+		{
+			name: "fail (invalid token)",
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreatePasswordRequest {
+				verification := authFixture.EmailVerificationVerified(nil)
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
+
+				return &registrationv1.CreatePasswordRequest{
+					Token:    verification.Verified.Token + "invalid",
+					Password: gofakeit.Password(true, true, true, false, false, 12),
+				}
+			},
+			assert: func(t *testing.T, got *connect.Response[registrationv1.CreatePasswordResponse], err error) {
+				require.Error(t, err)
+				assert.Equalf(t, connect.CodeInvalidArgument, connect.CodeOf(err), "code=%s", connect.CodeOf(err).String())
+				connErr := new(connect.Error)
+				require.ErrorAs(t, err, &connErr)
+				require.Len(t, connErr.Details(), 1)
+				detail := either.Must(connErr.Details()[0].Value())
+				if errMsg, ok := detail.(*commonv1.BadRequestError); ok {
+					require.Len(t, errMsg.FieldViolations, 1)
+					require.Equal(t, "token", errMsg.FieldViolations[0].Field)
+					require.Len(t, errMsg.FieldViolations[0].Descriptions, 1)
+					require.Equal(t, i18n.MustJapaneseMessage(i18n.Config{MessageID: i18n.RegistrationUsecaseCreate_passwordErrorEmail_verification_invalid_token}), errMsg.FieldViolations[0].Descriptions[0])
+				} else {
+					require.Failf(t, "unexpected detail type", "got=%T", detail)
+				}
+			},
+		},
+		{
+			name: "fail (token of request)",
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreatePasswordRequest {
+				verification := authFixture.EmailVerificationVerified(nil)
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
+
+				return &registrationv1.CreatePasswordRequest{
+					Token:    verification.Requested.Token,
+					Password: gofakeit.Password(true, true, true, false, false, 12),
+				}
+			},
+			assert: func(t *testing.T, got *connect.Response[registrationv1.CreatePasswordResponse], err error) {
+				require.Error(t, err)
+				assert.Equalf(t, connect.CodeInvalidArgument, connect.CodeOf(err), "code=%s", connect.CodeOf(err).String())
+				connErr := new(connect.Error)
+				require.ErrorAs(t, err, &connErr)
+				require.Len(t, connErr.Details(), 1)
+				detail := either.Must(connErr.Details()[0].Value())
+				if errMsg, ok := detail.(*commonv1.BadRequestError); ok {
+					require.Len(t, errMsg.FieldViolations, 1)
+					require.Equal(t, "token", errMsg.FieldViolations[0].Field)
+					require.Len(t, errMsg.FieldViolations[0].Descriptions, 1)
+					require.Equal(t, i18n.MustJapaneseMessage(i18n.Config{MessageID: i18n.RegistrationUsecaseCreate_passwordErrorEmail_verification_invalid_token}), errMsg.FieldViolations[0].Descriptions[0])
+				} else {
+					require.Failf(t, "unexpected detail type", "got=%T", detail)
+				}
+			},
+		},
+		{
+			name: "fail (token consumed)",
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreatePasswordRequest {
+				verification := authFixture.EmailVerificationConsumed(nil)
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
+
+				return &registrationv1.CreatePasswordRequest{
+					Token:    verification.Verified.Token,
+					Password: gofakeit.Password(true, true, true, false, false, 12),
+				}
+			},
+			assert: func(t *testing.T, got *connect.Response[registrationv1.CreatePasswordResponse], err error) {
+				require.Error(t, err)
+				assert.Equalf(t, connect.CodeInvalidArgument, connect.CodeOf(err), "code=%s", connect.CodeOf(err).String())
+				connErr := new(connect.Error)
+				require.ErrorAs(t, err, &connErr)
+				require.Len(t, connErr.Details(), 1)
+				detail := either.Must(connErr.Details()[0].Value())
+				if errMsg, ok := detail.(*commonv1.BadRequestError); ok {
+					require.Len(t, errMsg.FieldViolations, 1)
+					require.Equal(t, "token", errMsg.FieldViolations[0].Field)
+					require.Len(t, errMsg.FieldViolations[0].Descriptions, 1)
+					require.Equal(t, i18n.MustJapaneseMessage(i18n.Config{MessageID: i18n.RegistrationUsecaseCreate_passwordErrorEmail_verification_already_consumed}), errMsg.FieldViolations[0].Descriptions[0])
+				} else {
+					require.Failf(t, "unexpected detail type", "got=%T", detail)
+				}
+			},
+		},
 	}
 
 	for _, tc := range tsc {

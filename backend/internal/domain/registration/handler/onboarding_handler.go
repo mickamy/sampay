@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 
 	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/registration/v1/registrationv1connect"
 	registrationv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/registration/v1"
@@ -66,6 +67,10 @@ func (h *Onboarding) CreatePassword(
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
 		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
+			if errors.Is(err, usecase.ErrCreatePasswordEmailVerificationInvalidToken) || errors.Is(err, usecase.ErrCreatePasswordEmailVerificationAlreadyConsumed) {
+				return nil, localizable.AsFieldViolations("token").AsConnectError()
+			}
+
 			return nil, localizable.AsConnectError()
 		}
 
