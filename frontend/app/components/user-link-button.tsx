@@ -1,4 +1,5 @@
 import { type HTMLAttributes, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import Image from "~/components/image";
 import Spacer from "~/components/spacer";
@@ -9,7 +10,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { useSafeTranslation } from "~/lib/i18n/hooks";
 import { cn } from "~/lib/utils";
 import type { UserLink } from "~/models/user/user-link-model";
 import { getUserLinkProviderTypeImage } from "~/models/user/user-link-provider-type-model";
@@ -37,7 +37,7 @@ export default function UserLinkButton({
     }
   }, [admin, link, onEdit]);
 
-  const { t } = useSafeTranslation();
+  const { t } = useTranslation();
 
   if (admin) {
     return (

@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { HTMLAttributes } from "react";
+import { useTranslation } from "react-i18next";
 import ErrorMessage from "~/components/error-message";
 import { Button } from "~/components/ui/button";
 import {
@@ -15,7 +16,6 @@ import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import type { APIError } from "~/lib/api/response";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
-import { useSafeTranslation } from "~/lib/i18n/hooks";
 import {
   type UsageCategory,
   UsageCategoryTypes,
@@ -48,7 +48,7 @@ export default function OnboardingAttributeForm({
     error,
   });
 
-  const { t } = useSafeTranslation();
+  const { t } = useTranslation();
 
   return (
     <Form {...form}>

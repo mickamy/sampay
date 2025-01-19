@@ -9,12 +9,16 @@ import (
 )
 
 type AuthConfig struct {
-	EmailVerificationExpiresIn int    `env:"EMAIL_VERIFICATION_EXPIRES_IN" envDefault:"86400"` // seconds
+	EmailVerificationExpiresIn int    `env:"EMAIL_VERIFICATION_EXPIRES_IN" envDefault:"300"` // seconds
 	SigningSecret              string `env:"JWT_SIGNING_SECRET"`
 }
 
 func (c AuthConfig) EmailVerificationExpiresInDuration() time.Duration {
 	return time.Duration(c.EmailVerificationExpiresIn) * time.Second
+}
+
+func (c AuthConfig) EmailVerificationExpiresInMinute() int {
+	return c.EmailVerificationExpiresIn / 60
 }
 
 func (c AuthConfig) SigningSecretBytes() []byte {

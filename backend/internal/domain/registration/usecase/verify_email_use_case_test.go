@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -20,7 +21,8 @@ import (
 func TestVerifyEmail_Do(t *testing.T) {
 	t.Parallel()
 
-	token := either.Must(random.NewString(32))
+	email := gofakeit.GlobalFaker.Email()
+	pin := either.Must(random.NewPinCode(6))
 
 	tcs := []struct {
 		name    string
@@ -31,20 +33,35 @@ func TestVerifyEmail_Do(t *testing.T) {
 			name: "success",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := registrationFixture.EmailVerificationRequested(func(m *registrationModel.EmailVerification) {
-					m.Requested.Token = token
+					m.Email = email
+					m.Requested.PINCode = pin
 				})
 				assert.NoError(t, db.WithContext(ctx).Create(&m).Error)
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
 				require.NoError(t, err)
-				assert.Empty(t, got)
+				assert.NotEmpty(t, got.Token)
 			},
 		},
 		{
-			name: "token expired",
+			name: "different email",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := registrationFixture.EmailVerificationRequested(func(m *registrationModel.EmailVerification) {
-					m.Requested.Token = token
+					m.Email = email + "different"
+					m.Requested.PINCode = pin
+				})
+				assert.NoError(t, db.WithContext(ctx).Create(&m).Error)
+			},
+			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
+				assert.ErrorIs(t, err, usecase.ErrVerifyEmailInvalidToken)
+			},
+		},
+		{
+			name: "pin code expired",
+			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
+				m := registrationFixture.EmailVerificationRequested(func(m *registrationModel.EmailVerification) {
+					m.Email = email
+					m.Requested.PINCode = pin
 					m.Requested.ExpiresAt = time.Now().Add(-time.Second)
 				})
 				assert.NoError(t, db.WithContext(ctx).Create(&m).Error)
@@ -56,35 +73,40 @@ func TestVerifyEmail_Do(t *testing.T) {
 			},
 		},
 		{
-			name: "token not expired",
+			name: "pin code not expired",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := registrationFixture.EmailVerificationRequested(func(m *registrationModel.EmailVerification) {
-					m.Requested.Token = token
+					m.Email = email
+					m.Requested.PINCode = pin
 					m.Requested.ExpiresAt = time.Now().Add(5 * time.Second)
 				})
 				assert.NoError(t, db.WithContext(ctx).Create(&m).Error)
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
 				require.NoError(t, err)
+				assert.NotEmpty(t, got.Token)
 			},
 		},
 		{
-			name: "token verified",
+			name: "pin code verified",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := registrationFixture.EmailVerificationVerified(func(m *registrationModel.EmailVerification) {
-					m.Requested.Token = token
+					m.Email = email
+					m.Requested.PINCode = pin
 				})
 				assert.NoError(t, db.WithContext(ctx).Create(&m).Error)
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
-				require.NoError(t, err)
+				require.ErrorIs(t, err, usecase.ErrVerifyEmailInvalidToken)
+				assert.Empty(t, got)
 			},
 		},
 		{
-			name: "token consumed",
+			name: "pin code consumed",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := registrationFixture.EmailVerificationConsumed(func(m *registrationModel.EmailVerification) {
-					m.Requested.Token = token
+					m.Email = email
+					m.Requested.PINCode = pin
 				})
 				assert.NoError(t, db.WithContext(ctx).Create(&m).Error)
 			},
@@ -106,7 +128,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 
 			// act
 			sut := di.InitRegistrationUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).VerifyEmail
-			got, err := sut.Do(ctx, usecase.VerifyEmailInput{Token: token})
+			got, err := sut.Do(ctx, usecase.VerifyEmailInput{Email: email, PINCode: pin})
 
 			// assert
 			tc.assert(t, got, err)

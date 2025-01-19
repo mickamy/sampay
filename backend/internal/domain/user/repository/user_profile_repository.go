@@ -49,7 +49,7 @@ func (repo *userProfile) Find(ctx context.Context, id string, scopes ...database
 func (repo *userProfile) FindBySlug(ctx context.Context, slug string, scopes ...database.Scope) (*model.UserProfile, error) {
 	var m model.UserProfile
 	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
-		Joins("LEFT JOIN users on user_profiles.user_id = users.id").
+		Joins("LEFT OUTER JOIN users on user_profiles.user_id = users.id").
 		First(&m, "users.slug = ?", slug).
 		Error
 	if err != nil {

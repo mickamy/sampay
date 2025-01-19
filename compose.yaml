@@ -21,6 +21,26 @@ services:
     networks:
       default:
 
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+      args:
+        MAIN_GO_FILE: /src/cmd/worker/main.go
+        BIN_NAME: worker
+        GH_PAT: ${GH_PAT}
+    environment:
+      - GH_PAT=${GH_PAT}
+    env_file:
+      - .env.docker
+    volumes:
+      - ./backend:/src:delegated
+      - ./log:/var/log:delegated
+      - /src/build
+      - go:/go
+    networks:
+      default:
+
   web:
     build:
       context: ./frontend
@@ -40,6 +60,15 @@ services:
       - "5173:5173"
     networks:
       default:
+
+  worker-viewer:
+    image: mickamy/go-sqs-worker-viewer
+    environment:
+      REDIS_URL: redis://:password@redis:6379/0
+    ports:
+      - "3000:3000"
+    networks:
+      - default
 
   postgres:
     image: postgres:16.4-alpine

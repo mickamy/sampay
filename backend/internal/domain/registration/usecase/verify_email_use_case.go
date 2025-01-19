@@ -16,15 +16,17 @@ import (
 
 var (
 	ErrVerifyEmailInvalidToken = commonModel.
-		NewLocalizableError(errors.New("invalid token")).
-		WithMessages(i18n.Config{MessageID: i18n.RegistrationUsecaseVerify_emailErrorInvalid_token})
+		NewLocalizableError(errors.New("invalid pin code")).
+		WithMessages(i18n.Config{MessageID: i18n.RegistrationUsecaseVerify_emailErrorInvalid_pin_code})
 )
 
 type VerifyEmailInput struct {
-	Token string
+	Email   string
+	PINCode string
 }
 
 type VerifyEmailOutput struct {
+	Token string
 }
 
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
@@ -54,11 +56,13 @@ func NewVerifyEmail(
 }
 
 func (uc *verifyEmail) Do(ctx context.Context, input VerifyEmailInput) (VerifyEmailOutput, error) {
+	var token string
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
 		var err error
-		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByToken(
+		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByEmailAndPinCode(
 			ctx,
-			input.Token,
+			input.Email,
+			input.PINCode,
 			registrationRepository.EmailVerificationJoinRequested,
 			registrationRepository.EmailVerificationPreloadVerified,
 			registrationRepository.EmailVerificationNotConsumed,
@@ -71,7 +75,7 @@ func (uc *verifyEmail) Do(ctx context.Context, input VerifyEmailInput) (VerifyEm
 		}
 
 		if verification.IsVerified() {
-			return nil
+			return ErrVerifyEmailInvalidToken
 		}
 		if err := verification.Verify(); err != nil {
 			return fmt.Errorf("failed to verify email verification: %w", err)
@@ -79,10 +83,13 @@ func (uc *verifyEmail) Do(ctx context.Context, input VerifyEmailInput) (VerifyEm
 		if err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).Update(ctx, verification); err != nil {
 			return fmt.Errorf("failed to update email verification: %w", err)
 		}
+
+		token = verification.Verified.Token
+
 		return nil
 	}); err != nil {
 		return VerifyEmailOutput{}, err
 	}
 
-	return VerifyEmailOutput{}, nil
+	return VerifyEmailOutput{Token: token}, nil
 }

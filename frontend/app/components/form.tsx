@@ -45,6 +45,7 @@ interface FormFieldProps<T extends z.ZodSchema> {
   hidden?: boolean;
   type?: HTMLInputTypeAttribute;
   className?: string;
+  inputClassName?: string;
 }
 
 export function FormField<T extends z.ZodSchema>({
@@ -56,6 +57,7 @@ export function FormField<T extends z.ZodSchema>({
   hidden = false,
   type = "text",
   className,
+  inputClassName,
 }: FormFieldProps<T>) {
   return (
     <BaseFormField
@@ -79,7 +81,7 @@ export function FormField<T extends z.ZodSchema>({
         const safeValue = value ?? "";
 
         return (
-          <FormItem hidden={hidden} className={cn("flex-1", className)}>
+          <FormItem hidden={hidden} className={cn("", className)}>
             {label && <FormLabel className="font-bold">{label}</FormLabel>}
             <FormControl>
               {type === "textarea" ? (
@@ -88,6 +90,7 @@ export function FormField<T extends z.ZodSchema>({
                   placeholder={placeholder}
                   {...field}
                   value={safeValue}
+                  className={inputClassName}
                 />
               ) : (
                 <Input
@@ -96,6 +99,7 @@ export function FormField<T extends z.ZodSchema>({
                   placeholder={placeholder}
                   {...field}
                   value={safeValue}
+                  className={inputClassName}
                 />
               )}
             </FormControl>
@@ -115,6 +119,7 @@ interface SelectFieldProps<T extends z.ZodSchema> {
   options: { id: string; name: string }[];
   placeholder: string;
   className?: string;
+  inputClassName?: string;
 }
 
 export function SelectField<T extends z.ZodSchema>({
@@ -125,19 +130,21 @@ export function SelectField<T extends z.ZodSchema>({
   options,
   placeholder,
   className,
+  inputClassName,
 }: SelectFieldProps<T>) {
   return (
     <BaseFormField
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className={cn("flex-1", className)}>
+        <FormItem className={cn("", className)}>
           {label && <FormLabel className="font-bold">{label}</FormLabel>}
           <FormControl>
             {readOnly ? (
               <Input
                 readOnly
                 value={options.find((it) => it.id === field.value)?.name}
+                className={inputClassName}
               />
             ) : (
               <Select
@@ -149,7 +156,10 @@ export function SelectField<T extends z.ZodSchema>({
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={placeholder} />
+                  <SelectValue
+                    placeholder={placeholder}
+                    className={inputClassName}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {options.map((option) => (
@@ -176,6 +186,7 @@ interface DynamicFormFieldProps<T extends z.ZodSchema> {
   label?: string;
   type?: HTMLInputTypeAttribute;
   className?: string;
+  inputClassName?: string;
 }
 
 export function DynamicFormField<T extends z.ZodSchema>({
@@ -186,6 +197,7 @@ export function DynamicFormField<T extends z.ZodSchema>({
   label,
   type = "text",
   className,
+  inputClassName,
 }: DynamicFormFieldProps<T>) {
   return (
     <BaseFormField
@@ -205,10 +217,16 @@ export function DynamicFormField<T extends z.ZodSchema>({
           value = field.value;
         }
         return (
-          <FormItem className={cn("flex-1", className)}>
+          <FormItem className={cn("", className)}>
             {label && <FormLabel className="font-bold">{label}</FormLabel>}
             <FormControl>
-              <Input type={type} readOnly={readOnly} {...field} value={value} />
+              <Input
+                type={type}
+                readOnly={readOnly}
+                {...field}
+                value={value}
+                className={inputClassName}
+              />
             </FormControl>
             <FormMessage className="min-h-4" />
           </FormItem>
@@ -229,6 +247,7 @@ interface DynamicSelectProps<T extends z.ZodSchema> {
   placeholder: string;
   type?: HTMLInputTypeAttribute;
   className?: string;
+  inputClassName?: string;
 }
 
 export function DynamicSelectField<T extends z.ZodSchema>({
@@ -240,18 +259,20 @@ export function DynamicSelectField<T extends z.ZodSchema>({
   options,
   placeholder,
   className,
+  inputClassName,
 }: DynamicSelectProps<T>) {
   return (
     <BaseFormField
       control={control}
       render={({ field }) => (
-        <FormItem className={cn("flex-1", className)}>
+        <FormItem className={cn("", className)}>
           {label && <FormLabel className="font-bold">{label}</FormLabel>}
           <FormControl>
             {readOnly ? (
               <Input
                 readOnly
                 value={options.find((it) => it.id === field.value)?.name}
+                className={inputClassName}
               />
             ) : (
               <Select
@@ -259,7 +280,10 @@ export function DynamicSelectField<T extends z.ZodSchema>({
                 value={field.value}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={placeholder} />
+                  <SelectValue
+                    placeholder={placeholder}
+                    className={inputClassName}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {options.map((option) => (

@@ -12,6 +12,7 @@ import (
 func Route(mux *http.ServeMux, infras di.Infras, options ...connect.HandlerOption) {
 	handlers := di.InitRegistrationHandlers(infras.DB, infras.ReadWriter, infras.Writer, infras.Reader, infras.KVS)
 	mux.Handle(registrationv1connect.NewAccountServiceHandler(handlers.Account, options...))
+	mux.Handle(registrationv1connect.NewEmailVerificationServiceHandler(handlers.EmailVerification, options...))
 	mux.Handle(registrationv1connect.NewOnboardingServiceHandler(handlers.Onboarding, options...))
 	mux.Handle(registrationv1connect.NewUsageCategoryServiceHandler(handlers.UsageCategory, options...))
 }

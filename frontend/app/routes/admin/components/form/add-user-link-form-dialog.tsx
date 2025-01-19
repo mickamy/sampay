@@ -1,8 +1,8 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Dialog from "~/components/dialog";
 import type { APIError } from "~/lib/api/response";
 import type { z } from "~/lib/form/zod";
-import { useSafeTranslation } from "~/lib/i18n/hooks";
 import UserLinkForm, {
   type userLinkSchema,
 } from "~/routes/admin/components/form/user-link-form";
@@ -31,7 +31,7 @@ export default function AddUserLinkFormDialog({
     }
   }, [actionData, onClose]);
 
-  const { t } = useSafeTranslation();
+  const { t } = useTranslation();
 
   return (
     <Dialog

@@ -4,10 +4,10 @@ import React, {
   type KeyboardEvent,
   useCallback,
 } from "react";
+import { useTranslation } from "react-i18next";
 import Avatar from "~/components/avatar";
 import ExpandableText from "~/components/expandable-text";
 import { underlinedLinkStyle } from "~/components/underlined-link";
-import { useSafeTranslation } from "~/lib/i18n/hooks";
 import { cn } from "~/lib/utils";
 import type { UserProfile as UserProfileModel } from "~/models/user/user-profile-model";
 
@@ -26,7 +26,7 @@ export default function UserProfile({
   onClickAvatar,
   ...props
 }: Props) {
-  const { t } = useSafeTranslation();
+  const { t } = useTranslation();
 
   if (admin && !onClickEdit) {
     throw new Error("onClickEdit is required when admin is true");

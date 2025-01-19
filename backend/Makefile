@@ -42,9 +42,12 @@ install-mod: ## Install go modules
 	go mod tidy
 
 update-mod: ## Update go modules
+	go get -u buf.build/gen/go/mickamy/sampay/bufbuild/connect-go@latest
+	go get -u buf.build/gen/go/mickamy/sampay/protocolbuffers/go@latest
 	go get -u ./...
 	go mod tidy
 	go generate ./... # Run generate after updating modules for some packages are dropped on go mod tidy
+	gofmt -s -w .
 
 db-create: ## Create the database
 	PACKAGE_ROOT=$$(pwd) go run ./cmd/db/create/main.go

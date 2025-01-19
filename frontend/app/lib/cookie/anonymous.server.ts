@@ -35,7 +35,7 @@ async function initializeSession() {
   }
   return createCookieSessionStorage({
     cookie: {
-      name: "__sampay_authenticated_session",
+      name: "__sampay_anonymous_session",
       httpOnly: true,
       maxAge: 14 * DAY,
       path: "/",
@@ -71,45 +71,30 @@ async function destroySession(
   return destroySession(session, options);
 }
 
-export interface Token {
-  readonly value: string;
-  readonly expiresAt: string;
-}
+export type AnonymousSession = {
+  email: string;
+};
 
-export interface Tokens {
-  readonly access: Token;
-  readonly refresh: Token;
-}
-
-export interface AuthenticatedSession {
-  readonly tokens: Tokens;
-}
-
-export async function getAuthenticatedSession(
+export async function getAnonymousSession(
   request: Request,
-): Promise<AuthenticatedSession | null> {
+): Promise<AnonymousSession | null> {
   const s = await getSession(request.headers.get("cookie"));
   return s.get("sessions");
 }
 
-export async function setAuthenticatedSession(
-  tokens: AuthenticatedSession,
+export async function setAnonymousSession(
+  session: AnonymousSession,
 ): Promise<string> {
   const s = await getSession(null);
-  s.set("sessions", tokens);
+  s.set("sessions", session);
   return commitSession(s);
 }
 
-export async function destroyAuthenticatedSession(request: Request) {
-  const s = await getAuthenticatedSession(request);
+export async function destroyAnonymousSession(request: Request) {
+  const s = await getAnonymousSession(request);
   if (s == null) {
     throw new Error("session not found");
   }
   const session = await getSession();
   return destroySession(session);
-}
-
-export async function isLoggedIn(request: Request): Promise<boolean> {
-  const s = await getAuthenticatedSession(request);
-  return s != null;
 }

@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { HTMLAttributes } from "react";
+import { useTranslation } from "react-i18next";
 import ErrorMessage from "~/components/error-message";
 import { FormField } from "~/components/form";
 import Spacer from "~/components/spacer";
@@ -8,7 +9,6 @@ import { Form } from "~/components/ui/form";
 import type { APIError } from "~/lib/api/response";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
-import { useSafeTranslation } from "~/lib/i18n/hooks";
 import { cn } from "~/lib/utils";
 
 export const authSignInSchema = z.object({
@@ -38,7 +38,7 @@ export default function SignInForm({
     error,
   });
 
-  const { t } = useSafeTranslation();
+  const { t } = useTranslation();
 
   return (
     <>

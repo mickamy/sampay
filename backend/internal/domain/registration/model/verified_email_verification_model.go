@@ -6,5 +6,6 @@ import (
 
 type VerifiedEmailVerification struct {
 	EmailVerificationID string `gorm:"primaryKey"`
+	Token               string
 	VerifiedAt          time.Time
 }

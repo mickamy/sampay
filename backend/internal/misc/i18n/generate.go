@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -46,7 +47,13 @@ func main() {
 }
 
 func makeConstants(data map[string]any, prefix string, output *strings.Builder) {
-	for key, value := range data {
+	keys := make([]string, 0, len(data))
+	for key := range data {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	for _, key := range keys {
 		fullKey := key
 		if prefix != "" {
 			fullKey = prefix + "." + key
@@ -54,7 +61,7 @@ func makeConstants(data map[string]any, prefix string, output *strings.Builder) 
 
 		constName := makeConstantName(fullKey)
 
-		switch v := value.(type) {
+		switch v := data[key].(type) {
 		case string:
 			fmt.Fprintf(output, "\t%s MessageID = \"%s\"\n", constName, fullKey)
 		case map[string]any:

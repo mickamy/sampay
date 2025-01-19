@@ -118,7 +118,7 @@ func UserPreloadProfile(tx *database.DB) *database.DB {
 }
 
 func UserPreloadProfileAndImage(tx *database.DB) *database.DB {
-	return &database.DB{DB: tx.Joins("Profile.Image")}
+	return &database.DB{DB: tx.Preload("Profile.Image")}
 }
 
 func UserPreloadLinksQRCodeAndDisplayAttributes(tx *database.DB) *database.DB {

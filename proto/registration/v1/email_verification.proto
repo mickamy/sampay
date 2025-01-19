@@ -3,22 +3,21 @@ syntax = "proto3";
 package registration.v1;
 
 import "buf/validate/validate.proto";
-import "google/protobuf/timestamp.proto";
 
 message RequestVerificationRequest {
   string email = 1 [(buf.validate.field).string.email = true];
 }
 
 message RequestVerificationResponse {
-  string token = 1;
-  google.protobuf.Timestamp expires_at = 2;
 }
 
 message VerifyEmailRequest {
-  string token = 1;
+  string email = 1 [(buf.validate.field).string.email = true];
+  string pin_code = 2 [(buf.validate.field).string.len = 6];
 }
 
 message VerifyEmailResponse {
+  string token = 1 [(buf.validate.field).string.len = 64];
 }
 
 service EmailVerificationService {

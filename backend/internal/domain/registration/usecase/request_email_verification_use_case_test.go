@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/brianvoe/gofakeit/v7"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
@@ -39,7 +40,7 @@ func TestRequestEmailVerification_Do(t *testing.T) {
 			},
 			assert: func(t *testing.T, got usecase.RequestEmailVerificationOutput, err error) {
 				require.ErrorIs(t, err, usecase.ErrRequestEmailVerificationEmailAlreadyExists)
-				require.Empty(t, got)
+				assert.Empty(t, got)
 			},
 		},
 		{
@@ -48,8 +49,7 @@ func TestRequestEmailVerification_Do(t *testing.T) {
 			},
 			assert: func(t *testing.T, got usecase.RequestEmailVerificationOutput, err error) {
 				require.NoError(t, err)
-				require.NotEmpty(t, got.Token)
-				require.NotZero(t, got.ExpiresAt)
+				assert.Empty(t, got)
 			},
 		},
 	}

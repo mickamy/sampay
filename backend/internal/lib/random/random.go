@@ -4,6 +4,8 @@ import (
 	"crypto/rand"
 	"errors"
 	"fmt"
+	"math/big"
+	"strings"
 )
 
 // NewString generates a new random string with the specified byte length.
@@ -27,4 +29,21 @@ func NewBytes(length int) ([]byte, error) {
 		return nil, fmt.Errorf("failed to generate random bytes: %w", err)
 	}
 	return b, nil
+}
+
+// NewPinCode generates a random numeric pin code of the specified length.
+func NewPinCode(length int) (string, error) {
+	if length <= 0 {
+		return "", errors.New("length must be a positive integer")
+	}
+
+	var builder strings.Builder
+	for i := 0; i < length; i++ {
+		n, err := rand.Int(rand.Reader, big.NewInt(10))
+		if err != nil {
+			return "", fmt.Errorf("failed to generate random pin code: %w", err)
+		}
+		builder.WriteByte('0' + byte(n.Int64()))
+	}
+	return builder.String(), nil
 }
