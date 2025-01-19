@@ -5,9 +5,7 @@
       "terms": "利用規約",
       "privacy": "プライバシーポリシー",
       "have_account": "すでにアカウントをお持ちの方は",
-      "sign_in": "ログイン",
-      "verification_dialog_title": "確認メールを送信しました",
-      "verification_dialog_content": "{{email}} に確認コードが送信されました。<br/>次のフィールドに入力してください。"
+      "sign_in": "ログイン"
     }
   },
   "admin": {
@@ -31,9 +29,17 @@
       "forgot_password": "パスワードをお忘れですか？",
       "have_no_account": "アカウントをお持ちでない方は",
       "sign_up": "新規登録"
+    },
+    "reset_password": {
+      "title": "パスワードをリセット",
+      "back_to_sign_in": "ログイン画面に戻る"
     }
   },
   "components": {
+    "email_verification_dialog": {
+      "title": "確認メールを送信しました",
+      "content": "{{email}} に確認コードが送信されました。<br/>次のフィールドに入力してください。"
+    },
     "share_button": {
       "label": "このページのリンクを共有",
       "copy": "クリップボードにコピー",
@@ -65,6 +71,7 @@
     "delete": "削除",
     "email": "メールアドレス",
     "link_name": "表示名",
+    "new_password": "新しいパスワード",
     "next": "次へ",
     "password": "パスワード",
     "profile_image": "プロフィール画像",

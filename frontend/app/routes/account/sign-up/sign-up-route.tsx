@@ -5,6 +5,8 @@ import {
   type LoaderFunction,
   redirect,
 } from "react-router";
+import { requestEmailVerificationSchema } from "~/components/email-verification/request-form";
+import { verifyEmailSchema } from "~/components/email-verification/verify-form";
 import { getClient } from "~/lib/api/client";
 import { convertToAPIError } from "~/lib/api/response";
 import {
@@ -16,11 +18,9 @@ import {
   setRegistrationSession,
 } from "~/lib/cookie/registration.server";
 import { convertTokensToSession } from "~/models/auth/session-model";
-import { requestEmailVerificationSchema } from "~/routes/account/sign-up/components/request-email-verification-form";
 import SignUpScreen, {
   type ActionData,
 } from "~/routes/account/sign-up/components/sign-up-screen";
-import { verifyEmailSchema } from "~/routes/account/sign-up/components/verify-email-form";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const loggedIn = await isLoggedIn(request);
@@ -40,7 +40,7 @@ export const action: ActionFunction = async ({ request }) => {
       case "POST": {
         const body = await request.json();
         switch (body.intent) {
-          case "request":
+          case "request_email_verification":
             return requestVerification({ request, body });
           case "verify":
             return verifyEmail({ request, body });

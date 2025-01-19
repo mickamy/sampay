@@ -1,12 +1,12 @@
 import { Mail } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Dialog from "~/components/dialog";
-import { sanitizeHTML } from "~/lib/dom";
-import type { z } from "~/lib/form/zod";
 import VerifyEmailForm, {
   type ActionData as VerifyEmailFormActionData,
   type verifyEmailSchema,
-} from "~/routes/account/sign-up/components/verify-email-form";
+} from "~/components/email-verification/verify-form";
+import { sanitizeHTML } from "~/lib/dom";
+import type { z } from "~/lib/form/zod";
 
 export interface ActionData extends VerifyEmailFormActionData {}
 
@@ -18,7 +18,7 @@ interface Props {
   actionData?: ActionData;
 }
 
-export default function VerificationDialog({
+export default function VerifyEmailDialog({
   email,
   isOpen,
   onClose,
@@ -27,15 +27,13 @@ export default function VerificationDialog({
 }: Props) {
   const { t } = useTranslation();
 
-  console.log("actionData", actionData);
-
   return (
     <Dialog
       isOpen={isOpen}
       onClose={onClose}
       dialogTitle={() => (
         <div className="text-center">
-          {t("account.sign_up.verification_dialog_title")}
+          {t("components.email_verification_dialog.title")}
         </div>
       )}
       dialogDescription={() => (
@@ -49,7 +47,7 @@ export default function VerificationDialog({
             <span
               // biome-ignore lint: suspicious/no-dangerously-set-inner-html
               dangerouslySetInnerHTML={{
-                __html: t("account.sign_up.verification_dialog_content", {
+                __html: t("components.email_verification_dialog.content", {
                   email: sanitizeHTML(`<code>${email}</code>`),
                   interpolation: { escapeValue: false },
                 }),
