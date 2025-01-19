@@ -1,0 +1,1 @@
+DROP TABLE consumed_email_verifications;

@@ -71,6 +71,7 @@ func (uc *verifyEmail) Do(ctx context.Context, input VerifyEmailInput) (VerifyEm
 			input.PINCode,
 			registrationRepository.EmailVerificationInnerJoinRequested,
 			registrationRepository.EmailVerificationJoinVerified,
+			registrationRepository.EmailVerificationNotConsumed,
 		)
 		if err != nil {
 			return fmt.Errorf("failed to find email verification: %w", err)
