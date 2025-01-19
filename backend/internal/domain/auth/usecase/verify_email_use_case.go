@@ -29,6 +29,7 @@ type VerifyEmailInput struct {
 
 type VerifyEmailOutput struct {
 	Session authModel.Session
+	Token   string
 }
 
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
@@ -62,6 +63,7 @@ func NewVerifyEmail(
 
 func (uc *verifyEmail) Do(ctx context.Context, input VerifyEmailInput) (VerifyEmailOutput, error) {
 	var session authModel.Session
+	var token string
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
 		var err error
 		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByRequestedTokenAndPinCode(
@@ -88,6 +90,8 @@ func (uc *verifyEmail) Do(ctx context.Context, input VerifyEmailInput) (VerifyEm
 			return fmt.Errorf("failed to update email verification: %w", err)
 		}
 
+		token = verification.Verified.Token
+
 		user := userModel.User{}
 		if err := uc.userRepo.WithTx(tx.WriterDB()).Create(ctx, &user); err != nil {
 			return fmt.Errorf("failed to create user: %w", err)
@@ -107,5 +111,5 @@ func (uc *verifyEmail) Do(ctx context.Context, input VerifyEmailInput) (VerifyEm
 		return VerifyEmailOutput{}, err
 	}
 
-	return VerifyEmailOutput{Session: session}, nil
+	return VerifyEmailOutput{Session: session, Token: token}, nil
 }

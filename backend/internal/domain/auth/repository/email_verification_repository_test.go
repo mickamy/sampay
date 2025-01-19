@@ -123,7 +123,7 @@ func TestEmailVerification_FindByRequestedTokenAndPinCode(t *testing.T) {
 		}, {
 			name: "not found (pin code is different)",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
-				m := fixture.EmailVerification(func(m *model.EmailVerification) {
+				m := fixture.EmailVerificationRequested(func(m *model.EmailVerification) {
 					m.Requested.Token = token
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&m).Error)
@@ -135,7 +135,7 @@ func TestEmailVerification_FindByRequestedTokenAndPinCode(t *testing.T) {
 		}, {
 			name: "not found (token is different)",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
-				m := fixture.EmailVerification(func(m *model.EmailVerification) {
+				m := fixture.EmailVerificationRequested(func(m *model.EmailVerification) {
 					m.Requested.PINCode = pin
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&m).Error)

@@ -59,7 +59,7 @@ func (h *EmailVerification) VerifyEmail(
 	ctx context.Context,
 	req *connect.Request[authv1.VerifyEmailRequest],
 ) (*connect.Response[authv1.VerifyEmailResponse], error) {
-	got, err := h.verify.Do(ctx, usecase.VerifyEmailInput{
+	out, err := h.verify.Do(ctx, usecase.VerifyEmailInput{
 		Token:   req.Msg.Token,
 		PINCode: req.Msg.PinCode,
 	})
@@ -76,7 +76,8 @@ func (h *EmailVerification) VerifyEmail(
 		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&authv1.VerifyEmailResponse{
-		Tokens: authResponse.NewTokens(got.Session.Tokens),
+		Session: authResponse.NewTokens(out.Session.Tokens),
+		Token:   out.Token,
 	})
 	return res, nil
 }
