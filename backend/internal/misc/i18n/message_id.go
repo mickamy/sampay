@@ -8,17 +8,17 @@ func (id MessageID) String() string { return string(id) }
 
 const (
 	/**
-	認証情報が無効です。
-	*/
-	AuthUsecaseErrorInvalid_access_refresh_token MessageID = "auth.usecase.error.invalid_access_refresh_token"
-	/**
 	メールアドレスまたはパスワードが正しくありません。
 	*/
-	AuthUsecaseErrorInvalid_email_password MessageID = "auth.usecase.error.invalid_email_password"
+	AuthUsecaseCreate_sessionInvalid_email_password MessageID = "auth.usecase.create_session.invalid_email_password"
+	/**
+	認証情報が無効です。
+	*/
+	AuthUsecaseDelete_sessionInvalid_access_refresh_token MessageID = "auth.usecase.delete_session.invalid_access_refresh_token"
 	/**
 	リフレッシュトークンが無効です。
 	*/
-	AuthUsecaseErrorInvalid_refresh_token MessageID = "auth.usecase.error.invalid_refresh_token"
+	AuthUsecaseRefresh_sessionInvalid_refresh_token MessageID = "auth.usecase.refresh_session.invalid_refresh_token"
 	/**
 	メールログインの確認コードが発行されました。
 	表示されている画面に確認コードを入力してください。

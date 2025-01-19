@@ -72,7 +72,7 @@ func (h *Session) Refresh(
 		if err != nil {
 			slogger.ErrorCtx(ctx, "failed to extract refresh token from cookie", "err", err)
 			return nil, commonResponse.NewBadRequest(err).
-				WithMessage(i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.AuthUsecaseErrorInvalid_refresh_token})).
+				WithMessage(i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.AuthUsecaseRefresh_sessionInvalid_refresh_token})).
 				AsConnectError()
 		}
 		tkn = &tknFromCookie

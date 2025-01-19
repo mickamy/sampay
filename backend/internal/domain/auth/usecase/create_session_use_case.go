@@ -16,7 +16,7 @@ import (
 var (
 	ErrCreateSessionPasswordNotMatch = commonModel.
 		NewLocalizableError(errors.New("password not match")).
-		WithMessages(i18n.Config{MessageID: i18n.AuthUsecaseErrorInvalid_email_password})
+		WithMessages(i18n.Config{MessageID: i18n.AuthUsecaseCreate_sessionInvalid_email_password})
 )
 
 type CreateSessionInput struct {

@@ -15,10 +15,10 @@ import (
 var (
 	ErrDeleteSessionNotFound = commonModel.
 					NewLocalizableError(errors.New("session not found")).
-					WithMessages(i18n.Config{MessageID: i18n.AuthUsecaseErrorInvalid_access_refresh_token})
+					WithMessages(i18n.Config{MessageID: i18n.AuthUsecaseDelete_sessionInvalid_access_refresh_token})
 	ErrDeleteSessionTokenMismatch = commonModel.
 					NewLocalizableError(errors.New("token mismatch")).
-					WithMessages(i18n.Config{MessageID: i18n.AuthUsecaseErrorInvalid_access_refresh_token})
+					WithMessages(i18n.Config{MessageID: i18n.AuthUsecaseDelete_sessionInvalid_access_refresh_token})
 	ErrDeleteSessionDeletingTokensFailed = errors.New("deleting tokens failed")
 )
 

@@ -80,14 +80,14 @@ func (uc *requestEmailVerification) Do(ctx context.Context, input RequestEmailVe
 
 		lang := contexts.MustLanguage(ctx)
 		minute := i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.CommonFormatMinute, TemplateData: map[string]int{"Minute": cfg.EmailVerificationExpiresInMinute()}})
-		body := i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.RegistrationEmailRequest_email_verificationBody, TemplateData: map[string]string{
+		body := i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.AuthUsecaseRequest_email_verificationBody, TemplateData: map[string]string{
 			"ExpiresInMinute": minute,
 			"Code":            m.Requested.PINCode,
 		}})
 		msg, err := message.New(ctx, job.SendEmailJob.String(), job.SendEmailPayload{
 			From:    config.Email().From,
 			To:      m.Email,
-			Subject: i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.RegistrationEmailRequest_email_verificationTitle}),
+			Subject: i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.AuthUsecaseRequest_email_verificationTitle}),
 			Body:    body,
 		})
 		if err != nil {

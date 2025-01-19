@@ -16,7 +16,7 @@ var (
 	ErrRefreshSessionTokenNotFound = commonModel.
 		NewLocalizableError(errors.New("token not found")).
 		WithMessages(i18n.Config{
-			MessageID: i18n.AuthUsecaseErrorInvalid_refresh_token,
+			MessageID: i18n.AuthUsecaseRefresh_sessionInvalid_refresh_token,
 		})
 )
 
