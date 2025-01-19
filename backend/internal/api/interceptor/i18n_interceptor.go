@@ -3,7 +3,7 @@ package interceptor
 import (
 	"context"
 
-	"connectrpc.com/connect"
+	"github.com/bufbuild/connect-go"
 	"github.com/mickamy/slogger"
 	txtlang "golang.org/x/text/language"
 

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"connectrpc.com/connect"
+	"github.com/bufbuild/connect-go"
 	"github.com/mickamy/slogger"
 	"github.com/rs/cors"
 	"golang.org/x/net/http2"

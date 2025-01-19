@@ -3,9 +3,9 @@ package handler
 import (
 	"context"
 
-	"buf.build/gen/go/mickamy/sampay/connectrpc/go/test/v1/testv1connect"
+	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/test/v1/testv1connect"
 	testv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/test/v1"
-	"connectrpc.com/connect"
+	"github.com/bufbuild/connect-go"
 )
 
 type TestHandler struct {

@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"connectrpc.com/connect"
+	"github.com/bufbuild/connect-go"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/kvs"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"

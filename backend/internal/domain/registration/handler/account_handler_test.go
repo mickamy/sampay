@@ -6,11 +6,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"buf.build/gen/go/mickamy/sampay/connectrpc/go/registration/v1/registrationv1connect"
+	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/registration/v1/registrationv1connect"
 	commonv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/common/v1"
 	registrationv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/registration/v1"
-	"connectrpc.com/connect"
 	"github.com/brianvoe/gofakeit/v7"
+	"github.com/bufbuild/connect-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 

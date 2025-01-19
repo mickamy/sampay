@@ -42,7 +42,7 @@ install-mod: ## Install go modules
 	go mod tidy
 
 update-mod: ## Update go modules
-	go get -u buf.build/gen/go/mickamy/sampay/bufbuild/connect-go@latest
+	go get -u buf.build/gen/go/mickamy/sampay/connectrpc/go@latest
 	go get -u buf.build/gen/go/mickamy/sampay/protocolbuffers/go@latest
 	go get -u ./...
 	go mod tidy

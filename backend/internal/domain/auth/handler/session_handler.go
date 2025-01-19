@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"buf.build/gen/go/mickamy/sampay/connectrpc/go/auth/v1/authv1connect"
+	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/auth/v1/authv1connect"
 	authv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/auth/v1"
-	"connectrpc.com/connect"
+	"github.com/bufbuild/connect-go"
 	"github.com/mickamy/slogger"
 
 	authResponse "mickamy.com/sampay/internal/domain/auth/dto/response"
