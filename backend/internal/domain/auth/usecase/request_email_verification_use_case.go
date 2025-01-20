@@ -20,13 +20,17 @@ import (
 
 var (
 	ErrRequestEmailVerificationEmailAlreadyExists = commonModel.
-		NewLocalizableError(errors.New("email already exists")).
-		WithMessages(i18n.Config{MessageID: i18n.RegistrationUsecaseCommonErrorEmail_already_exists})
+							NewLocalizableError(errors.New("email already exists")).
+							WithMessages(i18n.Config{MessageID: i18n.AuthUsecaseRequest_email_verificationErrorEmail_already_exists})
+	ErrRequestEmailVerificationAuthenticationNotFound = commonModel.
+								NewLocalizableError(errors.New("authentication not found")).
+								WithMessages(i18n.Config{MessageID: i18n.AuthUsecaseRequest_email_verificationErrorEmail_not_found})
 )
 
 type RequestEmailVerificationInput struct {
-	Email    string
-	Password string
+	IntentType authModel.EmailVerificationIntentType
+	Email      string
+	Password   string
 }
 
 type RequestEmailVerificationOutput struct {
@@ -60,7 +64,10 @@ func NewRequestEmailVerification(
 }
 
 func (uc *requestEmailVerification) Do(ctx context.Context, input RequestEmailVerificationInput) (RequestEmailVerificationOutput, error) {
-	m := authModel.EmailVerification{Email: input.Email}
+	m := authModel.EmailVerification{
+		IntentType: input.IntentType,
+		Email:      input.Email,
+	}
 	cfg := config.Auth()
 	if err := m.Request(cfg.EmailVerificationExpiresInDuration()); err != nil {
 		return RequestEmailVerificationOutput{}, fmt.Errorf("failed to request email verification: %w", err)
@@ -70,8 +77,10 @@ func (uc *requestEmailVerification) Do(ctx context.Context, input RequestEmailVe
 		if err != nil {
 			return fmt.Errorf("failed to check email existence: %w", err)
 		}
-		if exists {
+		if input.IntentType == authModel.EmailVerificationIntentTypeSignUp && exists {
 			return errors.Join(ErrRequestEmailVerificationEmailAlreadyExists, fmt.Errorf("email=[%s]", m.Email))
+		} else if input.IntentType == authModel.EmailVerificationIntentTypeResetPassword && !exists {
+			return errors.Join(ErrRequestEmailVerificationAuthenticationNotFound, fmt.Errorf("email=[%s]", m.Email))
 		}
 
 		if err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).Create(ctx, &m); err != nil {

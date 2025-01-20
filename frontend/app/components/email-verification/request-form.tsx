@@ -1,7 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type HTMLAttributes, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
+import VerifyEmailDialog from "~/components/email-verification/dialog";
+import type {
+  ActionData as VerifyEmailFormActionData,
+  verifyEmailSchema,
+} from "~/components/email-verification/verify-form";
 import ErrorMessage from "~/components/error-message";
 import { FormField } from "~/components/form";
 import LoadableButton from "~/components/loadable-button";
@@ -12,14 +16,9 @@ import type { APIError } from "~/lib/api/response";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
 import { cn } from "~/lib/utils";
-import VerificationDialog from "~/routes/account/sign-up/components/verification-dialog";
-import type {
-  ActionData as VerifyEmailFormActionData,
-  verifyEmailSchema,
-} from "~/routes/account/sign-up/components/verify-email-form";
 
 export const requestEmailVerificationSchema = z.object({
-  intent: z.enum(["request"]),
+  intent: z.enum(["request_email_verification"]),
   email: z.string().email(),
 });
 
@@ -49,7 +48,7 @@ export default function RequestEmailVerificationForm({
     props: {
       resolver: zodResolver(requestEmailVerificationSchema),
       defaultValues: {
-        intent: "request",
+        intent: "request_email_verification",
         email: "",
       },
     },
@@ -63,12 +62,6 @@ export default function RequestEmailVerificationForm({
     closeDialog: closeSentDialog,
     isDialogOpen: isSentDialogOpen,
   } = useDialog<ActionData>();
-
-  const navigate = useNavigate();
-  const onCloseSentDialog = useCallback(() => {
-    closeSentDialog();
-    navigate("/");
-  }, [closeSentDialog, navigate]);
 
   useEffect(() => {
     if (actionData?.requestVerificationSuccess) {
@@ -106,19 +99,19 @@ export default function RequestEmailVerificationForm({
             name="email"
             label={t("form.email")}
             type="email"
-            placeholder="sampay@example.com"
+            placeholder="example@sampay.link"
           />
           <Spacer />
           <ErrorMessage message={form.formState.errors.root?.message} />
           <LoadableButton isLoading={isSubmitting} className="w-full">
-            {t("form.sign_up")}
+            {t("components.email_verification.request_form.submit")}
           </LoadableButton>
         </form>
       </Form>
-      <VerificationDialog
+      <VerifyEmailDialog
         email={form.watch("email")}
         isOpen={isSentDialogOpen}
-        onClose={onCloseSentDialog}
+        onClose={closeSentDialog}
         onVerifyEmail={onVerifyEmail}
         actionData={actionData}
       />

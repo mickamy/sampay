@@ -13,7 +13,6 @@ import (
 	authFixture "mickamy.com/sampay/internal/domain/auth/fixture"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	"mickamy.com/sampay/internal/domain/registration/usecase"
-	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/lib/contexts"
 	"mickamy.com/sampay/internal/lib/either"
 	"mickamy.com/sampay/internal/lib/random"
@@ -33,19 +32,21 @@ func TestCreatePassword_Do(t *testing.T) {
 			name: "success",
 			arrange: func(t *testing.T, ctx context.Context, db *database.Writer) {
 				verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Verified.Token = token
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&verification).Error)
 			},
 			assert: func(t *testing.T, got usecase.CreatePasswordOutput, err error) {
 				require.NoError(t, err)
-				assert.Empty(t, got)
+				assert.NotEmpty(t, got.Session)
 			},
 		},
 		{
 			name: "invalid token",
 			arrange: func(t *testing.T, ctx context.Context, db *database.Writer) {
 				verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Verified.Token = either.Must(random.NewString(32))
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&verification).Error)
@@ -53,12 +54,14 @@ func TestCreatePassword_Do(t *testing.T) {
 			assert: func(t *testing.T, got usecase.CreatePasswordOutput, err error) {
 				require.Error(t, err)
 				assert.ErrorContains(t, err, "email verification not found")
+				assert.Empty(t, got)
 			},
 		},
 		{
 			name: "already consumed",
 			arrange: func(t *testing.T, ctx context.Context, db *database.Writer) {
 				verification := authFixture.EmailVerificationConsumed(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Verified.Token = token
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&verification).Error)
@@ -66,6 +69,7 @@ func TestCreatePassword_Do(t *testing.T) {
 			assert: func(t *testing.T, got usecase.CreatePasswordOutput, err error) {
 				require.Error(t, err)
 				assert.ErrorContains(t, err, "email verification already consumed")
+				assert.Empty(t, got)
 			},
 		},
 	}
@@ -77,14 +81,11 @@ func TestCreatePassword_Do(t *testing.T) {
 
 			ctx := context.Background()
 			db := newReadWriter(t)
-			user := userFixture.User(nil)
-			require.NoError(t, db.Writer().WithContext(ctx).Create(&user).Error)
-			ctx = contexts.SetAuthenticatedUserID(ctx, user.ID)
+			ctx = contexts.SetAnonymousUserToken(ctx, token)
 			tc.arrange(t, ctx, db.Writer())
 
 			sut := di.InitRegistrationUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).CreatePassword
 			got, err := sut.Do(ctx, usecase.CreatePasswordInput{
-				Token:    token,
 				Password: gofakeit.Password(true, true, true, false, false, 12),
 			})
 

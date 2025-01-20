@@ -8,6 +8,7 @@ import (
 )
 
 type authenticatedUserIDKey struct{}
+type anonymousUserTokenKey struct{}
 type languageKey struct{}
 
 func SetAuthenticatedUserID(ctx context.Context, userID string) context.Context {
@@ -28,6 +29,26 @@ func MustAuthenticatedUserID(ctx context.Context) string {
 		panic(err)
 	}
 	return id
+}
+
+func SetAnonymousUserToken(ctx context.Context, token string) context.Context {
+	return context.WithValue(ctx, anonymousUserTokenKey{}, token)
+}
+
+func AnonymousUserToken(ctx context.Context) (string, error) {
+	token, ok := ctx.Value(anonymousUserTokenKey{}).(string)
+	if ok {
+		return token, nil
+	}
+	return token, errors.New("no anonymous user token found in context")
+}
+
+func MustAnonymousUserToken(ctx context.Context) string {
+	token, err := AnonymousUserToken(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return token
 }
 
 func SetLanguage(ctx context.Context, lang language.Type) context.Context {

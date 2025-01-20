@@ -2,9 +2,11 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
+	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	authRepository "mickamy.com/sampay/internal/domain/auth/repository"
 	registrationModel "mickamy.com/sampay/internal/domain/registration/model"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
@@ -24,38 +26,70 @@ type GetOnboardingStep interface {
 }
 
 type getOnboardingStep struct {
-	reader   *database.Reader
-	authRepo authRepository.Authentication
-	userRepo userRepository.User
+	reader                *database.Reader
+	emailVerificationRepo authRepository.EmailVerification
+	authRepo              authRepository.Authentication
+	userRepo              userRepository.User
 }
 
 func NewGetOnboardingStep(
 	reader *database.Reader,
+	emailVerificationRepo authRepository.EmailVerification,
 	authRepo authRepository.Authentication,
 	userRepo userRepository.User,
 ) GetOnboardingStep {
 	return &getOnboardingStep{
-		reader:   reader,
-		authRepo: authRepo,
-		userRepo: userRepo,
+		reader:                reader,
+		emailVerificationRepo: emailVerificationRepo,
+		authRepo:              authRepo,
+		userRepo:              userRepo,
 	}
 }
 
 func (uc *getOnboardingStep) Do(ctx context.Context, input GetOnboardingStepInput) (GetOnboardingStepOutput, error) {
 	var step registrationModel.OnboardingStep
-
 	if err := uc.reader.ReaderTransaction(ctx, func(tx database.ReaderTransactional) error {
-		id := contexts.MustAuthenticatedUserID(ctx)
-		auths, err := uc.authRepo.WithTx(tx.ReaderDB()).ListByUserID(ctx, id)
-		if err != nil {
-			return fmt.Errorf("failed to find user: %w", err)
-		}
-		if len(auths) == 0 {
-			step = registrationModel.OnboardingStepPassword
-			return nil
+		userID, err := contexts.AuthenticatedUserID(ctx)
+		if userID != "" {
+			// check if user has password
+			auth, err := uc.authRepo.WithTx(tx.ReaderDB()).FindByUserIDAndType(ctx, userID, authModel.AuthenticationTypeEmailPassword)
+			if err != nil {
+				return fmt.Errorf("failed to find auth: %w", err)
+			}
+			if auth == nil {
+				step = registrationModel.OnboardingStepPassword
+				return nil
+			}
+		} else if err != nil {
+			// authenticated by anonymous token
+			token, err := contexts.AnonymousUserToken(ctx)
+			if err != nil {
+				return fmt.Errorf("failed to get user id: %w", err)
+			}
+
+			// get email from email verification
+			verification, err := uc.emailVerificationRepo.WithTx(tx.ReaderDB()).FindByVerifiedToken(ctx, token)
+			if err != nil {
+				return fmt.Errorf("failed to find email verification: %w", err)
+			}
+			if verification == nil {
+				return errors.New("email verification not found")
+			}
+
+			// check if user has password
+			auth, err := uc.authRepo.FindByTypeAndIdentifier(ctx, authModel.AuthenticationTypeEmailPassword, verification.Email)
+			if err != nil {
+				return fmt.Errorf("failed to find auth: %w", err)
+			}
+			if auth == nil {
+				step = registrationModel.OnboardingStepPassword
+				return nil
+			}
+
+			userID = auth.UserID
 		}
 
-		user, err := uc.userRepo.WithTx(tx.ReaderDB()).Get(ctx, id, userRepository.UserJoinAttribute, userRepository.UserJoinProfile)
+		user, err := uc.userRepo.WithTx(tx.ReaderDB()).Get(ctx, userID, userRepository.UserJoinAttribute, userRepository.UserJoinProfile)
 		if err != nil {
 			return fmt.Errorf("failed to get user with attribute and profile: %w", err)
 		}

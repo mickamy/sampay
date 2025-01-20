@@ -21,6 +21,7 @@ import {
   getAuthenticatedSession,
   setAuthenticatedSession,
 } from "~/lib/cookie/authenticated.server";
+import { getEmailVerificationSession } from "~/lib/cookie/email-verification.server";
 import { type Either, Left, Right } from "~/lib/either/either";
 import logger from "~/lib/logger";
 import { convertTokensToSession } from "~/models/auth/session-model";
@@ -47,6 +48,46 @@ export async function authenticate(
 
 export type getClientType = <T extends DescService>(service: T) => Client<T>;
 
+export async function withEmailVerification(
+  {
+    request,
+  }: {
+    request: Request;
+  },
+  execute: ({ getClient }: { getClient: getClientType }) => Promise<Response>,
+): Promise<Either<Response, APIError>> {
+  try {
+    const session = await getEmailVerificationSession(request);
+    if (!session || !session.verify) {
+      return new Left(redirect("/auth/sign-in"));
+    }
+    const transport = createConnectTransport({
+      baseUrl: API_BASE_URL,
+      interceptors: [
+        createI18NInterceptor(request),
+        createAuthenticateInterceptor(session.verify),
+        loggingInterceptor,
+      ],
+    });
+    const res = await execute({
+      getClient: (service) => createClient(service, transport),
+    });
+    return new Left(res);
+  } catch (e) {
+    if (e instanceof ConnectError) {
+      if (e.code === Code.Unauthenticated) {
+        throw redirect("/auth/sign-in");
+      }
+      return new Right(convertToAPIError(e));
+    }
+    if (e instanceof Response) {
+      return new Left(e);
+    }
+    logger.error({ error: e }, "unexpected error");
+    throw e;
+  }
+}
+
 export async function withAuthentication(
   {
     request,
@@ -61,7 +102,7 @@ export async function withAuthentication(
       baseUrl: API_BASE_URL,
       interceptors: [
         createI18NInterceptor(request),
-        createAuthenticateInterceptor(session),
+        createAuthenticateInterceptor(session.tokens.access.value),
         loggingInterceptor,
       ],
     });
@@ -76,6 +117,9 @@ export async function withAuthentication(
         throw redirect("/auth/sign-in");
       }
       return new Right(convertToAPIError(e));
+    }
+    if (e instanceof Response) {
+      return new Left(e);
     }
     logger.error({ error: e }, "unexpected error");
     throw e;

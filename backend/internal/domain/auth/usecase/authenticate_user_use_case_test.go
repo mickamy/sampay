@@ -30,7 +30,7 @@ func TestAuthenticateUser_Do(t *testing.T) {
 	// act
 	sut := di.InitAuthUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), kvs).AuthenticateUser
 	got, err := sut.Do(ctx, usecase.AuthenticateUserInput{
-		AccessToken: session.Tokens.Access.Value,
+		Token: session.Tokens.Access.Value,
 	})
 
 	// assert

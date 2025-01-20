@@ -6,11 +6,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"buf.build/gen/go/mickamy/sampay/bufbuild/connect-go/registration/v1/registrationv1connect"
+	"buf.build/gen/go/mickamy/sampay/connectrpc/go/registration/v1/registrationv1connect"
 	commonv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/common/v1"
 	registrationv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/registration/v1"
+	"connectrpc.com/connect"
 	"github.com/brianvoe/gofakeit/v7"
-	"github.com/bufbuild/connect-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -73,7 +73,7 @@ func TestAccount_SignUp(t *testing.T) {
 					require.Len(t, errMsg.FieldViolations, 1)
 					require.Equal(t, "email", errMsg.FieldViolations[0].Field)
 					require.Len(t, errMsg.FieldViolations[0].Descriptions, 1)
-					require.Equal(t, i18n.MustJapaneseMessage(i18n.Config{MessageID: i18n.RegistrationUsecaseCommonErrorEmail_already_exists}), errMsg.FieldViolations[0].Descriptions[0])
+					require.Equal(t, i18n.MustJapaneseMessage(i18n.Config{MessageID: i18n.RegistrationUsecaseCreate_accountErrorEmail_already_exists}), errMsg.FieldViolations[0].Descriptions[0])
 				} else {
 					require.Failf(t, "unexpected detail type", "got=%T", detail)
 				}

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	testv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/test/v1"
-	"github.com/bufbuild/connect-go"
+	"connectrpc.com/connect"
 )
 
 type EchoHandler struct{}

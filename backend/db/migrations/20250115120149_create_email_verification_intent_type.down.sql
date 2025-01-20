@@ -1,0 +1,1 @@
+DROP TYPE email_verification_intent_type;

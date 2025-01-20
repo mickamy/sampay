@@ -22,31 +22,37 @@ var RepositorySet = wire.NewSet(
 )
 
 type UseCases struct {
+	usecase.AuthenticateAnonymousUser
 	usecase.AuthenticateUser
 	usecase.CreateSession
 	usecase.DeleteSession
 	usecase.RefreshSession
 	usecase.RequestEmailVerification
+	usecase.ResetPassword
 	usecase.VerifyEmail
 }
 
 //lint:ignore U1000 used by wire
 var UseCaseSet = wire.NewSet(
+	usecase.NewAuthenticateAnonymousUser,
 	usecase.NewAuthenticateUser,
 	usecase.NewCreateSession,
 	usecase.NewDeleteSession,
 	usecase.NewRefreshSession,
+	usecase.NewResetPassword,
 	usecase.NewRequestEmailVerification,
 	usecase.NewVerifyEmail,
 )
 
 type Handlers struct {
-	*handler.Session
 	*handler.EmailVerification
+	*handler.PasswordReset
+	*handler.Session
 }
 
 //lint:ignore U1000 used by wire
 var HandlerSet = wire.NewSet(
-	handler.NewSession,
 	handler.NewEmailVerification,
+	handler.NewPasswordReset,
+	handler.NewSession,
 )

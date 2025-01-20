@@ -1,5 +1,4 @@
 import type { Interceptor } from "@connectrpc/connect";
-import type { AuthenticatedSession } from "~/lib/cookie/authenticated.server";
 import i18nServer from "~/lib/i18n/index.server";
 import logger from "~/lib/logger";
 
@@ -15,12 +14,10 @@ export const loggingInterceptor: Interceptor = (next) => async (req) => {
   return res;
 };
 
-export function createAuthenticateInterceptor(
-  session: AuthenticatedSession,
-): Interceptor {
+export function createAuthenticateInterceptor(token: string): Interceptor {
   return (next) => async (req) => {
     if (req.header.get("Authorization") == null) {
-      req.header.set("Authorization", `Bearer ${session.tokens.access.value}`);
+      req.header.set("Authorization", `Bearer ${token}`);
     }
     return next(req);
   };

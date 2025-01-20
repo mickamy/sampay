@@ -10,6 +10,10 @@ export default [
 
   route("account/sign-up", "routes/account/sign-up/sign-up-route.tsx"),
   ...prefix("auth", [
+    route(
+      "/reset-password",
+      "routes/auth/reset-password/reset-password-route.tsx",
+    ),
     route("/sign-in", "routes/auth/sign-in/sign-in-route.tsx"),
     route("/sign-out", "routes/auth/sign-out/sign-out-route.tsx"),
   ]),

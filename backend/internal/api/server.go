@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/bufbuild/connect-go"
+	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 	"github.com/rs/cors"
 	"golang.org/x/net/http2"
@@ -22,11 +22,12 @@ import (
 func NewServer(infras di.Infras) http.Server {
 	mux := http.NewServeMux()
 
+	authUCs := di.InitAuthUseCases(infras.DB, infras.ReadWriter, infras.Writer, infras.Reader, infras.KVS)
 	interceptors := connect.WithInterceptors(
 		interceptor.Logging(),
 		interceptor.I18N(),
 		interceptor.Recovery(),
-		interceptor.Authenticate(di.InitAuthUseCases(infras.DB, infras.ReadWriter, infras.Writer, infras.Reader, infras.KVS).AuthenticateUser),
+		interceptor.Authenticate(authUCs.AuthenticateUser, authUCs.AuthenticateAnonymousUser),
 		interceptor.Cookie(),
 	)
 

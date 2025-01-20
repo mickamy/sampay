@@ -21,9 +21,10 @@ var (
 )
 
 type EmailVerification struct {
-	ID        string
-	Email     string
-	CreatedAt time.Time
+	ID         string
+	IntentType EmailVerificationIntentType
+	Email      string
+	CreatedAt  time.Time
 
 	Requested *RequestedEmailVerification
 	Verified  *VerifiedEmailVerification

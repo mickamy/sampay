@@ -1,26 +1,25 @@
-import { EmailVerificationService } from "@buf/mickamy_sampay.bufbuild_es/auth/v1/email_verification_pb";
+import {
+  EmailVerificationService,
+  RequestVerificationRequest_IntentType,
+} from "@buf/mickamy_sampay.bufbuild_es/auth/v1/email_verification_pb";
 import { ConnectError } from "@connectrpc/connect";
 import {
   type ActionFunction,
   type LoaderFunction,
   redirect,
 } from "react-router";
+import { requestEmailVerificationSchema } from "~/components/email-verification/request-form";
+import { verifyEmailSchema } from "~/components/email-verification/verify-form";
 import { getClient } from "~/lib/api/client";
 import { convertToAPIError } from "~/lib/api/response";
+import { isLoggedIn } from "~/lib/cookie/authenticated.server";
 import {
-  isLoggedIn,
-  setAuthenticatedSession,
-} from "~/lib/cookie/authenticated.server";
-import {
-  getRegistrationSession,
-  setRegistrationSession,
-} from "~/lib/cookie/registration.server";
-import { convertTokensToSession } from "~/models/auth/session-model";
-import { requestEmailVerificationSchema } from "~/routes/account/sign-up/components/request-email-verification-form";
+  getEmailVerificationSession,
+  setEmailVerificationSession,
+} from "~/lib/cookie/email-verification.server";
 import SignUpScreen, {
   type ActionData,
 } from "~/routes/account/sign-up/components/sign-up-screen";
-import { verifyEmailSchema } from "~/routes/account/sign-up/components/verify-email-form";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const loggedIn = await isLoggedIn(request);
@@ -40,9 +39,9 @@ export const action: ActionFunction = async ({ request }) => {
       case "POST": {
         const body = await request.json();
         switch (body.intent) {
-          case "request":
+          case "request_email_verification":
             return requestVerification({ request, body });
-          case "verify":
+          case "verify_email":
             return verifyEmail({ request, body });
         }
         throw new Response(null, { status: 405 });
@@ -64,13 +63,14 @@ async function requestVerification({
       service: EmailVerificationService,
       request,
     }).requestVerification({
+      intentType: RequestVerificationRequest_IntentType.SIGN_UP,
       email,
     });
 
     const actionData: ActionData = { requestVerificationSuccess: true };
     return Response.json(actionData, {
       headers: {
-        "set-cookie": await setRegistrationSession({ request_token: token }),
+        "set-cookie": await setEmailVerificationSession({ request: token }),
       },
     });
   } catch (e) {
@@ -90,27 +90,18 @@ async function verifyEmail({
 }: { request: Request; body: unknown }): Promise<Response> {
   try {
     const { pin_code } = verifyEmailSchema.parse(body);
-    const { session, token } = await getClient({
+    const { token } = await getClient({
       service: EmailVerificationService,
       request,
     }).verifyEmail({
-      token: (await getRegistrationSession(request))?.request_token,
+      token: (await getEmailVerificationSession(request))?.request,
       pinCode: pin_code,
     });
 
-    if (!session || !session.access || !session.refresh) {
-      throw new Error("no session returned from verify email");
-    }
-    const tokens = convertTokensToSession(session);
-    if (!tokens) {
-      throw new Error("failed to convert tokens to session");
-    }
-
     const headers = new Headers();
-    headers.append("set-cookie", await setAuthenticatedSession(tokens));
     headers.append(
       "set-cookie",
-      await setRegistrationSession({ verify_token: token }),
+      await setEmailVerificationSession({ verify: token }),
     );
     return redirect("/onboarding", {
       headers,

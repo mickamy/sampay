@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/bufbuild/connect-go"
+	"connectrpc.com/connect"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/kvs"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
@@ -33,5 +33,13 @@ func NewAuthenticatedRequest[T any](t *testing.T, ctx context.Context, message *
 	if err := authRepository.NewSession(kvs).Create(ctx, session); err != nil {
 		t.Fatal(fmt.Errorf("failed to persist session: %w", err))
 	}
+	return req
+}
+
+func NewAnonymousRequest[T any](t *testing.T, ctx context.Context, message *T, header http.Header, verification authModel.EmailVerification) *connect.Request[T] {
+	t.Helper()
+
+	req := NewRequest(t, ctx, message, header)
+	req.Header().Add("Authorization", "Bearer "+verification.Verified.Token)
 	return req
 }

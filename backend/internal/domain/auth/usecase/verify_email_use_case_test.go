@@ -32,6 +32,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 			name: "success",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := authFixture.EmailVerificationRequested(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Requested.Token = token
 					m.Requested.PINCode = pin
 				})
@@ -39,7 +40,6 @@ func TestVerifyEmail_Do(t *testing.T) {
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
 				require.NoError(t, err)
-				assert.NotEmpty(t, got.Session)
 				assert.NotEmpty(t, got.Token)
 			},
 		},
@@ -47,19 +47,23 @@ func TestVerifyEmail_Do(t *testing.T) {
 			name: "different token",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := authFixture.EmailVerificationRequested(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Requested.Token = either.Must(random.NewString(32))
 					m.Requested.PINCode = pin
 				})
 				assert.NoError(t, db.WithContext(ctx).Create(&m).Error)
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
+				require.Error(t, err)
 				assert.ErrorIs(t, err, usecase.ErrVerifyEmailInvalidToken)
+				assert.Empty(t, got)
 			},
 		},
 		{
 			name: "pin code expired",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := authFixture.EmailVerificationRequested(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Requested.Token = token
 					m.Requested.PINCode = pin
 					m.Requested.ExpiresAt = time.Now().Add(-time.Second)
@@ -67,6 +71,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 				assert.NoError(t, db.WithContext(ctx).Create(&m).Error)
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
+				require.Error(t, err)
 				assert.ErrorIs(t, err, authModel.ErrEmailVerificationTokenExpired)
 				assert.ErrorContains(t, err, "failed to verify email verification")
 				assert.Empty(t, got)
@@ -76,6 +81,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 			name: "pin code not expired",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := authFixture.EmailVerificationRequested(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Requested.Token = token
 					m.Requested.PINCode = pin
 					m.Requested.ExpiresAt = time.Now().Add(5 * time.Second)
@@ -84,20 +90,22 @@ func TestVerifyEmail_Do(t *testing.T) {
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
 				require.NoError(t, err)
-				assert.NotEmpty(t, got.Session)
+				assert.NotEmpty(t, got.Token)
 			},
 		},
 		{
 			name: "pin code verified",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Requested.Token = token
 					m.Requested.PINCode = pin
 				})
 				assert.NoError(t, db.WithContext(ctx).Create(&m).Error)
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
-				require.ErrorIs(t, err, usecase.ErrVerifyEmailInvalidToken)
+				require.Error(t, err)
+				assert.ErrorIs(t, err, usecase.ErrVerifyEmailInvalidToken)
 				assert.Empty(t, got)
 			},
 		},
@@ -105,12 +113,14 @@ func TestVerifyEmail_Do(t *testing.T) {
 			name: "pin code consumed",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := authFixture.EmailVerificationConsumed(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Requested.Token = token
 					m.Requested.PINCode = pin
 				})
 				assert.NoError(t, db.WithContext(ctx).Create(&m).Error)
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
+				require.Error(t, err)
 				assert.ErrorIs(t, err, usecase.ErrVerifyEmailInvalidToken)
 			},
 		},

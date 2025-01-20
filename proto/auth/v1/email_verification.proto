@@ -3,10 +3,16 @@ syntax = "proto3";
 package auth.v1;
 
 import "buf/validate/validate.proto";
-import "auth/v1/common.proto";
 
 message RequestVerificationRequest {
-  string email = 1 [(buf.validate.field).string.email = true];
+  enum IntentType {
+    INTENT_TYPE_UNSPECIFIED = 0;
+    INTENT_TYPE_SIGN_UP = 1;
+    INTENT_TYPE_RESET_PASSWORD = 2;
+  }
+
+  IntentType intent_type = 1 [(buf.validate.field).enum.defined_only = true];
+  string email = 2 [(buf.validate.field).string.email = true];
 }
 
 message RequestVerificationResponse {
@@ -19,8 +25,7 @@ message VerifyEmailRequest {
 }
 
 message VerifyEmailResponse {
-  auth.v1.Tokens session = 1;
-  string token = 2 [(buf.validate.field).string.len = 64];
+  string token = 1 [(buf.validate.field).string.len = 64];
 }
 
 service EmailVerificationService {

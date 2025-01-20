@@ -9,6 +9,8 @@ import (
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	authRepository "mickamy.com/sampay/internal/domain/auth/repository"
 	commonModel "mickamy.com/sampay/internal/domain/common/model"
+	userModel "mickamy.com/sampay/internal/domain/user/model"
+	userRepository "mickamy.com/sampay/internal/domain/user/repository"
 	"mickamy.com/sampay/internal/lib/contexts"
 	"mickamy.com/sampay/internal/misc/i18n"
 )
@@ -21,11 +23,11 @@ var (
 )
 
 type CreatePasswordInput struct {
-	Token    string
 	Password string
 }
 
 type CreatePasswordOutput struct {
+	Session authModel.Session
 }
 
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
@@ -37,23 +39,30 @@ type createPassword struct {
 	writer                *database.Writer
 	emailVerificationRepo authRepository.EmailVerification
 	authenticationRepo    authRepository.Authentication
+	userRepo              userRepository.User
+	sessionRepo           authRepository.Session
 }
 
 func NewCreatePassword(
 	writer *database.Writer,
 	emailVerificationRepo authRepository.EmailVerification,
 	authenticationRepo authRepository.Authentication,
+	userRepo userRepository.User,
+	sessionRepo authRepository.Session,
 ) CreatePassword {
 	return &createPassword{
 		writer:                writer,
 		emailVerificationRepo: emailVerificationRepo,
 		authenticationRepo:    authenticationRepo,
+		userRepo:              userRepo,
+		sessionRepo:           sessionRepo,
 	}
 }
 
 func (uc *createPassword) Do(ctx context.Context, input CreatePasswordInput) (CreatePasswordOutput, error) {
+	var session authModel.Session
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
-		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByVerifiedToken(ctx, input.Token, authRepository.EmailVerificationInnerJoinRequested, authRepository.EmailVerificationJoinConsumed)
+		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByVerifiedToken(ctx, contexts.MustAnonymousUserToken(ctx), authRepository.EmailVerificationInnerJoinRequested, authRepository.EmailVerificationJoinConsumed)
 		if err != nil {
 			return fmt.Errorf("failed to find email verification: %w", err)
 		}
@@ -71,13 +80,27 @@ func (uc *createPassword) Do(ctx context.Context, input CreatePasswordInput) (Cr
 			return fmt.Errorf("failed to update email verification: %w", err)
 		}
 
-		m, err := authModel.NewAuthenticationEmailPassword(contexts.MustAuthenticatedUserID(ctx), verification.Email, input.Password)
-		if err != nil {
-			return fmt.Errorf("failed to create authentication model: %w", err)
+		user := userModel.User{}
+		if err := uc.userRepo.WithTx(tx.WriterDB()).Create(ctx, &user); err != nil {
+			return fmt.Errorf("failed to create user: %w", err)
 		}
 
-		if err := uc.authenticationRepo.WithTx(tx.WriterDB()).Create(ctx, &m); err != nil {
+		auth, err := authModel.NewAuthenticationEmailPassword(user.ID, verification.Email, input.Password)
+		if err != nil {
+			return fmt.Errorf("failed to create authentication: %w", err)
+		}
+
+		if err := uc.authenticationRepo.WithTx(tx.WriterDB()).Create(ctx, &auth); err != nil {
 			return fmt.Errorf("failed to persist user attribute: %w", err)
+		}
+
+		session, err = authModel.NewSession(user.ID)
+		if err != nil {
+			return fmt.Errorf("failed to create session: %w", err)
+		}
+
+		if err := uc.sessionRepo.Create(ctx, session); err != nil {
+			return fmt.Errorf("failed to create session: %w", err)
 		}
 
 		return nil
@@ -85,5 +108,5 @@ func (uc *createPassword) Do(ctx context.Context, input CreatePasswordInput) (Cr
 		return CreatePasswordOutput{}, err
 	}
 
-	return CreatePasswordOutput{}, nil
+	return CreatePasswordOutput{Session: session}, nil
 }

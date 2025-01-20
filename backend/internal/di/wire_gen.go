@@ -124,6 +124,8 @@ func InitAuthRepositories(db *database.DB, readWriter *database.ReadWriter, writ
 }
 
 func InitAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di.UseCases {
+	emailVerification := repository.NewEmailVerification(db)
+	authenticateAnonymousUser := usecase.NewAuthenticateAnonymousUser(reader, emailVerification)
 	session := repository.NewSession(kvs2)
 	user := repository2.NewUser(db)
 	authenticateUser := usecase.NewAuthenticateUser(reader, session, user)
@@ -136,40 +138,45 @@ func InitAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *
 	producerConfig := provideProducerConfig(awsConfig, kvsConfig)
 	client := provideSQSClient(awsConfig)
 	producer := provideProducer(producerConfig, client)
-	emailVerification := repository.NewEmailVerification(db)
 	requestEmailVerification := usecase.NewRequestEmailVerification(writer, producer, authentication, emailVerification)
-	verifyEmail := usecase.NewVerifyEmail(writer, producer, emailVerification, user, session)
+	resetPassword := usecase.NewResetPassword(writer, emailVerification, authentication)
+	verifyEmail := usecase.NewVerifyEmail(writer, producer, emailVerification)
 	useCases := di.UseCases{
-		AuthenticateUser:         authenticateUser,
-		CreateSession:            createSession,
-		DeleteSession:            deleteSession,
-		RefreshSession:           refreshSession,
-		RequestEmailVerification: requestEmailVerification,
-		VerifyEmail:              verifyEmail,
+		AuthenticateAnonymousUser: authenticateAnonymousUser,
+		AuthenticateUser:          authenticateUser,
+		CreateSession:             createSession,
+		DeleteSession:             deleteSession,
+		RefreshSession:            refreshSession,
+		RequestEmailVerification:  requestEmailVerification,
+		ResetPassword:             resetPassword,
+		VerifyEmail:               verifyEmail,
 	}
 	return useCases
 }
 
 func InitAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di.Handlers {
+	awsConfig := config.AWS()
+	kvsConfig := config.KVS()
+	producerConfig := provideProducerConfig(awsConfig, kvsConfig)
+	client := provideSQSClient(awsConfig)
+	producer := provideProducer(producerConfig, client)
 	authentication := repository.NewAuthentication(db)
+	emailVerification := repository.NewEmailVerification(db)
+	requestEmailVerification := usecase.NewRequestEmailVerification(writer, producer, authentication, emailVerification)
+	verifyEmail := usecase.NewVerifyEmail(writer, producer, emailVerification)
+	handlerEmailVerification := handler.NewEmailVerification(requestEmailVerification, verifyEmail)
+	resetPassword := usecase.NewResetPassword(writer, emailVerification, authentication)
+	passwordReset := handler.NewPasswordReset(resetPassword)
 	session := repository.NewSession(kvs2)
 	user := repository2.NewUser(db)
 	createSession := usecase.NewCreateSession(reader, authentication, session, user)
 	refreshSession := usecase.NewRefreshSession(session)
 	deleteSession := usecase.NewDeleteSession(session)
 	handlerSession := handler.NewSession(createSession, refreshSession, deleteSession)
-	awsConfig := config.AWS()
-	kvsConfig := config.KVS()
-	producerConfig := provideProducerConfig(awsConfig, kvsConfig)
-	client := provideSQSClient(awsConfig)
-	producer := provideProducer(producerConfig, client)
-	emailVerification := repository.NewEmailVerification(db)
-	requestEmailVerification := usecase.NewRequestEmailVerification(writer, producer, authentication, emailVerification)
-	verifyEmail := usecase.NewVerifyEmail(writer, producer, emailVerification, user, session)
-	handlerEmailVerification := handler.NewEmailVerification(requestEmailVerification, verifyEmail)
 	handlers := di.Handlers{
-		Session:           handlerSession,
 		EmailVerification: handlerEmailVerification,
+		PasswordReset:     passwordReset,
+		Session:           handlerSession,
 	}
 	return handlers
 }
@@ -217,12 +224,12 @@ func InitRegistrationUseCases(db *database.DB, readWriter *database.ReadWriter, 
 	user := repository2.NewUser(db)
 	createAccount := usecase3.NewCreateAccount(writer, authentication, session, user)
 	emailVerification := repository.NewEmailVerification(db)
-	createPassword := usecase3.NewCreatePassword(writer, emailVerification, authentication)
+	createPassword := usecase3.NewCreatePassword(writer, emailVerification, authentication, user, session)
 	userAttribute := repository2.NewUserAttribute(db)
 	createUserAttribute := usecase3.NewCreateUserAttribute(writer, userAttribute)
 	userProfile := repository2.NewUserProfile(db)
 	createUserProfile := usecase3.NewCreateUserProfile(writer, userProfile)
-	getOnboardingStep := usecase3.NewGetOnboardingStep(reader, authentication, user)
+	getOnboardingStep := usecase3.NewGetOnboardingStep(reader, emailVerification, authentication, user)
 	usageCategory := repository4.NewUsageCategory(db)
 	listUsageCategories := usecase3.NewListUsageCategories(reader, usageCategory)
 	useCases := di3.UseCases{
@@ -242,9 +249,9 @@ func InitRegistrationHandlers(db *database.DB, readWriter *database.ReadWriter, 
 	user := repository2.NewUser(db)
 	createAccount := usecase3.NewCreateAccount(writer, authentication, session, user)
 	account := handler3.NewAccount(createAccount)
-	getOnboardingStep := usecase3.NewGetOnboardingStep(reader, authentication, user)
 	emailVerification := repository.NewEmailVerification(db)
-	createPassword := usecase3.NewCreatePassword(writer, emailVerification, authentication)
+	getOnboardingStep := usecase3.NewGetOnboardingStep(reader, emailVerification, authentication, user)
+	createPassword := usecase3.NewCreatePassword(writer, emailVerification, authentication, user, session)
 	userAttribute := repository2.NewUserAttribute(db)
 	createUserAttribute := usecase3.NewCreateUserAttribute(writer, userAttribute)
 	userProfile := repository2.NewUserProfile(db)

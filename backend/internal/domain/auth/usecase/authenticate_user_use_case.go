@@ -18,11 +18,11 @@ var (
 )
 
 type AuthenticateUserInput struct {
-	AccessToken string
+	Token string
 }
 
 type AuthenticateUserOutput struct {
-	User userModel.User
+	User *userModel.User
 }
 
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
@@ -49,12 +49,12 @@ func NewAuthenticateUser(
 }
 
 func (uc *authenticateUser) Do(ctx context.Context, input AuthenticateUserInput) (AuthenticateUserOutput, error) {
-	userID, err := jwt.ExtractID(input.AccessToken)
+	userID, err := jwt.ExtractID(input.Token)
 	if err != nil {
-		return AuthenticateUserOutput{}, fmt.Errorf("failed to extract user id from access token: %w", err)
+		return AuthenticateUserOutput{}, nil
 	}
 
-	exists, err := uc.sessionRepo.AccessTokenExists(ctx, userID, input.AccessToken)
+	exists, err := uc.sessionRepo.AccessTokenExists(ctx, userID, input.Token)
 	if err != nil {
 		return AuthenticateUserOutput{}, fmt.Errorf("failed to check access token existence: %w", err)
 	}
@@ -79,5 +79,5 @@ func (uc *authenticateUser) Do(ctx context.Context, input AuthenticateUserInput)
 		return AuthenticateUserOutput{}, err
 	}
 
-	return AuthenticateUserOutput{User: user}, nil
+	return AuthenticateUserOutput{User: &user}, nil
 }

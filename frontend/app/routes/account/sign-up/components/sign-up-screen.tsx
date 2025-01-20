@@ -1,16 +1,16 @@
 import { useTranslation } from "react-i18next";
 import { useActionData } from "react-router";
-import { Separator } from "~/components/ui/separator";
-import UnderlinedLink from "~/components/underlined-link";
-import { useJsonSubmit } from "~/hooks/use-submit";
 import RequestEmailVerificationForm, {
   type ActionData as RequestEmailVerificationFormActionData,
   requestEmailVerificationSchema,
-} from "~/routes/account/sign-up/components/request-email-verification-form";
+} from "~/components/email-verification/request-form";
 import {
   type ActionData as VerifyEmailFormActionData,
   verifyEmailSchema,
-} from "~/routes/account/sign-up/components/verify-email-form";
+} from "~/components/email-verification/verify-form";
+import { Separator } from "~/components/ui/separator";
+import UnderlinedLink from "~/components/underlined-link";
+import { useJsonSubmit } from "~/hooks/use-submit";
 
 export interface ActionData
   extends RequestEmailVerificationFormActionData,

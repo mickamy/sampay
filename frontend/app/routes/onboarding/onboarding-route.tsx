@@ -6,11 +6,10 @@ import {
   redirect,
 } from "react-router";
 import { userProfileSchema } from "~/components/user-profile-form";
-import { withAuthentication } from "~/lib/api/request";
-import {
-  destroyRegistrationSession,
-  getRegistrationSession,
-} from "~/lib/cookie/registration.server";
+import { withAuthentication, withEmailVerification } from "~/lib/api/request";
+import { setAuthenticatedSession } from "~/lib/cookie/authenticated.server";
+import { destroyEmailVerificationSession } from "~/lib/cookie/email-verification.server";
+import { convertTokensToSession } from "~/models/auth/session-model";
 import type { S3Object } from "~/models/common/s3-object-model";
 import { convertToUsageCategories } from "~/models/user/usage-category-model";
 import { onboardingAttributeSchema } from "~/routes/onboarding/components/onboarding-attribute-form";
@@ -22,7 +21,7 @@ import OnboardingScreen, {
 import { directUpload } from "~/services/.server/direct-upload-service";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  return withAuthentication({ request }, async ({ getClient }) => {
+  return withEmailVerification({ request }, async ({ getClient }) => {
     const { step } = await getClient(OnboardingService).getOnboardingStep({});
     switch (step) {
       case "password": {
@@ -30,14 +29,22 @@ export const loader: LoaderFunction = async ({ request }) => {
         return Response.json(data);
       }
       case "attribute": {
-        const { categories } = await getClient(
-          UsageCategoryService,
-        ).listUsageCategories({});
-        const data: LoaderData = {
-          step,
-          categories: convertToUsageCategories(categories),
-        };
-        return Response.json(data);
+        return withAuthentication({ request }, async ({ getClient }) => {
+          const { categories } = await getClient(
+            UsageCategoryService,
+          ).listUsageCategories({});
+          const data: LoaderData = {
+            step,
+            categories: convertToUsageCategories(categories),
+          };
+          return Response.json(data);
+        })
+          .then((res) => {
+            return res.map((error) => {
+              throw error;
+            });
+          })
+          .then((it) => it.value);
       }
       case "profile": {
         const data: LoaderData = { step };
@@ -51,7 +58,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   })
     .then((it) => {
       if (it.isRight()) {
-        throw new Error("unexpected right");
+        throw new Error(`failed to load data: ${it.value}`);
       }
       return it;
     })
@@ -92,15 +99,23 @@ async function submitPassword({
   request,
   body,
 }: { request: Request; body: unknown }): Promise<Response> {
-  return withAuthentication({ request }, async ({ getClient }) => {
+  return withEmailVerification({ request }, async ({ getClient }) => {
     const { password } = onboardingPasswordSchema.parse(body);
-    await getClient(OnboardingService).createPassword({
-      token: (await getRegistrationSession(request))?.verify_token,
+    const { tokens } = await getClient(OnboardingService).createPassword({
       password,
     });
+
+    if (!tokens) {
+      throw new Error("tokens not found");
+    }
+    const session = convertTokensToSession(tokens);
+    if (!session) {
+      throw new Error("session not found");
+    }
+
     return redirect("/onboarding", {
       headers: {
-        "set-cookie": await destroyRegistrationSession(request),
+        "set-cookie": await setAuthenticatedSession(session),
       },
     });
   })
@@ -153,7 +168,11 @@ async function submitProfile({
       image: imageObj,
       ...data,
     });
-    return redirect("/admin");
+    return redirect("/admin", {
+      headers: {
+        "set-cookie": await destroyEmailVerificationSession(request),
+      },
+    });
   })
     .then((res) => {
       return res.map((error) => {
