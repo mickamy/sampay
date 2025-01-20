@@ -39,7 +39,7 @@ func TestCreatePassword_Do(t *testing.T) {
 			},
 			assert: func(t *testing.T, got usecase.CreatePasswordOutput, err error) {
 				require.NoError(t, err)
-				assert.Empty(t, got)
+				assert.NotEmpty(t, got.Session)
 			},
 		},
 		{
@@ -53,6 +53,7 @@ func TestCreatePassword_Do(t *testing.T) {
 			assert: func(t *testing.T, got usecase.CreatePasswordOutput, err error) {
 				require.Error(t, err)
 				assert.ErrorContains(t, err, "email verification not found")
+				assert.Empty(t, got)
 			},
 		},
 		{
@@ -66,6 +67,7 @@ func TestCreatePassword_Do(t *testing.T) {
 			assert: func(t *testing.T, got usecase.CreatePasswordOutput, err error) {
 				require.Error(t, err)
 				assert.ErrorContains(t, err, "email verification already consumed")
+				assert.Empty(t, got)
 			},
 		},
 	}

@@ -35,3 +35,11 @@ func NewAuthenticatedRequest[T any](t *testing.T, ctx context.Context, message *
 	}
 	return req
 }
+
+func NewAnonymousRequest[T any](t *testing.T, ctx context.Context, message *T, header http.Header, verification authModel.EmailVerification) *connect.Request[T] {
+	t.Helper()
+
+	req := NewRequest(t, ctx, message, header)
+	req.Header().Add("Authorization", "Bearer "+verification.Verified.Token)
+	return req
+}

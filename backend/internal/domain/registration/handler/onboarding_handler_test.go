@@ -31,12 +31,12 @@ func TestOnboarding_GetOnboardingStep(t *testing.T) {
 
 	tsc := []struct {
 		name    string
-		arrange func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.GetOnboardingStepRequest
+		arrange func(t *testing.T, ctx context.Context, infras di.Infras, email string) *registrationv1.GetOnboardingStepRequest
 		assert  func(t *testing.T, got *connect.Response[registrationv1.GetOnboardingStepResponse], err error)
 	}{
 		{
 			name: "success (password)",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.GetOnboardingStepRequest {
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, email string) *registrationv1.GetOnboardingStepRequest {
 				return &registrationv1.GetOnboardingStepRequest{}
 			},
 			assert: func(t *testing.T, got *connect.Response[registrationv1.GetOnboardingStepResponse], err error) {
@@ -46,9 +46,12 @@ func TestOnboarding_GetOnboardingStep(t *testing.T) {
 		},
 		{
 			name: "success (attribute)",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.GetOnboardingStepRequest {
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, email string) *registrationv1.GetOnboardingStepRequest {
+				user := userFixture.User(nil)
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
-					m.UserID = userID
+					m.UserID = user.ID
+					m.Identifier = email
 				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&auth).Error)
 				return &registrationv1.GetOnboardingStepRequest{}
@@ -60,13 +63,16 @@ func TestOnboarding_GetOnboardingStep(t *testing.T) {
 		},
 		{
 			name: "success (profile)",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.GetOnboardingStepRequest {
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, email string) *registrationv1.GetOnboardingStepRequest {
+				user := userFixture.User(nil)
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
-					m.UserID = userID
+					m.UserID = user.ID
+					m.Identifier = email
 				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&auth).Error)
 				attr := userFixture.UserAttribute(func(m *model.UserAttribute) {
-					m.UserID = userID
+					m.UserID = user.ID
 				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&attr).Error)
 				return &registrationv1.GetOnboardingStepRequest{}
@@ -78,17 +84,20 @@ func TestOnboarding_GetOnboardingStep(t *testing.T) {
 		},
 		{
 			name: "success (complete)",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.GetOnboardingStepRequest {
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, email string) *registrationv1.GetOnboardingStepRequest {
+				user := userFixture.User(nil)
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
-					m.UserID = userID
+					m.UserID = user.ID
+					m.Identifier = email
 				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&auth).Error)
 				attr := userFixture.UserAttribute(func(m *model.UserAttribute) {
-					m.UserID = userID
+					m.UserID = user.ID
 				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&attr).Error)
 				profile := userFixture.UserProfile(func(m *model.UserProfile) {
-					m.UserID = userID
+					m.UserID = user.ID
 				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&profile).Error)
 				return &registrationv1.GetOnboardingStepRequest{}
@@ -108,14 +117,14 @@ func TestOnboarding_GetOnboardingStep(t *testing.T) {
 			// arrange
 			ctx := context.Background()
 			infras := di.NewInfras(newReadWriter(t), newKVS(t))
-			user := userFixture.User(nil)
-			require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
-			req := tc.arrange(t, ctx, infras, user.ID)
+			verification := authFixture.EmailVerificationVerified(nil)
+			require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
+			req := tc.arrange(t, ctx, infras, verification.Email)
 			server := newOnboardingServer(t, infras)
 
 			// act
 			client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, server.URL)
-			connReq := connecttest.NewAuthenticatedRequest(t, ctx, req, nil, authModel.MustNewSession(user.ID), infras.KVS)
+			connReq := connecttest.NewAnonymousRequest(t, ctx, req, nil, verification)
 			got, err := client.GetOnboardingStep(ctx, connReq)
 
 			// assert
@@ -145,6 +154,7 @@ func TestOnboarding_CreateUserPassword(t *testing.T) {
 			},
 			assert: func(t *testing.T, got *connect.Response[registrationv1.CreatePasswordResponse], err error) {
 				require.NoError(t, err)
+				assert.NotEmpty(t, got.Msg.Tokens)
 			},
 		},
 		{
@@ -241,14 +251,14 @@ func TestOnboarding_CreateUserPassword(t *testing.T) {
 			// arrange
 			ctx := context.Background()
 			infras := di.NewInfras(newReadWriter(t), newKVS(t))
-			user := userFixture.User(nil)
-			require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
-			req := tc.arrange(t, ctx, infras, user.ID)
+			verification := authFixture.EmailVerificationVerified(nil)
+			require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
+			req := tc.arrange(t, ctx, infras, verification.Email)
 			server := newOnboardingServer(t, infras)
 
 			// act
 			client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, server.URL)
-			connReq := connecttest.NewAuthenticatedRequest(t, ctx, req, nil, authModel.MustNewSession(user.ID), infras.KVS)
+			connReq := connecttest.NewAnonymousRequest(t, ctx, req, nil, verification)
 			got, err := client.CreatePassword(ctx, connReq)
 
 			// assert

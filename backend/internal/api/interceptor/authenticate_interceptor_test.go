@@ -6,7 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"buf.build/gen/go/mickamy/sampay/connectrpc/go/registration/v1/registrationv1connect"
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/test/v1/testv1connect"
+	registrationv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/registration/v1"
 	testv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/test/v1"
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
@@ -20,7 +22,7 @@ import (
 	authFixture "mickamy.com/sampay/internal/domain/auth/fixture"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	authRepository "mickamy.com/sampay/internal/domain/auth/repository"
-	"mickamy.com/sampay/internal/domain/test/handler"
+	testHandler "mickamy.com/sampay/internal/domain/test/handler"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
@@ -151,9 +153,10 @@ func TestAuthenticate(t *testing.T) {
 					}
 				}
 				mux := http.NewServeMux()
-				sut := interceptor.Authenticate(di.InitAuthUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), kvStore).AuthenticateUser)
+				ucs := di.InitAuthUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), kvStore)
+				sut := interceptor.Authenticate(ucs.AuthenticateUser, ucs.AuthenticateAnonymousUser)
 				interceptors := connect.WithInterceptors(sut)
-				mux.Handle(testv1connect.NewTestServiceHandler(&handler.TestHandler{Exec: test}, interceptors))
+				mux.Handle(testv1connect.NewTestServiceHandler(&testHandler.TestHandler{Exec: test}, interceptors))
 				server := httptest.NewServer(mux)
 				defer server.Close()
 
@@ -175,7 +178,7 @@ func TestAuthenticate(t *testing.T) {
 		tsc := []struct {
 			name    string
 			arrange func(t *testing.T, ctx context.Context, db *database.DB, kvs *kvs.KVS) string
-			assert  func(t *testing.T, got *connect.Response[testv1.TestResponse], err error)
+			assert  func(t *testing.T, got *connect.Response[registrationv1.GetOnboardingStepResponse], err error)
 		}{
 
 			{
@@ -185,7 +188,7 @@ func TestAuthenticate(t *testing.T) {
 					require.NoError(t, db.WithContext(ctx).Create(&verification).Error)
 					return "Bearer " + verification.Verified.Token
 				},
-				assert: func(t *testing.T, got *connect.Response[testv1.TestResponse], err error) {
+				assert: func(t *testing.T, got *connect.Response[registrationv1.GetOnboardingStepResponse], err error) {
 					require.NoError(t, err)
 				},
 			},
@@ -196,7 +199,7 @@ func TestAuthenticate(t *testing.T) {
 					require.NoError(t, db.WithContext(ctx).Create(&verification).Error)
 					return ""
 				},
-				assert: func(t *testing.T, got *connect.Response[testv1.TestResponse], err error) {
+				assert: func(t *testing.T, got *connect.Response[registrationv1.GetOnboardingStepResponse], err error) {
 					require.Error(t, err)
 					assert.Equal(t, connect.CodeUnauthenticated, connect.CodeOf(err))
 				},
@@ -208,7 +211,7 @@ func TestAuthenticate(t *testing.T) {
 					require.NoError(t, db.WithContext(ctx).Create(&verification).Error)
 					return "Bearer " + verification.Verified.Token + "invalid"
 				},
-				assert: func(t *testing.T, got *connect.Response[testv1.TestResponse], err error) {
+				assert: func(t *testing.T, got *connect.Response[registrationv1.GetOnboardingStepResponse], err error) {
 					require.Error(t, err)
 					assert.Equal(t, connect.CodeUnauthenticated, connect.CodeOf(err))
 				},
@@ -219,7 +222,7 @@ func TestAuthenticate(t *testing.T) {
 					verification := authFixture.EmailVerificationVerified(nil)
 					return "Bearer " + verification.Verified.Token
 				},
-				assert: func(t *testing.T, got *connect.Response[testv1.TestResponse], err error) {
+				assert: func(t *testing.T, got *connect.Response[registrationv1.GetOnboardingStepResponse], err error) {
 					require.Error(t, err)
 					assert.Equal(t, connect.CodeUnauthenticated, connect.CodeOf(err))
 				},
@@ -239,20 +242,20 @@ func TestAuthenticate(t *testing.T) {
 					require.Fail(t, "name="+tc.name)
 				}
 				authorization := tc.arrange(t, ctx, db.WriterDB(), kvStore)
-				test := func(ctx context.Context, req *connect.Request[testv1.TestRequest]) {
-				}
 				mux := http.NewServeMux()
-				sut := interceptor.Authenticate(di.InitAuthUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), kvStore).AuthenticateUser)
+				ucs := di.InitAuthUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), kvStore)
+				sut := interceptor.Authenticate(ucs.AuthenticateUser, ucs.AuthenticateAnonymousUser)
 				interceptors := connect.WithInterceptors(sut)
-				mux.Handle(testv1connect.NewTestServiceHandler(&handler.TestHandler{Exec: test}, interceptors))
+				onboarding := di.InitRegistrationHandlers(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).Onboarding
+				mux.Handle(registrationv1connect.NewOnboardingServiceHandler(onboarding, interceptors))
 				server := httptest.NewServer(mux)
 				defer server.Close()
 
 				// act
-				client := testv1connect.NewTestServiceClient(http.DefaultClient, server.URL)
-				req := connect.NewRequest(&testv1.TestRequest{})
+				client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, server.URL)
+				req := connect.NewRequest(&registrationv1.GetOnboardingStepRequest{})
 				req.Header().Add("Authorization", authorization)
-				got, err := client.Test(ctx, req)
+				got, err := client.GetOnboardingStep(ctx, req)
 
 				// assert
 				tc.assert(t, got, err)

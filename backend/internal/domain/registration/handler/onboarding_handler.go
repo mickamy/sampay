@@ -9,6 +9,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
+	authResponse "mickamy.com/sampay/internal/domain/auth/dto/response"
 	commonRequest "mickamy.com/sampay/internal/domain/common/dto/request"
 	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 	"mickamy.com/sampay/internal/domain/registration/usecase"
@@ -60,7 +61,7 @@ func (h *Onboarding) CreatePassword(
 	ctx context.Context,
 	req *connect.Request[registrationv1.CreatePasswordRequest],
 ) (*connect.Response[registrationv1.CreatePasswordResponse], error) {
-	_, err := h.createPassword.Do(ctx, usecase.CreatePasswordInput{
+	got, err := h.createPassword.Do(ctx, usecase.CreatePasswordInput{
 		Token:    req.Msg.Token,
 		Password: req.Msg.Password,
 	})
@@ -77,7 +78,9 @@ func (h *Onboarding) CreatePassword(
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
-	res := connect.NewResponse(&registrationv1.CreatePasswordResponse{})
+	res := connect.NewResponse(&registrationv1.CreatePasswordResponse{
+		Tokens: authResponse.NewTokens(got.Session.Tokens),
+	})
 	return res, nil
 }
 

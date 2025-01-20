@@ -23,12 +23,12 @@ func TestGetOnboardingStep_Do(t *testing.T) {
 
 	tcs := []struct {
 		name    string
-		arrange func(t *testing.T, ctx context.Context, db *database.Writer, userID string)
+		arrange func(t *testing.T, ctx context.Context, db *database.Writer, email string)
 		assert  func(t *testing.T, got usecase.GetOnboardingStepOutput, err error)
 	}{
 		{
 			name: "user has nothing",
-			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, userID string) {
+			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, email string) {
 			},
 			assert: func(t *testing.T, got usecase.GetOnboardingStepOutput, err error) {
 				require.NoError(t, err)
@@ -37,9 +37,13 @@ func TestGetOnboardingStep_Do(t *testing.T) {
 		},
 		{
 			name: "user has authentication",
-			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, userID string) {
+			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, email string) {
+				user := userFixture.User(nil)
+				require.NoError(t, db.WithContext(ctx).Create(&user).Error)
+
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
-					m.UserID = userID
+					m.Identifier = email
+					m.UserID = user.ID
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
 			},
@@ -50,13 +54,17 @@ func TestGetOnboardingStep_Do(t *testing.T) {
 		},
 		{
 			name: "user has authentication and attribute",
-			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, userID string) {
+			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, email string) {
+				user := userFixture.User(nil)
+				require.NoError(t, db.WithContext(ctx).Create(&user).Error)
+
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
-					m.UserID = userID
+					m.Identifier = email
+					m.UserID = user.ID
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
 				attribute := userFixture.UserAttribute(func(m *model.UserAttribute) {
-					m.UserID = userID
+					m.UserID = user.ID
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&attribute).Error)
 			},
@@ -67,13 +75,17 @@ func TestGetOnboardingStep_Do(t *testing.T) {
 		},
 		{
 			name: "user has authentication and profile",
-			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, userID string) {
+			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, email string) {
+				user := userFixture.User(nil)
+				require.NoError(t, db.WithContext(ctx).Create(&user).Error)
+
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
-					m.UserID = userID
+					m.Identifier = email
+					m.UserID = user.ID
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
 				profile := userFixture.UserProfile(func(m *model.UserProfile) {
-					m.UserID = userID
+					m.UserID = user.ID
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&profile).Error)
 			},
@@ -84,17 +96,21 @@ func TestGetOnboardingStep_Do(t *testing.T) {
 		},
 		{
 			name: "user has authentication, attribute and profile",
-			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, userID string) {
+			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, email string) {
+				user := userFixture.User(nil)
+				require.NoError(t, db.WithContext(ctx).Create(&user).Error)
+
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
-					m.UserID = userID
+					m.Identifier = email
+					m.UserID = user.ID
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
 				attribute := userFixture.UserAttribute(func(m *model.UserAttribute) {
-					m.UserID = userID
+					m.UserID = user.ID
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&attribute).Error)
 				profile := userFixture.UserProfile(func(m *model.UserProfile) {
-					m.UserID = userID
+					m.UserID = user.ID
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&profile).Error)
 			},
@@ -113,10 +129,10 @@ func TestGetOnboardingStep_Do(t *testing.T) {
 			// arrange
 			ctx := context.Background()
 			db := newReadWriter(t)
-			user := userFixture.User(nil)
-			require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
-			ctx = contexts.SetAuthenticatedUserID(ctx, user.ID)
-			tc.arrange(t, ctx, db.Writer(), user.ID)
+			verification := authFixture.EmailVerificationVerified(nil)
+			require.NoError(t, db.WriterDB().WithContext(ctx).Create(&verification).Error)
+			ctx = contexts.SetAnonymousUserToken(ctx, verification.Verified.Token)
+			tc.arrange(t, ctx, db.Writer(), verification.Email)
 
 			// act
 			sut := di.InitRegistrationUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).GetOnboardingStep

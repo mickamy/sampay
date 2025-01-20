@@ -8,11 +8,8 @@ import (
 	"github.com/mickamy/go-sqs-worker/producer"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
-	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	authRepository "mickamy.com/sampay/internal/domain/auth/repository"
 	commonModel "mickamy.com/sampay/internal/domain/common/model"
-	userModel "mickamy.com/sampay/internal/domain/user/model"
-	userRepository "mickamy.com/sampay/internal/domain/user/repository"
 	"mickamy.com/sampay/internal/misc/i18n"
 )
 
@@ -40,28 +37,21 @@ type verifyEmail struct {
 	writer                *database.Writer
 	producer              *producer.Producer
 	emailVerificationRepo authRepository.EmailVerification
-	userRepo              userRepository.User
-	sessionRepo           authRepository.Session
 }
 
 func NewVerifyEmail(
 	writer *database.Writer,
 	producer *producer.Producer,
 	emailVerificationRepo authRepository.EmailVerification,
-	userRepo userRepository.User,
-	sessionRepo authRepository.Session,
 ) VerifyEmail {
 	return &verifyEmail{
 		writer:                writer,
 		producer:              producer,
 		emailVerificationRepo: emailVerificationRepo,
-		userRepo:              userRepo,
-		sessionRepo:           sessionRepo,
 	}
 }
 
 func (uc *verifyEmail) Do(ctx context.Context, input VerifyEmailInput) (VerifyEmailOutput, error) {
-	var session authModel.Session
 	var token string
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
 		var err error
@@ -90,20 +80,6 @@ func (uc *verifyEmail) Do(ctx context.Context, input VerifyEmailInput) (VerifyEm
 		}
 
 		token = verification.Verified.Token
-
-		user := userModel.User{}
-		if err := uc.userRepo.WithTx(tx.WriterDB()).Create(ctx, &user); err != nil {
-			return fmt.Errorf("failed to create user: %w", err)
-		}
-
-		session, err = authModel.NewSession(user.ID)
-		if err != nil {
-			return fmt.Errorf("failed to create session: %w", err)
-		}
-
-		if err := uc.sessionRepo.Create(ctx, session); err != nil {
-			return fmt.Errorf("failed to persist session: %w", err)
-		}
 
 		return nil
 	}); err != nil {

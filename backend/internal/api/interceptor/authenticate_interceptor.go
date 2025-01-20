@@ -71,6 +71,7 @@ func Authenticate(authenticate usecase.AuthenticateUser, anonymous usecase.Authe
 					slogger.WarnCtx(ctx, "failed to authenticate anonymous user", "err", err)
 					return nil, connect.NewError(connect.CodeUnauthenticated, err)
 				}
+				ctx = contexts.SetAnonymousUserToken(ctx, accessToken)
 				return next(ctx, req)
 			}
 

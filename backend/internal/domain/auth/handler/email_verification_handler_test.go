@@ -200,7 +200,6 @@ func TestEmailVerification_VerifyEmail(t *testing.T) {
 			},
 			assert: func(t *testing.T, got *connect.Response[authv1.VerifyEmailResponse], err error) {
 				require.NoError(t, err)
-				assert.NotEmpty(t, got.Msg.Session)
 				assert.NotEmpty(t, got.Msg.Token)
 			},
 		},
