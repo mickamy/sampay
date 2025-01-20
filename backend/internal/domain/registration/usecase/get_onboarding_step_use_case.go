@@ -48,27 +48,48 @@ func NewGetOnboardingStep(
 
 func (uc *getOnboardingStep) Do(ctx context.Context, input GetOnboardingStepInput) (GetOnboardingStepOutput, error) {
 	var step registrationModel.OnboardingStep
-
 	if err := uc.reader.ReaderTransaction(ctx, func(tx database.ReaderTransactional) error {
-		token := contexts.MustAnonymousUserToken(ctx)
-		verification, err := uc.emailVerificationRepo.WithTx(tx.ReaderDB()).FindByVerifiedToken(ctx, token)
-		if err != nil {
-			return fmt.Errorf("failed to find email verification: %w", err)
-		}
-		if verification == nil {
-			return errors.New("email verification not found")
+		userID, err := contexts.AuthenticatedUserID(ctx)
+		if userID != "" {
+			// check if user has password
+			auth, err := uc.authRepo.WithTx(tx.ReaderDB()).FindByUserIDAndType(ctx, userID, authModel.AuthenticationTypeEmailPassword)
+			if err != nil {
+				return fmt.Errorf("failed to find auth: %w", err)
+			}
+			if auth == nil {
+				step = registrationModel.OnboardingStepPassword
+				return nil
+			}
+		} else {
+			// authenticated by anonymous token
+			token, err := contexts.AnonymousUserToken(ctx)
+			if err != nil {
+				return fmt.Errorf("failed to get user id: %w", err)
+			}
+
+			// get email from email verification
+			verification, err := uc.emailVerificationRepo.WithTx(tx.ReaderDB()).FindByVerifiedToken(ctx, token)
+			if err != nil {
+				return fmt.Errorf("failed to find email verification: %w", err)
+			}
+			if verification == nil {
+				return errors.New("email verification not found")
+			}
+
+			// check if user has password
+			auth, err := uc.authRepo.FindByTypeAndIdentifier(ctx, authModel.AuthenticationTypeEmailPassword, verification.Email)
+			if err != nil {
+				return fmt.Errorf("failed to find auth: %w", err)
+			}
+			if auth == nil {
+				step = registrationModel.OnboardingStepPassword
+				return nil
+			}
+
+			userID = auth.UserID
 		}
 
-		auth, err := uc.authRepo.FindByTypeAndIdentifier(ctx, authModel.AuthenticationTypeEmailPassword, verification.Email)
-		if err != nil {
-			return fmt.Errorf("failed to find auth: %w", err)
-		}
-		if auth == nil {
-			step = registrationModel.OnboardingStepPassword
-			return nil
-		}
-
-		user, err := uc.userRepo.WithTx(tx.ReaderDB()).Get(ctx, auth.UserID, userRepository.UserJoinAttribute, userRepository.UserJoinProfile)
+		user, err := uc.userRepo.WithTx(tx.ReaderDB()).Get(ctx, userID, userRepository.UserJoinAttribute, userRepository.UserJoinProfile)
 		if err != nil {
 			return fmt.Errorf("failed to get user with attribute and profile: %w", err)
 		}

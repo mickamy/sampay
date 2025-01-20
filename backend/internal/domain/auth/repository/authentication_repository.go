@@ -23,6 +23,7 @@ type Authentication interface {
 	Create(ctx context.Context, m *model.Authentication) error
 	FindByKey(ctx context.Context, key AuthenticationKey, scopes ...database.Scope) (*model.Authentication, error)
 	FindByTypeAndIdentifier(ctx context.Context, authType model.AuthenticationType, identifier string, scopes ...database.Scope) (*model.Authentication, error)
+	FindByUserIDAndType(ctx context.Context, userID string, authType model.AuthenticationType, scopes ...database.Scope) (*model.Authentication, error)
 	ListByUserID(ctx context.Context, userID string, scopes ...database.Scope) ([]model.Authentication, error)
 	ExistsByTypeAndIdentifier(ctx context.Context, authenticationType model.AuthenticationType, identifier string) (bool, error)
 	Update(ctx context.Context, m *model.Authentication) error
@@ -59,6 +60,20 @@ func (repo *authentication) FindByTypeAndIdentifier(ctx context.Context, authTyp
 	m := new(model.Authentication)
 	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
 		First(m, "type = ? AND identifier = ?", authType, identifier).
+		Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return m, err
+}
+
+func (repo *authentication) FindByUserIDAndType(ctx context.Context, userID string, authType model.AuthenticationType, scopes ...database.Scope) (*model.Authentication, error) {
+	m := new(model.Authentication)
+	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
+		First(m, "user_id = ? AND type = ?", userID, authType).
 		Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

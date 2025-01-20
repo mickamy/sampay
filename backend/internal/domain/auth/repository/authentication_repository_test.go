@@ -176,6 +176,62 @@ func TestAuthentication_ListByUserID(t *testing.T) {
 	}
 }
 
+func TestAuthentication_FindByUserIDAndType(t *testing.T) {
+	t.Parallel()
+
+	tcs := []struct {
+		name    string
+		arrange func(t *testing.T, ctx context.Context, db *database.DB) (string, authModel.AuthenticationType)
+		assert  func(t *testing.T, got *authModel.Authentication, err error)
+	}{
+		{
+			name: "found",
+			arrange: func(t *testing.T, ctx context.Context, db *database.DB) (string, authModel.AuthenticationType) {
+				user := userFixture.User(nil)
+				require.NoError(t, db.WithContext(ctx).Create(&user).Error)
+				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
+					m.UserID = user.ID
+				})
+				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
+				return user.ID, auth.Type
+			},
+			assert: func(t *testing.T, got *authModel.Authentication, err error) {
+				require.NoError(t, err)
+				require.NotNil(t, got)
+			},
+		},
+		{
+			name: "not found",
+			arrange: func(t *testing.T, ctx context.Context, db *database.DB) (string, authModel.AuthenticationType) {
+				return gofakeit.UUID(), authModel.AuthenticationTypeEmailPassword
+			},
+			assert: func(t *testing.T, got *authModel.Authentication, err error) {
+				require.NoError(t, err)
+				require.Nil(t, got)
+			},
+		},
+	}
+
+	for _, tc := range tcs {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			// arrange
+			ctx := context.Background()
+			db := newReadWriter(t)
+			userID, authType := tc.arrange(t, ctx, db.WriterDB())
+
+			// act
+			sut := repository.NewAuthentication(db.WriterDB())
+			got, err := sut.FindByUserIDAndType(ctx, userID, authType)
+
+			// assert
+			tc.assert(t, got, err)
+		})
+	}
+}
+
 func TestAuthentication_ExistsByTypeAndIdentifier(t *testing.T) {
 	t.Parallel()
 

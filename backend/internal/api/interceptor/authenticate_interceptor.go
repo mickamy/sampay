@@ -33,7 +33,7 @@ var anonymousProcedures = []string{
 	registrationv1connect.OnboardingServiceCreatePasswordProcedure,
 }
 
-func nonAuthenticatePaths(req connect.AnyRequest) bool {
+func authSkippingPaths(req connect.AnyRequest) bool {
 	for _, procedure := range authSkippingProcedures {
 		if req.Spec().Procedure == procedure {
 			return true
@@ -57,7 +57,7 @@ func Authenticate(authenticate usecase.AuthenticateUser, anonymous usecase.Authe
 			ctx context.Context,
 			req connect.AnyRequest,
 		) (connect.AnyResponse, error) {
-			if nonAuthenticatePaths(req) {
+			if authSkippingPaths(req) {
 				return next(ctx, req)
 			}
 
@@ -67,16 +67,6 @@ func Authenticate(authenticate usecase.AuthenticateUser, anonymous usecase.Authe
 				return nil, connect.NewError(connect.CodeUnauthenticated, ErrNoBearerToken)
 			}
 
-			if anonymousPaths(req) {
-				_, err := anonymous.Do(ctx, usecase.AuthenticateAnonymousUserInput{Token: bearer})
-				if err != nil {
-					slogger.WarnCtx(ctx, "failed to authenticate anonymous user", "err", err)
-					return nil, connect.NewError(connect.CodeUnauthenticated, err)
-				}
-				ctx = contexts.SetAnonymousUserToken(ctx, bearer)
-				return next(ctx, req)
-			}
-
 			out, err := authenticate.Do(ctx, usecase.AuthenticateUserInput{
 				Token: bearer,
 			})
@@ -84,7 +74,21 @@ func Authenticate(authenticate usecase.AuthenticateUser, anonymous usecase.Authe
 				slogger.WarnCtx(ctx, "failed to authenticate user", "err", err)
 				return nil, connect.NewError(connect.CodeUnauthenticated, err)
 			}
-			ctx = contexts.SetAuthenticatedUserID(ctx, out.User.ID)
+			if out.User == nil {
+				if anonymousPaths(req) {
+					_, err := anonymous.Do(ctx, usecase.AuthenticateAnonymousUserInput{Token: bearer})
+					if err != nil {
+						slogger.WarnCtx(ctx, "failed to authenticate anonymous user", "err", err)
+						return nil, connect.NewError(connect.CodeUnauthenticated, err)
+					}
+					ctx = contexts.SetAnonymousUserToken(ctx, bearer)
+					return next(ctx, req)
+				} else {
+					return nil, connect.NewError(connect.CodeUnauthenticated, usecase.ErrAuthenticateUserUserNotFound)
+				}
+			} else {
+				ctx = contexts.SetAuthenticatedUserID(ctx, out.User.ID)
+			}
 			return next(ctx, req)
 		}
 	}

@@ -45,7 +45,6 @@ func createPassword(t *testing.T, s *httptest.Server, verifyToken string, f func
 
 	client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, s.URL)
 	req := connect.NewRequest(&registrationv1.CreatePasswordRequest{
-		Token:    verifyToken,
 		Password: password,
 	})
 	req.Header().Add("Authorization", "Bearer "+verifyToken)

@@ -202,7 +202,6 @@ func TestOnboarding_CreateUserPassword(t *testing.T) {
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
 
 				return &registrationv1.CreatePasswordRequest{
-					Token:    verification.Verified.Token,
 					Password: gofakeit.Password(true, true, true, false, false, 12),
 				}
 			},
