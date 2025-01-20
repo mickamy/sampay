@@ -28,8 +28,7 @@ type VerifyEmailInput struct {
 }
 
 type VerifyEmailOutput struct {
-	Session authModel.Session
-	Token   string
+	Token string
 }
 
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
@@ -111,5 +110,5 @@ func (uc *verifyEmail) Do(ctx context.Context, input VerifyEmailInput) (VerifyEm
 		return VerifyEmailOutput{}, err
 	}
 
-	return VerifyEmailOutput{Session: session, Token: token}, nil
+	return VerifyEmailOutput{Token: token}, nil
 }

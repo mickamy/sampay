@@ -39,7 +39,6 @@ func TestVerifyEmail_Do(t *testing.T) {
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
 				require.NoError(t, err)
-				assert.NotEmpty(t, got.Session)
 				assert.NotEmpty(t, got.Token)
 			},
 		},
@@ -53,7 +52,9 @@ func TestVerifyEmail_Do(t *testing.T) {
 				assert.NoError(t, db.WithContext(ctx).Create(&m).Error)
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
+				require.Error(t, err)
 				assert.ErrorIs(t, err, usecase.ErrVerifyEmailInvalidToken)
+				assert.Empty(t, got)
 			},
 		},
 		{
@@ -67,6 +68,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 				assert.NoError(t, db.WithContext(ctx).Create(&m).Error)
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
+				require.Error(t, err)
 				assert.ErrorIs(t, err, authModel.ErrEmailVerificationTokenExpired)
 				assert.ErrorContains(t, err, "failed to verify email verification")
 				assert.Empty(t, got)
@@ -84,7 +86,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
 				require.NoError(t, err)
-				assert.NotEmpty(t, got.Session)
+				assert.NotEmpty(t, got.Token)
 			},
 		},
 		{
@@ -97,7 +99,8 @@ func TestVerifyEmail_Do(t *testing.T) {
 				assert.NoError(t, db.WithContext(ctx).Create(&m).Error)
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
-				require.ErrorIs(t, err, usecase.ErrVerifyEmailInvalidToken)
+				require.Error(t, err)
+				assert.ErrorIs(t, err, usecase.ErrVerifyEmailInvalidToken)
 				assert.Empty(t, got)
 			},
 		},
@@ -111,6 +114,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 				assert.NoError(t, db.WithContext(ctx).Create(&m).Error)
 			},
 			assert: func(t *testing.T, got usecase.VerifyEmailOutput, err error) {
+				require.Error(t, err)
 				assert.ErrorIs(t, err, usecase.ErrVerifyEmailInvalidToken)
 			},
 		},

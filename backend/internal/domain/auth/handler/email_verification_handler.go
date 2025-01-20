@@ -9,7 +9,6 @@ import (
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
-	authResponse "mickamy.com/sampay/internal/domain/auth/dto/response"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	"mickamy.com/sampay/internal/domain/auth/usecase"
 	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
@@ -92,8 +91,7 @@ func (h *EmailVerification) VerifyEmail(
 		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&authv1.VerifyEmailResponse{
-		Session: authResponse.NewTokens(out.Session.Tokens),
-		Token:   out.Token,
+		Token: out.Token,
 	})
 	return res, nil
 }
