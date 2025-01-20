@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	ErrNoAccessToken = errors.New("no access token found")
+	ErrNoBearerToken = errors.New("no bearer token found")
 )
 
 var authSkippingProcedures = []string{
@@ -31,7 +31,7 @@ var anonymousProcedures = []string{
 	registrationv1connect.OnboardingServiceCreatePasswordProcedure,
 }
 
-func skipper(req connect.AnyRequest) bool {
+func nonAuthenticatePaths(req connect.AnyRequest) bool {
 	for _, procedure := range authSkippingProcedures {
 		if req.Spec().Procedure == procedure {
 			return true
@@ -40,7 +40,7 @@ func skipper(req connect.AnyRequest) bool {
 	return false
 }
 
-func anonymousSkipper(req connect.AnyRequest) bool {
+func anonymousPaths(req connect.AnyRequest) bool {
 	for _, procedure := range anonymousProcedures {
 		if req.Spec().Procedure == procedure {
 			return true
@@ -55,28 +55,28 @@ func Authenticate(authenticate usecase.AuthenticateUser, anonymous usecase.Authe
 			ctx context.Context,
 			req connect.AnyRequest,
 		) (connect.AnyResponse, error) {
-			if skipper(req) {
+			if nonAuthenticatePaths(req) {
 				return next(ctx, req)
 			}
 
-			accessToken := extractAccessToken(ctx, req)
-			if accessToken == "" {
-				slogger.WarnCtx(ctx, "no access token found")
-				return nil, connect.NewError(connect.CodeUnauthenticated, ErrNoAccessToken)
+			bearer := extractBearerToken(ctx, req)
+			if bearer == "" {
+				slogger.WarnCtx(ctx, "no bearer token found")
+				return nil, connect.NewError(connect.CodeUnauthenticated, ErrNoBearerToken)
 			}
 
-			if anonymousSkipper(req) {
-				_, err := anonymous.Do(ctx, usecase.AuthenticateAnonymousUserInput{Token: accessToken})
+			if anonymousPaths(req) {
+				_, err := anonymous.Do(ctx, usecase.AuthenticateAnonymousUserInput{Token: bearer})
 				if err != nil {
 					slogger.WarnCtx(ctx, "failed to authenticate anonymous user", "err", err)
 					return nil, connect.NewError(connect.CodeUnauthenticated, err)
 				}
-				ctx = contexts.SetAnonymousUserToken(ctx, accessToken)
+				ctx = contexts.SetAnonymousUserToken(ctx, bearer)
 				return next(ctx, req)
 			}
 
 			out, err := authenticate.Do(ctx, usecase.AuthenticateUserInput{
-				AccessToken: accessToken,
+				Token: bearer,
 			})
 			if err != nil {
 				slogger.WarnCtx(ctx, "failed to authenticate user", "err", err)
@@ -88,7 +88,7 @@ func Authenticate(authenticate usecase.AuthenticateUser, anonymous usecase.Authe
 	}
 }
 
-func extractAccessToken(ctx context.Context, req connect.AnyRequest) string {
+func extractBearerToken(ctx context.Context, req connect.AnyRequest) string {
 	authHeader := req.Header().Get("Authorization")
 	if authHeader != "" {
 		slogger.DebugCtx(ctx, "extracting access token from Authorization header")
