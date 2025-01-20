@@ -14,9 +14,9 @@ import {
   setAuthenticatedSession,
 } from "~/lib/cookie/authenticated.server";
 import {
-  getRegistrationSession,
-  setRegistrationSession,
-} from "~/lib/cookie/registration.server";
+  getEmailVerificationSession,
+  setEmailVerificationSession,
+} from "~/lib/cookie/email-verification.server";
 import { convertTokensToSession } from "~/models/auth/session-model";
 import SignUpScreen, {
   type ActionData,
@@ -70,7 +70,7 @@ async function requestVerification({
     const actionData: ActionData = { requestVerificationSuccess: true };
     return Response.json(actionData, {
       headers: {
-        "set-cookie": await setRegistrationSession({ request_token: token }),
+        "set-cookie": await setEmailVerificationSession({ request: token }),
       },
     });
   } catch (e) {
@@ -94,7 +94,7 @@ async function verifyEmail({
       service: EmailVerificationService,
       request,
     }).verifyEmail({
-      token: (await getRegistrationSession(request))?.request_token,
+      token: (await getEmailVerificationSession(request))?.request,
       pinCode: pin_code,
     });
 
@@ -110,7 +110,7 @@ async function verifyEmail({
     headers.append("set-cookie", await setAuthenticatedSession(tokens));
     headers.append(
       "set-cookie",
-      await setRegistrationSession({ verify_token: token }),
+      await setEmailVerificationSession({ verify: token }),
     );
     return redirect("/onboarding", {
       headers,

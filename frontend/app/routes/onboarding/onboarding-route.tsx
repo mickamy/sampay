@@ -8,9 +8,9 @@ import {
 import { userProfileSchema } from "~/components/user-profile-form";
 import { withAuthentication } from "~/lib/api/request";
 import {
-  destroyRegistrationSession,
-  getRegistrationSession,
-} from "~/lib/cookie/registration.server";
+  destroyEmailVerificationSession,
+  getEmailVerificationSession,
+} from "~/lib/cookie/email-verification.server";
 import type { S3Object } from "~/models/common/s3-object-model";
 import { convertToUsageCategories } from "~/models/user/usage-category-model";
 import { onboardingAttributeSchema } from "~/routes/onboarding/components/onboarding-attribute-form";
@@ -95,12 +95,12 @@ async function submitPassword({
   return withAuthentication({ request }, async ({ getClient }) => {
     const { password } = onboardingPasswordSchema.parse(body);
     await getClient(OnboardingService).createPassword({
-      token: (await getRegistrationSession(request))?.verify_token,
+      token: (await getEmailVerificationSession(request))?.verify,
       password,
     });
     return redirect("/onboarding", {
       headers: {
-        "set-cookie": await destroyRegistrationSession(request),
+        "set-cookie": await destroyEmailVerificationSession(request),
       },
     });
   })

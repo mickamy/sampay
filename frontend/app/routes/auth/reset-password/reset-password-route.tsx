@@ -7,10 +7,10 @@ import { verifyEmailSchema } from "~/components/email-verification/verify-form";
 import { getClient } from "~/lib/api/client";
 import { convertToAPIError } from "~/lib/api/response";
 import {
-  destroyRegistrationSession,
-  getRegistrationSession,
-  setRegistrationSession,
-} from "~/lib/cookie/registration.server";
+  destroyEmailVerificationSession,
+  getEmailVerificationSession,
+  setEmailVerificationSession,
+} from "~/lib/cookie/email-verification.server";
 import { convertTokensToSession } from "~/models/auth/session-model";
 import { resetPasswordSchema } from "~/routes/auth/reset-password/components/reset-password-form";
 import ResetPasswordScreen, {
@@ -59,7 +59,7 @@ async function requestVerification({
     const actionData: ActionData = { requestVerificationSuccess: true };
     return Response.json(actionData, {
       headers: {
-        "set-cookie": await setRegistrationSession({ request_token: token }),
+        "set-cookie": await setEmailVerificationSession({ request: token }),
       },
     });
   } catch (e) {
@@ -83,7 +83,7 @@ async function verifyEmail({
       service: EmailVerificationService,
       request,
     }).verifyEmail({
-      token: (await getRegistrationSession(request))?.request_token,
+      token: (await getEmailVerificationSession(request))?.request,
       pinCode: pin_code,
     });
 
@@ -98,7 +98,7 @@ async function verifyEmail({
     const headers = new Headers();
     headers.append(
       "set-cookie",
-      await setRegistrationSession({ verify_token: token }),
+      await setEmailVerificationSession({ verify: token }),
     );
     const data: ActionData = { verifySuccess: true };
     return Response.json(data, { headers });
@@ -120,12 +120,15 @@ async function reset({ request }: { request: Request }): Promise<Response> {
       service: PasswordResetService,
       request,
     }).resetPassword({
-      token: (await getRegistrationSession(request))?.verify_token,
+      token: (await getEmailVerificationSession(request))?.verify,
       newPassword: new_password,
     });
 
     const headers = new Headers();
-    headers.append("Set-Cookie", await destroyRegistrationSession(request));
+    headers.append(
+      "Set-Cookie",
+      await destroyEmailVerificationSession(request),
+    );
     return redirect("/auth/sign-in", { headers });
   } catch (e) {
     if (e instanceof ConnectError) {
