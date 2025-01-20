@@ -6,8 +6,7 @@ import {
   redirect,
 } from "react-router";
 import { userProfileSchema } from "~/components/user-profile-form";
-import { getClient } from "~/lib/api/client";
-import { withAuthentication } from "~/lib/api/request";
+import { withAuthentication, withEmailVerification } from "~/lib/api/request";
 import { setAuthenticatedSession } from "~/lib/cookie/authenticated.server";
 import {
   destroyEmailVerificationSession,
@@ -25,42 +24,48 @@ import OnboardingScreen, {
 import { directUpload } from "~/services/.server/direct-upload-service";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const { step } = await getClient({
-    service: OnboardingService,
-    request,
-  }).getOnboardingStep({});
-  switch (step) {
-    case "password": {
-      const data: LoaderData = { step };
-      return Response.json(data);
-    }
-    case "attribute": {
-      return withAuthentication({ request }, async ({ getClient }) => {
-        const { categories } = await getClient(
-          UsageCategoryService,
-        ).listUsageCategories({});
-        const data: LoaderData = {
-          step,
-          categories: convertToUsageCategories(categories),
-        };
+  return withEmailVerification({ request }, async ({ getClient }) => {
+    const { step } = await getClient(OnboardingService).getOnboardingStep({});
+    switch (step) {
+      case "password": {
+        const data: LoaderData = { step };
         return Response.json(data);
-      })
-        .then((res) => {
-          return res.map((error) => {
-            throw error;
-          });
+      }
+      case "attribute": {
+        return withAuthentication({ request }, async ({ getClient }) => {
+          const { categories } = await getClient(
+            UsageCategoryService,
+          ).listUsageCategories({});
+          const data: LoaderData = {
+            step,
+            categories: convertToUsageCategories(categories),
+          };
+          return Response.json(data);
         })
-        .then((it) => it.value);
+          .then((res) => {
+            return res.map((error) => {
+              throw error;
+            });
+          })
+          .then((it) => it.value);
+      }
+      case "profile": {
+        const data: LoaderData = { step };
+        return Response.json(data);
+      }
+      case "completed":
+        return redirect("/admin");
+      default:
+        throw new Error(`unknown step: ${step}`);
     }
-    case "profile": {
-      const data: LoaderData = { step };
-      return Response.json(data);
-    }
-    case "completed":
-      return redirect("/admin");
-    default:
-      throw new Error(`unknown step: ${step}`);
-  }
+  })
+    .then((it) => {
+      if (it.isRight()) {
+        throw new Error(`failed to load data: ${it.value}`);
+      }
+      return it;
+    })
+    .then((it) => it.value);
 };
 
 export default function Onboarding() {
@@ -97,28 +102,34 @@ async function submitPassword({
   request,
   body,
 }: { request: Request; body: unknown }): Promise<Response> {
-  const { password } = onboardingPasswordSchema.parse(body);
-  const { tokens } = await getClient({
-    service: OnboardingService,
-    request,
-  }).createPassword({
-    token: (await getEmailVerificationSession(request))?.verify,
-    password,
-  });
+  return withEmailVerification({ request }, async ({ getClient }) => {
+    const { password } = onboardingPasswordSchema.parse(body);
+    const { tokens } = await getClient(OnboardingService).createPassword({
+      token: (await getEmailVerificationSession(request))?.verify,
+      password,
+    });
 
-  if (!tokens) {
-    throw new Error("tokens not found");
-  }
-  const session = convertTokensToSession(tokens);
-  if (!session) {
-    throw new Error("session not found");
-  }
+    if (!tokens) {
+      throw new Error("tokens not found");
+    }
+    const session = convertTokensToSession(tokens);
+    if (!session) {
+      throw new Error("session not found");
+    }
 
-  return redirect("/onboarding", {
-    headers: {
-      "set-cookie": await setAuthenticatedSession(session),
-    },
-  });
+    return redirect("/onboarding", {
+      headers: {
+        "set-cookie": await setAuthenticatedSession(session),
+      },
+    });
+  })
+    .then((res) => {
+      return res.map((error) => {
+        const data: ActionData = { error };
+        return Response.json(data);
+      });
+    })
+    .then((it) => it.value);
 }
 
 async function submitAttribute({

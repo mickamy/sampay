@@ -218,10 +218,7 @@ async function postLink({
         }),
       ),
     )
-    .then((it) => {
-      console.log("it", it);
-      return it.value;
-    });
+    .then((it) => it.value);
 }
 
 async function putLink({
