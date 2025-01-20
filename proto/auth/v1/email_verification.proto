@@ -3,7 +3,6 @@ syntax = "proto3";
 package auth.v1;
 
 import "buf/validate/validate.proto";
-import "auth/v1/common.proto";
 
 message RequestVerificationRequest {
   enum IntentType {
@@ -26,8 +25,7 @@ message VerifyEmailRequest {
 }
 
 message VerifyEmailResponse {
-  auth.v1.Tokens session = 1;
-  string token = 2 [(buf.validate.field).string.len = 64];
+  string token = 1 [(buf.validate.field).string.len = 64];
 }
 
 service EmailVerificationService {
