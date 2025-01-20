@@ -8,12 +8,14 @@ import { type ActionFunction, redirect } from "react-router";
 import { requestEmailVerificationSchema } from "~/components/email-verification/request-form";
 import { verifyEmailSchema } from "~/components/email-verification/verify-form";
 import { getClient } from "~/lib/api/client";
+import { withEmailVerification } from "~/lib/api/request";
 import { convertToAPIError } from "~/lib/api/response";
 import {
   destroyEmailVerificationSession,
   getEmailVerificationSession,
   setEmailVerificationSession,
 } from "~/lib/cookie/email-verification.server";
+import logger from "~/lib/logger";
 import { resetPasswordSchema } from "~/routes/reset-password/components/reset-password-form";
 import ResetPasswordScreen, {
   type ActionData,
@@ -34,7 +36,7 @@ export const action: ActionFunction = async ({ request }) => {
           case "verify_email":
             return verifyEmail({ request, body });
           case "reset_password":
-            return reset({ request });
+            return reset({ request, body });
         }
         throw new Response(null, { status: 405 });
       }
@@ -72,6 +74,7 @@ async function requestVerification({
       };
       return Response.json(data);
     }
+    logger.error({ error: e }, "unexpected error");
     throw e;
   }
 }
@@ -95,7 +98,8 @@ async function verifyEmail({
       "set-cookie",
       await setEmailVerificationSession({ verify: token }),
     );
-    return redirect("/onboarding", {
+    const data: ActionData = { verifySuccess: true };
+    return Response.json(data, {
       headers,
     });
   } catch (e) {
@@ -105,17 +109,15 @@ async function verifyEmail({
       };
       return Response.json(data);
     }
+    logger.error({ error: e }, "unexpected error");
     throw e;
   }
 }
 
-async function reset({ request }: { request: Request }): Promise<Response> {
-  try {
-    const { new_password } = resetPasswordSchema.parse(await request.json());
-    await getClient({
-      service: PasswordResetService,
-      request,
-    }).resetPassword({
+async function reset({ request, body }: { request: Request; body: unknown }) {
+  return withEmailVerification({ request }, async ({ getClient }) => {
+    const { new_password } = resetPasswordSchema.parse(body);
+    await getClient(PasswordResetService).resetPassword({
       newPassword: new_password,
     });
 
@@ -125,11 +127,10 @@ async function reset({ request }: { request: Request }): Promise<Response> {
       await destroyEmailVerificationSession(request),
     );
     return redirect("/sign-in", { headers });
-  } catch (e) {
-    if (e instanceof ConnectError) {
-      const data: ActionData = { resetPasswordError: convertToAPIError(e) };
-      return Response.json(data);
-    }
-    throw e;
-  }
+  }).then((it) => {
+    it.map((err) => {
+      throw err;
+    });
+    return it.value;
+  });
 }

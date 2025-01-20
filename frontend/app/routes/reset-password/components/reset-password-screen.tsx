@@ -25,6 +25,8 @@ export default function ResetPasswordScreen() {
 
   const { t } = useTranslation();
 
+  console.log("actionData", actionData);
+
   return (
     <>
       <div className="container mx-auto flex h-screen w-full flex-col justify-center px-12 space-y-6 sm:w-[420px] lg:p-8">

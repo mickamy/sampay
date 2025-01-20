@@ -3,8 +3,8 @@ import { type HTMLAttributes, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ErrorMessage from "~/components/error-message";
 import { FormField } from "~/components/form";
+import LoadableButton from "~/components/loadable-button";
 import Spacer from "~/components/spacer";
-import { Button } from "~/components/ui/button";
 import { Form } from "~/components/ui/form";
 import type { APIError } from "~/lib/api/response";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
@@ -12,6 +12,7 @@ import { z } from "~/lib/form/zod";
 import { cn } from "~/lib/utils";
 
 export const resetPasswordSchema = z.object({
+  intent: z.enum(["reset_password"]),
   new_password: z.string().min(8).max(64),
 });
 
@@ -30,6 +31,7 @@ export default function ResetPasswordForm({
     props: {
       resolver: zodResolver(resetPasswordSchema),
       defaultValues: {
+        intent: "reset_password",
         new_password: "",
       },
     },
@@ -70,7 +72,9 @@ export default function ResetPasswordForm({
           />
           <Spacer />
           <ErrorMessage message={form.formState.errors.root?.message} />
-          <Button className="w-full">{t("form.submit")}</Button>
+          <LoadableButton isLoading={submitting} className="w-full">
+            {t("form.submit")}
+          </LoadableButton>
         </form>
       </Form>
     </>
