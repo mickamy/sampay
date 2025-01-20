@@ -296,7 +296,7 @@ func InitUserUseCase(db *database.DB, readWriter *database.ReadWriter, writer *d
 	updateUserLinkQRCode := usecase4.NewUpdateUserLinkQRCode(writer, userLink, s3Object)
 	updateUserLink := usecase4.NewUpdateUserLink(writer, userLink)
 	userProfile := repository2.NewUserProfile(db)
-	updateUserProfile := usecase4.NewUpdateUserProfile(writer, userProfile)
+	updateUserProfile := usecase4.NewUpdateUserProfile(writer, user, userProfile)
 	updateUserProfileImage := usecase4.NewUpdateUserProfileImage(writer, userProfile, s3Object)
 	useCases := di4.UseCases{
 		CreateUserLink:         createUserLink,
@@ -326,7 +326,7 @@ func InitUserHandler(db *database.DB, readWriter *database.ReadWriter, writer *d
 	deleteUserLink := usecase4.NewDeleteUserLink(writer, userLink)
 	handlerUserLink := handler4.NewUserLink(createUserLink, listUserLink, updateUserLink, updateUserLinkQRCode, deleteUserLink)
 	userProfile := repository2.NewUserProfile(db)
-	updateUserProfile := usecase4.NewUpdateUserProfile(writer, userProfile)
+	updateUserProfile := usecase4.NewUpdateUserProfile(writer, user, userProfile)
 	updateUserProfileImage := usecase4.NewUpdateUserProfileImage(writer, userProfile, s3Object)
 	handlerUserProfile := handler4.NewUserProfile(updateUserProfile, updateUserProfileImage)
 	handlers := di4.Handlers{

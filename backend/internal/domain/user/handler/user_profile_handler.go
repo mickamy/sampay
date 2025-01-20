@@ -32,6 +32,7 @@ func NewUserProfile(
 func (h UserProfile) UpdateUserProfile(ctx context.Context, req *connect.Request[userv1.UpdateUserProfileRequest]) (*connect.Response[userv1.UpdateUserProfileResponse], error) {
 	_, err := h.update.Do(ctx, usecase.UpdateUserProfileInput{
 		Name: req.Msg.Name,
+		Slug: req.Msg.Slug,
 		Bio:  req.Msg.Bio,
 	})
 	if err != nil {

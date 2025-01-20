@@ -36,6 +36,7 @@ func TestUserProfile_UpdateUserProfile(t *testing.T) {
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *userv1.UpdateUserProfileRequest {
 				return &userv1.UpdateUserProfileRequest{
 					Name: "name",
+					Slug: gofakeit.GlobalFaker.Username(),
 					Bio:  ptr.Of("bio"),
 				}
 			},
