@@ -1,4 +1,7 @@
-import { EmailVerificationService } from "@buf/mickamy_sampay.bufbuild_es/auth/v1/email_verification_pb";
+import {
+  EmailVerificationService,
+  RequestVerificationRequest_IntentType,
+} from "@buf/mickamy_sampay.bufbuild_es/auth/v1/email_verification_pb";
 import { ConnectError } from "@connectrpc/connect";
 import {
   type ActionFunction,
@@ -9,15 +12,11 @@ import { requestEmailVerificationSchema } from "~/components/email-verification/
 import { verifyEmailSchema } from "~/components/email-verification/verify-form";
 import { getClient } from "~/lib/api/client";
 import { convertToAPIError } from "~/lib/api/response";
-import {
-  isLoggedIn,
-  setAuthenticatedSession,
-} from "~/lib/cookie/authenticated.server";
+import { isLoggedIn } from "~/lib/cookie/authenticated.server";
 import {
   getEmailVerificationSession,
   setEmailVerificationSession,
 } from "~/lib/cookie/email-verification.server";
-import { convertTokensToSession } from "~/models/auth/session-model";
 import SignUpScreen, {
   type ActionData,
 } from "~/routes/account/sign-up/components/sign-up-screen";
@@ -64,6 +63,7 @@ async function requestVerification({
       service: EmailVerificationService,
       request,
     }).requestVerification({
+      intentType: RequestVerificationRequest_IntentType.SIGN_UP,
       email,
     });
 
@@ -90,7 +90,7 @@ async function verifyEmail({
 }: { request: Request; body: unknown }): Promise<Response> {
   try {
     const { pin_code } = verifyEmailSchema.parse(body);
-    const { session, token } = await getClient({
+    const { token } = await getClient({
       service: EmailVerificationService,
       request,
     }).verifyEmail({
@@ -98,16 +98,7 @@ async function verifyEmail({
       pinCode: pin_code,
     });
 
-    if (!session || !session.access || !session.refresh) {
-      throw new Error("no session returned from verify email");
-    }
-    const tokens = convertTokensToSession(session);
-    if (!tokens) {
-      throw new Error("failed to convert tokens to session");
-    }
-
     const headers = new Headers();
-    headers.append("set-cookie", await setAuthenticatedSession(tokens));
     headers.append(
       "set-cookie",
       await setEmailVerificationSession({ verify: token }),

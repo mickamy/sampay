@@ -1,4 +1,7 @@
-import { EmailVerificationService } from "@buf/mickamy_sampay.bufbuild_es/auth/v1/email_verification_pb";
+import {
+  EmailVerificationService,
+  RequestVerificationRequest_IntentType,
+} from "@buf/mickamy_sampay.bufbuild_es/auth/v1/email_verification_pb";
 import { PasswordResetService } from "@buf/mickamy_sampay.bufbuild_es/auth/v1/password_reset_pb";
 import { ConnectError } from "@connectrpc/connect";
 import { type ActionFunction, redirect } from "react-router";
@@ -11,7 +14,6 @@ import {
   getEmailVerificationSession,
   setEmailVerificationSession,
 } from "~/lib/cookie/email-verification.server";
-import { convertTokensToSession } from "~/models/auth/session-model";
 import { resetPasswordSchema } from "~/routes/auth/reset-password/components/reset-password-form";
 import ResetPasswordScreen, {
   type ActionData,
@@ -53,6 +55,7 @@ async function requestVerification({
       service: EmailVerificationService,
       request,
     }).requestVerification({
+      intentType: RequestVerificationRequest_IntentType.RESET_PASSWORD,
       email,
     });
 
@@ -79,7 +82,7 @@ async function verifyEmail({
 }: { request: Request; body: unknown }): Promise<Response> {
   try {
     const { pin_code } = verifyEmailSchema.parse(body);
-    const { session, token } = await getClient({
+    const { token } = await getClient({
       service: EmailVerificationService,
       request,
     }).verifyEmail({
@@ -87,21 +90,14 @@ async function verifyEmail({
       pinCode: pin_code,
     });
 
-    if (!session || !session.access || !session.refresh) {
-      throw new Error("no session returned from verify email");
-    }
-    const tokens = convertTokensToSession(session);
-    if (!tokens) {
-      throw new Error("failed to convert tokens to session");
-    }
-
     const headers = new Headers();
     headers.append(
       "set-cookie",
       await setEmailVerificationSession({ verify: token }),
     );
-    const data: ActionData = { verifySuccess: true };
-    return Response.json(data, { headers });
+    return redirect("/onboarding", {
+      headers,
+    });
   } catch (e) {
     if (e instanceof ConnectError) {
       const data: ActionData = {
@@ -132,7 +128,7 @@ async function reset({ request }: { request: Request }): Promise<Response> {
     return redirect("/auth/sign-in", { headers });
   } catch (e) {
     if (e instanceof ConnectError) {
-      const data: ActionData = { error: convertToAPIError(e) };
+      const data: ActionData = { resetPasswordError: convertToAPIError(e) };
       return Response.json(data);
     }
     throw e;
