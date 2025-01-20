@@ -60,7 +60,7 @@ func (uc *getOnboardingStep) Do(ctx context.Context, input GetOnboardingStepInpu
 				step = registrationModel.OnboardingStepPassword
 				return nil
 			}
-		} else {
+		} else if err != nil {
 			// authenticated by anonymous token
 			token, err := contexts.AnonymousUserToken(ctx)
 			if err != nil {

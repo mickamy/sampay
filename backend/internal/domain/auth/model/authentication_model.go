@@ -54,7 +54,7 @@ func (m Authentication) AuthenticateByEmailAndPassword(email string, password st
 	return passwd.Verify(password, m.Secret)
 }
 
-func (m Authentication) ResetPassword(password string) error {
+func (m *Authentication) ResetPassword(password string) error {
 	hash, err := passwd.New(password, 16)
 	if err != nil {
 		return fmt.Errorf("failed to hash password: %w", err)
