@@ -116,7 +116,6 @@ async function reset({ request }: { request: Request }): Promise<Response> {
       service: PasswordResetService,
       request,
     }).resetPassword({
-      token: (await getEmailVerificationSession(request))?.verify,
       newPassword: new_password,
     });
 

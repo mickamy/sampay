@@ -8,10 +8,7 @@ import {
 import { userProfileSchema } from "~/components/user-profile-form";
 import { withAuthentication, withEmailVerification } from "~/lib/api/request";
 import { setAuthenticatedSession } from "~/lib/cookie/authenticated.server";
-import {
-  destroyEmailVerificationSession,
-  getEmailVerificationSession,
-} from "~/lib/cookie/email-verification.server";
+import { destroyEmailVerificationSession } from "~/lib/cookie/email-verification.server";
 import { convertTokensToSession } from "~/models/auth/session-model";
 import type { S3Object } from "~/models/common/s3-object-model";
 import { convertToUsageCategories } from "~/models/user/usage-category-model";
@@ -105,7 +102,6 @@ async function submitPassword({
   return withEmailVerification({ request }, async ({ getClient }) => {
     const { password } = onboardingPasswordSchema.parse(body);
     const { tokens } = await getClient(OnboardingService).createPassword({
-      token: (await getEmailVerificationSession(request))?.verify,
       password,
     });
 
