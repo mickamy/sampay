@@ -6,7 +6,7 @@ import UserProfileForm, {
 } from "~/components/user-profile-form";
 import type { APIError } from "~/lib/api/response";
 import type { z } from "~/lib/form/zod";
-import type { UserProfile } from "~/models/user/user-profile-model";
+import type { User } from "~/models/user/user-model";
 
 export interface ActionData {
   putProfileSuccess?: boolean;
@@ -14,7 +14,7 @@ export interface ActionData {
 }
 
 type Props = {
-  profile: UserProfile;
+  user: User;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: z.infer<typeof userProfileSchema>) => void;
@@ -22,7 +22,7 @@ type Props = {
 };
 
 export default function UserProfileFormDialog({
-  profile,
+  user,
   isOpen,
   onClose,
   onSubmit,
@@ -48,7 +48,7 @@ export default function UserProfileFormDialog({
       dialogContent={() => {
         return (
           <UserProfileForm
-            profile={profile}
+            user={user}
             onSubmitData={onSubmit}
             error={actionData?.putProfileError}
           />

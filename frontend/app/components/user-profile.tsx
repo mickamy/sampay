@@ -9,18 +9,20 @@ import Avatar from "~/components/avatar";
 import ExpandableText from "~/components/expandable-text";
 import { underlinedLinkStyle } from "~/components/underlined-link";
 import { cn } from "~/lib/utils";
-import type { UserProfile as UserProfileModel } from "~/models/user/user-profile-model";
+import type { User } from "~/models/user/user-model";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   admin?: boolean;
-  profile: UserProfileModel;
+  user: User;
+  url: string;
   onClickEdit?: () => void;
   onClickAvatar?: () => void;
 }
 
 export default function UserProfile({
   admin = false,
-  profile,
+  user,
+  url,
   className,
   onClickEdit,
   onClickAvatar,
@@ -37,11 +39,18 @@ export default function UserProfile({
       <div className="mx-auto flex w-full flex-col items-center space-y-4">
         <UserProfileAvatar
           admin={admin}
-          src={profile.imageURL}
+          src={user.profile.imageURL}
           onClick={onClickAvatar}
         />
-        <h2 className="font-bold">{profile?.name}</h2>
-        <ExpandableText>{profile.bio}</ExpandableText>
+        <h2 className="font-bold">{user.profile.name}</h2>
+        <ExpandableText>{user.profile.bio}</ExpandableText>
+        {admin && (
+          <div className="flex flex-col space-y-2">
+            <div>
+              <strong>{t("model.user.slug")}</strong>: {url}
+            </div>
+          </div>
+        )}
       </div>
       {admin && (
         <button
