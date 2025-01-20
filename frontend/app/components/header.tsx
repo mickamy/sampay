@@ -102,7 +102,7 @@ function Navigation({ isLoggedIn, className, ...props }: NavigationProps) {
   }
   return (
     <div className={cn("", className)} {...props}>
-      <Form method="delete" action="/auth/sign-out" className="w-full">
+      <Form method="delete" action="sign-out" className="w-full">
         <Button variant="ghost" className="w-full">
           {t("header.sign_out")}
         </Button>
@@ -112,6 +112,6 @@ function Navigation({ isLoggedIn, className, ...props }: NavigationProps) {
 }
 
 const loggedInNavItems = [
-  { labelKey: "header.sign_in", href: "/auth/sign-in" },
-  { labelKey: "header.sign_up", href: "/account/sign-up" },
+  { labelKey: "header.sign_in", href: "sign-in" },
+  { labelKey: "header.sign_up", href: "sign-up" },
 ];

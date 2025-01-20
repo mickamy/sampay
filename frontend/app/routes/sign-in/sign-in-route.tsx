@@ -12,10 +12,10 @@ import {
   setAuthenticatedSession,
 } from "~/lib/cookie/authenticated.server";
 import { convertTokensToSession } from "~/models/auth/session-model";
-import { authSignInSchema } from "~/routes/auth/sign-in/components/sign-in-form";
+import { authSignInSchema } from "~/routes/sign-in/components/sign-in-form";
 import SignInScreen, {
   type ActionData,
-} from "~/routes/auth/sign-in/components/sign-in-screen";
+} from "~/routes/sign-in/components/sign-in-screen";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const loggedIn = await isLoggedIn(request);
@@ -49,12 +49,12 @@ async function signIn({ request }: { request: Request }): Promise<Response> {
       password,
     });
     if (!tokens) {
-      return redirect("/auth/sign-in");
+      return redirect("/sign-in");
     }
 
     const session = convertTokensToSession(tokens);
     if (!session) {
-      return redirect("/auth/sign-in");
+      return redirect("/sign-in");
     }
 
     const headers = new Headers();

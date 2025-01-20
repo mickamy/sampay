@@ -19,7 +19,7 @@ import {
 } from "~/lib/cookie/email-verification.server";
 import SignUpScreen, {
   type ActionData,
-} from "~/routes/account/sign-up/components/sign-up-screen";
+} from "~/routes/sign-up/components/sign-up-screen";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const loggedIn = await isLoggedIn(request);

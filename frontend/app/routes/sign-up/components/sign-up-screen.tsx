@@ -46,7 +46,7 @@ export default function SignUpScreen() {
         <Separator />
         <p className="flex flex-row justify-center text-sm text-muted-foreground">
           {t("account.sign_up.have_account")}
-          <UnderlinedLink to="/auth/sign-in">
+          <UnderlinedLink to="/sign-in">
             {t("account.sign_up.sign_in")}
           </UnderlinedLink>
         </p>
