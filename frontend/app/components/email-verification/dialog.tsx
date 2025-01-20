@@ -37,13 +37,11 @@ export default function VerifyEmailDialog({
         </div>
       )}
       dialogDescription={() => (
-        <div className="text-center">
-          <Mail className="mx-auto mt-12 h-12 w-12" aria-hidden />
-        </div>
+        <Mail aria-hidden className="mx-auto mt-6 h-12 w-12" />
       )}
       dialogContent={() => (
         <div className="space-y-6">
-          <p className="text-center text-sm text-gray-500">
+          <div className="text-center text-sm text-gray-500">
             <span
               // biome-ignore lint: suspicious/no-dangerously-set-inner-html
               dangerouslySetInnerHTML={{
@@ -53,7 +51,7 @@ export default function VerifyEmailDialog({
                 }),
               }}
             />
-          </p>
+          </div>
           <VerifyEmailForm
             onSubmitData={onVerifyEmail}
             actionData={actionData}
