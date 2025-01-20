@@ -116,6 +116,7 @@ export default function UserProfileImageForm({
                   <Input
                     id="image"
                     type="file"
+                    accept="image/png, image/jpeg"
                     ref={(node) => {
                       inputRef.current = node;
                       field.ref(node);
