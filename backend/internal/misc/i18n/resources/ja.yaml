@@ -1,4 +1,9 @@
 auth:
+  handler:
+    email_verification:
+      request:
+        error:
+          invalid_intent_type: '無効な種別です。'
   usecase:
     create_session:
       invalid_email_password: 'メールアドレスまたはパスワードが正しくありません。'
@@ -17,10 +22,16 @@ auth:
         
         有効期限は発行から{{.ExpiresInMinute}}です。
         このメールに心当たりがない場合は、無視していただいて構いません。
+      error:
+        email_already_exists: 'このメールアドレスは既に登録されています。'
+        email_not_found: 'このメールアドレスは登録されていません。'
     reset_password:
       error:
         email_verification_invalid_token: '無効なメールアドレス認証トークンです。'
         email_verification_already_consumed: '再度メールアドレス認証を行ってください'
+    verify_email:
+      error:
+        invalid_pin_code: '無効な PIN コードです。'
 common:
   format:
     minute: '{{.Minute}}分'
@@ -32,12 +43,9 @@ common:
         invalid_s3_object: '無効なS3オブジェクトです。'
 registration:
   usecase:
-    common:
+    create_account:
       error:
         email_already_exists: 'このメールアドレスは既に登録されています。'
-    verify_email:
-      error:
-        invalid_pin_code: '無効な PIN コードです。'
     create_password:
       error:
         email_verification_invalid_token: '無効なメールアドレス認証トークンです。'

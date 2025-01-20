@@ -19,7 +19,7 @@ import (
 var (
 	ErrVerifyEmailInvalidToken = commonModel.
 		NewLocalizableError(errors.New("invalid pin code")).
-		WithMessages(i18n.Config{MessageID: i18n.RegistrationUsecaseVerify_emailErrorInvalid_pin_code})
+		WithMessages(i18n.Config{MessageID: i18n.AuthUsecaseVerify_emailErrorInvalid_pin_code})
 )
 
 type VerifyEmailInput struct {

@@ -104,8 +104,27 @@ func TestRequestEmailVerification_Do(t *testing.T) {
 				},
 			},
 			{
+				name: "no authentication exists",
+				arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
+					user := userFixture.User(nil)
+					require.NoError(t, db.WithContext(ctx).Create(&user).Error)
+				},
+				assert: func(t *testing.T, got usecase.RequestEmailVerificationOutput, err error) {
+					require.Error(t, err)
+					require.ErrorContains(t, err, "authentication not found")
+					assert.Empty(t, got.Token)
+				},
+			},
+			{
 				name: "no verification exists",
 				arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
+					user := userFixture.User(nil)
+					require.NoError(t, db.WithContext(ctx).Create(&user).Error)
+					auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
+						m.Identifier = email
+						m.UserID = user.ID
+					})
+					require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
 				},
 				assert: func(t *testing.T, got usecase.RequestEmailVerificationOutput, err error) {
 					require.NoError(t, err)

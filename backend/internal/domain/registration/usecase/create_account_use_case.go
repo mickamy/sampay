@@ -17,7 +17,7 @@ import (
 var (
 	ErrCreateAccountEmailAlreadyExists = commonModel.
 		NewLocalizableError(errors.New("email already exists")).
-		WithMessages(i18n.Config{MessageID: i18n.RegistrationUsecaseCommonErrorEmail_already_exists})
+		WithMessages(i18n.Config{MessageID: i18n.RegistrationUsecaseCreate_accountErrorEmail_already_exists})
 )
 
 type CreateAccountInput struct {

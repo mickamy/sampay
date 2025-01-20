@@ -8,6 +8,10 @@ func (id MessageID) String() string { return string(id) }
 
 const (
 	/*
+		無効な種別です。
+	*/
+	AuthHandlerEmail_verificationRequestErrorInvalid_intent_type MessageID = "auth.handler.email_verification.request.error.invalid_intent_type"
+	/*
 		メールアドレスまたはパスワードが正しくありません。
 	*/
 	AuthUsecaseCreate_sessionInvalid_email_password MessageID = "auth.usecase.create_session.invalid_email_password"
@@ -30,6 +34,14 @@ const (
 	*/
 	AuthUsecaseRequest_email_verificationBody MessageID = "auth.usecase.request_email_verification.body"
 	/*
+		このメールアドレスは既に登録されています。
+	*/
+	AuthUsecaseRequest_email_verificationErrorEmail_already_exists MessageID = "auth.usecase.request_email_verification.error.email_already_exists"
+	/*
+		このメールアドレスは登録されていません。
+	*/
+	AuthUsecaseRequest_email_verificationErrorEmail_not_found MessageID = "auth.usecase.request_email_verification.error.email_not_found"
+	/*
 		メール路銀の確認コードが発行されました。
 	*/
 	AuthUsecaseRequest_email_verificationHeader MessageID = "auth.usecase.request_email_verification.header"
@@ -46,6 +58,10 @@ const (
 	*/
 	AuthUsecaseReset_passwordErrorEmail_verification_invalid_token MessageID = "auth.usecase.reset_password.error.email_verification_invalid_token"
 	/*
+		無効な PIN コードです。
+	*/
+	AuthUsecaseVerify_emailErrorInvalid_pin_code MessageID = "auth.usecase.verify_email.error.invalid_pin_code"
+	/*
 		{{.Minute}}分
 	*/
 	CommonFormatMinute MessageID = "common.format.minute"
@@ -60,7 +76,7 @@ const (
 	/*
 		このメールアドレスは既に登録されています。
 	*/
-	RegistrationUsecaseCommonErrorEmail_already_exists MessageID = "registration.usecase.common.error.email_already_exists"
+	RegistrationUsecaseCreate_accountErrorEmail_already_exists MessageID = "registration.usecase.create_account.error.email_already_exists"
 	/*
 		再度メールアドレス認証を行ってください
 	*/
@@ -69,10 +85,6 @@ const (
 		無効なメールアドレス認証トークンです。
 	*/
 	RegistrationUsecaseCreate_passwordErrorEmail_verification_invalid_token MessageID = "registration.usecase.create_password.error.email_verification_invalid_token"
-	/*
-		無効な PIN コードです。
-	*/
-	RegistrationUsecaseVerify_emailErrorInvalid_pin_code MessageID = "registration.usecase.verify_email.error.invalid_pin_code"
 	/*
 		無効なリンク提供業者です。
 	*/
