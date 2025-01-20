@@ -64,7 +64,10 @@ func NewRequestEmailVerification(
 }
 
 func (uc *requestEmailVerification) Do(ctx context.Context, input RequestEmailVerificationInput) (RequestEmailVerificationOutput, error) {
-	m := authModel.EmailVerification{Email: input.Email}
+	m := authModel.EmailVerification{
+		IntentType: input.IntentType,
+		Email:      input.Email,
+	}
 	cfg := config.Auth()
 	if err := m.Request(cfg.EmailVerificationExpiresInDuration()); err != nil {
 		return RequestEmailVerificationOutput{}, fmt.Errorf("failed to request email verification: %w", err)
