@@ -32,6 +32,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 			name: "success",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := authFixture.EmailVerificationRequested(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Requested.Token = token
 					m.Requested.PINCode = pin
 				})
@@ -46,6 +47,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 			name: "different token",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := authFixture.EmailVerificationRequested(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Requested.Token = either.Must(random.NewString(32))
 					m.Requested.PINCode = pin
 				})
@@ -61,6 +63,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 			name: "pin code expired",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := authFixture.EmailVerificationRequested(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Requested.Token = token
 					m.Requested.PINCode = pin
 					m.Requested.ExpiresAt = time.Now().Add(-time.Second)
@@ -78,6 +81,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 			name: "pin code not expired",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := authFixture.EmailVerificationRequested(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Requested.Token = token
 					m.Requested.PINCode = pin
 					m.Requested.ExpiresAt = time.Now().Add(5 * time.Second)
@@ -93,6 +97,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 			name: "pin code verified",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Requested.Token = token
 					m.Requested.PINCode = pin
 				})
@@ -108,6 +113,7 @@ func TestVerifyEmail_Do(t *testing.T) {
 			name: "pin code consumed",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := authFixture.EmailVerificationConsumed(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Requested.Token = token
 					m.Requested.PINCode = pin
 				})

@@ -129,7 +129,9 @@ func TestGetOnboardingStep_Do(t *testing.T) {
 			// arrange
 			ctx := context.Background()
 			db := newReadWriter(t)
-			verification := authFixture.EmailVerificationVerified(nil)
+			verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+				m.IntentType = authModel.EmailVerificationIntentTypeSignUp
+			})
 			require.NoError(t, db.WriterDB().WithContext(ctx).Create(&verification).Error)
 			ctx = contexts.SetAnonymousUserToken(ctx, verification.Verified.Token)
 			tc.arrange(t, ctx, db.Writer(), verification.Email)

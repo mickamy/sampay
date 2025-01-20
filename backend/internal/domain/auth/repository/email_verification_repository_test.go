@@ -23,7 +23,9 @@ func TestEmailVerification_Create(t *testing.T) {
 	// arrange
 	ctx := context.Background()
 	db := newReadWriter(t)
-	m := fixture.EmailVerification(nil)
+	m := fixture.EmailVerification(func(m *model.EmailVerification) {
+		m.IntentType = model.EmailVerificationIntentTypeSignUp
+	})
 
 	// act
 	sut := repository.NewEmailVerification(db.WriterDB())
@@ -52,6 +54,7 @@ func TestEmailVerification_FindByEmail(t *testing.T) {
 			name: "found",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := fixture.EmailVerification(func(m *model.EmailVerification) {
+					m.IntentType = model.EmailVerificationIntentTypeSignUp
 					m.Email = email
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&m).Error)
@@ -108,6 +111,7 @@ func TestEmailVerification_FindByRequestedTokenAndPinCode(t *testing.T) {
 			name: "found",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := fixture.EmailVerificationRequested(func(m *model.EmailVerification) {
+					m.IntentType = model.EmailVerificationIntentTypeSignUp
 					m.Requested.Token = token
 					m.Requested.PINCode = pin
 				})
@@ -124,6 +128,7 @@ func TestEmailVerification_FindByRequestedTokenAndPinCode(t *testing.T) {
 			name: "not found (pin code is different)",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := fixture.EmailVerificationRequested(func(m *model.EmailVerification) {
+					m.IntentType = model.EmailVerificationIntentTypeSignUp
 					m.Requested.Token = token
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&m).Error)
@@ -136,6 +141,7 @@ func TestEmailVerification_FindByRequestedTokenAndPinCode(t *testing.T) {
 			name: "not found (token is different)",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := fixture.EmailVerificationRequested(func(m *model.EmailVerification) {
+					m.IntentType = model.EmailVerificationIntentTypeSignUp
 					m.Requested.PINCode = pin
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&m).Error)
@@ -181,6 +187,7 @@ func TestEmailVerification_FindByVerifiedToken(t *testing.T) {
 			name: "found",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
 				m := fixture.EmailVerificationVerified(func(m *model.EmailVerification) {
+					m.IntentType = model.EmailVerificationIntentTypeSignUp
 					m.Verified.Token = token
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&m).Error)
@@ -195,7 +202,9 @@ func TestEmailVerification_FindByVerifiedToken(t *testing.T) {
 		}, {
 			name: "not found",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) {
-				m := fixture.EmailVerification(nil)
+				m := fixture.EmailVerification(func(m *model.EmailVerification) {
+					m.IntentType = model.EmailVerificationIntentTypeSignUp
+				})
 				require.NoError(t, db.WithContext(ctx).Create(&m).Error)
 			},
 			assert: func(t *testing.T, got *model.EmailVerification, err error) {
@@ -231,7 +240,9 @@ func TestEmailVerification_Update(t *testing.T) {
 	// arrange
 	ctx := context.Background()
 	db := newReadWriter(t)
-	m := fixture.EmailVerification(nil)
+	m := fixture.EmailVerification(func(m *model.EmailVerification) {
+		m.IntentType = model.EmailVerificationIntentTypeSignUp
+	})
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&m).Error)
 	m.Email = gofakeit.GlobalFaker.Email()
 

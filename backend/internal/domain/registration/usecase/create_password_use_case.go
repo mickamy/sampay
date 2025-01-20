@@ -11,6 +11,7 @@ import (
 	commonModel "mickamy.com/sampay/internal/domain/common/model"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
+	"mickamy.com/sampay/internal/lib/contexts"
 	"mickamy.com/sampay/internal/misc/i18n"
 )
 
@@ -22,7 +23,6 @@ var (
 )
 
 type CreatePasswordInput struct {
-	Token    string
 	Password string
 }
 
@@ -62,7 +62,7 @@ func NewCreatePassword(
 func (uc *createPassword) Do(ctx context.Context, input CreatePasswordInput) (CreatePasswordOutput, error) {
 	var session authModel.Session
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
-		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByVerifiedToken(ctx, input.Token, authRepository.EmailVerificationInnerJoinRequested, authRepository.EmailVerificationJoinConsumed)
+		verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByVerifiedToken(ctx, contexts.MustAnonymousUserToken(ctx), authRepository.EmailVerificationInnerJoinRequested, authRepository.EmailVerificationJoinConsumed)
 		if err != nil {
 			return fmt.Errorf("failed to find email verification: %w", err)
 		}

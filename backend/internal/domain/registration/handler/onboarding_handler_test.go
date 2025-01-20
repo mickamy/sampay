@@ -22,6 +22,7 @@ import (
 	"mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/lib/either"
 	"mickamy.com/sampay/internal/lib/ptr"
+	"mickamy.com/sampay/internal/lib/random"
 	"mickamy.com/sampay/internal/misc/i18n"
 	"mickamy.com/sampay/test/connecttest"
 )
@@ -117,7 +118,9 @@ func TestOnboarding_GetOnboardingStep(t *testing.T) {
 			// arrange
 			ctx := context.Background()
 			infras := di.NewInfras(newReadWriter(t), newKVS(t))
-			verification := authFixture.EmailVerificationVerified(nil)
+			verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+				m.IntentType = authModel.EmailVerificationIntentTypeSignUp
+			})
 			require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
 			req := tc.arrange(t, ctx, infras, verification.Email)
 			server := newOnboardingServer(t, infras)
@@ -136,21 +139,29 @@ func TestOnboarding_GetOnboardingStep(t *testing.T) {
 func TestOnboarding_CreateUserPassword(t *testing.T) {
 	t.Parallel()
 
+	token := either.Must(random.NewString(32))
+
 	tsc := []struct {
-		name    string
-		arrange func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreatePasswordRequest
-		assert  func(t *testing.T, got *connect.Response[registrationv1.CreatePasswordResponse], err error)
+		name         string
+		arrange      func(t *testing.T, ctx context.Context, infras di.Infras) *registrationv1.CreatePasswordRequest
+		authenticate func(req *connect.Request[registrationv1.CreatePasswordRequest])
+		assert       func(t *testing.T, got *connect.Response[registrationv1.CreatePasswordResponse], err error)
 	}{
 		{
 			name: "success",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreatePasswordRequest {
-				verification := authFixture.EmailVerificationVerified(nil)
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *registrationv1.CreatePasswordRequest {
+				verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
+					m.Verified.Token = token
+				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
 
 				return &registrationv1.CreatePasswordRequest{
-					Token:    verification.Verified.Token,
 					Password: gofakeit.Password(true, true, true, false, false, 12),
 				}
+			},
+			authenticate: func(req *connect.Request[registrationv1.CreatePasswordRequest]) {
+				req.Header().Add("Authorization", "Bearer "+token)
 			},
 			assert: func(t *testing.T, got *connect.Response[registrationv1.CreatePasswordResponse], err error) {
 				require.NoError(t, err)
@@ -159,70 +170,44 @@ func TestOnboarding_CreateUserPassword(t *testing.T) {
 		},
 		{
 			name: "fail (invalid token)",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreatePasswordRequest {
-				verification := authFixture.EmailVerificationVerified(nil)
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *registrationv1.CreatePasswordRequest {
+				verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
+					m.Verified.Token = token
+				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
 
 				return &registrationv1.CreatePasswordRequest{
-					Token:    verification.Verified.Token + "invalid",
 					Password: gofakeit.Password(true, true, true, false, false, 12),
 				}
 			},
-			assert: func(t *testing.T, got *connect.Response[registrationv1.CreatePasswordResponse], err error) {
-				require.Error(t, err)
-				assert.Equalf(t, connect.CodeInvalidArgument, connect.CodeOf(err), "code=%s", connect.CodeOf(err).String())
-				connErr := new(connect.Error)
-				require.ErrorAs(t, err, &connErr)
-				require.Len(t, connErr.Details(), 1)
-				detail := either.Must(connErr.Details()[0].Value())
-				if errMsg, ok := detail.(*commonv1.BadRequestError); ok {
-					require.Len(t, errMsg.FieldViolations, 1)
-					require.Equal(t, "token", errMsg.FieldViolations[0].Field)
-					require.Len(t, errMsg.FieldViolations[0].Descriptions, 1)
-					require.Equal(t, i18n.MustJapaneseMessage(i18n.Config{MessageID: i18n.RegistrationUsecaseCreate_passwordErrorEmail_verification_invalid_token}), errMsg.FieldViolations[0].Descriptions[0])
-				} else {
-					require.Failf(t, "unexpected detail type", "got=%T", detail)
-				}
-			},
-		},
-		{
-			name: "fail (token of request)",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreatePasswordRequest {
-				verification := authFixture.EmailVerificationVerified(nil)
-				require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
-
-				return &registrationv1.CreatePasswordRequest{
-					Token:    verification.Requested.Token,
-					Password: gofakeit.Password(true, true, true, false, false, 12),
-				}
+			authenticate: func(req *connect.Request[registrationv1.CreatePasswordRequest]) {
+				req.Header().Add("Authorization", "Bearer "+token+"invalid")
 			},
 			assert: func(t *testing.T, got *connect.Response[registrationv1.CreatePasswordResponse], err error) {
 				require.Error(t, err)
-				assert.Equalf(t, connect.CodeInvalidArgument, connect.CodeOf(err), "code=%s", connect.CodeOf(err).String())
+				assert.Equalf(t, connect.CodeUnauthenticated, connect.CodeOf(err), "code=%s", connect.CodeOf(err).String())
 				connErr := new(connect.Error)
 				require.ErrorAs(t, err, &connErr)
-				require.Len(t, connErr.Details(), 1)
-				detail := either.Must(connErr.Details()[0].Value())
-				if errMsg, ok := detail.(*commonv1.BadRequestError); ok {
-					require.Len(t, errMsg.FieldViolations, 1)
-					require.Equal(t, "token", errMsg.FieldViolations[0].Field)
-					require.Len(t, errMsg.FieldViolations[0].Descriptions, 1)
-					require.Equal(t, i18n.MustJapaneseMessage(i18n.Config{MessageID: i18n.RegistrationUsecaseCreate_passwordErrorEmail_verification_invalid_token}), errMsg.FieldViolations[0].Descriptions[0])
-				} else {
-					require.Failf(t, "unexpected detail type", "got=%T", detail)
-				}
+				require.Len(t, connErr.Details(), 0)
 			},
 		},
 		{
 			name: "fail (token consumed)",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreatePasswordRequest {
-				verification := authFixture.EmailVerificationConsumed(nil)
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *registrationv1.CreatePasswordRequest {
+				verification := authFixture.EmailVerificationConsumed(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
+					m.Verified.Token = token
+				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
 
 				return &registrationv1.CreatePasswordRequest{
 					Token:    verification.Verified.Token,
 					Password: gofakeit.Password(true, true, true, false, false, 12),
 				}
+			},
+			authenticate: func(req *connect.Request[registrationv1.CreatePasswordRequest]) {
+				req.Header().Add("Authorization", "Bearer "+token)
 			},
 			assert: func(t *testing.T, got *connect.Response[registrationv1.CreatePasswordResponse], err error) {
 				require.Error(t, err)
@@ -251,14 +236,13 @@ func TestOnboarding_CreateUserPassword(t *testing.T) {
 			// arrange
 			ctx := context.Background()
 			infras := di.NewInfras(newReadWriter(t), newKVS(t))
-			verification := authFixture.EmailVerificationVerified(nil)
-			require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
-			req := tc.arrange(t, ctx, infras, verification.Email)
+			req := tc.arrange(t, ctx, infras)
 			server := newOnboardingServer(t, infras)
 
 			// act
 			client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, server.URL)
-			connReq := connecttest.NewAnonymousRequest(t, ctx, req, nil, verification)
+			connReq := connecttest.NewRequest(t, ctx, req, nil)
+			tc.authenticate(connReq)
 			got, err := client.CreatePassword(ctx, connReq)
 
 			// assert

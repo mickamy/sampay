@@ -62,7 +62,6 @@ func (h *Onboarding) CreatePassword(
 	req *connect.Request[registrationv1.CreatePasswordRequest],
 ) (*connect.Response[registrationv1.CreatePasswordResponse], error) {
 	got, err := h.createPassword.Do(ctx, usecase.CreatePasswordInput{
-		Token:    req.Msg.Token,
 		Password: req.Msg.Password,
 	})
 	if err != nil {

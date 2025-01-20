@@ -9,6 +9,7 @@ import (
 
 	"mickamy.com/sampay/internal/di"
 	authFixture "mickamy.com/sampay/internal/domain/auth/fixture"
+	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	"mickamy.com/sampay/internal/domain/auth/usecase"
 )
 
@@ -18,7 +19,9 @@ func TestAuthenticateAnonymousUser_Do(t *testing.T) {
 	// arrange
 	ctx := context.Background()
 	db := newReadWriter(t)
-	m := authFixture.EmailVerificationVerified(nil)
+	m := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+		m.IntentType = authModel.EmailVerificationIntentTypeSignUp
+	})
 	require.NoError(t, db.Writer().WithContext(ctx).Create(&m).Error)
 
 	// act

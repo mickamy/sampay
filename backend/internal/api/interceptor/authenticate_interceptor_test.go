@@ -184,7 +184,9 @@ func TestAuthenticate(t *testing.T) {
 			{
 				name: "success",
 				arrange: func(t *testing.T, ctx context.Context, db *database.DB, kvs *kvs.KVS) string {
-					verification := authFixture.EmailVerificationVerified(nil)
+					verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+						m.IntentType = authModel.EmailVerificationIntentTypeSignUp
+					})
 					require.NoError(t, db.WithContext(ctx).Create(&verification).Error)
 					return "Bearer " + verification.Verified.Token
 				},
@@ -195,7 +197,9 @@ func TestAuthenticate(t *testing.T) {
 			{
 				name: "fail (token not set)",
 				arrange: func(t *testing.T, ctx context.Context, db *database.DB, kvs *kvs.KVS) string {
-					verification := authFixture.EmailVerificationVerified(nil)
+					verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+						m.IntentType = authModel.EmailVerificationIntentTypeSignUp
+					})
 					require.NoError(t, db.WithContext(ctx).Create(&verification).Error)
 					return ""
 				},
@@ -207,7 +211,9 @@ func TestAuthenticate(t *testing.T) {
 			{
 				name: "fail (invalid token set)",
 				arrange: func(t *testing.T, ctx context.Context, db *database.DB, kvs *kvs.KVS) string {
-					verification := authFixture.EmailVerificationVerified(nil)
+					verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+						m.IntentType = authModel.EmailVerificationIntentTypeSignUp
+					})
 					require.NoError(t, db.WithContext(ctx).Create(&verification).Error)
 					return "Bearer " + verification.Verified.Token + "invalid"
 				},
@@ -219,7 +225,9 @@ func TestAuthenticate(t *testing.T) {
 			{
 				name: "fail (verification not exists)",
 				arrange: func(t *testing.T, ctx context.Context, db *database.DB, kvs *kvs.KVS) string {
-					verification := authFixture.EmailVerificationVerified(nil)
+					verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+						m.IntentType = authModel.EmailVerificationIntentTypeSignUp
+					})
 					return "Bearer " + verification.Verified.Token
 				},
 				assert: func(t *testing.T, got *connect.Response[registrationv1.GetOnboardingStepResponse], err error) {

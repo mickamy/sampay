@@ -34,7 +34,9 @@ func TestPasswordReset_ResetPassword(t *testing.T) {
 		{
 			name: "success",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.ResetPasswordRequest {
-				verification := authFixture.EmailVerificationVerified(nil)
+				verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeResetPassword
+				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
 					m.UserID = userID
@@ -54,7 +56,9 @@ func TestPasswordReset_ResetPassword(t *testing.T) {
 		{
 			name: "fail (invalid token)",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.ResetPasswordRequest {
-				verification := authFixture.EmailVerificationVerified(nil)
+				verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeResetPassword
+				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
 					m.UserID = userID
@@ -87,7 +91,9 @@ func TestPasswordReset_ResetPassword(t *testing.T) {
 		{
 			name: "fail (token of request)",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.ResetPasswordRequest {
-				verification := authFixture.EmailVerificationVerified(nil)
+				verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeResetPassword
+				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
 					m.UserID = userID
@@ -120,7 +126,9 @@ func TestPasswordReset_ResetPassword(t *testing.T) {
 		{
 			name: "fail (token consumed)",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.ResetPasswordRequest {
-				verification := authFixture.EmailVerificationConsumed(nil)
+				verification := authFixture.EmailVerificationConsumed(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeResetPassword
+				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
 					m.UserID = userID
@@ -153,7 +161,9 @@ func TestPasswordReset_ResetPassword(t *testing.T) {
 		{
 			name: "fail (no authentication)",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.ResetPasswordRequest {
-				verification := authFixture.EmailVerificationVerified(nil)
+				verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeResetPassword
+				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&verification).Error)
 
 				return &authv1.ResetPasswordRequest{

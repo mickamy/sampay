@@ -191,7 +191,9 @@ func TestEmailVerification_VerifyEmail(t *testing.T) {
 		{
 			name: "success",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *authv1.VerifyEmailRequest {
-				request := authFixture.EmailVerificationRequested(nil)
+				request := authFixture.EmailVerificationRequested(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
+				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&request).Error)
 				return &authv1.VerifyEmailRequest{
 					Token:   request.Requested.Token,
@@ -206,7 +208,9 @@ func TestEmailVerification_VerifyEmail(t *testing.T) {
 		{
 			name: "invalid token",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *authv1.VerifyEmailRequest {
-				request := authFixture.EmailVerificationRequested(nil)
+				request := authFixture.EmailVerificationRequested(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
+				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&request).Error)
 				return &authv1.VerifyEmailRequest{
 					Token:   request.Requested.Token,

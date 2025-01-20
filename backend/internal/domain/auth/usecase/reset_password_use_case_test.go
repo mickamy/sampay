@@ -37,6 +37,7 @@ func TestResetPassword_Do(t *testing.T) {
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
 				verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Email = auth.Identifier
 					m.Verified.Token = token
 				})
@@ -55,6 +56,7 @@ func TestResetPassword_Do(t *testing.T) {
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
 				verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Email = auth.Identifier
 					m.Verified.Token = either.Must(random.NewString(32))
 				})
@@ -73,6 +75,7 @@ func TestResetPassword_Do(t *testing.T) {
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
 				verification := authFixture.EmailVerificationConsumed(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Email = auth.Identifier
 					m.Verified.Token = token
 				})
@@ -87,6 +90,7 @@ func TestResetPassword_Do(t *testing.T) {
 			name: "authentication not found",
 			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, userID string) {
 				verification := authFixture.EmailVerificationVerified(func(m *authModel.EmailVerification) {
+					m.IntentType = authModel.EmailVerificationIntentTypeSignUp
 					m.Verified.Token = token
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&verification).Error)
