@@ -4,6 +4,7 @@ package registration.v1;
 
 import "buf/validate/validate.proto";
 import "common/v1/direct_upload_url.proto";
+import "auth/v1/common.proto";
 
 message GetOnboardingStepRequest {}
 
@@ -16,7 +17,9 @@ message CreatePasswordRequest {
   string password = 2 [(buf.validate.field).string.min_len = 8, (buf.validate.field).string.max_len = 64];
 }
 
-message CreatePasswordResponse {}
+message CreatePasswordResponse {
+  auth.v1.Tokens tokens = 1;
+}
 
 message CreateUserAttributeRequest {
   string category_type = 1 [(buf.validate.field).string.min_len = 1];
