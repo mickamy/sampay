@@ -14,7 +14,7 @@ export default function LandingPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <section className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 whitespace-pre-line tracking-wider leading-loose">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 whitespace-pre-line tracking-wider leading-normal md:leading-normal">
             {t("lp.tagline")}
           </h1>
           <p className="text-xl text-gray-600 mb-8">
@@ -56,7 +56,10 @@ export default function LandingPage() {
             <h3 className="text-lg font-semibold mb-4">サポート</h3>
             <ul className="space-y-2">
               <li>
-                <a href="/contact" className="hover:text-gray-300">
+                <a
+                  href="mailto:contact@sampay.link"
+                  className="hover:text-gray-300"
+                >
                   {t("lp.contact")}
                 </a>
               </li>

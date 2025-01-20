@@ -18,7 +18,7 @@ export default function FeatureCard({
         <CardTitle className="flex items-center justify-center mb-4">
           {icon}
         </CardTitle>
-        <CardTitle className="text-center">{title}</CardTitle>
+        <CardTitle className="text-center leading-normal">{title}</CardTitle>
       </CardHeader>
       <CardContent>
         <CardDescription>{description}</CardDescription>
