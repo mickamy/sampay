@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type HTMLAttributes, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
 import VerifyEmailDialog from "~/components/email-verification/dialog";
 import type {
   ActionData as VerifyEmailFormActionData,
@@ -64,12 +63,6 @@ export default function RequestEmailVerificationForm({
     isDialogOpen: isSentDialogOpen,
   } = useDialog<ActionData>();
 
-  const navigate = useNavigate();
-  const onCloseSentDialog = useCallback(() => {
-    closeSentDialog();
-    navigate("/");
-  }, [closeSentDialog, navigate]);
-
   useEffect(() => {
     if (actionData?.requestVerificationSuccess) {
       openSentDialog();
@@ -118,7 +111,7 @@ export default function RequestEmailVerificationForm({
       <VerifyEmailDialog
         email={form.watch("email")}
         isOpen={isSentDialogOpen}
-        onClose={onCloseSentDialog}
+        onClose={closeSentDialog}
         onVerifyEmail={onVerifyEmail}
         actionData={actionData}
       />
