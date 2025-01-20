@@ -6,7 +6,7 @@ import { useJsonSubmit } from "~/hooks/use-submit";
 import type { APIError } from "~/lib/api/response";
 import SignInForm, {
   authSignInSchema,
-} from "~/routes/auth/sign-in/components/sign-in-form";
+} from "~/routes/sign-in/components/sign-in-form";
 
 export interface ActionData {
   error?: APIError;
@@ -28,14 +28,14 @@ export default function SignInScreen() {
         <SignInForm onSubmitData={submit} error={actionData?.error} />
         <Separator />
         <p className="flex flex-col space-y-4 px-8 text-center text-sm text-muted-foreground">
-          <UnderlinedLink to="/auth/forgot_password">
+          <UnderlinedLink to="/reset-password">
             {t("auth.sign_in.forgot_password")}
           </UnderlinedLink>
         </p>
         <Separator />
         <p className="flex flex-row justify-center text-sm text-muted-foreground">
           {t("auth.sign_in.have_no_account")}
-          <UnderlinedLink to="/account/sign-up">
+          <UnderlinedLink to="/sign-up">
             {t("auth.sign_in.sign_up")}
           </UnderlinedLink>
         </p>

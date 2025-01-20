@@ -14,10 +14,10 @@ import {
   getEmailVerificationSession,
   setEmailVerificationSession,
 } from "~/lib/cookie/email-verification.server";
-import { resetPasswordSchema } from "~/routes/auth/reset-password/components/reset-password-form";
+import { resetPasswordSchema } from "~/routes/reset-password/components/reset-password-form";
 import ResetPasswordScreen, {
   type ActionData,
-} from "~/routes/auth/reset-password/components/reset-password-screen";
+} from "~/routes/reset-password/components/reset-password-screen";
 
 export default function ResetPassword() {
   return <ResetPasswordScreen />;
@@ -124,7 +124,7 @@ async function reset({ request }: { request: Request }): Promise<Response> {
       "Set-Cookie",
       await destroyEmailVerificationSession(request),
     );
-    return redirect("/auth/sign-in", { headers });
+    return redirect("/sign-in", { headers });
   } catch (e) {
     if (e instanceof ConnectError) {
       const data: ActionData = { resetPasswordError: convertToAPIError(e) };

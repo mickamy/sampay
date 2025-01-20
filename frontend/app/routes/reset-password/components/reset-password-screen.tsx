@@ -10,7 +10,7 @@ import { useJsonSubmit } from "~/hooks/use-submit";
 import type { APIError } from "~/lib/api/response";
 import ResetPasswordForm, {
   resetPasswordSchema,
-} from "~/routes/auth/reset-password/components/reset-password-form";
+} from "~/routes/reset-password/components/reset-password-form";
 
 export interface ActionData extends RequestEmailVerificationFormActionData {
   resetPasswordError?: APIError;
@@ -47,7 +47,7 @@ export default function ResetPasswordScreen() {
           />
         )}
         <p className="flex flex-row justify-center text-sm text-muted-foreground">
-          <UnderlinedLink to="/auth/sign-in">
+          <UnderlinedLink to="/sign-in">
             {t("auth.reset_password.back_to_sign_in")}
           </UnderlinedLink>
         </p>

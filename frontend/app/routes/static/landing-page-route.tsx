@@ -22,7 +22,7 @@ export default function LandingPage() {
             <br />
             {t("lp.tagline_description_2")}
           </p>
-          <Link to="/account/sign-up">
+          <Link to="/sign-up">
             <Button size="lg" className="mr-4">
               {t("lp.get_started")}
             </Button>

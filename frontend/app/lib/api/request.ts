@@ -31,18 +31,18 @@ export async function authenticate(
 ): Promise<AuthenticatedSession> {
   const session = await getAuthenticatedSession(request);
   if (session == null) {
-    throw redirect("/auth/sign-in");
+    throw redirect("/sign-in");
   }
   if (!needsRefresh(session)) {
     return session;
   }
   if (!canRefresh(session)) {
-    throw redirect("/auth/sign-in");
+    throw redirect("/sign-in");
   }
   try {
     return await refreshSession({ request, original: session });
   } catch (e) {
-    throw redirect("/auth/sign-in");
+    throw redirect("/sign-in");
   }
 }
 
@@ -59,7 +59,7 @@ export async function withEmailVerification(
   try {
     const session = await getEmailVerificationSession(request);
     if (!session || !session.verify) {
-      return new Left(redirect("/auth/sign-in"));
+      return new Left(redirect("/sign-in"));
     }
     const transport = createConnectTransport({
       baseUrl: API_BASE_URL,
@@ -76,7 +76,7 @@ export async function withEmailVerification(
   } catch (e) {
     if (e instanceof ConnectError) {
       if (e.code === Code.Unauthenticated) {
-        throw redirect("/auth/sign-in");
+        throw redirect("/sign-in");
       }
       return new Right(convertToAPIError(e));
     }
@@ -114,7 +114,7 @@ export async function withAuthentication(
   } catch (e) {
     if (e instanceof ConnectError) {
       if (e.code === Code.Unauthenticated) {
-        throw redirect("/auth/sign-in");
+        throw redirect("/sign-in");
       }
       return new Right(convertToAPIError(e));
     }
