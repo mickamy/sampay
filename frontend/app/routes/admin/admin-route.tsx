@@ -126,6 +126,7 @@ async function putProfile({
     const { image, ...data } = userProfileSchema.parse(
       Object.fromEntries(body),
     );
+
     await getClient(UserProfileService).updateUserProfile(data);
     const actionData: ActionData = {
       putProfileSuccess: true,

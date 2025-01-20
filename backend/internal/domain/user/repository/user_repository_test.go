@@ -149,3 +149,26 @@ func TestUser_FindByEmailOrSlug(t *testing.T) {
 		})
 	}
 }
+
+func TestUser_Update(t *testing.T) {
+	t.Parallel()
+
+	// arrange
+	ctx := context.Background()
+	user := userFixture.User(nil)
+	db := newReadWriter(t)
+	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
+	user.Slug = gofakeit.GlobalFaker.Username()
+
+	// act
+	sut := repository.NewUser(db.WriterDB())
+	err := sut.Update(ctx, &user)
+
+	// assert
+	require.NoError(t, err)
+	var got model.User
+	err = db.ReaderDB().WithContext(ctx).First(&got, "id = ?", user.ID).Error
+	require.NoError(t, err)
+	assert.Equal(t, user.ID, got.ID)
+	assert.Equal(t, user.Slug, got.Slug)
+}

@@ -13,6 +13,7 @@ import (
 
 type CreateUserProfileInput struct {
 	Name  string
+	Slug  string
 	Bio   *string
 	Image *commonModel.S3Object
 }
@@ -27,29 +28,41 @@ type CreateUserProfile interface {
 
 type createUserProfile struct {
 	writer          *database.Writer
+	userRepo        userRepository.User
 	userProfileRepo userRepository.UserProfile
 }
 
 func NewCreateUserProfile(
 	writer *database.Writer,
+	userRepo userRepository.User,
 	userProfileRepo userRepository.UserProfile,
 ) CreateUserProfile {
 	return &createUserProfile{
 		writer:          writer,
+		userRepo:        userRepo,
 		userProfileRepo: userProfileRepo,
 	}
 }
 
 func (uc *createUserProfile) Do(ctx context.Context, input CreateUserProfileInput) (CreateUserProfileOutput, error) {
+	id := contexts.MustAuthenticatedUserID(ctx)
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
-		m := userModel.UserProfile{
-			UserID: contexts.MustAuthenticatedUserID(ctx),
+		user := userModel.User{
+			ID:   id,
+			Slug: input.Slug,
+		}
+		if err := uc.userRepo.WithTx(tx.WriterDB()).Update(ctx, &user); err != nil {
+			return fmt.Errorf("failed to update user: %w", err)
+		}
+
+		profile := userModel.UserProfile{
+			UserID: id,
 			Name:   input.Name,
 			Bio:    input.Bio,
 		}
-		m.SetImage(input.Image)
+		profile.SetImage(input.Image)
 
-		if err := uc.userProfileRepo.WithTx(tx.WriterDB()).Create(ctx, &m); err != nil {
+		if err := uc.userProfileRepo.WithTx(tx.WriterDB()).Create(ctx, &profile); err != nil {
 			return fmt.Errorf("failed to persist user profile: %w", err)
 		}
 

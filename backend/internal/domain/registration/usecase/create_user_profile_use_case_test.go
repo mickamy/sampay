@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"mickamy.com/sampay/internal/di"
+	commonFixture "mickamy.com/sampay/internal/domain/common/fixture"
 	"mickamy.com/sampay/internal/domain/registration/usecase"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/lib/contexts"
@@ -27,8 +28,10 @@ func TestCreateUserProfile_Do(t *testing.T) {
 	// act
 	sut := di.InitRegistrationUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).CreateUserProfile
 	_, err := sut.Do(ctx, usecase.CreateUserProfileInput{
-		Name: gofakeit.GlobalFaker.Name(),
-		Bio:  ptr.Of(gofakeit.GlobalFaker.Sentence(20)),
+		Name:  gofakeit.GlobalFaker.Name(),
+		Slug:  gofakeit.GlobalFaker.Username(),
+		Bio:   ptr.Of(gofakeit.GlobalFaker.Sentence(20)),
+		Image: ptr.Of(commonFixture.S3Object(nil)),
 	})
 
 	// assert

@@ -87,12 +87,7 @@
     "submit": "送信",
     "update": "更新",
     "upload": "アップロード",
-    "uri": "リンク",
-    "error": {
-      "invalid_file_type": "ファイル形式が無効です",
-      "invalid_qr_code": "QRコードが無効です",
-      "too_large_file": "ファイルサイズが大きすぎます。{{size}}以下のファイルを選択してください"
-    }
+    "uri": "リンク"
   },
   "lp": {
     "tagline": "Sampay\n個人間決済リンクを\nひとつのリンクで",
@@ -136,6 +131,7 @@
   },
   "model": {
     "user": {
+      "slug": "Sampay URL",
       "profile": {
         "name": "名前",
         "bio": "自己紹介"

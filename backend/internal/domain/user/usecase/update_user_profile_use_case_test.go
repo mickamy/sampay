@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -29,6 +30,7 @@ func TestUpdateUserProfile_Do(t *testing.T) {
 			arrange: func(t *testing.T, ctx context.Context, writer *database.Writer) usecase.UpdateUserProfileInput {
 				return usecase.UpdateUserProfileInput{
 					Name: "updated-name",
+					Slug: gofakeit.GlobalFaker.Username(),
 					Bio:  nil,
 				}
 			},
@@ -46,6 +48,7 @@ func TestUpdateUserProfile_Do(t *testing.T) {
 			arrange: func(t *testing.T, ctx context.Context, writer *database.Writer) usecase.UpdateUserProfileInput {
 				return usecase.UpdateUserProfileInput{
 					Name: "updated-name",
+					Slug: gofakeit.GlobalFaker.Username(),
 					Bio:  ptr.Of("updated-bio"),
 				}
 			},

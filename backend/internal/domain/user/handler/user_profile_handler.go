@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/user/v1/userv1connect"
 	userv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/user/v1"
@@ -10,6 +11,7 @@ import (
 
 	"mickamy.com/sampay/internal/domain/common/dto/request"
 	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
+	userModel "mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/domain/user/usecase"
 	"mickamy.com/sampay/internal/lib/contexts"
 )
@@ -32,11 +34,15 @@ func NewUserProfile(
 func (h UserProfile) UpdateUserProfile(ctx context.Context, req *connect.Request[userv1.UpdateUserProfileRequest]) (*connect.Response[userv1.UpdateUserProfileResponse], error) {
 	_, err := h.update.Do(ctx, usecase.UpdateUserProfileInput{
 		Name: req.Msg.Name,
+		Slug: req.Msg.Slug,
 		Bio:  req.Msg.Bio,
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
 		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
+			if errors.Is(err, userModel.ErrUserSlugAlreadyExists) {
+				return nil, localizable.AsFieldViolations("slug").AsConnectError()
+			}
 			return nil, localizable.AsConnectError()
 		}
 

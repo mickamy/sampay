@@ -19,6 +19,7 @@ type User interface {
 	FindBySlug(ctx context.Context, slug string, scopes ...database.Scope) (*model.User, error)
 	FindByEmail(ctx context.Context, email string, scopes ...database.Scope) (*model.User, error)
 	FindByEmailOrSlug(ctx context.Context, emailOrSlug string, scopes ...database.Scope) (*model.User, error)
+	Update(ctx context.Context, m *model.User) error
 	WithTx(tx *database.DB) User
 }
 
@@ -103,6 +104,10 @@ func (repo *user) FindByEmailOrSlug(ctx context.Context, emailOrSlug string, sco
 		return nil, err
 	}
 	return &m, err
+}
+
+func (repo *user) Update(ctx context.Context, m *model.User) error {
+	return repo.db.WithContext(ctx).Save(m).Error
 }
 
 func (repo *user) WithTx(tx *database.DB) User {

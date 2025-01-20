@@ -157,6 +157,20 @@ func (mr *MockUserMockRecorder) Get(ctx, id any, scopes ...any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockUser)(nil).Get), varargs...)
 }
 
+// Update mocks base method.
+func (m_2 *MockUser) Update(ctx context.Context, m *model.User) error {
+	m_2.ctrl.T.Helper()
+	ret := m_2.ctrl.Call(m_2, "Update", ctx, m)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockUserMockRecorder) Update(ctx, m any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockUser)(nil).Update), ctx, m)
+}
+
 // WithTx mocks base method.
 func (m *MockUser) WithTx(tx *database.DB) repository.User {
 	m.ctrl.T.Helper()

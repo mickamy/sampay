@@ -52,6 +52,9 @@ registration:
         email_verification_already_consumed: '再度メールアドレス認証を行ってください'
 user:
   model:
+    user:
+      error:
+        slug_already_exists: 'このリンクは既に使用されています。'
     user_attribute:
       error:
         duplicated: '既に登録済みです。'

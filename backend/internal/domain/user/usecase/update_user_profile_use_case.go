@@ -12,6 +12,7 @@ import (
 
 type UpdateUserProfileInput struct {
 	Name string
+	Slug string
 	Bio  *string
 }
 
@@ -25,29 +26,41 @@ type UpdateUserProfile interface {
 
 type updateUserProfile struct {
 	writer          *database.Writer
+	userRepo        userRepository.User
 	userProfileRepo userRepository.UserProfile
 }
 
 func NewUpdateUserProfile(
 	writer *database.Writer,
+	userRepo userRepository.User,
 	userProfileRepo userRepository.UserProfile,
 ) UpdateUserProfile {
 	return &updateUserProfile{
 		writer:          writer,
+		userRepo:        userRepo,
 		userProfileRepo: userProfileRepo,
 	}
 }
 
 func (uc *updateUserProfile) Do(ctx context.Context, input UpdateUserProfileInput) (UpdateUserProfileOutput, error) {
-	m := userModel.UserProfile{
-		UserID: contexts.MustAuthenticatedUserID(ctx),
+	id := contexts.MustAuthenticatedUserID(ctx)
+	user := userModel.User{
+		ID:   id,
+		Slug: input.Slug,
+	}
+	profile := userModel.UserProfile{
+		UserID: id,
 		Name:   input.Name,
 	}
 	if input.Bio != nil {
-		m.Bio = input.Bio
+		profile.Bio = input.Bio
 	}
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
-		if err := uc.userProfileRepo.WithTx(tx.WriterDB()).Update(ctx, &m); err != nil {
+		if err := uc.userRepo.WithTx(tx.WriterDB()).Update(ctx, &user); err != nil {
+			return fmt.Errorf("failed to update user: %w", err)
+		}
+
+		if err := uc.userProfileRepo.WithTx(tx.WriterDB()).Update(ctx, &profile); err != nil {
 			return fmt.Errorf("failed to update user profile: %w", err)
 		}
 		return nil

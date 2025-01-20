@@ -90,7 +90,8 @@ export default function AdminScreen() {
       </div>
       <UserProfile
         admin
-        profile={user.profile}
+        url={url}
+        user={user}
         onClickAvatar={openProfileImageFormDialog}
         onClickEdit={openProfileFormDialog}
       />
@@ -112,7 +113,7 @@ export default function AdminScreen() {
         actionData={profileImageFormDialogActionData}
       />
       <UserProfileFormDialog
-        profile={user.profile}
+        user={user}
         isOpen={isProfileFormDialogOpen}
         onClose={closeProfileFormDialog}
         onSubmit={submitProfileForm}

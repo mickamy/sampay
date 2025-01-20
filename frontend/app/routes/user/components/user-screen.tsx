@@ -17,7 +17,7 @@ export default function UserScreen() {
       <div className="flex justify-end w-full">
         <ShareButton url={url} />
       </div>
-      <UserProfile profile={user.profile} />
+      <UserProfile user={user} url={url} />
       <Spacer size={6} />
       <UserLinkButtons links={user.links} />
       <Spacer size={20} />

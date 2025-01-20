@@ -12,6 +12,7 @@ import {
   FormControl,
   FormDescription,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
@@ -22,39 +23,46 @@ import { useFormWithAPIError } from "~/lib/form/react-hook-form";
 import { z } from "~/lib/form/zod";
 import { isFileLike } from "~/lib/polyfill/file";
 import { cn } from "~/lib/utils";
-import type { UserProfile } from "~/models/user/user-profile-model";
+import type { User } from "~/models/user/user-model";
 
 export const userProfileSchema = z.object({
   intent: z.enum(["profile"]),
   image: z
     .any()
     .refine((file) => isFileLike(file), {
-      params: { i18n: "form.choose_file" },
+      params: { i18n: "choose_file" },
     })
     .refine((file) => file?.type?.startsWith("image/"), {
-      params: { i18n: "form.error.invalid_file_type" },
+      params: { i18n: "invalid_file_type" },
     })
     .refine((file) => file?.size <= 5 * 1024 * 1024, {
       params: {
         i18n: {
-          key: "form.error.too_large_file",
+          key: "too_large_file",
           values: { size: "5MB" },
         },
       },
     })
     .optional(),
-  name: z.string().min(1),
+  name: z.string().min(1).max(64),
+  slug: z
+    .string()
+    .min(1)
+    .max(32)
+    .refine((slug) => /^[a-zA-Z0-9._-]+$/.test(slug), {
+      params: { i18n: "invalid_slug" },
+    }),
   bio: z.string().optional(),
 });
 
 interface Props extends HTMLAttributes<HTMLFormElement> {
-  profile?: UserProfile;
+  user?: User;
   onSubmitData: (data: z.infer<typeof userProfileSchema>) => void;
   error?: APIError;
 }
 
 export default function UserProfileForm({
-  profile,
+  user,
   onSubmitData,
   error,
   className,
@@ -65,14 +73,15 @@ export default function UserProfileForm({
       resolver: zodResolver(userProfileSchema),
       defaultValues: {
         intent: "profile",
-        name: profile?.name,
-        bio: profile?.bio,
+        name: user?.profile.name,
+        slug: user?.slug,
+        bio: user?.profile.bio,
       },
     },
     error,
   });
 
-  const { imageURL, onImageChange } = useImagePreview(profile?.imageURL);
+  const { imageURL, onImageChange } = useImagePreview(user?.profile.imageURL);
 
   const { t } = useTranslation();
 
@@ -126,11 +135,32 @@ export default function UserProfileForm({
           name="name"
           label={t("model.user.profile.name")}
         />
+        <BaseFormField
+          control={form.control}
+          name="slug"
+          render={({ field }) => {
+            return (
+              <FormItem className={cn("", className)}>
+                <FormLabel className="font-bold">
+                  {t("model.user.slug")}
+                </FormLabel>
+                <FormControl>
+                  <div className="flex flex-row items-center space-x-2">
+                    <Label htmlFor="slug">https://sampay.link/u/</Label>
+                    <Input type="text" {...field} />
+                  </div>
+                </FormControl>
+                <FormMessage className="min-h-4" />
+              </FormItem>
+            );
+          }}
+        />
         <FormField
           control={form.control}
           name="bio"
           label={t("model.user.profile.bio")}
           type="textarea"
+          inputClassName="h-32"
         />
         <ErrorMessage message={form.formState.errors.root?.message} />
         <Spacer size={1} />
