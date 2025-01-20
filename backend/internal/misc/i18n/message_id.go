@@ -90,6 +90,10 @@ const (
 	*/
 	UserHandlerUser_linkErrorInvalid_provider_type MessageID = "user.handler.user_link.error.invalid_provider_type"
 	/*
+		このリンクは既に使用されています。
+	*/
+	UserModelUserErrorSlug_already_exists MessageID = "user.model.user.error.slug_already_exists"
+	/*
 		既に登録済みです。
 	*/
 	UserModelUser_attributeErrorDuplicated MessageID = "user.model.user_attribute.error.duplicated"

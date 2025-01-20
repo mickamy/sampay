@@ -114,6 +114,7 @@ func (repo *authentication) Upsert(ctx context.Context, m *model.Authentication,
 	var id string
 	if err := repo.db.WithContext(ctx).Model(&model.Authentication{}).
 		Where("user_id = ? AND type = ? AND identifier = ?", key.UserID, key.Type, key.Identifier).
+		Limit(1).
 		Pluck("id", &id).
 		Error; err != nil {
 		return fmt.Errorf("failed to check authentication existence: %w", err)

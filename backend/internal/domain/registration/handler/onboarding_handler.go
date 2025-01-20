@@ -13,6 +13,7 @@ import (
 	commonRequest "mickamy.com/sampay/internal/domain/common/dto/request"
 	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 	"mickamy.com/sampay/internal/domain/registration/usecase"
+	userModel "mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/lib/contexts"
 )
 
@@ -116,6 +117,9 @@ func (h *Onboarding) CreateUserProfile(
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
 		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
+			if errors.Is(err, userModel.ErrUserSlugAlreadyExists) {
+				return nil, localizable.AsFieldViolations("slug").AsConnectError()
+			}
 			return nil, localizable.AsConnectError()
 		}
 
