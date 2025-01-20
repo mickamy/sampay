@@ -1,4 +1,4 @@
-package scenario
+package scenario_test
 
 import (
 	"context"
