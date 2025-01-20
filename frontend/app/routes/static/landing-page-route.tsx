@@ -56,7 +56,10 @@ export default function LandingPage() {
             <h3 className="text-lg font-semibold mb-4">サポート</h3>
             <ul className="space-y-2">
               <li>
-                <a href="/contact" className="hover:text-gray-300">
+                <a
+                  href="mailto:contact@sampay.link"
+                  className="hover:text-gray-300"
+                >
                   {t("lp.contact")}
                 </a>
               </li>
