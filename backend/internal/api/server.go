@@ -22,11 +22,12 @@ import (
 func NewServer(infras di.Infras) http.Server {
 	mux := http.NewServeMux()
 
+	authUCs := di.InitAuthUseCases(infras.DB, infras.ReadWriter, infras.Writer, infras.Reader, infras.KVS)
 	interceptors := connect.WithInterceptors(
 		interceptor.Logging(),
 		interceptor.I18N(),
 		interceptor.Recovery(),
-		interceptor.Authenticate(di.InitAuthUseCases(infras.DB, infras.ReadWriter, infras.Writer, infras.Reader, infras.KVS).AuthenticateUser),
+		interceptor.Authenticate(authUCs.AuthenticateUser, authUCs.AuthenticateAnonymousUser),
 		interceptor.Cookie(),
 	)
 

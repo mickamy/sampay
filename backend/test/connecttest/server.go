@@ -25,11 +25,12 @@ func NewServer(t *testing.T, infras di.Infras, newService func([]connect.Interce
 }
 
 func NewInterceptors(infras di.Infras) []connect.Interceptor {
+	ucs := di.InitAuthUseCases(infras.DB, infras.ReadWriter, infras.Writer, infras.Reader, infras.KVS)
 	return []connect.Interceptor{
 		interceptor.Logging(),
 		interceptor.I18N(),
 		interceptor.Recovery(),
-		interceptor.Authenticate(di.InitAuthUseCases(infras.DB, infras.ReadWriter, infras.Writer, infras.Reader, infras.KVS).AuthenticateUser),
+		interceptor.Authenticate(ucs.AuthenticateUser, ucs.AuthenticateAnonymousUser),
 		interceptor.Cookie(),
 	}
 }

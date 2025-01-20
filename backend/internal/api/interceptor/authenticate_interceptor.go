@@ -26,6 +26,11 @@ var authSkippingProcedures = []string{
 	registrationv1connect.AccountServiceSignUpProcedure,
 }
 
+var anonymousProcedures = []string{
+	registrationv1connect.OnboardingServiceGetOnboardingStepProcedure,
+	registrationv1connect.OnboardingServiceCreatePasswordProcedure,
+}
+
 func skipper(req connect.AnyRequest) bool {
 	for _, procedure := range authSkippingProcedures {
 		if req.Spec().Procedure == procedure {
@@ -35,7 +40,16 @@ func skipper(req connect.AnyRequest) bool {
 	return false
 }
 
-func Authenticate(uc usecase.AuthenticateUser) connect.UnaryInterceptorFunc {
+func anonymousSkipper(req connect.AnyRequest) bool {
+	for _, procedure := range anonymousProcedures {
+		if req.Spec().Procedure == procedure {
+			return true
+		}
+	}
+	return false
+}
+
+func Authenticate(authenticate usecase.AuthenticateUser, anonymous usecase.AuthenticateAnonymousUser) connect.UnaryInterceptorFunc {
 	return func(next connect.UnaryFunc) connect.UnaryFunc {
 		return func(
 			ctx context.Context,
@@ -50,7 +64,17 @@ func Authenticate(uc usecase.AuthenticateUser) connect.UnaryInterceptorFunc {
 				slogger.WarnCtx(ctx, "no access token found")
 				return nil, connect.NewError(connect.CodeUnauthenticated, ErrNoAccessToken)
 			}
-			out, err := uc.Do(ctx, usecase.AuthenticateUserInput{
+
+			if anonymousSkipper(req) {
+				_, err := anonymous.Do(ctx, usecase.AuthenticateAnonymousUserInput{Token: accessToken})
+				if err != nil {
+					slogger.WarnCtx(ctx, "failed to authenticate anonymous user", "err", err)
+					return nil, connect.NewError(connect.CodeUnauthenticated, err)
+				}
+				return next(ctx, req)
+			}
+
+			out, err := authenticate.Do(ctx, usecase.AuthenticateUserInput{
 				AccessToken: accessToken,
 			})
 			if err != nil {
