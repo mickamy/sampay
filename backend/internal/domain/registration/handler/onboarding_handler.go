@@ -109,6 +109,7 @@ func (h *Onboarding) CreateUserProfile(
 ) (*connect.Response[registrationv1.CreateUserProfileResponse], error) {
 	_, err := h.createProfile.Do(ctx, usecase.CreateUserProfileInput{
 		Name:  req.Msg.Name,
+		Slug:  req.Msg.Slug,
 		Bio:   req.Msg.Bio,
 		Image: commonRequest.NewS3Object(req.Msg.Image),
 	})
