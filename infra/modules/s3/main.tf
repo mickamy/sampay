@@ -8,7 +8,6 @@ locals {
 
 resource "aws_s3_bucket" "public" {
   bucket = "sampay-${var.env}-public"
-
   tags = local.common_tags
 }
 
@@ -80,11 +79,16 @@ resource "aws_s3_bucket_policy" "public_policy" {
   ]
 }
 
+data "aws_cloudfront_cache_policy" "cache_policy" {
+  name = "Managed-CachingOptimized"
+}
+
 # Create a CloudFront distribution
 resource "aws_cloudfront_distribution" "cdn" {
   origin {
     domain_name = aws_s3_bucket.public.bucket_regional_domain_name
     origin_id   = aws_s3_bucket.public.bucket
+
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.oai.cloudfront_access_identity_path
     }
@@ -97,7 +101,7 @@ resource "aws_cloudfront_distribution" "cdn" {
     cached_methods = ["GET", "HEAD"]
     target_origin_id       = aws_s3_bucket.public.bucket
     viewer_protocol_policy = "redirect-to-https"
-    cache_policy_id        = "Managed-CachingOptimized"
+    cache_policy_id        = data.aws_cloudfront_cache_policy.cache_policy.id
   }
 
   price_class = "PriceClass_200"
