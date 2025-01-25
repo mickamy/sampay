@@ -7,14 +7,14 @@ locals {
 }
 
 resource "aws_sqs_queue" "worker_queue" {
-  name                       = "${var.env}-sampay-worker-queue"
+  name                       = "sampay-${var.env}-worker-queue"
   visibility_timeout_seconds = 43200
 
   tags = local.common_tags
 }
 
 resource "aws_sqs_queue" "worker_dlq" {
-  name = "${var.env}-sampay-worker-dlq"
+  name = "sampay-${var.env}-worker-dlq"
 
   tags = local.common_tags
 }

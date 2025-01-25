@@ -106,7 +106,7 @@ resource "aws_s3_bucket_public_access_block" "dmarc_reports" {
 }
 
 resource "aws_iam_role" "ses_dmarc_role" {
-  name = "ses-dmarc-role"
+  name = "sampay-ses-dmarc-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -151,7 +151,7 @@ resource "aws_s3_bucket_policy" "dmarc_reports" {
 
 
 resource "aws_iam_role_policy" "ses_dmarc_policy" {
-  name = "ses-dmarc-policy"
+  name = "sampay-ses-dmarc-policy"
   role = aws_iam_role.ses_dmarc_role.id
 
   policy = jsonencode({
@@ -173,11 +173,11 @@ resource "aws_iam_role_policy" "ses_dmarc_policy" {
 }
 
 resource "aws_ses_receipt_rule_set" "dmarc_ruleset" {
-  rule_set_name = "dmarc-ruleset"
+  rule_set_name = "sampay-dmarc-ruleset"
 }
 
 resource "aws_ses_receipt_rule" "store_dmarc" {
-  name          = "store-dmarc-reports"
+  name          = "sampay-store-dmarc-reports"
   rule_set_name = aws_ses_receipt_rule_set.dmarc_ruleset.rule_set_name
   recipients = ["dmarc-reports@${var.domain}"]
   enabled       = true

@@ -51,6 +51,8 @@ resource "aws_lightsail_static_ip_attachment" "attach_static_ip" {
 
 data "aws_route53_zone" "main" {
   name = "sampay.link"
+
+  tags = local.common_tags
 }
 
 resource "aws_route53_record" "public_record" {
@@ -69,7 +71,7 @@ resource "aws_route53_record" "public_record" {
 # IAM
 ########################################################################################################################
 resource "aws_iam_role" "lightsail_role" {
-  name = "lightsail-role"
+  name = "${local.instance_name}-lightsail-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -87,14 +89,14 @@ resource "aws_iam_role" "lightsail_role" {
 }
 
 resource "aws_iam_instance_profile" "lightsail_instance_profile" {
-  name = "lightsail-instance-profile"
+  name = "${local.instance_name}-lightsail-instance-profile"
   role = aws_iam_role.lightsail_role.name
 
   tags = local.common_tags
 }
 
 resource "aws_iam_policy" "s3_access_policy" {
-  name        = "sampay-s3-access-${var.env}"
+  name        = "sampay-${var.env}-s3-access"
   description = "Allows read and write actions for S3"
   policy = jsonencode({
     Version = "2012-10-17",
@@ -130,7 +132,7 @@ resource "aws_iam_role_policy_attachment" "attach_s3_access_policy" {
 }
 
 resource "aws_iam_policy" "ses_access_policy" {
-  name        = "sampay-ses-access-${var.env}"
+  name        = "sampay-${var.env}-ses-access"
   description = "Allows send email actions for SES"
   policy = jsonencode({
     Version = "2012-10-17",
@@ -161,7 +163,7 @@ resource "aws_iam_role_policy_attachment" "attach_ses_access_policy" {
 }
 
 resource "aws_iam_policy" "sqs_access_policy" {
-  name        = "sampay-sqs-access-${var.env}"
+  name        = "sampay-${var.env}-sqs-access"
   description = "Allows read and write actions for SQS"
   policy = jsonencode({
     Version = "2012-10-17",
@@ -172,10 +174,6 @@ resource "aws_iam_policy" "sqs_access_policy" {
           "sqs:SendMessage",
           "sqs:ReceiveMessage",
           "sqs:DeleteMessage",
-          "sqs:GetQueueAttributes",
-          "sqs:ListQueues",
-          "sqs:CreateQueue",
-          "sqs:DeleteQueue",
         ],
         Resource = [
           var.sqs_worker_queue_arn,
@@ -199,7 +197,7 @@ resource "aws_iam_role_policy_attachment" "attach_sqs_access_policy" {
 }
 
 resource "aws_iam_policy" "ssm_access_policy" {
-  name        = "sampay-ssm-access-${var.env}"
+  name        = "sampay-${var.env}-ssm-access"
   description = "Allows read and write actions for SSM"
   policy = jsonencode({
     Version = "2012-10-17",
