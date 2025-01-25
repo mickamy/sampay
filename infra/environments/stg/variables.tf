@@ -1,5 +1,6 @@
 variable "aws_region" {
   description = "AWS region to deploy the Lightsail instance"
+  type        = string
   default     = "ap-northeast-1"
 }
 
