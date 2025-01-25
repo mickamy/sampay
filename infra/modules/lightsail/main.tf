@@ -51,8 +51,6 @@ resource "aws_lightsail_static_ip_attachment" "attach_static_ip" {
 
 data "aws_route53_zone" "main" {
   name = "sampay.link"
-
-  tags = local.common_tags
 }
 
 resource "aws_route53_record" "public_record" {
