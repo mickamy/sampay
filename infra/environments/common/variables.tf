@@ -1,5 +1,5 @@
-variable "email_domain" {
-  description = "Email domain"
+variable "domain" {
+  description = "Domain name"
   type        = string
 }
 

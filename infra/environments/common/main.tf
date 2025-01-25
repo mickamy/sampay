@@ -4,6 +4,6 @@ provider "aws" {
 
 module "ses" {
   source  = "../../modules/ses"
-  domain  = var.email_domain
+  domain  = var.domain
   zone_id = var.zone_id
 }
