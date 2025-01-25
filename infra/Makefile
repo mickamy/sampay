@@ -43,6 +43,10 @@ apply-stg:
 destroy-stg:
 	cd ./environments/stg && terraform destroy
 
+reapply-lightsail-stg:
+	cd ./environments/stg && terraform destroy -target=module.lightsail
+	cd ./environments/stg && terraform apply -target=module.lightsail
+
 lint-init:
 	tflint --init
 
