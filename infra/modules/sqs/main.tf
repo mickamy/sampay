@@ -23,6 +23,14 @@ output "worker_arn" {
   value = aws_sqs_queue.worker_queue.arn
 }
 
+output "worker_url" {
+  value = aws_sqs_queue.worker_queue.url
+}
+
 output "worker_dlq_arn" {
   value = aws_sqs_queue.worker_dlq.arn
+}
+
+output "worker_dlq_url" {
+  value = aws_sqs_queue.worker_dlq.url
 }
