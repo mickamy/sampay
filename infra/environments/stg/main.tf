@@ -58,15 +58,12 @@ module "ssm" {
   db_host            = var.db_host
   db_name            = var.db_name
   db_port            = var.db_port
-  db_reader_password = var.db_reader_password
-  db_reader_user     = var.db_reader_user
   db_timezone        = var.db_timezone
-  db_writer_password = var.db_writer_password
-  db_writer_user     = var.db_writer_user
   frontend_base_url  = var.frontend_base_url
   private_key_path   = var.private_key_path
   public_key_path    = var.public_key_path
-  redis_url          = var.redis_url
+  redis_host         = var.redis_host
+  redis_port         = var.redis_port
   sqs_worker_dlq_url = module.sqs.worker_url
   sqs_worker_url     = module.sqs.worker_dlq_url
 }

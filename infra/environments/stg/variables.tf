@@ -29,30 +29,10 @@ variable "db_port" {
   type        = number
 }
 
-variable "db_reader_password" {
-  description = "Database reader password"
-  type        = string
-}
-
-variable "db_reader_user" {
-  description = "Database reader user"
-  type        = string
-}
-
 variable "db_timezone" {
   description = "Database timezone"
   type        = string
   default     = "Asia/Tokyo"
-}
-
-variable "db_writer_password" {
-  description = "Database writer password"
-  type        = string
-}
-
-variable "db_writer_user" {
-  description = "Database writer user"
-  type        = string
 }
 
 variable "domain" {
@@ -65,6 +45,15 @@ variable "frontend_base_url" {
   type        = string
 }
 
+variable "redis_host" {
+  description = "Redis host"
+  type        = string
+}
+
+variable "redis_port" {
+  description = "Redis port"
+  type        = number
+}
 
 variable "geo_locations" {
   description = "Geo locations to allow access"
