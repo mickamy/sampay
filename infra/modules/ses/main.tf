@@ -37,7 +37,7 @@ resource "aws_ses_domain_dkim" "dkim" {
 }
 
 resource "aws_route53_record" "dkim" {
-  count   = 3
+  count = 3
   zone_id = var.zone_id
   name    = "${aws_ses_domain_dkim.dkim.dkim_tokens[count.index]}.${aws_ses_domain_identity.domain.domain}"
   type    = "CNAME"
@@ -73,7 +73,7 @@ resource "aws_s3_bucket" "dmarc_reports" {
   tags   = local.common_tags
 }
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "public" {
+resource "aws_s3_bucket_server_side_encryption_configuration" "dmarc_reports" {
   bucket = aws_s3_bucket.dmarc_reports.id
 
   rule {
@@ -137,17 +137,18 @@ resource "aws_s3_bucket_policy" "dmarc_reports" {
         Principal = {
           Service = "ses.amazonaws.com"
         },
-        Action   = "s3:PutObject",
+        Action = "s3:PutObject",
         Resource = "${aws_s3_bucket.dmarc_reports.arn}/*",
         Condition = {
           StringEquals = {
-            "aws:SourceArn" = data.aws_caller_identity.default.account_id,
+            "AWS:SourceAccount": data.aws_caller_identity.default.account_id
           }
         }
       }
     ]
   })
 }
+
 
 resource "aws_iam_role_policy" "ses_dmarc_policy" {
   name = "ses-dmarc-policy"
@@ -160,8 +161,7 @@ resource "aws_iam_role_policy" "ses_dmarc_policy" {
         Effect = "Allow",
         Action = [
           "s3:PutObject",
-          "s3:GetBucketLocation",
-          "s3:ListBucket"
+          "s3:GetBucketLocation"
         ],
         Resource = [
           aws_s3_bucket.dmarc_reports.arn,
@@ -188,11 +188,6 @@ resource "aws_ses_receipt_rule" "store_dmarc" {
     object_key_prefix = "dmarc-reports/"
     position          = 1
   }
-
-  depends_on = [
-    aws_ses_receipt_rule_set.dmarc_ruleset,
-    aws_s3_bucket_policy.dmarc_reports,
-  ]
 }
 
 resource "aws_ses_active_receipt_rule_set" "dmarc_active" {
