@@ -45,6 +45,18 @@ variable "frontend_base_url" {
   type        = string
 }
 
+variable "geo_locations" {
+  description = "Geo locations to allow access"
+  type = list(string)
+  default = ["JP"]
+}
+
+variable "instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     = "t2.medium"
+}
+
 variable "redis_host" {
   description = "Redis host"
   type        = string
@@ -53,12 +65,6 @@ variable "redis_host" {
 variable "redis_port" {
   description = "Redis port"
   type        = number
-}
-
-variable "geo_locations" {
-  description = "Geo locations to allow access"
-  type = list(string)
-  default = ["JP"]
 }
 
 variable "private_key_path" {
@@ -74,4 +80,22 @@ variable "public_key_path" {
 variable "redis_url" {
   description = "Redis URL"
   type        = string
+}
+
+variable "volume_size" {
+  description = "Volume size in GB"
+  type        = number
+  default     = 8
+}
+
+variable "volume_type" {
+  description = "Volume type"
+  type        = string
+  default     = "gp2"
+}
+
+variable "vpc_cidr" {
+  description = "VPC CIDR"
+  type        = string
+  default     = "10.0.0.0/16"
 }

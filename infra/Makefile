@@ -43,9 +43,9 @@ apply-stg:
 destroy-stg:
 	cd ./environments/stg && terraform destroy
 
-reapply-lightsail-stg:
-	cd ./environments/stg && terraform destroy -target=module.lightsail
-	cd ./environments/stg && terraform apply -target=module.lightsail
+reapply-ec2-stg:
+	cd ./environments/stg && terraform destroy -target=module.ec2
+	cd ./environments/stg && terraform apply -target=module.ec2
 
 lint-init:
 	tflint --init
