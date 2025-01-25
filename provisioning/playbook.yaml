@@ -2,7 +2,22 @@
   hosts: all
   become: true
 
-- name: Import Postgres Playbook
-  import_playbook: playbooks/postgres.yaml
+  tasks:
+    - name: Install necessary packages
+      ansible.builtin.dnf:
+        name:
+          - ec2-instance-connect
+          - gcc
+          - git
+          - make
+          - tar
+          - vim
+          - wget
+        state: present
+
 - name: Import nginx Playbook
   import_playbook: playbooks/nginx.yaml
+- name: Import postgres Playbook
+  import_playbook: playbooks/postgres.yaml
+- name: Import redis Playbook
+  import_playbook: playbooks/redis.yaml
