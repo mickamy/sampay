@@ -1,4 +1,5 @@
 .PHONY: \
+	init-backend \
 	init-common \
 	plan-common \
 	apply-common \
@@ -10,6 +11,13 @@
 	lint-init \
 	lint \
 	upgrade \
+
+init-backend:
+	set -e
+	aws s3api create-bucket \
+		--bucket $(BUCKET_NAME) \
+		--region $(AWS_REGION) \
+		--create-bucket-configuration LocationConstraint=$(AWS_REGION)
 
 init-common:
 	cd ./environments/common && terraform init

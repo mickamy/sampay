@@ -1,3 +1,13 @@
+terraform {
+  backend "s3" {
+    bucket       = "sampay-tf-backend"
+    key          = "stg/state/terraform.tfstate"
+    region       = "ap-northeast-1"
+    use_lockfile = true
+    encrypt      = true
+  }
+}
+
 locals {
   env = "stg"
 }
