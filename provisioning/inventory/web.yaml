@@ -1,0 +1,9 @@
+all:
+  hosts:
+    "{{ lookup('env', 'ANSIBLE_HOST') }}":
+      ansible_user: "{{ lookup('env', 'ANSIBLE_USER') }}"
+      ansible_ssh_private_key_file: "{{ lookup('env', 'ANSIBLE_SSH_KEY') }}"
+  children:
+    web:
+      hosts:
+        "{{ lookup('env', 'ANSIBLE_HOST') }}":

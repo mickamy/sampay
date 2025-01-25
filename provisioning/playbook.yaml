@@ -1,0 +1,8 @@
+- name: Set up Web Application on Amazon Linux 2023
+  hosts: all
+  become: true
+
+- name: Import Postgres Playbook
+  import_playbook: playbooks/postgres.yaml
+- name: Import nginx Playbook
+  import_playbook: playbooks/nginx.yaml
