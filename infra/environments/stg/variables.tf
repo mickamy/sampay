@@ -1,15 +1,10 @@
-variable "api_domain" {
-  description = "API domain name"
-  type        = string
-}
-
 variable "aws_region" {
   description = "AWS region to deploy the Lightsail instance"
   default     = "ap-northeast-1"
 }
 
-variable "email_domain" {
-  description = "Email domain"
+variable "domain" {
+  description = "Domain name"
   type        = string
 }
 

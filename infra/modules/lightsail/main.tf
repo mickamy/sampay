@@ -60,7 +60,7 @@ data "aws_route53_zone" "main" {
 
 resource "aws_route53_record" "public_record" {
   zone_id = data.aws_route53_zone.main.zone_id
-  name    = var.api_domain
+  name    = "api.${var.domain}"
   type    = "A"
   ttl     = var.route53_record_ttl
   records = [aws_lightsail_static_ip.static_ip.ip_address]
@@ -70,6 +70,9 @@ resource "aws_route53_record" "public_record" {
   }
 }
 
+########################################################################################################################
+# IAM
+########################################################################################################################
 resource "aws_iam_role" "lightsail_role" {
   name = "lightsail-role"
   assume_role_policy = jsonencode({

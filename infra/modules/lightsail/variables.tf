@@ -1,5 +1,5 @@
-variable "api_domain" {
-  description = "API domain name"
+variable "domain" {
+  description = "Domain name"
   type        = string
 }
 

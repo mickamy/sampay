@@ -11,8 +11,8 @@ module "lightsail" {
 
   env = local.env
 
-  api_domain               = var.api_domain
-  email_domain             = var.email_domain
+  domain                   = var.domain
+  email_domain             = var.domain
   public_key               = module.ssm.public_key
   s3_public_bucket_arn     = module.s3.public_bucket_arn
   sqs_worker_dlq_queue_arn = module.sqs.worker_dlq_arn
