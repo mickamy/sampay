@@ -37,13 +37,14 @@ resource "aws_ses_domain_dkim" "dkim" {
 }
 
 resource "aws_route53_record" "dkim" {
-  for_each = toset(aws_ses_domain_dkim.dkim.dkim_tokens)
-
+  count = 3
   zone_id = var.zone_id
-  name    = "${each.value}.${aws_ses_domain_identity.domain.domain}"
+  name    = "${aws_ses_domain_dkim.dkim.dkim_tokens[count.index]}.${aws_ses_domain_identity.domain.domain}"
   type    = "CNAME"
   ttl     = 300
-  records = ["${each.value}.dkim.amazonses.com"]
+  records = ["${aws_ses_domain_dkim.dkim.dkim_tokens[count.index]}.dkim.amazonses.com"]
+
+  depends_on = [aws_ses_domain_dkim.dkim]
 }
 
 ########################################################################################################################
@@ -68,8 +69,8 @@ resource "aws_route53_record" "dmarc_reports_mx" {
 }
 
 resource "aws_s3_bucket" "dmarc_reports" {
-  bucket = "dmarc-reports-${var.domain}-${timestamp()}"
-  tags = local.common_tags
+  bucket = "dmarc-reports-${var.domain}"
+  tags   = local.common_tags
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "dmarc_reports_lifecycle" {
