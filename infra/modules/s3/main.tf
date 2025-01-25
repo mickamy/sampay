@@ -8,7 +8,7 @@ locals {
 
 resource "aws_s3_bucket" "public" {
   bucket = "sampay-${var.env}-public"
-  tags = local.common_tags
+  tags   = local.common_tags
 }
 
 output "public_bucket_arn" {

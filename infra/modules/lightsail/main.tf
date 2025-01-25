@@ -11,7 +11,7 @@ locals {
 data "aws_caller_identity" "default" {}
 
 resource "aws_lightsail_key_pair" "sampay" {
-  name   = "${local.instance_name}-key"
+  name       = "${local.instance_name}-key"
   public_key = var.public_key
 
   tags = local.common_tags

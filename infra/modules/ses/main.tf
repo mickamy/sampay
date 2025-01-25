@@ -37,7 +37,7 @@ resource "aws_ses_domain_dkim" "dkim" {
 }
 
 resource "aws_route53_record" "dkim" {
-  count = 3
+  count   = 3
   zone_id = var.zone_id
   name    = "${aws_ses_domain_dkim.dkim.dkim_tokens[count.index]}.${aws_ses_domain_identity.domain.domain}"
   type    = "CNAME"
@@ -137,11 +137,11 @@ resource "aws_s3_bucket_policy" "dmarc_reports" {
         Principal = {
           Service = "ses.amazonaws.com"
         },
-        Action = "s3:PutObject",
+        Action   = "s3:PutObject",
         Resource = "${aws_s3_bucket.dmarc_reports.arn}/*",
         Condition = {
           StringEquals = {
-            "AWS:SourceAccount": data.aws_caller_identity.default.account_id
+            "AWS:SourceAccount" : data.aws_caller_identity.default.account_id
           }
         }
       }

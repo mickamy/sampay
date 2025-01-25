@@ -5,5 +5,5 @@ variable "env" {
 
 variable "geo_locations" {
   description = "Geo locations to allow access"
-  type        = list(string)
+  type = list(string)
 }
