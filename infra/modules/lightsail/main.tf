@@ -33,7 +33,7 @@ resource "aws_lightsail_instance" "web" {
   key_pair_name     = aws_key_pair.sampay.key_name
   name              = local.instance_name
 
-  user_data = templatefile("${path.module}/init.sh.tpl", {
+  user_data = templatefile("user_data.sh.tpl", {
     aws_region : var.aws_region,
   })
 
