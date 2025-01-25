@@ -69,7 +69,7 @@ resource "aws_route53_record" "dmarc_reports_mx" {
 }
 
 resource "aws_s3_bucket" "dmarc_reports" {
-  bucket = "dmarc-reports-${var.domain}"
+  bucket = "${var.domain}-dmarc-reports"
   tags   = local.common_tags
 }
 
