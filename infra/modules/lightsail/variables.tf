@@ -5,16 +5,19 @@ variable "domain" {
 
 variable "aws_region" {
   description = "AWS region to deploy the Lightsail instance"
+  type        = string
   default     = "ap-northeast-1"
 }
 
 variable "blueprint_id" {
   description = "Blueprint ID for Lightsail instance"
+  type        = string
   default     = "amazon_linux_2"
 }
 
 variable "bundle_id" {
   description = "Instance plan (CPU, Memory, Disk size)"
+  type        = string
   default     = "nano_2_0"
 }
 
