@@ -1,12 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "5.54.1"
-    }
-  }
-}
-
 locals {
   instance_name = "sampay-${var.env}"
 
@@ -19,8 +10,8 @@ locals {
 
 data "aws_caller_identity" "default" {}
 
-resource "aws_key_pair" "sampay" {
-  key_name   = "${local.instance_name}-key"
+resource "aws_lightsail_key_pair" "sampay" {
+  name   = "${local.instance_name}-key"
   public_key = var.public_key
 
   tags = local.common_tags
@@ -30,12 +21,16 @@ resource "aws_lightsail_instance" "web" {
   availability_zone = "${var.aws_region}a"
   blueprint_id      = var.blueprint_id
   bundle_id         = var.bundle_id
-  key_pair_name     = aws_key_pair.sampay.key_name
+  key_pair_name     = aws_lightsail_key_pair.sampay.name
   name              = local.instance_name
 
-  user_data = templatefile("user_data.sh.tpl", {
+  user_data = templatefile("${path.module}/user_data.sh.tpl", {
     aws_region : var.aws_region,
   })
+
+  depends_on = [
+    aws_lightsail_key_pair.sampay,
+  ]
 
   tags = local.common_tags
 }
