@@ -10,6 +10,21 @@ import (
 
 type Env string
 
+func (e Env) ShortName() string {
+	switch e {
+	case Development:
+		return "dev"
+	case Test:
+		return "test"
+	case Staging:
+		return "stg"
+	case Production:
+		return "prod"
+	}
+
+	panic(fmt.Errorf("unknown environment: %s", e))
+}
+
 const (
 	Development Env = "development"
 	Test        Env = "test"

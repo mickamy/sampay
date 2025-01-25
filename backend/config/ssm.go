@@ -23,7 +23,7 @@ func initBySSM(ctx context.Context, region string, env Env) error {
 
 	client := ssm.NewFromConfig(cfg)
 
-	ssmPathPrefix := fmt.Sprintf("/sampay/config/%s/", env)
+	ssmPathPrefix := fmt.Sprintf("/sampay/app/%s/", env.ShortName())
 	paginator := ssm.NewGetParametersByPathPaginator(client, &ssm.GetParametersByPathInput{
 		Path:           aws.String(ssmPathPrefix),
 		WithDecryption: aws.Bool(true),
