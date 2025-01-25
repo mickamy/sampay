@@ -7,6 +7,7 @@
 	plan-stg \
 	apply-stg \
 	destroy-stg \
+	lint-init \
 	lint \
 
 init-common:
@@ -32,6 +33,9 @@ apply-stg:
 
 destroy-stg:
 	cd ./environments/staging && terraform destroy
+
+lint-init:
+	tflint --init
 
 lint:
 	tflint --fix --recursive
