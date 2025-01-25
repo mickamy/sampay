@@ -57,7 +57,7 @@ func initPostgresContainers(cfg config.DatabaseConfig) (DatabaseDSN, CleanUpDB) 
 		"00_users.sql",
 		"01_database.sql",
 		"02_migrate.sh",
-		"03_grant_select_to_reader.sql",
+		"03_grant_users.sql",
 	}, func(file string) testcontainers.ContainerFile {
 		return testcontainers.ContainerFile{
 			HostFilePath:      filepath.Join(packageRoot, "db", file),

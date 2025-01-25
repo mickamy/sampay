@@ -3,9 +3,6 @@ package db
 import (
 	"context"
 	"fmt"
-	"os"
-	"os/exec"
-	"path"
 
 	"mickamy.com/sampay/config"
 )
@@ -14,25 +11,27 @@ func Create(ctx context.Context) error {
 	db := config.Database()
 	common := config.Common()
 
-	// create user
+	// Create users
 	if common.Env == config.Development {
-		cmd := exec.Command("psql", "-U", db.AdminUser, "-h", db.Host, "-d", "postgres", "-f", path.Join(common.PackageRoot, "db", "00_users.sql"))
-		cmd.Env = append(os.Environ(), "PGPASSWORD="+db.AdminPassword)
-
-		output, err := cmd.CombinedOutput()
-		if err != nil {
-			return fmt.Errorf("failed to create user: %w\nOutput: %s", err, string(output))
+		variables := map[string]string{
+			"sampay.writer_username": db.Writer,
+			"sampay.writer_password": db.WriterPass,
+			"sampay.reader_username": db.Reader,
+			"sampay.reader_password": db.ReaderPass,
+		}
+		if err := runPSQL("00_users.sql", variables); err != nil {
+			return fmt.Errorf("failed to create users: %w", err)
 		}
 	}
 
-	// create database
+	// Create database
 	{
-		cmd := exec.Command("psql", "-U", db.AdminUser, "-h", db.Host, "-d", "postgres", "-f", path.Join(common.PackageRoot, "db", "01_database.sql"))
-		cmd.Env = append(os.Environ(), "PGPASSWORD="+db.AdminPassword)
-
-		output, err := cmd.CombinedOutput()
-		if err != nil {
-			return fmt.Errorf("failed to create database: %w\nOutput: %s", err, string(output))
+		variables := map[string]string{
+			"sampay.db_name":         db.Name,
+			"sampay.writer_username": db.Writer,
+		}
+		if err := runPSQL("01_database.sql", variables); err != nil {
+			return fmt.Errorf("failed to create database: %w", err)
 		}
 	}
 

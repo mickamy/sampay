@@ -4,9 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
-	"os/exec"
-	"path"
 	"path/filepath"
 
 	"github.com/golang-migrate/migrate/v4"
@@ -30,8 +27,7 @@ func Migrate(ctx context.Context) error {
 		}
 
 		defer func(m *migrate.Migrate) {
-			err, _ := m.Close()
-			if err != nil {
+			if err, _ := m.Close(); err != nil {
 				slogger.WarnCtx(ctx, "failed to close database: %v", err)
 			}
 		}(m)
@@ -43,12 +39,13 @@ func Migrate(ctx context.Context) error {
 
 	// grant reader to select
 	{
-		cmd := exec.Command("psql", "-U", cfg.AdminUser, "-h", cfg.Host, "-d", "postgres", "-f", path.Join(config.Common().PackageRoot, "db", "03_grant_select_to_reader.sql"))
-		cmd.Env = append(os.Environ(), "PGPASSWORD="+cfg.AdminPassword)
+		variables := map[string]string{
+			"sampay.db_name":         cfg.Name,
+			"sampay.reader_username": cfg.Reader,
+		}
 
-		output, err := cmd.CombinedOutput()
-		if err != nil {
-			return fmt.Errorf("failed to grant read user: %w\nOutput: %s", err, string(output))
+		if err := runPSQL("03_grant_users.sql", variables); err != nil {
+			return fmt.Errorf("failed to grant read user: %w", err)
 		}
 	}
 

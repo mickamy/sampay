@@ -21,6 +21,8 @@ func (e Env) ShortName() string {
 	case Production:
 		return "prod"
 	}
+
+	panic(fmt.Errorf("unknown environment: %s", e))
 }
 
 const (

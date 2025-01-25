@@ -87,7 +87,6 @@ services:
       start_period: 30s
     volumes:
       - postgres:/var/lib/postgresql/data
-      - ./backend/db:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
 
