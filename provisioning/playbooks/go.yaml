@@ -1,53 +1,56 @@
 - name: Install Go on Amazon Linux 2023
   hosts: all
   become: true
+
   tasks:
-    - name: Install required dependencies
-      ansible.builtin.dnf:
-        name:
-          - gcc
-          - make
-          - tar
-          - wget
-        state: present
+    - name: Check installed Go version
+      ansible.builtin.command: /usr/local/go/bin/go version
+      register: go_installed_version
+      ignore_errors: true
 
-    - name: Download Go source code
-      ansible.builtin.get_url:
-        url: https://golang.org/dl/go{{ go_version }}.linux-amd64.tar.gz
-        dest: /tmp/go{{ go_version }}.linux-amd64.tar.gz
-        mode: '0644'
+    - name: Install Go if not installed or version mismatch
+      block:
+        - name: Install required dependencies
+          ansible.builtin.dnf:
+            name:
+              - gcc
+              - make
+              - tar
+              - wget
+            state: present
 
-    - name: Remove any existing Go installation
-      ansible.builtin.file:
-        path: /usr/local/go
-        state: absent
+        - name: Download Go source code
+          ansible.builtin.get_url:
+            url: https://golang.org/dl/go{{ go_version }}.linux-amd64.tar.gz
+            dest: /tmp/go{{ go_version }}.linux-amd64.tar.gz
+            mode: '0644'
 
-    - name: Extract Go tarball
-      ansible.builtin.unarchive:
-        src: /tmp/go{{ go_version }}.linux-amd64.tar.gz
-        dest: /usr/local
-        remote_src: true
-        creates: /usr/local/go/bin/go
+        - name: Remove any existing Go installation
+          ansible.builtin.file:
+            path: /usr/local/go
+            state: absent
 
-    - name: Ensure Go binary path is in the environment
-      ansible.builtin.lineinfile:
-        path: /etc/profile.d/go.sh
-        line: 'export PATH=$PATH:/usr/local/go/bin'
-        create: true
-        state: present
-        mode: '0755'
+        - name: Extract Go tarball
+          ansible.builtin.unarchive:
+            src: /tmp/go{{ go_version }}.linux-amd64.tar.gz
+            dest: /usr/local
+            remote_src: true
+            creates: /usr/local/go/bin/go
 
-    - name: Check if Go binary path is already in the environment
-      ansible.builtin.stat:
-        path: /etc/profile.d/go.sh
-      register: go_profile
+        - name: Ensure Go binary path is in the environment
+          ansible.builtin.lineinfile:
+            path: /etc/profile.d/go.sh
+            line: 'export PATH=$PATH:/usr/local/go/bin'
+            create: true
+            state: present
+            mode: '0755'
 
-    - name: Reload profile to apply Go path
-      ansible.builtin.shell: source /etc/profile.d/go.sh
-      args:
-        executable: /bin/bash
-      when: go_profile.stat.exists and "'/usr/local/go/bin' not in ansible_env.PATH"
-      changed_when: false
+        - name: Reload profile to apply Go path
+          ansible.builtin.shell: source /etc/profile.d/go.sh
+          args:
+            executable: /bin/bash
+
+      when: go_installed_version.failed or "go version go{{ go_version }}" not in go_installed_version.stdout
 
     - name: Verify Go installation
       ansible.builtin.command: /usr/local/go/bin/go version
@@ -56,4 +59,4 @@
 
     - name: Display Go version
       ansible.builtin.debug:
-        msg: "{{ go_version_output.stdout }}"
+        msg: "Installed Go version: {{ go_version_output.stdout }}"

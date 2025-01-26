@@ -1,14 +1,31 @@
 - name: Install nginx on AWS Linux 2023
   hosts: all
   become: true
+
   tasks:
-    - name: Install nginx
-      ansible.builtin.dnf:
-        name: nginx
-        state: present
+    - name: Check installed nginx version
+      ansible.builtin.command: nginx -v
+      register: nginx_version_result
+      ignore_errors: true
+      changed_when: false
+
+    - name: Install and configure nginx if not installed or version mismatch
+      block:
+        - name: Install nginx
+          ansible.builtin.dnf:
+            name: nginx
+            state: present
+
+      when: nginx_version_result.failed or
+              "nginx version: nginx/{{ nginx_version }}" not in nginx_version_result.stderr
+
 
     - name: Start and enable nginx service
       ansible.builtin.systemd:
         name: nginx
         state: started
         enabled: true
+
+    - name: Display installed nginx version
+      ansible.builtin.debug:
+        msg: "Installed nginx version: {{ nginx_version_result.stderr if not nginx_version_result.failed else 'not installed' }}"
