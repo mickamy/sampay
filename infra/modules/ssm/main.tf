@@ -151,3 +151,9 @@ resource "aws_ssm_parameter" "non_random_values" {
   value       = each.value.value
   tags        = local.common_tags
 }
+
+resource "github_actions_secret" "postgres_admin_password" {
+  repository      = var.github_repo
+  secret_name     = "POSTGRES_ADMIN_PASSWORD_${upper(var.env)}"
+  plaintext_value = aws_ssm_parameter.non_random_values["db_admin_password"].value
+}

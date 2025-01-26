@@ -44,6 +44,11 @@ variable "frontend_base_url" {
   type        = string
 }
 
+variable "github_repo" {
+  description = "GitHub repository name"
+  type        = string
+}
+
 variable "ssh_private_key_path" {
   description = "Path to the private key"
   type        = string

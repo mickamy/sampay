@@ -96,6 +96,7 @@ module "ssm" {
   db_port              = var.db_port
   db_timezone          = var.db_timezone
   frontend_base_url    = var.frontend_base_url
+  github_repo          = var.github_repo
   ssh_private_key_path = var.ssh_private_key_path
   ssh_public_key_path  = var.ssh_public_key_path
   redis_host           = var.redis_host
