@@ -7,14 +7,12 @@
       ansible.builtin.dnf:
         name:
           - ec2-instance-connect
-          - gcc
           - git
-          - make
-          - tar
           - vim
-          - wget
         state: present
 
+- name: Import go Playbook
+  import_playbook: playbooks/go.yaml
 - name: Import nginx Playbook
   import_playbook: playbooks/nginx.yaml
 - name: Import postgres Playbook

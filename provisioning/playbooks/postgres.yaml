@@ -1,4 +1,4 @@
-- name: Configure PostgreSQL authentication
+- name: Install PostgreSQL on Amazon Linux 2023
   hosts: all
   become: true
   tasks:
