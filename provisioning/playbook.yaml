@@ -28,3 +28,7 @@
   import_playbook: playbooks/redis.yaml
 - name: Import security Playbook
   import_playbook: playbooks/security.yaml
+- name: Import backend Playbook
+  import_playbook: playbooks/backend.yaml
+- name: Import frontend Playbook
+  import_playbook: playbooks/frontend.yaml

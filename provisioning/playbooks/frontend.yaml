@@ -1,0 +1,35 @@
+- name: Configure Sampay frontend server
+  hosts: all
+  become: true
+  tasks:
+    - name: Create frontend systemd service
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/system/sampay-frontend.service
+        content: |
+          [Unit]
+          Description=Sampay frontend Service
+          After=network.target
+
+          [Service]
+          WorkingDirectory=/home/ec2-user/sampay/frontend
+          ExecStartPre=npm ci --omit=dev && npm run build
+          ExecStart=npm run start
+          Restart=always
+          User=ec2-user
+          Group=ec-user
+
+          [Install]
+          WantedBy=multi-user.target
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Start frontend service
+      ansible.builtin.systemd:
+        name: sampay-frontend
+        state: started
+        enabled: yes
