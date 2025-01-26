@@ -34,6 +34,7 @@ module "ec2" {
   domain                   = var.domain
   github_repo              = var.github_repo
   instance_type            = var.instance_type
+  ssh_port                 = var.ssh_port
   ssh_private_key          = module.ssm.private_key
   ssh_public_key           = module.ssm.public_key
   s3_public_bucket_arn     = module.s3.public_bucket_arn

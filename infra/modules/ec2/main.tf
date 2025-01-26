@@ -65,12 +65,12 @@ resource "aws_instance" "main" {
   }
 
   user_data = templatefile("${path.module}/user_data.sh.tpl", {
-    aws_region : var.aws_region,
     deploy_key : tls_private_key.deploy_key.private_key_openssh,
+    ssh_port   = var.ssh_port,
   })
 
   tags = merge(local.common_tags, {
-    Name = "${local.instance_name}-web"
+    Name = local.instance_name
   })
 }
 

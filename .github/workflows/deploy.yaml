@@ -28,14 +28,6 @@ jobs:
           role-to-assume: arn:aws:iam::590183691452:role/GitHubActionsRole-590183691452
           aws-region: ap-northeast-1
 
-      - name: Allow IP in Security Group
-        run: |
-          aws ec2 authorize-security-group-ingress \
-            --group-id ${{ secrets.SECURITY_GROUP_ID_STG }} \
-            --protocol tcp \
-            --port ${{ secrets.SSH_PORT_STG }} \
-            --cidr ${{ steps.ip.outputs.ipv4 }}/32
-
       - name: Setup SSH
         run: |
           echo "${{ secrets.EC2_SSH_KEY_STG }}" | base64 --decode > key.pem
@@ -81,12 +73,3 @@ jobs:
             sudo systemctl restart sampay-worker
             sudo systemctl restart sampay-frontend
           EOF
-
-      - name: Revoke IP from Security Group
-        if: ${{ always() }}
-        run: |
-          aws ec2 revoke-security-group-ingress \
-            --group-id ${{ secrets.SECURITY_GROUP_ID_STG }} \
-            --protocol tcp \
-            --port ${{ secrets.SSH_PORT_STG }} \
-            --cidr ${{ steps.ip.outputs.ipv4 }}/32

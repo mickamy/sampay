@@ -1,8 +1,13 @@
 #!/bin/bash
 
-sudo yum update -y
+yum update -y
 
-sudo yum install -y ec2-instance-connect
+yum install -y ec2-instance-connect
+
+# Configure SSH port
+sed -i 's/^#Port 22/Port 22/' /etc/ssh/sshd_config
+sed -i "/^Port 22/a Port ${ssh_port}" /etc/ssh/sshd_config
+systemctl restart sshd
 
 # Configure deploy key
 echo {deploy_key} > /home/ec2-user/.ssh/deploy_key

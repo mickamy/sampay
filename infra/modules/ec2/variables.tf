@@ -23,6 +23,11 @@ variable "instance_type" {
   type        = string
 }
 
+variable "ssh_port" {
+  description = "SSH port"
+  type        = number
+}
+
 variable "ssh_public_key" {
   description = "Public key for SSH access"
   type        = string
