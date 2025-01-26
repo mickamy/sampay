@@ -12,7 +12,7 @@
 
           [Service]
           WorkingDirectory=/home/ec2-user/sampay/backend
-          ExecStart=/home/ec2-user/sampay/backend/bin/api
+          ExecStart=/home/ec2-user/sampay/backend/build/api
           Restart=always
           Environment="PACKAGE_ROOT=/home/ec2-user/sampay/backend"
           Environment="ENV={{ env }}"
@@ -35,7 +35,7 @@
 
           [Service]
           WorkingDirectory=/home/ec2-user/sampay/backend
-          ExecStart=/home/ec2-user/sampay/backend/bin/worker
+          ExecStart=/home/ec2-user/sampay/backend/build/worker
           Restart=always
           Environment="PACKAGE_ROOT=/home/ec2-user/sampay/backend"
           Environment="ENV={{ env }}"
