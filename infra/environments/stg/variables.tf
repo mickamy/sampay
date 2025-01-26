@@ -45,6 +45,11 @@ variable "frontend_base_url" {
   type        = string
 }
 
+variable "github_repo" {
+  description = "GitHub repository name"
+  type        = string
+}
+
 variable "github_token" {
   description = "GitHub token"
   type        = string
@@ -52,8 +57,8 @@ variable "github_token" {
 
 variable "geo_locations" {
   description = "Geo locations to allow access"
-  type        = list(string)
-  default     = ["JP"]
+  type = list(string)
+  default = ["JP"]
 }
 
 variable "instance_type" {

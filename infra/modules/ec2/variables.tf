@@ -1,12 +1,11 @@
-variable "domain" {
-  description = "Domain name"
-  type        = string
-}
-
 variable "aws_region" {
   description = "AWS region to deploy the Lightsail instance"
   type        = string
-  default     = "ap-northeast-1"
+}
+
+variable "domain" {
+  description = "Domain name"
+  type        = string
 }
 
 variable "env" {
@@ -41,7 +40,7 @@ variable "volume_type" {
 
 variable "vpc_security_group_ids" {
   description = "VPC security group IDs"
-  type        = list(string)
+  type = list(string)
 }
 
 variable "sqs_worker_dlq_queue_arn" {

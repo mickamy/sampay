@@ -32,7 +32,6 @@ module "ec2" {
 
   aws_region               = var.aws_region
   domain                   = var.domain
-  github_token             = var.github_token
   instance_type            = var.instance_type
   ssh_public_key           = module.ssm.public_key
   s3_public_bucket_arn     = module.s3.public_bucket_arn
@@ -54,6 +53,13 @@ module "ec2" {
     module.ssm,
     module.vpc,
   ]
+}
+
+module "iam" {
+  source = "../../modules/iam"
+  env    = local.env
+
+  github_repo = var.github_repo
 }
 
 module "s3" {
@@ -83,7 +89,6 @@ module "ssm" {
   db_admin_password    = var.db_admin_password
   db_admin_user        = var.db_admin_user
   db_host              = var.db_host
-  db_name              = var.db_name
   db_port              = var.db_port
   db_timezone          = var.db_timezone
   frontend_base_url    = var.frontend_base_url
