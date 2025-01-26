@@ -1,0 +1,41 @@
+- name: Install Node.js on Amazon Linux 2023
+  hosts: all
+  become: true
+  tasks:
+    - name: Download nvm install script
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh
+        dest: /tmp/install_nvm.sh
+        mode: '0755'
+
+    - name: Install nvm
+      ansible.builtin.shell: |
+        set -o pipefail
+        /tmp/install_nvm.sh
+      args:
+        creates: /home/ec2-user/.nvm
+
+    - name: Load nvm and install Node.js
+      ansible.builtin.shell: |
+        set -o pipefail
+        export NVM_DIR="/home/ec2-user/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        nvm install {{ node_version }}
+        nvm alias default {{ node_version }}
+      args:
+        executable: /bin/bash
+        creates: /home/ec2-user/.nvm/versions/node/{{ node_version }}
+
+    - name: Verify Node.js installation
+      ansible.builtin.shell: |
+        export NVM_DIR="/home/ec2-user/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        node --version
+      args:
+        executable: /bin/bash
+      register: node_version_output
+      changed_when: false
+
+    - name: Print Node.js version
+      ansible.builtin.debug:
+        msg: "Node.js version: {{ node_version_output.stdout }}"

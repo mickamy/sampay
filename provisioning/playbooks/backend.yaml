@@ -1,0 +1,65 @@
+- name: Configure Sampay backend server
+  hosts: all
+  become: true
+  tasks:
+    - name: Create API systemd service
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/system/sampay-api.service
+        content: |
+          [Unit]
+          Description=Sampay API Service
+          After=network.target
+
+          [Service]
+          WorkingDirectory=/home/ec2-user/sampay/backend
+          ExecStart=/home/ec2-user/sampay/backend/build/api
+          Restart=always
+          Environment="PACKAGE_ROOT=/home/ec2-user/sampay/backend"
+          Environment="ENV={{ env }}"
+          User=ec2-user
+          Group=ec-user
+
+          [Install]
+          WantedBy=multi-user.target
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Create worker systemd service
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/system/sampay-worker.service
+        content: |
+          [Unit]
+          Description=Sampay worker Service
+          After=network.target
+
+          [Service]
+          WorkingDirectory=/home/ec2-user/sampay/backend
+          ExecStart=/home/ec2-user/sampay/backend/build/worker
+          Restart=always
+          Environment="PACKAGE_ROOT=/home/ec2-user/sampay/backend"
+          Environment="ENV={{ env }}"
+          User=ec2-user
+          Group=ec-user
+
+          [Install]
+          WantedBy=multi-user.target
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Start API service
+      ansible.builtin.systemd:
+        name: sampay-api
+        state: started
+        enabled: true
+
+    - name: Start worker service
+      ansible.builtin.systemd:
+        name: sampay-worker
+        state: started
+        enabled: true

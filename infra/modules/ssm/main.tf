@@ -4,47 +4,31 @@ locals {
     Environment = var.env
     ManagedBy   = "Terraform"
   }
-}
 
-resource "null_resource" "check_keys" {
-  provisioner "local-exec" {
-    command = "test -f ${var.private_key_path} && test -f ${var.public_key_path} || echo 'Key files are missing'"
-  }
-}
-
-locals {
   creds = {
     "private_key" = {
       name        = "private_key"
       description = "SSH private key"
-      file_path   = var.private_key_path
+      file_path   = var.ssh_private_key_path
     }
     "public_key" = {
       name        = "public_key"
       description = "SSH public key"
-      file_path   = var.public_key_path
+      file_path   = var.ssh_public_key_path
     }
   }
-}
 
-resource "aws_ssm_parameter" "creds" {
-  for_each    = local.creds
-  name        = "/sampay/creds/${var.env}/${each.value.name}"
-  description = each.value.description
-  type        = "SecureString"
-  value = file(each.value.file_path)
-  tags        = local.common_tags
+  random_values = {
+    "db_name"            = "Database name"
+    "db_writer_user"     = "Database writer user"
+    "db_writer_password" = "Database writer password"
+    "db_reader_user"     = "Database reader user"
+    "db_reader_password" = "Database reader password"
+    "redis_password"     = "Redis password"
+    "api_secret"         = "API secret"
+  }
 
-  depends_on = [null_resource.check_keys]
-}
-
-output "public_key" {
-  value       = aws_ssm_parameter.creds["public_key"].value
-  description = "The public key stored in SSM Parameter Store"
-}
-
-locals {
-  app = {
+  non_random_values = {
     "aws_region" = {
       name        = "aws_region"
       description = "AWS region"
@@ -70,50 +54,30 @@ locals {
       description = "Database host"
       value       = var.db_host
     }
-    "db_name" = {
-      name        = "db_name"
-      description = "Database name"
-      value       = var.db_name
-    }
     "db_port" = {
       name        = "db_port"
       description = "Database port"
       value       = var.db_port
-    }
-    "db_reader_password" = {
-      name        = "db_reader_password"
-      description = "Database reader password"
-      value       = var.db_reader_password
-    }
-    "db_reader_user" = {
-      name        = "db_reader_user"
-      description = "Database reader user"
-      value       = var.db_reader_user
     }
     "db_timezone" = {
       name        = "db_timezone"
       description = "Database timezone"
       value       = var.db_timezone
     }
-    "db_writer_password" = {
-      name        = "db_writer_password"
-      description = "Database writer password"
-      value       = var.db_writer_password
-    }
-    "db_writer_user" = {
-      name        = "db_writer_user"
-      description = "Database writer user"
-      value       = var.db_writer_user
-    }
     "frontend_base_url" = {
       name        = "frontend_base_url"
       description = "Frontend base URL"
       value       = var.frontend_base_url
     }
-    "redis_url" = {
-      name        = "redis_url"
-      description = "Redis URL"
-      value       = var.redis_url
+    "redis_host" = {
+      name        = "redis_host"
+      description = "Redis host"
+      value       = var.redis_host
+    }
+    "redis_port" = {
+      name        = "redis_port"
+      description = "Redis port"
+      value       = var.redis_port
     }
     "sqs_worker_dlq_url" = {
       name        = "sqs_worker_dlq_url"
@@ -128,8 +92,54 @@ locals {
   }
 }
 
-resource "aws_ssm_parameter" "app" {
-  for_each    = local.app
+resource "null_resource" "check_keys" {
+  provisioner "local-exec" {
+    command = "test -f ${var.ssh_private_key_path} && test -f ${var.ssh_public_key_path} || echo 'Key files are missing'"
+  }
+}
+
+resource "aws_ssm_parameter" "creds" {
+  for_each    = local.creds
+  name        = "/sampay/creds/${var.env}/${each.value.name}"
+  description = each.value.description
+  type        = "SecureString"
+  value = file(each.value.file_path)
+  tags        = local.common_tags
+
+  depends_on = [null_resource.check_keys]
+}
+
+output "public_key" {
+  value       = aws_ssm_parameter.creds["public_key"].value
+  description = "The public key stored in SSM Parameter Store"
+}
+
+resource "random_password" "secure_values" {
+  for_each         = local.random_values
+  length           = 16
+  special          = true
+  override_special = "_%@"
+  upper            = true
+  lower            = true
+  numeric          = true
+}
+
+resource "aws_ssm_parameter" "random_values" {
+  for_each    = random_password.secure_values
+  name        = "/sampay/app/${var.env}/${each.key}"
+  description = local.random_values[each.key]
+  type        = "SecureString"
+  value       = each.value.result
+
+  lifecycle {
+    prevent_destroy = true
+  }
+
+  tags = local.common_tags
+}
+
+resource "aws_ssm_parameter" "non_random_values" {
+  for_each    = local.non_random_values
   name        = "/sampay/app/${var.env}/${each.value.name}"
   description = each.value.description
   type        = "SecureString"

@@ -3,9 +3,9 @@ CREATE EXTENSION IF NOT EXISTS dblink;
 DO
 $$
     DECLARE
-        db_name text := current_setting('sampay.db_name', false);
+        db_name         text := current_setting('sampay.db_name', false);
         writer_username text := current_setting('sampay.writer_username', false);
-        error_message text;
+        error_message   text;
     BEGIN
         IF db_name IS NULL THEN
             RAISE EXCEPTION 'Environment variable for database name (sampay.db_name) is not set.';

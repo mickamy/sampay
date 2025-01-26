@@ -1,0 +1,62 @@
+name: Deploy Application
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DOMAIN: stg.sampay.link
+
+    steps:
+      - name: Set up SSH
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY_STAGING }}" | base64 --decode > key.pem
+          chmod 600 key.pem
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ARN }}
+          aws-region: ap-northeast-1
+
+      - name: Checkout repository on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
+            if [ ! -d "sampay" ]; then
+              GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" git clone git@github.com:mickamy/sampay.git
+            fi
+            cd sampay
+            git checkout -b adhoc/${{ github.sha }}
+            git add .
+            git stash
+            git branch --merged | grep -v \* | xargs git branch -D
+            git fetch origin --prune
+            git checkout ${{ github.ref_name }}
+            git branch -D adhoc/${{ github.sha }}
+          EOF
+
+      - name: Deploy backend application
+        run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} \
+            "bash ~/sampay/backend/bin/deploy.sh"
+
+      - name: Deploy frontend application
+        run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} \
+            "bash ~/sampay/frontend/bin/deploy.sh"
+
+      - name: Rollback
+        if: ${{ failure() }}
+        run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
+            cd sampay
+            git checkout -
+            sudo systemctl restart sampay-api
+            sudo systemctl restart sampay-worker
+            sudo systemctl restart sampay-frontend
+          EOF

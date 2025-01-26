@@ -1,0 +1,29 @@
+- name: Set up Web Application on Amazon Linux 2023
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install necessary packages
+      ansible.builtin.dnf:
+        name:
+          - ec2-instance-connect
+          - git
+          - vim
+        state: present
+
+- name: Import go Playbook
+  import_playbook: playbooks/go.yaml
+- name: Import nginx Playbook
+  import_playbook: playbooks/nginx.yaml
+- name: Import node Playbook
+  import_playbook: playbooks/node.yaml
+- name: Import postgres Playbook
+  import_playbook: playbooks/postgres.yaml
+- name: Import redis Playbook
+  import_playbook: playbooks/redis.yaml
+- name: Import security Playbook
+  import_playbook: playbooks/security.yaml
+- name: Import backend Playbook
+  import_playbook: playbooks/backend.yaml
+- name: Import frontend Playbook
+  import_playbook: playbooks/frontend.yaml

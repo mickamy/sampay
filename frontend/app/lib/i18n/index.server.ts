@@ -1,5 +1,4 @@
 import { resolve } from "node:path";
-import process from "node:process";
 import { createInstance } from "i18next";
 import I18NextFSBackend from "i18next-fs-backend/cjs";
 import { initReactI18next } from "react-i18next";

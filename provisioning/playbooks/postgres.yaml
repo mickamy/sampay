@@ -1,0 +1,91 @@
+- name: Install PostgreSQL on Amazon Linux 2023
+  hosts: all
+  become: true
+  tasks:
+    - name: Install required Python library for PostgreSQL
+      ansible.builtin.dnf:
+        name:
+          - python3-psycopg2
+        state: present
+
+    - name: Ensure PostgreSQL packages are installed
+      ansible.builtin.dnf:
+        name:
+          - postgresql16-server
+          - postgresql16
+        state: present
+
+    - name: Initialize PostgreSQL database if not already done
+      ansible.builtin.command:
+        cmd: postgresql-setup --initdb
+      args:
+        creates: /var/lib/pgsql/data/postgresql.conf
+
+    - name: Temporarily allow trust authentication for local connections
+      ansible.builtin.lineinfile:
+        path: /var/lib/pgsql/data/pg_hba.conf
+        line: "local   all   all   trust"
+        regexp: "^local\\s+all\\s+all\\s+.*$"
+        state: present
+
+    - name: Restart PostgreSQL service to apply temporary authentication
+      ansible.builtin.systemd:
+        name: postgresql
+        state: restarted
+
+    - name: Set password for postgres user
+      community.postgresql.postgresql_user:
+        name: postgres
+        password: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
+        encrypted: true
+      when: lookup('env', 'POSTGRES_PASSWORD') != ''
+
+    - name: Configure PostgreSQL to use scram-sha-256
+      ansible.builtin.lineinfile:
+        path: /var/lib/pgsql/data/postgresql.conf
+        line: "password_encryption = 'scram-sha-256'"
+        regexp: "^password_encryption"
+        state: present
+
+    - name: Update pg_hba.conf for local connections with scram-sha-256
+      ansible.builtin.lineinfile:
+        path: /var/lib/pgsql/data/pg_hba.conf
+        line: "local   all   all   scram-sha-256"
+        regexp: "^local\\s+all\\s+all\\s+.*$"
+        state: present
+
+    - name: Update pg_hba.conf to allow IPv4 connections with scram-sha-256
+      ansible.builtin.lineinfile:
+        path: /var/lib/pgsql/data/pg_hba.conf
+        line: "host    all   all   127.0.0.1/32   scram-sha-256"
+        regexp: "^host\\s+all\\s+all\\s+127\\.0\\.0\\.1/32\\s+.*$"
+        state: present
+        insertafter: "^# IPv4 local connections:"
+
+    - name: Update pg_hba.conf to allow IPv6 connections with scram-sha-256
+      ansible.builtin.lineinfile:
+        path: /var/lib/pgsql/data/pg_hba.conf
+        line: "host    all   all   ::1/128   scram-sha-256"
+        regexp: "^host\\s+all\\s+all\\s+::1/128\\s+.*$"
+        state: present
+        insertafter: "^# IPv6 local connections:"
+
+    - name: Update replication settings for IPv4 connections
+      ansible.builtin.lineinfile:
+        path: /var/lib/pgsql/data/pg_hba.conf
+        line: "host    replication     all   127.0.0.1/32   scram-sha-256"
+        regexp: "^host\\s+replication\\s+all\\s+127\\.0\\.0\\.1/32\\s+.*$"
+        state: present
+
+    - name: Update replication settings for IPv6 connections
+      ansible.builtin.lineinfile:
+        path: /var/lib/pgsql/data/pg_hba.conf
+        line: "host    replication     all   ::1/128   scram-sha-256"
+        regexp: "^host\\s+replication\\s+all\\s+::1/128\\s+.*$"
+        state: present
+
+    - name: Restart PostgreSQL service to apply final configuration
+      ansible.builtin.systemd:
+        name: postgresql
+        state: restarted
+        enabled: true

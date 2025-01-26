@@ -9,29 +9,17 @@ variable "aws_region" {
   default     = "ap-northeast-1"
 }
 
-variable "blueprint_id" {
-  description = "Blueprint ID for Lightsail instance"
-  type        = string
-  default     = "amazon_linux_2"
-}
-
-variable "bundle_id" {
-  description = "Instance plan (CPU, Memory, Disk size)"
-  type        = string
-  default     = "nano_2_0"
-}
-
-variable "email_domain" {
-  description = "Email domain"
-  type        = string
-}
-
 variable "env" {
   description = "Environment name (e.g., stg, prod)"
   type        = string
 }
 
-variable "public_key" {
+variable "instance_type" {
+  description = "Instance type"
+  type        = string
+}
+
+variable "ssh_public_key" {
   description = "Public key for SSH access"
   type        = string
 }
@@ -41,6 +29,21 @@ variable "s3_public_bucket_arn" {
   type        = string
 }
 
+variable "volume_size" {
+  description = "Volume size in GB"
+  type        = number
+}
+
+variable "volume_type" {
+  description = "Volume type"
+  type        = string
+}
+
+variable "vpc_security_group_ids" {
+  description = "VPC security group IDs"
+  type        = list(string)
+}
+
 variable "sqs_worker_dlq_queue_arn" {
   description = "SQS worker dead-letter queue ARN"
   type        = string
@@ -48,6 +51,11 @@ variable "sqs_worker_dlq_queue_arn" {
 
 variable "sqs_worker_queue_arn" {
   description = "SQS worker queue ARN"
+  type        = string
+}
+
+variable "subnet_id" {
+  description = "Subnet ID"
   type        = string
 }
 

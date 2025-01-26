@@ -24,38 +24,13 @@ variable "db_host" {
   type        = string
 }
 
-variable "db_name" {
-  description = "Database name"
-  type        = string
-}
-
 variable "db_port" {
   description = "Database port"
   type        = number
 }
 
-variable "db_reader_password" {
-  description = "Database reader password"
-  type        = string
-}
-
-variable "db_reader_user" {
-  description = "Database reader user"
-  type        = string
-}
-
 variable "db_timezone" {
   description = "Database timezone"
-  type        = string
-}
-
-variable "db_writer_password" {
-  description = "Database writer password"
-  type        = string
-}
-
-variable "db_writer_user" {
-  description = "Database writer user"
   type        = string
 }
 
@@ -69,19 +44,24 @@ variable "frontend_base_url" {
   type        = string
 }
 
-variable "private_key_path" {
+variable "ssh_private_key_path" {
   description = "Path to the private key"
   type        = string
 }
 
-variable "public_key_path" {
+variable "ssh_public_key_path" {
   description = "Path to the public key"
   type        = string
 }
 
-variable "redis_url" {
-  description = "Redis URL"
+variable "redis_host" {
+  description = "Redis host"
   type        = string
+}
+
+variable "redis_port" {
+  description = "Redis port"
+  type        = number
 }
 
 variable "sqs_worker_dlq_url" {

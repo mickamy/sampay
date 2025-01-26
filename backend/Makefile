@@ -22,6 +22,7 @@
 
 build: ## Build the application
 	go build -o ./build/api ./cmd/api/main.go
+	go build -o ./build/worker ./cmd/worker/main.go
 
 install: install-build install-dev install-mod ## Install all dependencies
 	@echo "All dependencies installed"

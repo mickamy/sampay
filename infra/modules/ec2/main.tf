@@ -1,3 +1,30 @@
+########################################################################################################################
+# Deploy key
+########################################################################################################################
+locals {
+  repository = "sampay"
+}
+
+resource "tls_private_key" "deploy_key" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
+resource "github_repository_deploy_key" "main" {
+  repository = local.repository
+  title      = "Terraform Deploy Key"
+  key        = tls_private_key.deploy_key.public_key_openssh
+  read_only  = true
+}
+
+output "deploy_key_private" {
+  value     = tls_private_key.deploy_key.private_key_pem
+  sensitive = true
+}
+
+########################################################################################################################
+# EC2
+########################################################################################################################
 locals {
   instance_name = "sampay-${var.env}"
 
@@ -10,55 +37,77 @@ locals {
 
 data "aws_caller_identity" "default" {}
 
-resource "aws_lightsail_key_pair" "sampay" {
-  name       = "${local.instance_name}-key"
-  public_key = var.public_key
+resource "aws_key_pair" "ssh" {
+  key_name   = "${local.instance_name}-key"
+  public_key = var.ssh_public_key
 
   tags = local.common_tags
 }
 
-resource "aws_lightsail_instance" "web" {
-  availability_zone = "${var.aws_region}a"
-  blueprint_id      = var.blueprint_id
-  bundle_id         = var.bundle_id
-  key_pair_name     = aws_lightsail_key_pair.sampay.name
-  name              = local.instance_name
+data "aws_ami" "amazon_linux_2023" {
+  most_recent = true
+  owners = ["amazon"]
+
+  filter {
+    name = "name"
+    values = ["al2023-ami-*-kernel-6.1-x86_64"]
+  }
+}
+
+resource "aws_instance" "web" {
+  ami                         = data.aws_ami.amazon_linux_2023.id
+  associate_public_ip_address = true
+  iam_instance_profile        = aws_iam_instance_profile.ec2_instance_profile.name
+  instance_type               = var.instance_type
+  key_name                    = aws_key_pair.ssh.key_name
+  subnet_id                   = var.subnet_id
+  vpc_security_group_ids      = var.vpc_security_group_ids
+
+  root_block_device {
+    volume_size = var.volume_size
+    volume_type = var.volume_type
+  }
 
   user_data = templatefile("${path.module}/user_data.sh.tpl", {
     aws_region : var.aws_region,
+    deploy_key : tls_private_key.deploy_key.private_key_openssh,
   })
 
-  depends_on = [
-    aws_lightsail_key_pair.sampay,
-  ]
+  tags = merge(local.common_tags, {
+    Name = "${local.instance_name}-web"
+  })
+}
+
+resource "aws_eip" "web_eip" {
+  instance = aws_instance.web.id
 
   tags = local.common_tags
 }
 
-resource "aws_lightsail_static_ip" "static_ip" {
-  name = "${local.instance_name}-static-ip"
-}
-
-resource "aws_lightsail_static_ip_attachment" "attach_static_ip" {
-  static_ip_name = aws_lightsail_static_ip.static_ip.name
-  instance_name  = aws_lightsail_instance.web.name
-
-  depends_on = [
-    aws_lightsail_instance.web,
-    aws_lightsail_static_ip.static_ip,
-  ]
+output "public_ip" {
+  value = aws_eip.web_eip.public_ip
 }
 
 data "aws_route53_zone" "main" {
-  name = "sampay.link"
+  name = var.domain
 }
 
-resource "aws_route53_record" "public_record" {
+locals {
+  base_domain = var.env == "prod" ? var.domain : "${var.env}.${var.domain}"
+  subdomains = {
+    "api" = "api.${local.base_domain}"
+    "web" = local.base_domain
+  }
+}
+
+resource "aws_route53_record" "records" {
+  for_each = local.subdomains
+
   zone_id = data.aws_route53_zone.main.zone_id
-  name    = "api.${var.domain}"
+  name    = each.value
   type    = "A"
   ttl     = var.route53_record_ttl
-  records = [aws_lightsail_static_ip.static_ip.ip_address]
+  records = [aws_eip.web_eip.public_ip]
 
   lifecycle {
     create_before_destroy = true
@@ -68,15 +117,15 @@ resource "aws_route53_record" "public_record" {
 ########################################################################################################################
 # IAM
 ########################################################################################################################
-resource "aws_iam_role" "lightsail_role" {
-  name = "${local.instance_name}-lightsail-role"
+resource "aws_iam_role" "ec2_role" {
+  name = "${local.instance_name}-ec2-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
         Effect = "Allow",
         Principal = {
-          Service = "lightsail.amazonaws.com"
+          Service = "ec2.amazonaws.com"
         },
         Action = "sts:AssumeRole"
       }
@@ -86,9 +135,9 @@ resource "aws_iam_role" "lightsail_role" {
   tags = local.common_tags
 }
 
-resource "aws_iam_instance_profile" "lightsail_instance_profile" {
-  name = "${local.instance_name}-lightsail-instance-profile"
-  role = aws_iam_role.lightsail_role.name
+resource "aws_iam_instance_profile" "ec2_instance_profile" {
+  name = "${local.instance_name}-ec2-instance-profile"
+  role = aws_iam_role.ec2_role.name
 
   tags = local.common_tags
 }
@@ -121,10 +170,10 @@ resource "aws_iam_policy" "s3_access_policy" {
 
 resource "aws_iam_role_policy_attachment" "attach_s3_access_policy" {
   policy_arn = aws_iam_policy.s3_access_policy.arn
-  role       = aws_iam_role.lightsail_role.name
+  role       = aws_iam_role.ec2_role.name
 
   depends_on = [
-    aws_iam_role.lightsail_role,
+    aws_iam_role.ec2_role,
     aws_iam_policy.s3_access_policy,
   ]
 }
@@ -141,7 +190,7 @@ resource "aws_iam_policy" "ses_access_policy" {
           "ses:SendEmail",
         ],
         Resource = [
-          "arn:aws:ses:${var.aws_region}:${data.aws_caller_identity.default.account_id}:identity/${var.email_domain}",
+          "arn:aws:ses:${var.aws_region}:${data.aws_caller_identity.default.account_id}:identity/${var.domain}",
         ],
       },
     ],
@@ -152,10 +201,10 @@ resource "aws_iam_policy" "ses_access_policy" {
 
 resource "aws_iam_role_policy_attachment" "attach_ses_access_policy" {
   policy_arn = aws_iam_policy.ses_access_policy.arn
-  role       = aws_iam_role.lightsail_role.name
+  role       = aws_iam_role.ec2_role.name
 
   depends_on = [
-    aws_iam_role.lightsail_role,
+    aws_iam_role.ec2_role,
     aws_iam_policy.ses_access_policy,
   ]
 }
@@ -174,8 +223,8 @@ resource "aws_iam_policy" "sqs_access_policy" {
           "sqs:DeleteMessage",
         ],
         Resource = [
-          var.sqs_worker_queue_arn,
           var.sqs_worker_dlq_queue_arn,
+          var.sqs_worker_queue_arn,
         ],
       },
     ],
@@ -186,10 +235,10 @@ resource "aws_iam_policy" "sqs_access_policy" {
 
 resource "aws_iam_role_policy_attachment" "attach_sqs_access_policy" {
   policy_arn = aws_iam_policy.sqs_access_policy.arn
-  role       = aws_iam_role.lightsail_role.name
+  role       = aws_iam_role.ec2_role.name
 
   depends_on = [
-    aws_iam_role.lightsail_role,
+    aws_iam_role.ec2_role,
     aws_iam_policy.sqs_access_policy,
   ]
 }
@@ -217,10 +266,10 @@ resource "aws_iam_policy" "ssm_access_policy" {
 
 resource "aws_iam_role_policy_attachment" "attach_ssm_access_policy" {
   policy_arn = aws_iam_policy.ssm_access_policy.arn
-  role       = aws_iam_role.lightsail_role.name
+  role       = aws_iam_role.ec2_role.name
 
   depends_on = [
-    aws_iam_role.lightsail_role,
+    aws_iam_role.ec2_role,
     aws_iam_policy.ssm_access_policy,
   ]
 }

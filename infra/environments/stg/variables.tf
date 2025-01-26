@@ -29,30 +29,10 @@ variable "db_port" {
   type        = number
 }
 
-variable "db_reader_password" {
-  description = "Database reader password"
-  type        = string
-}
-
-variable "db_reader_user" {
-  description = "Database reader user"
-  type        = string
-}
-
 variable "db_timezone" {
   description = "Database timezone"
   type        = string
   default     = "Asia/Tokyo"
-}
-
-variable "db_writer_password" {
-  description = "Database writer password"
-  type        = string
-}
-
-variable "db_writer_user" {
-  description = "Database writer user"
-  type        = string
 }
 
 variable "domain" {
@@ -65,24 +45,57 @@ variable "frontend_base_url" {
   type        = string
 }
 
+variable "github_token" {
+  description = "GitHub token"
+  type        = string
+}
 
 variable "geo_locations" {
   description = "Geo locations to allow access"
-  type = list(string)
-  default = ["JP"]
+  type        = list(string)
+  default     = ["JP"]
 }
 
-variable "private_key_path" {
+variable "instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     = "t2.medium"
+}
+
+variable "redis_host" {
+  description = "Redis host"
+  type        = string
+}
+
+variable "redis_port" {
+  description = "Redis port"
+  type        = number
+}
+
+variable "ssh_private_key_path" {
   description = "Path to the private key"
   type        = string
 }
 
-variable "public_key_path" {
+variable "ssh_public_key_path" {
   description = "Path to the public key"
   type        = string
 }
 
-variable "redis_url" {
-  description = "Redis URL"
+variable "volume_size" {
+  description = "Volume size in GB"
+  type        = number
+  default     = 8
+}
+
+variable "volume_type" {
+  description = "Volume type"
   type        = string
+  default     = "gp2"
+}
+
+variable "vpc_cidr" {
+  description = "VPC CIDR"
+  type        = string
+  default     = "10.0.0.0/16"
 }

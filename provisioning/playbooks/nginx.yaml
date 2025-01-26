@@ -1,0 +1,14 @@
+- name: Install nginx on AWS Linux 2023
+  hosts: all
+  become: true
+  tasks:
+    - name: Install nginx
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
+
+    - name: Start and enable nginx service
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+        enabled: true
