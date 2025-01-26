@@ -168,6 +168,7 @@ jobs:
             exit 1
           fi
 
+
   infra:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -195,3 +196,14 @@ jobs:
 
       - name: Run TFLint
         run: cd infra && make lint
+
+  provisioning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run ansible-lint
+        uses: ansible/ansible-lint@main
+        with:
+          working_directory: "./provisioning"
