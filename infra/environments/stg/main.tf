@@ -32,7 +32,9 @@ module "ec2" {
 
   aws_region               = var.aws_region
   domain                   = var.domain
+  github_repo              = var.github_repo
   instance_type            = var.instance_type
+  ssh_private_key          = module.ssm.private_key
   ssh_public_key           = module.ssm.public_key
   s3_public_bucket_arn     = module.s3.public_bucket_arn
   sqs_worker_dlq_queue_arn = module.sqs.worker_dlq_arn
@@ -73,7 +75,9 @@ module "sg" {
   source = "../../modules/sg"
   env    = local.env
 
-  vpc_id = module.vpc.vpc_id
+  github_repo = var.github_repo
+  ssh_port    = var.ssh_port
+  vpc_id      = module.vpc.vpc_id
 }
 
 module "sqs" {

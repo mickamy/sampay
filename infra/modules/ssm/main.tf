@@ -109,6 +109,11 @@ resource "aws_ssm_parameter" "creds" {
   depends_on = [null_resource.check_keys]
 }
 
+output "private_key" {
+  value       = aws_ssm_parameter.creds["private_key"].value
+  description = "The private key stored in SSM Parameter Store"
+}
+
 output "public_key" {
   value       = aws_ssm_parameter.creds["public_key"].value
   description = "The public key stored in SSM Parameter Store"

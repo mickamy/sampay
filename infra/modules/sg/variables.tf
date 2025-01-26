@@ -3,10 +3,14 @@ variable "env" {
   type        = string
 }
 
+variable "github_repo" {
+  description = "GitHub repository name"
+  type        = string
+}
+
 variable "ssh_port" {
   description = "SSH port"
   type        = number
-  default     = 22
 }
 
 variable "vpc_id" {

@@ -95,3 +95,9 @@ output "sg_ssh_id" {
 output "sg_web_id" {
   value = aws_security_group.web.id
 }
+
+resource "github_actions_secret" "ssh_port" {
+  repository      = var.github_repo
+  secret_name     = "SSH_PORT_${upper(var.env)}"
+  plaintext_value = var.ssh_port
+}

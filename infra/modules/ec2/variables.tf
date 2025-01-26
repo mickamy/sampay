@@ -13,6 +13,11 @@ variable "env" {
   type        = string
 }
 
+variable "github_repo" {
+  description = "GitHub repository name"
+  type        = string
+}
+
 variable "instance_type" {
   description = "Instance type"
   type        = string
@@ -20,6 +25,11 @@ variable "instance_type" {
 
 variable "ssh_public_key" {
   description = "Public key for SSH access"
+  type        = string
+}
+
+variable "ssh_private_key" {
+  description = "Private key for SSH access"
   type        = string
 }
 

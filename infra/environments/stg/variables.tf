@@ -77,6 +77,11 @@ variable "redis_port" {
   type        = number
 }
 
+variable "ssh_port" {
+  description = "SSH port"
+  type        = number
+}
+
 variable "ssh_private_key_path" {
   description = "Path to the private key"
   type        = string
