@@ -31,5 +31,4 @@
     - name: Start frontend service
       ansible.builtin.systemd:
         name: sampay-frontend
-        state: started
         enabled: true

@@ -52,14 +52,12 @@
       ansible.builtin.systemd:
         daemon_reload: true
 
-    - name: Start API service
+    - name: Enable API service
       ansible.builtin.systemd:
         name: sampay-api
-        state: started
         enabled: true
 
-    - name: Start worker service
+    - name: Enable worker service
       ansible.builtin.systemd:
         name: sampay-worker
-        state: started
         enabled: true
