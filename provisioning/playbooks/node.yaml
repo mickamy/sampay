@@ -1,8 +1,6 @@
 - name: Install Node.js on Amazon Linux 2023
   hosts: all
   become: true
-  vars:
-    node_version: "18.16.0"  # 期待するNode.jsのバージョン
 
   tasks:
     - name: Check installed Node.js version
@@ -45,8 +43,11 @@
             nvm alias default {{ node_version }}
           args:
             executable: /bin/bash
-          creates: /home/ec2-user/.nvm/versions/node/v{{ node_version }}
-      when: node_installed_version.failed or node_installed_version.stdout.strip() != "v{{ node_version }}"
+            creates: /home/ec2-user/.nvm/versions/node/{{ node_version }}
+
+      when: >
+        node_installed_version.failed or
+        node_installed_version.stdout.strip() != "v{{ node_version }}"
 
     - name: Verify Node.js installation
       ansible.builtin.shell: |
