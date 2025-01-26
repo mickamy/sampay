@@ -27,7 +27,8 @@ jobs:
 
       - name: Set ansible vault password
         run: |
-          echo "${{ secrets.ANSIBLE_VAULT_PASS }}" > provisioning/secrets/ansible_vault_pass 
+          mkdir -p provisioning/secrets
+          echo "${{ secrets.ANSIBLE_VAULT_PASS }}" > ./provisioning/secrets/ansible_vault_pass 
 
       - name: Execute ansible playbook
         run: |
