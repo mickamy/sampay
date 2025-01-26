@@ -14,11 +14,6 @@ variable "env" {
   type        = string
 }
 
-variable "github_token" {
-  description = "GitHub token"
-  type        = string
-}
-
 variable "instance_type" {
   description = "Instance type"
   type        = string
@@ -46,7 +41,7 @@ variable "volume_type" {
 
 variable "vpc_security_group_ids" {
   description = "VPC security group IDs"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "sqs_worker_dlq_queue_arn" {

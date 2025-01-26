@@ -24,11 +24,6 @@ variable "db_host" {
   type        = string
 }
 
-variable "db_name" {
-  description = "Database name"
-  type        = string
-}
-
 variable "db_port" {
   description = "Database port"
   type        = number

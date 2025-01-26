@@ -52,8 +52,8 @@ variable "github_token" {
 
 variable "geo_locations" {
   description = "Geo locations to allow access"
-  type = list(string)
-  default = ["JP"]
+  type        = list(string)
+  default     = ["JP"]
 }
 
 variable "instance_type" {
@@ -79,11 +79,6 @@ variable "ssh_private_key_path" {
 
 variable "ssh_public_key_path" {
   description = "Path to the public key"
-  type        = string
-}
-
-variable "redis_url" {
-  description = "Redis URL"
   type        = string
 }
 
