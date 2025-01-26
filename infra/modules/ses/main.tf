@@ -30,6 +30,31 @@ resource "null_resource" "wait_for_ses_verification" {
 }
 
 ########################################################################################################################
+# Mail From
+########################################################################################################################
+resource "aws_ses_domain_mail_from" "mail_from" {
+  domain      = aws_ses_domain_identity.domain.domain
+  mail_from_domain = "mail.${aws_ses_domain_identity.domain.domain}"
+  behavior_on_mx_failure = "UseDefaultValue"
+}
+
+resource "aws_route53_record" "mail_from_mx" {
+  zone_id = var.zone_id
+  name    = "mail.${aws_ses_domain_identity.domain.domain}"
+  type    = "MX"
+  ttl     = 300
+  records = ["10 feedback-smtp.${var.aws_region}.amazonses.com"]
+}
+
+resource "aws_route53_record" "mail_from_txt" {
+  zone_id = var.zone_id
+  name    = "mail.${aws_ses_domain_identity.domain.domain}"
+  type    = "TXT"
+  ttl     = 300
+  records = ["v=spf1 include:amazonses.com -all"]
+}
+
+########################################################################################################################
 # DKIM
 ########################################################################################################################
 resource "aws_ses_domain_dkim" "dkim" {

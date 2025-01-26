@@ -13,7 +13,8 @@ provider "aws" {
 }
 
 module "ses" {
-  source  = "../../modules/ses"
-  domain  = var.domain
-  zone_id = var.zone_id
+  source     = "../../modules/ses"
+  aws_region = var.aws_region
+  domain     = var.domain
+  zone_id    = var.zone_id
 }
