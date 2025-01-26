@@ -5,7 +5,7 @@ $do$
         writer_password text := current_setting('sampay.writer_password', false);
         reader_username text := current_setting('sampay.reader_username', false);
         reader_password text := current_setting('sampay.reader_password', false);
-        error_message text;
+        error_message   text;
     BEGIN
         IF writer_username IS NULL THEN
             RAISE EXCEPTION 'Environment variable for writer username is not set.';

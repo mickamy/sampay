@@ -1,10 +1,10 @@
 DO
 $$
     DECLARE
-        r RECORD;
-        db_name text := current_setting('sampay.db_name', false);
+        r               RECORD;
+        db_name         text := current_setting('sampay.db_name', false);
         reader_username text := current_setting('sampay.reader_username', false);
-        error_message text;
+        error_message   text;
     BEGIN
         IF db_name IS NULL THEN
             RAISE EXCEPTION 'Environment variable for database name is not set.';

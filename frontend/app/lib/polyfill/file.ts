@@ -1,8 +1,8 @@
 export interface FileLike {
-  arrayBuffer(): Promise<ArrayBuffer>;
-
   name: string;
   type: string;
+
+  arrayBuffer(): Promise<ArrayBuffer>;
 }
 
 export function isFileLike(value: unknown) {
