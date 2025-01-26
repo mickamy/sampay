@@ -64,7 +64,7 @@ data "aws_route53_zone" "main" {
   name = var.domain
 }
 
-locals  {
+locals {
   base_domain = var.env == "prod" ? var.domain : "${var.env}.${var.domain}"
   subdomains = {
     "api" = "api.${local.base_domain}"

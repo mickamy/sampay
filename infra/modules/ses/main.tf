@@ -200,3 +200,7 @@ resource "aws_ses_active_receipt_rule_set" "dmarc_active" {
 resource "aws_ses_email_identity" "no_reply" {
   email = "no-reply@${aws_ses_domain_identity.domain.domain}"
 }
+
+resource "aws_ses_email_identity" "system" {
+  email = "system@${aws_ses_domain_identity.domain.domain}"
+}
