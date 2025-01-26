@@ -14,12 +14,17 @@ variable "env" {
   type        = string
 }
 
+variable "github_token" {
+  description = "GitHub token"
+  type        = string
+}
+
 variable "instance_type" {
   description = "Instance type"
   type        = string
 }
 
-variable "public_key" {
+variable "ssh_public_key" {
   description = "Public key for SSH access"
   type        = string
 }

@@ -49,12 +49,12 @@ variable "frontend_base_url" {
   type        = string
 }
 
-variable "private_key_path" {
+variable "ssh_private_key_path" {
   description = "Path to the private key"
   type        = string
 }
 
-variable "public_key_path" {
+variable "ssh_public_key_path" {
   description = "Path to the public key"
   type        = string
 }

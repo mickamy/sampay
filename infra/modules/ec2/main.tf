@@ -1,3 +1,32 @@
+
+
+########################################################################################################################
+# Deploy key
+########################################################################################################################
+locals {
+  repository = "sampay"
+}
+
+resource "tls_private_key" "deploy_key" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
+resource "github_repository_deploy_key" "main" {
+  repository = local.repository
+  title      = "Terraform Deploy Key"
+  key        = tls_private_key.deploy_key.public_key_openssh
+  read_only  = true
+}
+
+output "deploy_key_private" {
+  value     = tls_private_key.deploy_key.private_key_pem
+  sensitive = true
+}
+
+########################################################################################################################
+# EC2
+########################################################################################################################
 locals {
   instance_name = "sampay-${var.env}"
 
@@ -10,9 +39,9 @@ locals {
 
 data "aws_caller_identity" "default" {}
 
-resource "aws_key_pair" "sampay" {
+resource "aws_key_pair" "ssh" {
   key_name   = "${local.instance_name}-key"
-  public_key = var.public_key
+  public_key = var.ssh_public_key
 
   tags = local.common_tags
 }
@@ -32,7 +61,7 @@ resource "aws_instance" "web" {
   associate_public_ip_address = true
   iam_instance_profile        = aws_iam_instance_profile.ec2_instance_profile.name
   instance_type               = var.instance_type
-  key_name                    = aws_key_pair.sampay.key_name
+  key_name                    = aws_key_pair.ssh.key_name
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = var.vpc_security_group_ids
 
@@ -43,6 +72,7 @@ resource "aws_instance" "web" {
 
   user_data = templatefile("${path.module}/user_data.sh.tpl", {
     aws_region : var.aws_region,
+    deploy_key : tls_private_key.deploy_key.private_key_openssh,
   })
 
   tags = merge(local.common_tags, {
@@ -85,7 +115,6 @@ resource "aws_route53_record" "records" {
     create_before_destroy = true
   }
 }
-
 
 ########################################################################################################################
 # IAM

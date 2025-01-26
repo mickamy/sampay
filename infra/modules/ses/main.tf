@@ -33,8 +33,8 @@ resource "null_resource" "wait_for_ses_verification" {
 # Mail From
 ########################################################################################################################
 resource "aws_ses_domain_mail_from" "mail_from" {
-  domain      = aws_ses_domain_identity.domain.domain
-  mail_from_domain = "mail.${aws_ses_domain_identity.domain.domain}"
+  domain                 = aws_ses_domain_identity.domain.domain
+  mail_from_domain       = "mail.${aws_ses_domain_identity.domain.domain}"
   behavior_on_mx_failure = "UseDefaultValue"
 }
 

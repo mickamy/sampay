@@ -45,6 +45,11 @@ variable "frontend_base_url" {
   type        = string
 }
 
+variable "github_token" {
+  description = "GitHub token"
+  type        = string
+}
+
 variable "geo_locations" {
   description = "Geo locations to allow access"
   type = list(string)
@@ -67,12 +72,12 @@ variable "redis_port" {
   type        = number
 }
 
-variable "private_key_path" {
+variable "ssh_private_key_path" {
   description = "Path to the private key"
   type        = string
 }
 
-variable "public_key_path" {
+variable "ssh_public_key_path" {
   description = "Path to the public key"
   type        = string
 }

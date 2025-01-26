@@ -9,12 +9,12 @@ locals {
     "private_key" = {
       name        = "private_key"
       description = "SSH private key"
-      file_path   = var.private_key_path
+      file_path   = var.ssh_private_key_path
     }
     "public_key" = {
       name        = "public_key"
       description = "SSH public key"
-      file_path   = var.public_key_path
+      file_path   = var.ssh_public_key_path
     }
   }
 
@@ -94,7 +94,7 @@ locals {
 
 resource "null_resource" "check_keys" {
   provisioner "local-exec" {
-    command = "test -f ${var.private_key_path} && test -f ${var.public_key_path} || echo 'Key files are missing'"
+    command = "test -f ${var.ssh_private_key_path} && test -f ${var.ssh_public_key_path} || echo 'Key files are missing'"
   }
 }
 
