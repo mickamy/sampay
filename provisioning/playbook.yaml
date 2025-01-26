@@ -19,3 +19,5 @@
   import_playbook: playbooks/postgres.yaml
 - name: Import redis Playbook
   import_playbook: playbooks/redis.yaml
+- name: Import security Playbook
+  import_playbook: playbooks/security.yaml

@@ -1,0 +1,58 @@
+---
+- name: Configure dnf-automatic to use Amazon SES for update notifications
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install dnf-automatic
+      ansible.builtin.dnf:
+        name: dnf-automatic
+        state: present
+
+    - name: Configure dnf-automatic to send email notifications via SES
+      ansible.builtin.lineinfile:
+        path: /etc/dnf/automatic.conf
+        regexp: "^emit_via = .*"
+        line: "emit_via = email"
+
+    - name: Configure email_from for dnf-automatic
+      ansible.builtin.lineinfile:
+        path: /etc/dnf/automatic.conf
+        regexp: "^email_from = .*"
+        line: "email_from = system@{{ email_domain }}"
+
+    - name: Configure email_to for dnf-automatic
+      ansible.builtin.lineinfile:
+        path: /etc/dnf/automatic.conf
+        regexp: "^email_to = .*"
+        line: "email_to = admin@{{ email_domain }}"
+
+    - name: Configure SMTP server for dnf-automatic
+      ansible.builtin.lineinfile:
+        path: /etc/dnf/automatic.conf
+        regexp: "^smtp_server = .*"
+        line: "smtp_server = email-smtp.ap-northeast-1.amazonaws.com"
+
+    - name: Configure SMTP port for dnf-automatic
+      ansible.builtin.lineinfile:
+        path: /etc/dnf/automatic.conf
+        regexp: "^smtp_port = .*"
+        line: "smtp_port = 587"
+
+    - name: Configure SMTP user for SES authentication
+      ansible.builtin.lineinfile:
+        path: /etc/dnf/automatic.conf
+        regexp: "^smtp_auth_username = .*"
+        line: "smtp_auth_username = {{ ses_smtp_user }}"
+
+    - name: Configure SMTP password for SES authentication
+      ansible.builtin.lineinfile:
+        path: /etc/dnf/automatic.conf
+        regexp: "^smtp_auth_password = .*"
+        line: "smtp_auth_password = {{ ses_smtp_password }}"
+
+    - name: Enable and start dnf-automatic timer
+      ansible.builtin.systemd:
+        name: dnf-automatic.timer
+        enabled: true
+        state: started

@@ -12,7 +12,8 @@ stg: mkdir_secrets touch_secrets ## Provisioning staging server
 		ANSIBLE_USER=ec2-user \
 		ANSIBLE_SSH_KEY=~/.ssh/sampay-stg \
 		POSTGRES_PASSWORD=$$POSTGRES_PASSWORD \
-		ansible-playbook -i $$(PWD)/inventory/web.yaml playbook.yaml; \
+		ansible-playbook -i $$(PWD)/inventory/web.yaml playbook.yaml \
+		--vault-password-file ./secrets/ansible_vault_pass; \
 	else \
 		echo "Using provided POSTGRES_PASSWORD: $(POSTGRES_PASSWORD)"; \
 		truncate -s 0 ./secrets/postgres_password.stg; \
@@ -22,7 +23,8 @@ stg: mkdir_secrets touch_secrets ## Provisioning staging server
 		ANSIBLE_USER=ec2-user \
 		ANSIBLE_SSH_KEY=~/.ssh/sampay-stg \
 		POSTGRES_PASSWORD=$(POSTGRES_PASSWORD) \
-		ansible-playbook -i $$(PWD)/inventory/web.yaml playbook.yaml; \
+		ansible-playbook -i $$(PWD)/inventory/web.yaml playbook.yaml \
+		--vault-password-file ./secrets/ansible_vault_pass; \
 	fi
 
 mkdir_secrets:
