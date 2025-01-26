@@ -45,6 +45,11 @@ variable "github_repo" {
   type        = string
 }
 
+variable "github_repo_with_owner" {
+  description = "GitHub repository with owner"
+  type        = string
+}
+
 variable "github_token" {
   description = "GitHub token"
   type        = string

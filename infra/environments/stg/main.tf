@@ -61,7 +61,7 @@ module "ec2" {
 module "iam" {
   source = "../../modules/iam"
 
-  github_repo = var.github_repo
+  github_repo_with_owner = var.github_repo_with_owner
 }
 
 module "s3" {

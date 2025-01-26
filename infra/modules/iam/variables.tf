@@ -1,4 +1,4 @@
-variable "github_repo" {
-  description = "GitHub repository name"
+variable "github_repo_with_owner" {
+  description = "GitHub repository with owner"
   type        = string
 }
