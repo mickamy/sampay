@@ -1,5 +1,9 @@
 .PHONY: \
+	lint \
 	stg \
+
+lint:
+	ansible-lint .
 
 stg: mkdir_secrets touch_secrets ## Provisioning staging server
 	@if [ -z "$(POSTGRES_PASSWORD)" ]; then \
@@ -33,4 +37,5 @@ mkdir_secrets:
 
 touch_secrets:
 	@echo "Creating secrets files..."
-	@touch ./secrets/postgres_password
+	@touch ./secrets/postgres_password.stg
+	@touch ./secrets/postgres_password.prod
