@@ -2,7 +2,7 @@
 
 yum update -y
 
-yum install -y ec2-instance-connect
+yum install -y ec2-instance-connect git
 
 # Configure SSH port
 sed -i 's/^#Port 22/Port 22/' /etc/ssh/sshd_config
