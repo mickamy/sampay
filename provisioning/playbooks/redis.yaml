@@ -13,33 +13,33 @@
 
     - name: Download Redis source code
       ansible.builtin.get_url:
-        url: https://download.redis.io/releases/redis-7.0.15.tar.gz
-        dest: /tmp/redis-7.0.15.tar.gz
+        url: https://download.redis.io/releases/redis-{{ redis_version }}.tar.gz
+        dest: /tmp/redis-{{ redis_version }}.tar.gz
         mode: '0644'
 
     - name: Set permissions for Redis source
       ansible.builtin.file:
-        path: /tmp/redis-7.0.15.tar.gz
+        path: /tmp/redis-{{ redis_version }}.tar.gz
         mode: '0755'
 
     - name: Unzip Redis source
       ansible.builtin.unarchive:
-        src: /tmp/redis-7.0.15.tar.gz
+        src: /tmp/redis-{{ redis_version }}.tar.gz
         dest: /tmp
         remote_src: true
 
     - name: Build Redis
       community.general.make:
-        chdir: /tmp/redis-7.0.15
+        chdir: /tmp/redis-{{ redis_version }}
 
     - name: Install Redis
       community.general.make:
-        chdir: /tmp/redis-7.0.15
+        chdir: /tmp/redis-{{ redis_version }}
         target: install
 
     - name: Copy Redis configuration file
       ansible.builtin.command:
-        cmd: cp /tmp/redis-7.0.15/redis.conf /etc/redis.conf
+        cmd: cp /tmp/redis-{{ redis_version }}/redis.conf /etc/redis.conf
       args:
         creates: /etc/redis.conf
 
@@ -52,12 +52,12 @@
 
     - name: Remove Redis archive
       ansible.builtin.file:
-        path: /tmp/redis-7.0.15.tar.gz
+        path: /tmp/redis-{{ redis_version }}.tar.gz
         state: absent
 
     - name: Remove Redis source directory
       ansible.builtin.file:
-        path: /tmp/redis-7.0.15
+        path: /tmp/redis-{{ redis_version }}
         state: absent
 
     - name: Create Redis group

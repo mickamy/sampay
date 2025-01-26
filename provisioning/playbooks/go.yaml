@@ -13,8 +13,8 @@
 
     - name: Download Go source code
       ansible.builtin.get_url:
-        url: https://golang.org/dl/go1.23.4.linux-amd64.tar.gz
-        dest: /tmp/go1.23.4.linux-amd64.tar.gz
+        url: https://golang.org/dl/go{{ go_version }}.linux-amd64.tar.gz
+        dest: /tmp/go{{ go_version }}.linux-amd64.tar.gz
         mode: '0644'
 
     - name: Remove any existing Go installation
@@ -24,7 +24,7 @@
 
     - name: Extract Go tarball
       ansible.builtin.unarchive:
-        src: /tmp/go1.23.4.linux-amd64.tar.gz
+        src: /tmp/go{{ go_version }}.linux-amd64.tar.gz
         dest: /usr/local
         remote_src: true
         creates: /usr/local/go/bin/go

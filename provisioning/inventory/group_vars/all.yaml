@@ -1,4 +1,7 @@
 email_domain: sampay.link
+go_version: 1.23.4
+node_version: v22.13.1
+redis_version: 7.0.15
 ses_smtp_user: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   33363262316634326365353631343931393334316430333434633463353265323630663662643234
