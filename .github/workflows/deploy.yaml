@@ -37,7 +37,7 @@ jobs:
         run: |
           ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
             if [ ! -d "sampay" ]; then
-              GIT_SSH_COMMAND="ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no" git clone git@github.com:mickamy/sampay.git
+              git clone git@github.com:mickamy/sampay.git
             fi
             cd sampay
             git checkout -b adhoc/${{ github.sha }}-${{ github.event.repository.updated_at }} 

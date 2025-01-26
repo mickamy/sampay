@@ -60,7 +60,6 @@ module "ec2" {
 
 module "iam" {
   source = "../../modules/iam"
-  env    = local.env
 
   github_repo = var.github_repo
 }

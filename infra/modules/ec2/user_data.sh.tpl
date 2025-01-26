@@ -18,6 +18,7 @@ Host github.com
   HostName github.com
   User git
   IdentityFile /home/ec2-user/.ssh/deploy_key
+  StrictHostKeyChecking no
 EOF
 chown ec2-user:ec2-user /home/ec2-user/.ssh/config
 chmod 600 /home/ec2-user/.ssh/config
