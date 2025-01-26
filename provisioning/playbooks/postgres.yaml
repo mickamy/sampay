@@ -1,6 +1,9 @@
 - name: Install PostgreSQL on Amazon Linux 2023
   hosts: all
   become: true
+  vars:
+    postgres_version: "16.5"
+
   tasks:
     - name: Install required Python library for PostgreSQL
       ansible.builtin.dnf:

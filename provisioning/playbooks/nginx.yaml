@@ -1,6 +1,8 @@
 - name: Install nginx on AWS Linux 2023
   hosts: all
   become: true
+  vars:
+    nginx_version: "1.26.2"
 
   tasks:
     - name: Check installed nginx version

@@ -1,6 +1,7 @@
 - name: Install Go on Amazon Linux 2023
   hosts: all
   become: true
+  go_version: "1.23.4"
 
   tasks:
     - name: Check installed Go version

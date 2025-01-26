@@ -1,10 +1,5 @@
 email_domain: sampay.link
 env: staging
-go_version: 1.23.4
-nginx_version: 1.26.2
-node_version: v22.13.1
-postgres_version: 16.5
-redis_version: 7.0.15
 ses_smtp_user: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   62656564316535393938663133323938643561663039613031366536613262303863353763643663
