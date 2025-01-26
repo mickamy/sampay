@@ -47,7 +47,7 @@
 
       when: >
         node_installed_version.failed or
-        node_installed_version.stdout.strip() != "v{{ node_version }}"
+        node_installed_version.stdout.strip() != "v" + node_version
 
     - name: Verify Node.js installation
       ansible.builtin.shell: |

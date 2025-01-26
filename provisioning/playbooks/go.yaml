@@ -50,7 +50,7 @@
           args:
             executable: /bin/bash
 
-      when: go_installed_version.failed or "go version go{{ go_version }}" not in go_installed_version.stdout
+      when: go_installed_version.failed or "go version go" + go_version not in go_installed_version.stdout
 
     - name: Verify Go installation
       ansible.builtin.command: /usr/local/go/bin/go version
