@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+      - feat/deploy
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   deploy:
@@ -13,50 +18,75 @@ jobs:
       DOMAIN: stg.sampay.link
 
     steps:
-      - name: Set up SSH
-        run: |
-          echo "${{ secrets.EC2_SSH_KEY_STAGING }}" | base64 --decode > key.pem
-          chmod 600 key.pem
+      - name: Public IP
+        id: ip
+        uses: haythem/public-ip@v1.3
 
-      - name: Set up AWS CLI
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ARN }}
+          role-to-assume: arn:aws:iam::590183691452:role/GitHubActionsRole-590183691452
           aws-region: ap-northeast-1
+
+      - name: Allow IP in Security Group
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.SECURITY_GROUP_ID_STG }} \
+            --protocol tcp \
+            --port ${{ secrets.SSH_PORT_STG }} \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
+      - name: Setup SSH
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY_STG }}" | base64 --decode > key.pem
+          chmod 600 key.pem
 
       - name: Checkout repository on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
+          ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
             if [ ! -d "sampay" ]; then
-              GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" git clone git@github.com:mickamy/sampay.git
+              GIT_SSH_COMMAND="ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no" git clone git@github.com:mickamy/sampay.git
             fi
             cd sampay
-            git checkout -b adhoc/${{ github.sha }}
+            git checkout -b adhoc/${{ github.sha }}-${{ github.event.repository.updated_at }} 
             git add .
             git stash
             git branch --merged | grep -v \* | xargs git branch -D
             git fetch origin --prune
             git checkout ${{ github.ref_name }}
-            git branch -D adhoc/${{ github.sha }}
           EOF
 
       - name: Deploy backend application
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} \
+          ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} \
             "bash ~/sampay/backend/bin/deploy.sh"
 
       - name: Deploy frontend application
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} \
+          ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} \
             "bash ~/sampay/frontend/bin/deploy.sh"
+
+      - name: Delete adhoc branch
+        run: |
+          ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} \
+            "git branch -D adhoc/${{ github.sha }}"
 
       - name: Rollback
         if: ${{ failure() }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
+          ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
             cd sampay
             git checkout -
             sudo systemctl restart sampay-api
             sudo systemctl restart sampay-worker
             sudo systemctl restart sampay-frontend
           EOF
+
+      - name: Revoke IP from Security Group
+        if: ${{ always() }}
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id ${{ secrets.SECURITY_GROUP_ID_STG }} \
+            --protocol tcp \
+            --port ${{ secrets.SSH_PORT_STG }} \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
