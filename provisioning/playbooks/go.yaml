@@ -47,6 +47,7 @@
       args:
         executable: /bin/bash
       when: go_profile.stat.exists and "'/usr/local/go/bin' not in ansible_env.PATH"
+      changed_when: false
 
     - name: Verify Go installation
       ansible.builtin.command: /usr/local/go/bin/go version
