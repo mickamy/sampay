@@ -1,7 +1,7 @@
 ---
 - name: Configure dnf-automatic to use Amazon SES for update notifications
   hosts: all
-  become: yes
+  become: true
 
   tasks:
     - name: Install dnf-automatic

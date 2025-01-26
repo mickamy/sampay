@@ -3,11 +3,6 @@
   become: true
 
   tasks:
-    - name: Update all packages to the latest version
-      ansible.builtin.dnf:
-        name: '*'
-        state: latest
-
     - name: Install necessary packages
       ansible.builtin.dnf:
         name:

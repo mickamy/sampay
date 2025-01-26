@@ -56,10 +56,10 @@
       ansible.builtin.systemd:
         name: sampay-api
         state: started
-        enabled: yes
+        enabled: true
 
     - name: Start worker service
       ansible.builtin.systemd:
         name: sampay-worker
         state: started
-        enabled: yes
+        enabled: true

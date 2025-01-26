@@ -185,7 +185,6 @@ jobs:
             ${{ runner.os }}-tflint-
             ${{ runner.os }}-
 
-
       - uses: terraform-linters/setup-tflint@v4
         name: Set up TFLint
         with:
@@ -203,7 +202,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - name: Run ansible-lint
         uses: ansible/ansible-lint@main
         with:
           working_directory: "./provisioning"
+          requirements_file: './requirements.yaml'
