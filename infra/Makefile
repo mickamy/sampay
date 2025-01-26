@@ -44,7 +44,7 @@ destroy-stg:
 	cd ./environments/stg && terraform destroy
 
 reapply-ec2-stg:
-	cd ./environments/stg && terraform destroy -target=module.ec2.aws_instance.web
+	cd ./environments/stg && terraform destroy -target=module.ec2
 	cd ./environments/stg && terraform apply -target=module.ec2
 
 lint-init:
