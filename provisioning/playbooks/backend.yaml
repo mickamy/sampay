@@ -4,7 +4,7 @@
   tasks:
     - name: Create API systemd service
       ansible.builtin.copy:
-        dest: /etc/systemd/system/system/sampay-api.service
+        dest: /etc/systemd/system/sampay-api.service
         content: |
           [Unit]
           Description=Sampay API Service
@@ -27,7 +27,7 @@
 
     - name: Create worker systemd service
       ansible.builtin.copy:
-        dest: /etc/systemd/system/system/sampay-worker.service
+        dest: /etc/systemd/system/sampay-worker.service
         content: |
           [Unit]
           Description=Sampay worker Service
