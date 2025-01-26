@@ -16,9 +16,9 @@
             name: nginx
             state: present
 
-      when: nginx_version_result.failed or
-              "nginx version: nginx/{{ nginx_version }}" not in nginx_version_result.stderr
-
+      when: >
+        nginx_version_result.failed or
+        "nginx version: nginx/{{ nginx_version }}" not in nginx_version_result.stderr
 
     - name: Start and enable nginx service
       ansible.builtin.systemd:
