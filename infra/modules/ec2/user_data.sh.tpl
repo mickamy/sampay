@@ -2,8 +2,7 @@
 
 sudo yum update -y
 
-source /etc/profile
-aws s3 ls
+sudo yum install -y ec2-instance-connect
 
 # Configure deploy key
 echo {deploy_key} > /home/ec2-user/.ssh/deploy_key

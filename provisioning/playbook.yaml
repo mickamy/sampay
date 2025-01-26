@@ -6,7 +6,6 @@
     - name: Install necessary packages
       ansible.builtin.dnf:
         name:
-          - ec2-instance-connect
           - git
           - vim
         state: present
