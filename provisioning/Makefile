@@ -14,6 +14,7 @@ stg: mkdir_secrets touch_secrets ## Provisioning staging server
 		echo "Saved POSTGRES_PASSWORD to ./secrets/postgres_password.stg"; \
 		ANSIBLE_SSH_KEY=~/.ssh/sampay-stg \
 		POSTGRES_PASSWORD=$$POSTGRES_PASSWORD \
+		CERTBOT_EMAIL=$(CERTBOT_EMAIL) \
 		ansible-playbook -i $$(PWD)/inventory/web.yaml playbook.yaml \
 		--vault-password-file ./secrets/ansible_vault_pass; \
 	else \
@@ -23,6 +24,7 @@ stg: mkdir_secrets touch_secrets ## Provisioning staging server
 		echo "Saved POSTGRES_PASSWORD to ./secrets/postgres_password.stg"; \
 		ANSIBLE_SSH_KEY=~/.ssh/sampay-stg \
 		POSTGRES_PASSWORD=$(POSTGRES_PASSWORD) \
+		CERTBOT_EMAIL=$(CERTBOT_EMAIL) \
 		ansible-playbook -i $$(PWD)/inventory/web.yaml playbook.yaml \
 		--vault-password-file ./secrets/ansible_vault_pass; \
 	fi
