@@ -56,12 +56,10 @@
             target: install
 
         - name: Copy Redis configuration file
-          ansible.builtin.copy:
-            remote_src: /tmp/redis-{{ redis_version }}/redis.conf
-            dest: /etc/redis.conf
-            owner: root
-            group: root
-            mode: '0644'
+          ansible.builtin.command:
+            cmd: cp /tmp/redis-{{ redis_version }}/redis.conf /etc/redis.conf
+          args:
+            creates: /etc/redis.conf
 
         - name: Remove Redis archive and source directory
           ansible.builtin.file:
