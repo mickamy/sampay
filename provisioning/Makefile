@@ -12,8 +12,6 @@ stg: mkdir_secrets touch_secrets ## Provisioning staging server
 		truncate -s 0 ./secrets/postgres_password.stg; \
 		echo $$POSTGRES_PASSWORD > ./secrets/postgres_password.stg; \
 		echo "Saved POSTGRES_PASSWORD to ./secrets/postgres_password.stg"; \
-		ANSIBLE_HOST=stg.sampay.link \
-		ANSIBLE_USER=ec2-user \
 		ANSIBLE_SSH_KEY=~/.ssh/sampay-stg \
 		POSTGRES_PASSWORD=$$POSTGRES_PASSWORD \
 		ansible-playbook -i $$(PWD)/inventory/web.yaml playbook.yaml \
@@ -23,8 +21,6 @@ stg: mkdir_secrets touch_secrets ## Provisioning staging server
 		truncate -s 0 ./secrets/postgres_password.stg; \
 		echo $(POSTGRES_PASSWORD) > ./secrets/postgres_password.stg; \
 		echo "Saved POSTGRES_PASSWORD to ./secrets/postgres_password.stg"; \
-		ANSIBLE_HOST=stg.sampay.link \
-		ANSIBLE_USER=ec2-user \
 		ANSIBLE_SSH_KEY=~/.ssh/sampay-stg \
 		POSTGRES_PASSWORD=$(POSTGRES_PASSWORD) \
 		ansible-playbook -i $$(PWD)/inventory/web.yaml playbook.yaml \

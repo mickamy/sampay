@@ -41,9 +41,15 @@ apply-stg:
 	cd ./environments/stg && terraform apply
 
 destroy-stg:
-	while read -r resource; do \
-		terraform destroy -target="$resource" \
-	done < <(terraform state list | grep -vE "^data\." | grep -vE "module.ssm.aws_ssm_parameter.random_values|module.ssm.random_password.secure_values");
+	cd ./environments/stg && \
+	bash -c 'while read -r resource; do \
+		terraform destroy -target="$${resource}" -auto-approve; \
+	done < <( \
+		terraform state list | \
+		grep -vE "^data\\." | \
+		grep -vE "module.ssm.aws_ssm_parameter.random_values|module.ssm.random_password.secure_values" \
+	)'
+
 
 reapply-stg: destroy-stg apply-stg
 	@echo "Reapply completed"
