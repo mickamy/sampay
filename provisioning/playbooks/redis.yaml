@@ -46,6 +46,15 @@
             dest: /tmp
             remote_src: true
 
+        - name: Copy Redis configuration file
+          ansible.builtin.copy:
+            src: /tmp/redis-{{ redis_version }}/redis.conf
+            dest: /etc/redis.conf
+            remote_src: yes
+            owner: root
+            group: root
+            mode: '0644'
+
         - name: Build Redis
           community.general.make:
             chdir: /tmp/redis-{{ redis_version }}
@@ -54,12 +63,6 @@
           community.general.make:
             chdir: /tmp/redis-{{ redis_version }}
             target: install
-
-        - name: Copy Redis configuration file
-          ansible.builtin.command:
-            cmd: cp /tmp/redis-{{ redis_version }}/redis.conf /etc/redis.conf
-          args:
-            creates: /etc/redis.conf
 
         - name: Remove Redis archive and source directory
           ansible.builtin.file:
