@@ -90,7 +90,6 @@ module "ssm" {
   env    = local.env
 
   cloudfront_domain    = module.s3.cloudfront_domain
-  db_admin_password    = var.db_admin_password
   db_admin_user        = var.db_admin_user
   db_host              = var.db_host
   db_port              = var.db_port

@@ -19,13 +19,13 @@ locals {
   }
 
   random_values = {
+    "db_admin_password"  = "Database admin password"
     "db_name"            = "Database name"
     "db_writer_user"     = "Database writer user"
     "db_writer_password" = "Database writer password"
     "db_reader_user"     = "Database reader user"
     "db_reader_password" = "Database reader password"
     "redis_password"     = "Redis password"
-    "api_secret"         = "API secret"
   }
 
   non_random_values = {
@@ -38,11 +38,6 @@ locals {
       name        = "cloudfront_domain"
       description = "CloudFront domain"
       value       = var.cloudfront_domain
-    }
-    "db_admin_password" = {
-      name        = "db_admin_password"
-      description = "Database admin password"
-      value       = var.db_admin_password
     }
     "db_admin_user" = {
       name        = "db_admin_user"
@@ -136,9 +131,9 @@ resource "aws_ssm_parameter" "random_values" {
   type        = "SecureString"
   value       = each.value.result
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 
   tags = local.common_tags
 }
@@ -155,7 +150,7 @@ resource "aws_ssm_parameter" "non_random_values" {
 resource "github_actions_secret" "postgres_admin_password" {
   repository      = var.github_repo
   secret_name     = "POSTGRES_ADMIN_PASSWORD_${upper(var.env)}"
-  plaintext_value = aws_ssm_parameter.non_random_values["db_admin_password"].value
+  plaintext_value = aws_ssm_parameter.random_values["db_admin_password"].value
 }
 
 resource "github_actions_secret" "redis_password" {

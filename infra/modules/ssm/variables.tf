@@ -9,11 +9,6 @@ variable "cloudfront_domain" {
   type        = string
 }
 
-variable "db_admin_password" {
-  description = "Database admin password"
-  type        = string
-}
-
 variable "db_admin_user" {
   description = "Database admin user"
   type        = string
