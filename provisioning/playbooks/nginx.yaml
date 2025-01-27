@@ -3,7 +3,6 @@
   become: true
   vars:
     nginx_version: "1.26.2"
-    domain_name: "{{ domain_name }}"
     webroot_path: "/var/www/html"
 
   tasks:
