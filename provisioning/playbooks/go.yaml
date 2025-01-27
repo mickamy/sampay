@@ -11,6 +11,7 @@
       ignore_errors: true
 
     - name: Install Go if not installed or version mismatch
+      when: go_installed_version.failed or "go version go" + go_version not in go_installed_version.stdout
       block:
         - name: Install required dependencies
           ansible.builtin.dnf:
@@ -51,8 +52,6 @@
           ansible.builtin.shell: source /etc/profile.d/go.sh
           args:
             executable: /bin/bash
-
-      when: go_installed_version.failed or "go version go" + go_version not in go_installed_version.stdout
 
     - name: Verify Go installation
       ansible.builtin.command: /usr/local/go/bin/go version

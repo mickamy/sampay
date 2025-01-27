@@ -12,15 +12,14 @@
       changed_when: false
 
     - name: Install and configure nginx if not installed or version mismatch
+      when: >
+        nginx_version_result.failed or
+        "nginx version: nginx/" + nginx_version not in nginx_version_result.stderr
       block:
         - name: Install nginx
           ansible.builtin.dnf:
             name: nginx
             state: present
-
-      when: >
-        nginx_version_result.failed or
-        "nginx version: nginx/" + nginx_version not in nginx_version_result.stderr
 
     - name: Start and enable nginx service
       ansible.builtin.systemd:

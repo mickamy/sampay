@@ -71,10 +71,6 @@
             - /tmp/redis-{{ redis_version }}.tar.gz
             - /tmp/redis-{{ redis_version }}
 
-      when: >
-        redis_version_check.failed or
-        "Redis server v=" + redis_version not in redis_version_check.stdout
-
     - name: Create Redis group and user
       block:
         - name: Create Redis group
