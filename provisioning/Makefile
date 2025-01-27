@@ -16,7 +16,7 @@ stg: mkdir_secrets touch_secrets ## Provisioning staging server
 		POSTGRES_PASSWORD=$$POSTGRES_PASSWORD \
 		CERTBOT_EMAIL=$(CERTBOT_EMAIL) \
 		ansible-playbook -i $$(PWD)/inventory/web.yaml playbook.yaml \
-		--vault-password-file ./secrets/ansible_vault_pass; \
+		--vault-password-file ./secrets/ansible_vault_pass --limit stg; \
 	else \
 		echo "Using provided POSTGRES_PASSWORD: $(POSTGRES_PASSWORD)"; \
 		truncate -s 0 ./secrets/postgres_password.stg; \
@@ -26,7 +26,7 @@ stg: mkdir_secrets touch_secrets ## Provisioning staging server
 		POSTGRES_PASSWORD=$(POSTGRES_PASSWORD) \
 		CERTBOT_EMAIL=$(CERTBOT_EMAIL) \
 		ansible-playbook -i $$(PWD)/inventory/web.yaml playbook.yaml \
-		--vault-password-file ./secrets/ansible_vault_pass; \
+		--vault-password-file ./secrets/ansible_vault_pass --limit stg; \
 	fi
 
 mkdir_secrets:
