@@ -12,7 +12,7 @@ all:
         domain_name: stg.sampay.link
       hosts:
         stg.sampay.link:
-        ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+          ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
     prod:
       vars:
         env: production
