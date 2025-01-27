@@ -6,6 +6,7 @@
     redis_install_dir: "/usr/local/bin/redis-server"
     redis_data_dir: "/var/lib/redis"
     redis_service_file: "/etc/systemd/system/redis.service"
+    redis_password: "{{ lookup('env', 'REDIS_PASSWORD') }}"
 
   tasks:
     - name: Check if Redis is installed and its version
@@ -15,6 +16,9 @@
       changed_when: false
 
     - name: Install Redis if not installed or version mismatch
+      when: >
+        redis_version_check.failed or
+        "Redis server v=" + redis_version not in redis_version_check.stdout
       block:
         - name: Install required dependencies
           ansible.builtin.dnf:
@@ -53,7 +57,7 @@
 
         - name: Copy Redis configuration file
           ansible.builtin.copy:
-            src: /tmp/redis-{{ redis_version }}/redis.conf
+            remote_src: /tmp/redis-{{ redis_version }}/redis.conf
             dest: /etc/redis.conf
             owner: root
             group: root
@@ -114,23 +118,29 @@
         group: root
         mode: '0644'
 
-    - name: Reload systemd
-      ansible.builtin.systemd:
-        daemon_reload: true
+    - name: Set Redis password in configuration file
+      ansible.builtin.lineinfile:
+        path: /etc/redis.conf
+        regexp: '^requirepass'
+        line: 'requirepass {{ redis_password }}'
+        state: present
+        owner: root
+        group: root
+        mode: '0644'
 
-    - name: Enable and start Redis service
+    - name: Restart Redis service
       ansible.builtin.systemd:
         name: redis
-        state: started
-        enabled: true
+        state: restarted
+        daemon_reload: true
 
-    - name: Verify Redis is running
+    - name: Verify Redis password is set
       ansible.builtin.command:
-        cmd: redis-cli ping
-      register: redis_status
+        cmd: redis-cli -a {{ redis_password }} ping
+      register: redis_password_status
+      failed_when: "'PONG' not in redis_password_status.stdout"
       changed_when: false
-      ignore_errors: true
 
-    - name: Print Redis status
+    - name: Print Redis password verification status
       ansible.builtin.debug:
-        msg: "Redis status: {{ redis_status.stdout if not redis_status.failed else 'Not running' }}"
+        msg: "Redis password status: {{ redis_password_status.stdout if not redis_password_status.failed else 'Password not set or verification failed' }}"

@@ -157,3 +157,9 @@ resource "github_actions_secret" "postgres_admin_password" {
   secret_name     = "POSTGRES_ADMIN_PASSWORD_${upper(var.env)}"
   plaintext_value = aws_ssm_parameter.non_random_values["db_admin_password"].value
 }
+
+resource "github_actions_secret" "redis_password" {
+  repository      = var.github_repo
+  secret_name     = "REDIS_PASSWORD_${upper(var.env)}"
+  plaintext_value = aws_ssm_parameter.random_values["redis_password"].value
+}

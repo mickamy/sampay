@@ -38,6 +38,7 @@ jobs:
           ANSIBLE_SSH_KEY="${GITHUB_WORKSPACE}/key.pem" \
           ANSIBLE_SSH_PORT=${{ secrets.SSH_PORT_STG }} \
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_ADMIN_PASSWORD_STG }} \
+          REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD_STG }} \
           ansible-playbook -i ./inventory/web.yaml playbook.yaml \
           --vault-password-file ./secrets/ansible_vault_pass \
 
