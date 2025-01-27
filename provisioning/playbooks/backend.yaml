@@ -61,3 +61,10 @@
       ansible.builtin.systemd:
         name: sampay-worker
         enabled: true
+
+    - name: Set environment variable to /etc/environment
+      ansible.builtin.lineinfile:
+        path: /etc/environment
+        line: "ENV={{ env }}"
+        create: yes
+        state: present
