@@ -131,10 +131,6 @@ resource "aws_ssm_parameter" "random_values" {
   type        = "SecureString"
   value       = each.value.result
 
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
-
   tags = local.common_tags
 }
 
