@@ -1,9 +1,14 @@
 all:
+  vars:
+    ansible_user: ec2-user
+    ansible_ssh_private_key_file: "{{ lookup('env', 'ANSIBLE_SSH_KEY') }}"
+    ansible_ssh_port: "{{ lookup('env', 'ANSIBLE_SSH_PORT') }}"
+    ansible_python_interpreter: /usr/bin/python3
   children:
     stg:
       hosts:
         stg.sampay.link:
-          ansible_user: ec2-user
-          ansible_ssh_private_key_file: "{{ lookup('env', 'ANSIBLE_SSH_KEY') }}"
-          ansible_ssh_port: "{{ lookup('env', 'ANSIBLE_SSH_PORT') }}"
-          ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+        ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+    prod:
+      hosts:
+        sampay.link:
