@@ -40,8 +40,8 @@ func Migrate(ctx context.Context) error {
 	// grant reader to select
 	{
 		variables := map[string]string{
-			"sampay.db_name":         cfg.Name,
-			"sampay.reader_username": cfg.Reader,
+			"sampay.db_name":         cfg.Name.Escape(),
+			"sampay.reader_username": cfg.Reader.Escape(),
 		}
 
 		if err := runPSQL("03_grant_users.sql", variables); err != nil {

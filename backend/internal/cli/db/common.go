@@ -14,14 +14,14 @@ func runPSQL(fileName string, variables map[string]string) error {
 	db := config.Database()
 	filePath := path.Join(config.Common().PackageRoot, "db", fileName)
 	opts := []string{
-		"-U", db.AdminUser,
+		"-U", db.AdminUser.Escape(),
 		"-h", db.Host,
 		"-d", "postgres",
 		"-f", filePath,
 	}
 
 	cmd := exec.Command("psql", opts...)
-	cmd.Env = append(os.Environ(), "PGPASSWORD="+db.AdminPassword)
+	cmd.Env = append(os.Environ(), "PGPASSWORD="+db.AdminPassword.Escape())
 
 	var pgOpts []string
 	for k, v := range variables {
