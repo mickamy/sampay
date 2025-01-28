@@ -112,7 +112,7 @@ func Database() DatabaseConfig {
 		}
 
 		if database.Host == "" ||
-			database.Port == "" ||
+			database.Port == 0 ||
 			database.Writer == "" ||
 			database.WriterPass == "" ||
 			database.Reader == "" ||
