@@ -25,6 +25,7 @@ locals {
     "db_writer_password" = "Database writer password"
     "db_reader_user"     = "Database reader user"
     "db_reader_password" = "Database reader password"
+    "jwt_signing_secret" = "JWT signing secret"
     "redis_password"     = "Redis password"
   }
 
