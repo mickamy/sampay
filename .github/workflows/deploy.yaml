@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
+      AWS_REGION: ap-northeast-1
       DOMAIN: stg.sampay.link
 
     steps:
@@ -36,6 +37,7 @@ jobs:
           
           export ANSIBLE_SSH_KEY="${GITHUB_WORKSPACE}/key.pem"
           export ANSIBLE_SSH_PORT=${{ secrets.SSH_PORT_STG }}
+          export AWS_REGION=${{ env.AWS_REGION }}
           export CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}
           export POSTGRES_PASSWORD=${{ secrets.POSTGRES_ADMIN_PASSWORD_STG }}
           export REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD_STG }}

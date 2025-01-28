@@ -24,7 +24,6 @@
           ansible.builtin.dnf:
             name:
               - gcc
-              - jemalloc-devel
               - make
               - tar
               - wget
