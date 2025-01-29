@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
@@ -10,18 +11,18 @@ import (
 	"mickamy.com/sampay/config"
 )
 
-func runPSQL(fileName string, variables map[string]string) error {
+func runPSQL(ctx context.Context, fileName, user, password, name string, variables map[string]string) error {
 	db := config.Database()
 	filePath := path.Join(config.Common().PackageRoot, "db", fileName)
 	opts := []string{
-		"-U", db.AdminUser.Escape(),
+		"-U", user,
 		"-h", db.Host,
-		"-d", "postgres",
+		"-d", name,
 		"-f", filePath,
 	}
 
 	cmd := exec.Command("psql", opts...)
-	cmd.Env = append(os.Environ(), "PGPASSWORD="+db.AdminPassword.Escape())
+	cmd.Env = append(os.Environ(), "PGPASSWORD="+password)
 
 	var pgOpts []string
 	for k, v := range variables {
@@ -34,6 +35,8 @@ func runPSQL(fileName string, variables map[string]string) error {
 	if err != nil {
 		return fmt.Errorf("failed to execute %s: %w\nOutput: %s", fileName, err, string(output))
 	}
+
+	fmt.Println("Executed", cmd.String(), "Output", string(output))
 
 	return nil
 }

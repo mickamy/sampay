@@ -54,10 +54,10 @@ func initPostgresContainers(cfg config.DatabaseConfig) (DatabaseDSN, CleanUpDB) 
 
 	packageRoot := config.Common().PackageRoot
 	mountFiles := slices.Map([]string{
-		"00_users.sql",
-		"01_database.sql",
+		"00_create_users.sql",
+		"01_grant_writer_to_writer.sql",
 		"02_migrate.sh",
-		"03_grant_users.sql",
+		"03_grant_reader_to_read.sql",
 	}, func(file string) testcontainers.ContainerFile {
 		return testcontainers.ContainerFile{
 			HostFilePath:      filepath.Join(packageRoot, "db", file),

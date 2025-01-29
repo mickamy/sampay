@@ -21,16 +21,16 @@ func (s EscapableString) Escape() string {
 }
 
 type DatabaseConfig struct {
-	Host          string          `env:"DB_HOST"`
-	Port          int             `env:"DB_PORT"`
-	Writer        EscapableString `env:"DB_WRITER_USER"`
-	WriterPass    EscapableString `env:"DB_WRITER_PASSWORD"`
-	Reader        EscapableString `env:"DB_READER_USER"`
-	ReaderPass    EscapableString `env:"DB_READER_PASSWORD"`
-	Name          EscapableString `env:"DB_NAME"`
-	TimeZone      string          `env:"DB_TIMEZONE"`
-	AdminUser     EscapableString `env:"DB_ADMIN_USER" envDefault:"postgres"`
-	AdminPassword EscapableString `env:"DB_ADMIN_PASSWORD"`
+	Host       string          `env:"DB_HOST"`
+	Port       int             `env:"DB_PORT"`
+	Writer     EscapableString `env:"DB_WRITER_USER"`
+	WriterPass EscapableString `env:"DB_WRITER_PASSWORD"`
+	Reader     EscapableString `env:"DB_READER_USER"`
+	ReaderPass EscapableString `env:"DB_READER_PASSWORD"`
+	Name       EscapableString `env:"DB_NAME"`
+	TimeZone   string          `env:"DB_TIMEZONE"`
+	AdminUser  EscapableString `env:"DB_ADMIN_USER" envDefault:"postgres"`
+	AdminPass  EscapableString `env:"DB_ADMIN_PASSWORD"`
 }
 
 func (c DatabaseConfig) ReaderURL() string {
@@ -63,8 +63,8 @@ func (c DatabaseConfig) ReaderDSN() string {
 
 func (c DatabaseConfig) AdminDSN() string {
 	return fmt.Sprintf(
-		"host=%s port=%d user=postgres password=%s dbname=%s TimeZone=%s sslmode=disable",
-		c.Host, c.Port, c.AdminUser.Escape(), c.AdminPassword.Escape(), c.TimeZone,
+		"host=%s port=%d user=%s password=%s dbname=%s TimeZone=%s sslmode=disable",
+		c.Host, c.Port, c.AdminUser.Escape(), c.AdminPass.Escape(), "postgres", c.TimeZone,
 	)
 }
 
@@ -120,7 +120,7 @@ func Database() DatabaseConfig {
 			database.Name == "" ||
 			database.TimeZone == "" ||
 			database.AdminUser == "" ||
-			database.AdminPassword == "" {
+			database.AdminPass == "" {
 			panic(fmt.Errorf("some of required environment variables are missing: %#v", database))
 		}
 	})
