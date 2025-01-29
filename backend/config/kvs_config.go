@@ -9,9 +9,9 @@ import (
 )
 
 type KVSConfig struct {
-	Host     string `env:"REDIS_HOST" envDefault:"localhost"`
-	Port     int    `env:"REDIS_PORT" envDefault:"6379"`
-	Password string `env:"REDIS_PASSWORD" envDefault:""`
+	Host     string `env:"KVS_HOST" envDefault:"localhost"`
+	Port     int    `env:"KVS_PORT" envDefault:"6379"`
+	Password string `env:"KVS_PASSWORD" envDefault:""`
 }
 
 func (c KVSConfig) URL() string {

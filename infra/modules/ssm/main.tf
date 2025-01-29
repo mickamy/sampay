@@ -26,7 +26,7 @@ locals {
     "DB_READER_USER"     = "Database reader user"
     "DB_READER_PASSWORD" = "Database reader password"
     "JWT_SIGNING_SECRET" = "JWT signing secret"
-    "REDIS_PASSWORD"     = "Redis password"
+    "KVS_PASSWORD"     = "KVS password"
   }
 
   non_random_values = {
@@ -65,14 +65,14 @@ locals {
       description = "Frontend base URL"
       value       = var.frontend_base_url
     }
-    "redis_host" = {
-      name        = "REDIS_HOST"
-      description = "Redis host"
+    "kvs_host" = {
+      name        = "KVS_HOST"
+      description = "KVS host"
       value       = var.redis_host
     }
-    "redis_port" = {
-      name        = "REDIS_PORT"
-      description = "Redis port"
+    "kvs_port" = {
+      name        = "KVS_PORT"
+      description = "KVS port"
       value       = var.redis_port
     }
     "sqs_worker_dlq_url" = {
@@ -150,8 +150,8 @@ resource "github_actions_secret" "postgres_admin_password" {
   plaintext_value = aws_ssm_parameter.random_values["DB_ADMIN_PASSWORD"].value
 }
 
-resource "github_actions_secret" "redis_password" {
+resource "github_actions_secret" "kvs_password" {
   repository      = var.github_repo
-  secret_name     = "REDIS_PASSWORD_${upper(var.env)}"
-  plaintext_value = aws_ssm_parameter.random_values["REDIS_PASSWORD"].value
+  secret_name     = "KVS_PASSWORD_${upper(var.env)}"
+  plaintext_value = aws_ssm_parameter.random_values["KVS_PASSWORD"].value
 }
