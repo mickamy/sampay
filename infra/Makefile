@@ -47,7 +47,7 @@ destroy-stg:
 	done < <( \
 		terraform state list | \
 		grep -vE "^data\\." | \
-		grep -vE "module.ssm.aws_ssm_parameter.random_values|module.ssm.random_password.secure_values" \
+		grep -vE "module.ssm.aws_ssm_parameter.random_values|module.ssm.random_password.secure_values|module.s3.aws_cloudfront_distribution.cdn" \
 	)'
 
 
