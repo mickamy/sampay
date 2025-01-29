@@ -79,6 +79,7 @@
       ansible.builtin.command:
         cmd: >
           certbot certonly
+          {% if env == 'staging' %}--staging{% endif %}
           --non-interactive
           --agree-tos
           --email {{ certbot_email }}
