@@ -1,13 +1,13 @@
 - name: Install Go on Amazon Linux 2023
   hosts: all
-  gather_facts: no
+  gather_facts: false
   become: true
   vars:
     go_version: "1.23.4"
 
   tasks:
     - name: Check installed Go version
-      ansible.builtin.shell: /usr/local/go/bin/go version
+      ansible.builtin.command: /usr/local/go/bin/go version
       register: go_installed_version
       ignore_errors: true
       changed_when: false

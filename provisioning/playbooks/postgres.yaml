@@ -1,6 +1,6 @@
 - name: Install PostgreSQL on Amazon Linux 2023
   hosts: all
-  gather_facts: no
+  gather_facts: false
   become: true
   vars:
     postgres_version: "16.5"
