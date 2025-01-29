@@ -64,6 +64,11 @@ variable "redis_port" {
   type        = number
 }
 
+variable "s3_public_bucket_name" {
+  description = "Public S3 bucket name"
+  type        = string
+}
+
 variable "sqs_worker_dlq_url" {
   description = "SQS worker DLQ URL"
   type        = string

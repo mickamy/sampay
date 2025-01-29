@@ -26,7 +26,7 @@ locals {
     "DB_READER_USER"     = "Database reader user"
     "DB_READER_PASSWORD" = "Database reader password"
     "JWT_SIGNING_SECRET" = "JWT signing secret"
-    "KVS_PASSWORD"     = "KVS password"
+    "KVS_PASSWORD"       = "KVS password"
   }
 
   non_random_values = {
@@ -74,6 +74,11 @@ locals {
       name        = "KVS_PORT"
       description = "KVS port"
       value       = var.redis_port
+    }
+    "s3_public_bucket_name" = {
+      name        = "S3_PUBLIC_BUCKET_NAME"
+      description = "S3 public bucket name"
+      value       = var.s3_public_bucket_name
     }
     "sqs_worker_dlq_url" = {
       name        = "SQS_WORKER_DLQ_URL"

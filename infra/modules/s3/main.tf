@@ -123,3 +123,7 @@ resource "aws_cloudfront_distribution" "cdn" {
 output "cloudfront_domain" {
   value = aws_cloudfront_distribution.cdn.domain_name
 }
+
+output "public_bucket_name" {
+  value = aws_s3_bucket.public.bucket
+}
