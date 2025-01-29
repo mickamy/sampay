@@ -14,7 +14,7 @@ func Create(ctx context.Context) error {
 	cfg := config.Database()
 
 	// Create users
-	if config.Common().Env == config.Development {
+	{
 		variables := map[string]string{
 			"sampay.writer_username": cfg.Writer.Escape(),
 			"sampay.writer_password": cfg.WriterPass.Escape(),
