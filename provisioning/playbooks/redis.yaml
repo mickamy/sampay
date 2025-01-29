@@ -50,7 +50,7 @@
           ansible.builtin.copy:
             src: /tmp/redis-{{ redis_version }}/redis.conf
             dest: /etc/redis.conf
-            remote_src: yes
+            remote_src: true
             owner: root
             group: root
             mode: '0644'

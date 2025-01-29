@@ -68,12 +68,14 @@
       ansible.builtin.lineinfile:
         path: /etc/environment
         line: "ENV={{ env }}"
-        create: yes
+        create: true
         state: present
+        mode: '0644'
 
     - name: Set AES_REGION to /etc/environment
       ansible.builtin.lineinfile:
         path: /etc/environment
         line: "AWS_REGION={{ aws_region }}"
-        create: yes
+        create: true
         state: present
+        mode: '0644'

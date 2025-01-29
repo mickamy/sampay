@@ -6,9 +6,10 @@
 
   tasks:
     - name: Check installed Go version
-      ansible.builtin.command: /usr/local/go/bin/go version
+      ansible.builtin.shell: /usr/local/go/bin/go version
       register: go_installed_version
       ignore_errors: true
+      changed_when: false
 
     - name: Install Go if not installed or version mismatch
       when: go_installed_version.failed or "go version go" + go_version not in go_installed_version.stdout
@@ -52,6 +53,7 @@
           ansible.builtin.shell: source /etc/profile.d/go.sh
           args:
             executable: /bin/bash
+          changed_when: false
 
     - name: Verify Go installation
       ansible.builtin.command: /usr/local/go/bin/go version
