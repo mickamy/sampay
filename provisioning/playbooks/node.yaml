@@ -1,5 +1,6 @@
 - name: Install Node.js on Amazon Linux 2023
   hosts: all
+  gather_facts: no
   become: true
   vars:
     node_version: v22.13.1

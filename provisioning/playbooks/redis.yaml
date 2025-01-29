@@ -1,5 +1,6 @@
 - name: Install Redis on Amazon Linux 2023
   hosts: all
+  gather_facts: no
   become: true
   vars:
     redis_version: "7.0.15"
