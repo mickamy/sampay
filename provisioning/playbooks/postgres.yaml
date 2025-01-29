@@ -39,7 +39,7 @@
     - name: Set password for postgres user
       community.postgresql.postgresql_user:
         name: postgres
-        password: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
+        password: "{{ lookup('env', 'POSTGRES_PASSWORD') | urlencode() }}"
         encrypted: true
       when: lookup('env', 'POSTGRES_PASSWORD') != ''
 
