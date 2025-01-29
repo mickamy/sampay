@@ -30,7 +30,7 @@ type Producers struct {
 func provideProducerConfig(aws config.AWSConfig, kvs config.KVSConfig) producer.Config {
 	return producer.Config{
 		WorkerQueueURL: aws.SQSWorkerURL,
-		RedisURL:       kvs.URL,
+		RedisURL:       kvs.URL(),
 		BeforeProduceFunc: func(ctx context.Context, msg message.Message) {
 			slogger.InfoCtx(ctx, "producing message", "msg", msg)
 		},
@@ -69,7 +69,7 @@ func provideConsumerConfig(aws config.AWSConfig, kvs config.KVSConfig) consumer.
 	return consumer.Config{
 		WorkerQueueURL:     aws.SQSWorkerURL,
 		DeadLetterQueueURL: aws.SQSWorkerDeadLetterQueueURL,
-		RedisURL:           kvs.URL,
+		RedisURL:           kvs.URL(),
 		BeforeProcessFunc: func(ctx context.Context, msg message.Message) error {
 			slogger.InfoCtx(ctx, "processing message", "msg", msg)
 			return nil
