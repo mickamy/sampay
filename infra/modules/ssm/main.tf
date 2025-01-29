@@ -119,7 +119,7 @@ resource "random_password" "secure_values" {
   for_each         = local.random_values
   length           = 16
   special          = true
-  override_special = "_%@"
+  override_special = "-_"
   upper            = true
   lower            = true
   numeric          = true
