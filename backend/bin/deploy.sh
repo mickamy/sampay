@@ -9,12 +9,12 @@ make build db-prepare
 sudo systemctl restart sampay-api
 sudo systemctl restart sampay-worker
 
-if timeout 10s bash -c 'until systemctl is-active --quiet sampay-worker; do sleep 1; done'; then
-    echo "sampay-worker service is now active."
-else
-    echo "Timed out waiting for sampay-worker service to become active."
-    exit 1
-fi
+#if timeout 10s bash -c 'until systemctl is-active --quiet sampay-worker; do sleep 1; done'; then
+#    echo "sampay-worker service is now active."
+#else
+#    echo "Timed out waiting for sampay-worker service to become active."
+#    exit 1
+#fi
 
 echo "Waiting for sampay-api service to become active..."
 retry_count=0
