@@ -38,6 +38,7 @@ require (
 	golang.org/x/net v0.34.0
 	golang.org/x/text v0.21.0
 	google.golang.org/protobuf v1.36.3
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.25.12
