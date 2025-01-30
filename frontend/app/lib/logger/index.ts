@@ -5,13 +5,8 @@ import { isBrowser } from "~/lib/utils";
 
 async function init() {
   let level = process.env.NODE_ENV === "development" ? "debug" : "info";
-  if (
-    typeof import.meta.env !== "undefined" &&
-    import.meta.env.VITE_LOG_LEVEL
-  ) {
+  if (import.meta.env.VITE_LOG_LEVEL) {
     level = import.meta.env.VITE_LOG_LEVEL;
-  } else if (process.env.VITE_LOG_LEVEL) {
-    level = process.env.VITE_LOG_LEVEL;
   }
 
   if (isBrowser()) {
