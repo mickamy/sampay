@@ -13,7 +13,7 @@
 
           [Service]
           WorkingDirectory=/home/ec2-user/sampay/frontend
-          ExecStartPre=npm ci --omit=dev && npm run build
+          ExecStartPre=npm ci && npm run build
           ExecStart=npm run start
           Restart=always
           User=ec2-user
