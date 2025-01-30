@@ -20,6 +20,7 @@
           ExecStart=/home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/node \
             /home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/npm run start
           EnvironmentFile=/etc/systemd/system/sampay-frontend.env
+          Environment="ENVIRONMENT={{ env }}"
           Restart=always
           User=ec2-user
           Group=ec2-user
