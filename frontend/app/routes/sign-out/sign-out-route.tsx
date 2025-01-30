@@ -16,7 +16,7 @@ export const action: ActionFunction = async ({ request }) => {
       },
     });
   } catch (e) {
-    logger.warn("failed to sign out", e);
+    logger.warn({ error: e }, "failed to sign out");
     return redirect("/", {
       headers: {
         "Set-Cookie": await destroyAuthenticatedSession(request),

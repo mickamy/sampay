@@ -34,12 +34,12 @@ export async function directUpload({
       },
     });
     if (!res.ok) {
-      logger.error("failed to upload file", res);
+      logger.error({ response: res }, "failed to upload file");
       return Promise.reject(new Error("failed to upload file"));
     }
     return obj;
   } catch (e) {
-    logger.error("failed to upload file", e);
+    logger.error({ error: e }, "failed to upload file");
     throw e;
   }
 }
