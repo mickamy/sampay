@@ -55,6 +55,10 @@ jobs:
           role-to-assume: arn:aws:iam::590183691452:role/GitHubActionsRole-590183691452
           aws-region: ap-northeast-1
 
+      - name: Set adhoc branch name
+        run: |
+          echo "BRANCH_NAME=adhoc/${{ github.sha }}-$(echo ${{ github.event.repository.updated_at }} | sed 's/[:]/_/g')" >> $GITHUB_ENV
+
       - name: Checkout repository on EC2
         run: |
           ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
@@ -62,7 +66,6 @@ jobs:
               git clone git@github.com:mickamy/sampay.git
             fi
             cd sampay
-            BRANCH_NAME="adhoc/${{ github.sha }}-$(echo ${{ github.event.repository.updated_at }} | sed 's/[:]/_/g')"
             git checkout -b "$BRANCH_NAME" 
             git add .
             git stash
@@ -85,7 +88,7 @@ jobs:
       - name: Delete adhoc branch
         run: |
           ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} \
-            "git branch -D adhoc/${{ github.sha }}"
+            "git branch -D $BRANCH_NAME"
 
       - name: Rollback
         if: ${{ failure() }}
