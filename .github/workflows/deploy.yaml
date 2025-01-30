@@ -62,6 +62,7 @@ jobs:
       - name: Checkout repository on EC2
         run: |
           ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
+            set -eux -o pipefail
             if [ ! -d "sampay" ]; then
               git clone git@github.com:mickamy/sampay.git
             fi

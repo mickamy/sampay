@@ -12,7 +12,7 @@ export async function getParameter({
   }
   const client = new SSMClient({ region: "ap-northeast-1" });
   const command = new GetParameterCommand({
-    Name: `/sampay/config/${name}`,
+    Name: `/sampay/app/${name}`,
     WithDecryption: true,
   });
   return client.send(command).then((response) => {
