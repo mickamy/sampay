@@ -8,11 +8,11 @@ export async function getParameter({
   name: ParameterName;
 }): Promise<string> {
   if (process.env.NODE_ENV === "development") {
-    return getEnv(name);
+    return getFromEnvironment(name);
   }
   const client = new SSMClient({ region: "ap-northeast-1" });
   const command = new GetParameterCommand({
-    Name: `/sampay/app/${name}`,
+    Name: `/sampay/app/${getShortEnvironment()}/${name}`,
     WithDecryption: true,
   });
   return client.send(command).then((response) => {
@@ -23,10 +23,18 @@ export async function getParameter({
   });
 }
 
-function getEnv(name: string): string {
+function getFromEnvironment(name: string): string {
   const value = process.env[name];
   if (value == null) {
     throw new Error(`missing env: ${name}`);
   }
   return value;
+}
+
+function getShortEnvironment(): string {
+  return process.env.ENVIRONMENT === "production"
+    ? "prod"
+    : process.env.ENVIRONMENT === "staging"
+      ? "stg"
+      : "dev";
 }
