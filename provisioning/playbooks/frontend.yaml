@@ -17,7 +17,7 @@
           ExecStart=npm run start
           Restart=always
           User=ec2-user
-          Group=ec-user
+          Group=ec2-user
 
           [Install]
           WantedBy=multi-user.target

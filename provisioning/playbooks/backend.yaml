@@ -19,7 +19,7 @@
           Environment="ENV={{ env }}"
           Environment="PACKAGE_ROOT=/home/ec2-user/sampay/backend"
           User=ec2-user
-          Group=ec-user
+          Group=ec2-user
 
           [Install]
           WantedBy=multi-user.target
@@ -43,7 +43,7 @@
           Environment="ENV={{ env }}"
           Environment="PACKAGE_ROOT=/home/ec2-user/sampay/backend"
           User=ec2-user
-          Group=ec-user
+          Group=ec2-user
 
           [Install]
           WantedBy=multi-user.target
