@@ -57,7 +57,7 @@ jobs:
 
       - name: Set adhoc branch name
         run: |
-          echo "BRANCH_NAME=adhoc/${{ github.sha }}-$(echo ${{ github.event.repository.updated_at }} | sed 's/[:]/_/g')" >> $GITHUB_ENV
+          echo "ADHOC_BRANCH_NAME=adhoc/${{ github.sha }}-$(echo ${{ github.event.repository.updated_at }} | sed 's/[:]/_/g')" >> $GITHUB_ENV
 
       - name: Checkout repository on EC2
         run: |
@@ -66,7 +66,7 @@ jobs:
               git clone git@github.com:mickamy/sampay.git
             fi
             cd sampay
-            git checkout -b "$BRANCH_NAME" 
+            git checkout -b "$ADHOC_BRANCH_NAME" 
             git add .
             git stash
             git branch --merged | grep -v \* | xargs git branch -D
@@ -87,8 +87,10 @@ jobs:
 
       - name: Delete adhoc branch
         run: |
-          ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} \
-            "git branch -D $BRANCH_NAME"
+          ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
+            cd sampay
+            git branch -D "$ADHOC_BRANCH_NAME"
+          EOF
 
       - name: Rollback
         if: ${{ failure() }}
