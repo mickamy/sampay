@@ -73,7 +73,7 @@ jobs:
             git stash
             git branch --merged | grep -v \* | xargs git branch -D
             git fetch origin --prune
-            git branch -D ${{ github.ref_name }}
+            git branch -D ${{ github.ref_name }} || true
             git checkout ${{ github.ref_name }}
           EOF
 
