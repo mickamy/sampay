@@ -77,7 +77,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <Links />
         <title>{title}</title>
       </head>
-      <body>
+      <body className="overscroll-x-auto overscroll-y-none">
         {ready ? children : null}
         <script
           // biome-ignore lint: suspicious/no-dangerously-set-inner-html
