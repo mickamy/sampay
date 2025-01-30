@@ -63,6 +63,7 @@ jobs:
         run: |
           ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
             set -eux -o pipefail
+            export ADHOC_BRANCH_NAME="${{ env.ADHOC_BRANCH_NAME }}"
             if [ ! -d "sampay" ]; then
               git clone git@github.com:mickamy/sampay.git
             fi
@@ -90,6 +91,7 @@ jobs:
         run: |
           ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
             cd sampay
+            export ADHOC_BRANCH_NAME="${{ env.ADHOC_BRANCH_NAME }}"
             git branch -D "$ADHOC_BRANCH_NAME"
           EOF
 
