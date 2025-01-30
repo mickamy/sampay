@@ -27,6 +27,7 @@ locals {
     "DB_READER_PASSWORD" = "Database reader password"
     "JWT_SIGNING_SECRET" = "JWT signing secret"
     "KVS_PASSWORD"       = "KVS password"
+    "SESSION_SECRET"     = "Session secret"
   }
 
   non_random_values = {
