@@ -19,9 +19,15 @@ import (
 
 func init() {
 	cfg := config.Common()
+	writer, err := logger.FileWriter()
+	if err != nil {
+		fmt.Println("failed to create log file writer:", err)
+		os.Exit(1)
+	}
+
 	slogger.Init(slogger.Config{
 		Level:          cfg.SLoggerLevel(),
-		Outputs:        []io.Writer{os.Stdout, logger.FileWriter()},
+		Outputs:        []io.Writer{os.Stdout, writer},
 		TrimPathPrefix: cfg.PackageRoot,
 		ContextFieldsExtractor: func(ctx context.Context) []any {
 			return []any{}
