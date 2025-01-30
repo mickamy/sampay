@@ -11,19 +11,11 @@ import (
 type KVSConfig struct {
 	Host     string `env:"KVS_HOST" envDefault:"localhost"`
 	Port     int    `env:"KVS_PORT" envDefault:"6379"`
-	Password string `env:"KVS_PASSWORD" envDefault:""`
+	Password string `env:"KVS_PASSWORD"`
 }
 
 func (c KVSConfig) URL() string {
-	scheme := "redis"
-
-	// Encode password if present
-	var kvsAuth string
-	if c.Password != "" {
-		kvsAuth = url.QueryEscape(c.Password) + "@"
-	}
-
-	return fmt.Sprintf("%s://%s%s:%d", scheme, kvsAuth, c.Host, c.Port)
+	return fmt.Sprintf("redis://:%s@%s:%d", url.QueryEscape(c.Password), c.Host, c.Port)
 }
 
 var (
