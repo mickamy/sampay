@@ -11,7 +11,12 @@ import (
 
 func FileWriter() io.Writer {
 	filename := filepath.Base(os.Args[0]) + ".log"
-	p := path.Join(path.Dir("/"), "var", "log", "sampay", filename)
+	p := path.Join("/var", "log", "sampay", filename)
+
+	dir := path.Dir(p)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		panic("failed to create log directory: " + err.Error())
+	}
 	return &lumberjack.Logger{
 		Filename:   p,
 		MaxSize:    500, // megabytes
