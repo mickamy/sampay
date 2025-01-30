@@ -2,8 +2,6 @@
   hosts: all
   gather_facts: false
   become: true
-  vars:
-    node_version: v22.13.1
 
   tasks:
     - name: Check installed Node.js version

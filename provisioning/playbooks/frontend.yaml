@@ -15,12 +15,23 @@
           WorkingDirectory=/home/ec2-user/sampay/frontend
           ExecStartPre=npm ci && npm run build
           ExecStart=npm run start
+          EnvironmentFile=/etc/systemd/system/sampay-frontend.env
           Restart=always
           User=ec2-user
           Group=ec2-user
 
           [Install]
           WantedBy=multi-user.target
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Create frontend env file
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/sampay-frontend.env
+        content: |
+          PATH=$HOME/.nvm/versions/node/{{ node_version }}:$PATH"
+          PATH=$HOME/.nvm/versions/node/{{ node_version }}/bin:$PATH"
         owner: root
         group: root
         mode: '0644'
