@@ -13,8 +13,12 @@
 
           [Service]
           WorkingDirectory=/home/ec2-user/sampay/frontend
-          ExecStartPre=npm ci && npm run build
-          ExecStart=npm run start
+          ExecStartPre=/home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/node \
+            /home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/npm ci
+          ExecStartPre=/home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/node \
+            /home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/npm run build
+          ExecStart=/home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/node \
+            /home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/npm run start
           EnvironmentFile=/etc/systemd/system/sampay-frontend.env
           Restart=always
           User=ec2-user
@@ -26,12 +30,16 @@
         group: root
         mode: '0644'
 
-    - name: Create frontend env file
+    - name: Create frontend systemd environment file
       ansible.builtin.copy:
         dest: /etc/systemd/system/sampay-frontend.env
         content: |
-          PATH=$HOME/.nvm/versions/node/{{ node_version }}:$PATH"
-          PATH=$HOME/.nvm/versions/node/{{ node_version }}/bin:$PATH"
+          PATH=/home/ec2-user/.nvm/versions/node/{{ node_version }}/bin:/usr/local/bin:/usr/bin:/bin
+          NODE_PATH=/home/ec2-user/.nvm/versions/node{{ node_version }}/lib/node_modules
+          NVM_DIR=/home/ec2-user/.nvm
+          export PATH
+          export NODE_PATH
+          export NVM_DIR
         owner: root
         group: root
         mode: '0644'
