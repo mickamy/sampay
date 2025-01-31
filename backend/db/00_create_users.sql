@@ -42,7 +42,7 @@ $do$
         END;
 
         BEGIN
-            EXECUTE format('CREATE USER %I PASSWORD %L', reader_username, reader_password);
+            EXECUTE format('CREATE ROLE %I WITH LOGIN PASSWORD %L', reader_username, reader_password);
             RAISE NOTICE 'Reader role "%" created successfully.', reader_username;
         EXCEPTION
             WHEN duplicate_object THEN
