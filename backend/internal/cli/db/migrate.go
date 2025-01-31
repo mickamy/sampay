@@ -44,7 +44,7 @@ func Migrate(ctx context.Context) error {
 			"sampay.reader_username": cfg.Reader.Escape(),
 		}
 
-		if err := runPSQL(ctx, "03_grant_reader_to_read.sql", cfg.AdminUser.Escape(), cfg.AdminPass.Escape(), "postgres", variables); err != nil {
+		if err := runPSQL(ctx, "03_grant_reader_to_read.sql", cfg.Writer.Escape(), cfg.WriterPass.Escape(), cfg.Name.Escape(), variables); err != nil {
 			return fmt.Errorf("failed to grant read user: %w", err)
 		}
 	}
