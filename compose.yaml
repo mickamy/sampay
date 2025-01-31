@@ -100,7 +100,7 @@ services:
     environment:
       REDIS_PASSWORD: password
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: [ "CMD-SHELL", "redis-cli -a password ping || exit 1" ]
       interval: 1s
       timeout: 3s
       retries: 30
