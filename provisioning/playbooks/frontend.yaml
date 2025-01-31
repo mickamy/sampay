@@ -38,7 +38,7 @@
           PATH=/home/ec2-user/.nvm/versions/node/{{ node_version }}/bin:/usr/local/bin:/usr/bin:/bin
           NODE_PATH=/home/ec2-user/.nvm/versions/node{{ node_version }}/lib/node_modules
           NVM_DIR=/home/ec2-user/.nvm
-          PUBLIC_API_BASE_URL=https://{% if env == 'staging' %}stg{% endif %}.api.sampay.co
+          API_BASE_URL=https://{% if env == 'staging' %}stg{% endif %}.api.sampay.co
           export PATH
           export NODE_PATH
           export NVM_DIR
