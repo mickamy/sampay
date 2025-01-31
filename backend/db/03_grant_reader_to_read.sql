@@ -2,24 +2,20 @@ DO
 $$
     DECLARE
         r               RECORD;
-        db_name         text := current_setting('sampay.db_name', false);
         reader_username text := current_setting('sampay.reader_username', false);
         error_message   text;
     BEGIN
-        IF db_name IS NULL THEN
-            RAISE EXCEPTION 'Environment variable for database name is not set.';
-        END IF;
         IF reader_username IS NULL THEN
             RAISE EXCEPTION 'Environment variable for reader username is not set.';
         END IF;
 
         BEGIN
-            EXECUTE format('SET search_path TO %I', db_name);
-            RAISE NOTICE 'Connected to database "%".', db_name;
+            EXECUTE format('GRANT USAGE ON SCHEMA public TO %I', reader_username);
+            RAISE NOTICE 'Granted USAGE on schema public to "%".', reader_username;
         EXCEPTION
             WHEN others THEN
                 GET STACKED DIAGNOSTICS error_message = MESSAGE_TEXT;
-                RAISE EXCEPTION 'Failed to connect to database "%": %', db_name, error_message;
+                RAISE EXCEPTION 'Failed to connect to database: %', error_message;
         END;
 
         BEGIN

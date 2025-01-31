@@ -32,8 +32,10 @@ module "ec2" {
 
   aws_region               = var.aws_region
   domain                   = var.domain
-  github_token             = var.github_token
+  github_repo              = var.github_repo
   instance_type            = var.instance_type
+  ssh_port                 = var.ssh_port
+  ssh_private_key          = module.ssm.private_key
   ssh_public_key           = module.ssm.public_key
   s3_public_bucket_arn     = module.s3.public_bucket_arn
   sqs_worker_dlq_queue_arn = module.sqs.worker_dlq_arn
@@ -56,6 +58,12 @@ module "ec2" {
   ]
 }
 
+module "iam" {
+  source = "../../modules/iam"
+
+  github_repo_with_owner = var.github_repo_with_owner
+}
+
 module "s3" {
   source = "../../modules/s3"
   env    = local.env
@@ -67,7 +75,9 @@ module "sg" {
   source = "../../modules/sg"
   env    = local.env
 
-  vpc_id = module.vpc.vpc_id
+  github_repo = var.github_repo
+  ssh_port    = var.ssh_port
+  vpc_id      = module.vpc.vpc_id
 }
 
 module "sqs" {
@@ -79,20 +89,25 @@ module "ssm" {
   source = "../../modules/ssm"
   env    = local.env
 
-  cloudfront_domain    = module.s3.cloudfront_domain
-  db_admin_password    = var.db_admin_password
-  db_admin_user        = var.db_admin_user
-  db_host              = var.db_host
-  db_name              = var.db_name
-  db_port              = var.db_port
-  db_timezone          = var.db_timezone
-  frontend_base_url    = var.frontend_base_url
-  ssh_private_key_path = var.ssh_private_key_path
-  ssh_public_key_path  = var.ssh_public_key_path
-  redis_host           = var.redis_host
-  redis_port           = var.redis_port
-  sqs_worker_dlq_url   = module.sqs.worker_url
-  sqs_worker_url       = module.sqs.worker_dlq_url
+  cloudfront_domain     = module.s3.cloudfront_domain
+  db_admin_user         = var.db_admin_user
+  db_host               = var.db_host
+  db_port               = var.db_port
+  db_timezone           = var.db_timezone
+  frontend_base_url     = var.frontend_base_url
+  github_repo           = var.github_repo
+  ssh_private_key_path  = var.ssh_private_key_path
+  ssh_public_key_path   = var.ssh_public_key_path
+  redis_host            = var.redis_host
+  redis_port            = var.redis_port
+  s3_public_bucket_name = module.s3.public_bucket_name
+  sqs_worker_dlq_url    = module.sqs.worker_url
+  sqs_worker_url        = module.sqs.worker_dlq_url
+
+  depends_on = [
+    module.s3,
+    module.sqs,
+  ]
 }
 
 module "vpc" {

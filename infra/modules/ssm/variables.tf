@@ -9,11 +9,6 @@ variable "cloudfront_domain" {
   type        = string
 }
 
-variable "db_admin_password" {
-  description = "Database admin password"
-  type        = string
-}
-
 variable "db_admin_user" {
   description = "Database admin user"
   type        = string
@@ -44,6 +39,11 @@ variable "frontend_base_url" {
   type        = string
 }
 
+variable "github_repo" {
+  description = "GitHub repository name"
+  type        = string
+}
+
 variable "ssh_private_key_path" {
   description = "Path to the private key"
   type        = string
@@ -62,6 +62,11 @@ variable "redis_host" {
 variable "redis_port" {
   description = "Redis port"
   type        = number
+}
+
+variable "s3_public_bucket_name" {
+  description = "Public S3 bucket name"
+  type        = string
 }
 
 variable "sqs_worker_dlq_url" {

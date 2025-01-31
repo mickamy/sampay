@@ -7,8 +7,8 @@ import { ConnectError } from "@connectrpc/connect";
 import { type ActionFunction, redirect } from "react-router";
 import { requestEmailVerificationSchema } from "~/components/email-verification/request-form";
 import { verifyEmailSchema } from "~/components/email-verification/verify-form";
-import { getClient } from "~/lib/api/client";
-import { withEmailVerification } from "~/lib/api/request";
+import { getClient } from "~/lib/api/client.server";
+import { withEmailVerification } from "~/lib/api/request.server";
 import { convertToAPIError } from "~/lib/api/response";
 import {
   destroyEmailVerificationSession,

@@ -8,7 +8,7 @@ import {
   redirect,
 } from "react-router";
 import { userProfileSchema } from "~/components/user-profile-form";
-import { withAuthentication } from "~/lib/api/request";
+import { withAuthentication } from "~/lib/api/request.server";
 import type { S3Object } from "~/models/common/s3-object-model";
 import { convertToUser } from "~/models/user/user-model";
 import AdminScreen, {

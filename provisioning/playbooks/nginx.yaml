@@ -1,14 +1,134 @@
-- name: Install nginx on AWS Linux 2023
+- name: Install nginx and configure Let's Encrypt on AWS Linux 2023
   hosts: all
+  gather_facts: false
   become: true
+  vars:
+    nginx_version: "1.26.2"
+    webroot_path: "/var/www/html"
+
   tasks:
-    - name: Install nginx
+    - name: Check installed nginx version
+      ansible.builtin.command: nginx -v
+      register: nginx_version_result
+      ignore_errors: true
+      changed_when: false
+
+    - name: Install and configure nginx if not installed or version mismatch
+      when: >
+        nginx_version_result.failed or
+        "nginx version: nginx/" + nginx_version not in nginx_version_result.stderr
+      block:
+        - name: Install nginx
+          ansible.builtin.dnf:
+            name: nginx
+            state: present
+
+        - name: Start and enable nginx service
+          ansible.builtin.systemd:
+            name: nginx
+            state: started
+            enabled: true
+
+    - name: Display installed nginx version
+      ansible.builtin.debug:
+        msg: "Installed nginx version: {{ nginx_version_result.stderr if not nginx_version_result.failed else 'not installed' }}"
+
+    - name: Install Certbot and dependencies
       ansible.builtin.dnf:
-        name: nginx
+        name:
+          - certbot
+          - cronie
+          - python3-certbot-nginx  # nginx を使用する場合
         state: present
 
-    - name: Start and enable nginx service
+    - name: Create webroot directory for Let's Encrypt
+      ansible.builtin.file:
+        path: "{{ webroot_path }}"
+        state: directory
+        owner: nginx
+        group: nginx
+        mode: '0755'
+
+    - name: Configure nginx for Let's Encrypt
+      ansible.builtin.copy:
+        dest: /etc/nginx/conf.d/letsencrypt.conf
+        content: |
+          server {
+              listen 80;
+              server_name {{ domain_name }};
+
+              location /.well-known/acme-challenge/ {
+                  root {{ webroot_path }};
+                  allow all;
+              }
+
+              location / {
+                  return 301 https://$host$request_uri;
+              }
+          }
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Reload nginx to apply Let's Encrypt configuration
       ansible.builtin.systemd:
         name: nginx
-        state: started
-        enabled: true
+        state: reloaded
+
+    - name: Obtain Let's Encrypt certificate
+      ansible.builtin.command:
+        cmd: >
+          certbot certonly
+          --non-interactive
+          --agree-tos
+          --email {{ certbot_email }}
+          --webroot
+          --webroot-path {{ webroot_path }}
+          -d {{ domain_name }}
+      args:
+        creates: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"
+
+    - name: Configure nginx for HTTPS
+      ansible.builtin.copy:
+        dest: /etc/nginx/conf.d/{{ domain_name }}.conf
+        content: |
+          server {
+              listen 443 ssl;
+              server_name {{ domain_name }};
+
+              ssl_certificate /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem;
+              ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
+
+              location /api {
+                  proxy_pass http://127.0.0.1:8080;
+                  proxy_http_version 1.1;
+                  proxy_set_header Upgrade $http_upgrade;
+                  proxy_set_header Connection "upgrade";
+                  proxy_set_header Host $host;
+              }
+
+              location / {
+                  proxy_pass http://127.0.0.1:3000;
+                  proxy_http_version 1.1;
+                  proxy_set_header Upgrade $http_upgrade;
+                  proxy_set_header Connection "upgrade";
+                  proxy_set_header Host $host;
+              }
+          }
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Reload nginx to apply HTTPS configuration
+      ansible.builtin.systemd:
+        name: nginx
+        state: reloaded
+
+    - name: Set up automatic certificate renewal
+      ansible.builtin.copy:
+        dest: /etc/cron.d/certbot-renew
+        content: |
+          0 0 * * * root certbot renew --quiet && systemctl reload nginx
+        owner: root
+        group: root
+        mode: '0644'

@@ -22,6 +22,10 @@
 
 build: ## Build the application
 	go build -o ./build/api ./cmd/api/main.go
+	go build -o ./build/db-create ./cmd/db/create/main.go
+	go build -o ./build/db-drop ./cmd/db/drop/main.go
+	go build -o ./build/db-migrate ./cmd/db/migrate/main.go
+	go build -o ./build/db-seed ./cmd/db/seed/main.go
 	go build -o ./build/worker ./cmd/worker/main.go
 
 install: install-build install-dev install-mod ## Install all dependencies

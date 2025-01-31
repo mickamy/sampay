@@ -4,11 +4,6 @@ variable "aws_region" {
   default     = "ap-northeast-1"
 }
 
-variable "db_admin_password" {
-  description = "Database admin password"
-  type        = string
-}
-
 variable "db_admin_user" {
   description = "Database admin user"
   type        = string
@@ -16,11 +11,6 @@ variable "db_admin_user" {
 
 variable "db_host" {
   description = "Database host"
-  type        = string
-}
-
-variable "db_name" {
-  description = "Database name"
   type        = string
 }
 
@@ -45,6 +35,16 @@ variable "frontend_base_url" {
   type        = string
 }
 
+variable "github_repo" {
+  description = "GitHub repository name"
+  type        = string
+}
+
+variable "github_repo_with_owner" {
+  description = "GitHub repository with owner"
+  type        = string
+}
+
 variable "github_token" {
   description = "GitHub token"
   type        = string
@@ -52,8 +52,8 @@ variable "github_token" {
 
 variable "geo_locations" {
   description = "Geo locations to allow access"
-  type        = list(string)
-  default     = ["JP"]
+  type = list(string)
+  default = ["JP"]
 }
 
 variable "instance_type" {
@@ -69,6 +69,11 @@ variable "redis_host" {
 
 variable "redis_port" {
   description = "Redis port"
+  type        = number
+}
+
+variable "ssh_port" {
+  description = "SSH port"
   type        = number
 }
 

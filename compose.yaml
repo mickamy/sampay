@@ -47,7 +47,8 @@ services:
       dockerfile: Dockerfile
       target: development-dependencies-env
     environment:
-      PUBLIC_API_BASE_URL: http://api:8080
+      API_BASE_URL: http://api:8080
+      ENVIRONMENT: development
       PUBLIC_BUCKET_NAME: sampay-public
       SESSION_SECRET: secret
     command: sh -c "npm ci && npm run dev"
@@ -96,10 +97,9 @@ services:
       - redis:/data
     ports:
       - "6379:6379"
-    environment:
-      REDIS_PASSWORD: password
+    command: ["redis-server", "--requirepass", "password"]
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: [ "CMD-SHELL", "redis-cli -a password ping || exit 1" ]
       interval: 1s
       timeout: 3s
       retries: 30

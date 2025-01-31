@@ -1,10 +1,11 @@
 - name: Configure Sampay backend server
   hosts: all
+  gather_facts: false
   become: true
   tasks:
     - name: Create API systemd service
       ansible.builtin.copy:
-        dest: /etc/systemd/system/system/sampay-api.service
+        dest: /etc/systemd/system/sampay-api.service
         content: |
           [Unit]
           Description=Sampay API Service
@@ -14,10 +15,11 @@
           WorkingDirectory=/home/ec2-user/sampay/backend
           ExecStart=/home/ec2-user/sampay/backend/build/api
           Restart=always
-          Environment="PACKAGE_ROOT=/home/ec2-user/sampay/backend"
+          Environment="AWS_REGION={{ aws_region }}"
           Environment="ENV={{ env }}"
+          Environment="PACKAGE_ROOT=/home/ec2-user/sampay/backend"
           User=ec2-user
-          Group=ec-user
+          Group=ec2-user
 
           [Install]
           WantedBy=multi-user.target
@@ -27,7 +29,7 @@
 
     - name: Create worker systemd service
       ansible.builtin.copy:
-        dest: /etc/systemd/system/system/sampay-worker.service
+        dest: /etc/systemd/system/sampay-worker.service
         content: |
           [Unit]
           Description=Sampay worker Service
@@ -37,10 +39,11 @@
           WorkingDirectory=/home/ec2-user/sampay/backend
           ExecStart=/home/ec2-user/sampay/backend/build/worker
           Restart=always
-          Environment="PACKAGE_ROOT=/home/ec2-user/sampay/backend"
+          Environment="AWS_REGION={{ aws_region }}"
           Environment="ENV={{ env }}"
+          Environment="PACKAGE_ROOT=/home/ec2-user/sampay/backend"
           User=ec2-user
-          Group=ec-user
+          Group=ec2-user
 
           [Install]
           WantedBy=multi-user.target
@@ -52,14 +55,28 @@
       ansible.builtin.systemd:
         daemon_reload: true
 
-    - name: Start API service
+    - name: Enable API service
       ansible.builtin.systemd:
         name: sampay-api
-        state: started
         enabled: true
 
-    - name: Start worker service
+    - name: Enable worker service
       ansible.builtin.systemd:
         name: sampay-worker
-        state: started
         enabled: true
+
+    - name: Set ENV to /etc/environment
+      ansible.builtin.lineinfile:
+        path: /etc/environment
+        line: "ENV={{ env }}"
+        create: true
+        state: present
+        mode: '0644'
+
+    - name: Set AWS_REGION to /etc/environment
+      ansible.builtin.lineinfile:
+        path: /etc/environment
+        line: "AWS_REGION={{ aws_region }}"
+        create: true
+        state: present
+        mode: '0644'

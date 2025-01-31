@@ -1,16 +1,20 @@
+variable "aws_region" {
+  description = "AWS region to deploy the Lightsail instance"
+  type        = string
+}
+
 variable "domain" {
   description = "Domain name"
   type        = string
 }
 
-variable "aws_region" {
-  description = "AWS region to deploy the Lightsail instance"
-  type        = string
-  default     = "ap-northeast-1"
-}
-
 variable "env" {
   description = "Environment name (e.g., stg, prod)"
+  type        = string
+}
+
+variable "github_repo" {
+  description = "GitHub repository name"
   type        = string
 }
 
@@ -19,8 +23,18 @@ variable "instance_type" {
   type        = string
 }
 
+variable "ssh_port" {
+  description = "SSH port"
+  type        = number
+}
+
 variable "ssh_public_key" {
   description = "Public key for SSH access"
+  type        = string
+}
+
+variable "ssh_private_key" {
+  description = "Private key for SSH access"
   type        = string
 }
 
@@ -41,7 +55,7 @@ variable "volume_type" {
 
 variable "vpc_security_group_ids" {
   description = "VPC security group IDs"
-  type        = list(string)
+  type = list(string)
 }
 
 variable "sqs_worker_dlq_queue_arn" {

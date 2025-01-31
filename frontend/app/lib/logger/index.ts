@@ -17,13 +17,20 @@ async function init() {
       },
     });
   }
+
   const dir = "/var/log/sampay";
   const { createWriteStream, existsSync, mkdirSync } = await import("node:fs");
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
+
+  try {
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true });
+    }
+  } catch (error) {
+    console.error(`failed to create log directory: ${dir}`);
+    throw error;
   }
 
-  const path = join(dir, "web.log");
+  const path = join(dir, "frontend.log");
   const fileStream = createWriteStream(path, {
     flags: "a",
   });

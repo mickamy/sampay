@@ -19,7 +19,7 @@ func Connect(cfg config.KVSConfig) (*KVS, error) {
 	if instance == nil {
 		once.Do(func() {
 			var opts *redis.Options
-			opts, err = redis.ParseURL(cfg.URL)
+			opts, err = redis.ParseURL(cfg.URL())
 			if err != nil {
 				err = fmt.Errorf("failed to parse redis url: %s", err)
 			}

@@ -19,7 +19,7 @@ async function initialize() {
       SESSION_SECRET: sessionSecret,
     };
   } catch (e) {
-    logger.error("failed to retrieve SSM parameters", e);
+    logger.error({ error: e }, "failed to retrieve SSM parameters");
     throw e;
   }
 }

@@ -1,10 +1,11 @@
 - name: Configure Sampay frontend server
   hosts: all
+  gather_facts: false
   become: true
   tasks:
     - name: Create frontend systemd service
       ansible.builtin.copy:
-        dest: /etc/systemd/system/system/sampay-frontend.service
+        dest: /etc/systemd/system/sampay-frontend.service
         content: |
           [Unit]
           Description=Sampay frontend Service
@@ -12,14 +13,35 @@
 
           [Service]
           WorkingDirectory=/home/ec2-user/sampay/frontend
-          ExecStartPre=npm ci --omit=dev && npm run build
-          ExecStart=npm run start
+          ExecStartPre=/home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/node \
+            /home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/npm ci
+          ExecStartPre=/home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/node \
+            /home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/npm run build
+          ExecStart=/home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/node \
+            /home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/npm run start
+          EnvironmentFile=/etc/systemd/system/sampay-frontend.env
+          Environment="ENVIRONMENT={{ env }}"
           Restart=always
           User=ec2-user
-          Group=ec-user
+          Group=ec2-user
 
           [Install]
           WantedBy=multi-user.target
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Create frontend systemd environment file
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/sampay-frontend.env
+        content: |
+          PATH=/home/ec2-user/.nvm/versions/node/{{ node_version }}/bin:/usr/local/bin:/usr/bin:/bin
+          NODE_PATH=/home/ec2-user/.nvm/versions/node{{ node_version }}/lib/node_modules
+          NVM_DIR=/home/ec2-user/.nvm
+          API_BASE_URL=http:localhost:8080
+          export PATH
+          export NODE_PATH
+          export NVM_DIR
         owner: root
         group: root
         mode: '0644'
@@ -31,5 +53,4 @@
     - name: Start frontend service
       ansible.builtin.systemd:
         name: sampay-frontend
-        state: started
         enabled: true

@@ -4,56 +4,101 @@ on:
   push:
     branches:
       - main
+      - feat/deploy
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     env:
+      AWS_REGION: ap-northeast-1
       DOMAIN: stg.sampay.link
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Set up SSH
         run: |
-          echo "${{ secrets.EC2_SSH_KEY_STAGING }}" | base64 --decode > key.pem
+          echo "${{ secrets.EC2_SSH_KEY_STG }}" | base64 --decode > key.pem
           chmod 600 key.pem
 
-      - name: Set up AWS CLI
+      - name: Set ansible vault password
+        run: |
+          mkdir -p provisioning/secrets
+          echo "${{ secrets.ANSIBLE_VAULT_PASS }}" > ./provisioning/secrets/ansible_vault_pass 
+
+      - name: Execute ansible playbook
+        run: |
+          cd ./provisioning
+          
+          export ANSIBLE_SSH_KEY="${GITHUB_WORKSPACE}/key.pem"
+          export ANSIBLE_SSH_PORT=${{ secrets.SSH_PORT_STG }}
+          export AWS_REGION=${{ env.AWS_REGION }}
+          export CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}
+          export POSTGRES_PASSWORD=${{ secrets.POSTGRES_ADMIN_PASSWORD_STG }}
+          export KVS_PASSWORD=${{ secrets.KVS_PASSWORD_STG }}
+          
+          ansible-playbook -i ./inventory/web.yaml playbook.yaml \
+          --vault-password-file ./secrets/ansible_vault_pass --limit stg \
+
+      - name: Public IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ARN }}
+          role-to-assume: arn:aws:iam::590183691452:role/GitHubActionsRole-590183691452
           aws-region: ap-northeast-1
+
+      - name: Set adhoc branch name
+        run: |
+          echo "ADHOC_BRANCH_NAME=adhoc/${{ github.sha }}-$(echo ${{ github.event.repository.updated_at }} | sed 's/[:]/_/g')" >> $GITHUB_ENV
 
       - name: Checkout repository on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
+          ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
+            set -eux -o pipefail
+            export ADHOC_BRANCH_NAME="${{ env.ADHOC_BRANCH_NAME }}"
             if [ ! -d "sampay" ]; then
-              GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" git clone git@github.com:mickamy/sampay.git
+              git clone git@github.com:mickamy/sampay.git
             fi
             cd sampay
-            git checkout -b adhoc/${{ github.sha }}
+            git checkout -b "$ADHOC_BRANCH_NAME" 
             git add .
             git stash
             git branch --merged | grep -v \* | xargs git branch -D
             git fetch origin --prune
+            git branch -D ${{ github.ref_name }} || true
             git checkout ${{ github.ref_name }}
-            git branch -D adhoc/${{ github.sha }}
           EOF
 
       - name: Deploy backend application
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} \
+          ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} \
             "bash ~/sampay/backend/bin/deploy.sh"
 
       - name: Deploy frontend application
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} \
+          ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} \
             "bash ~/sampay/frontend/bin/deploy.sh"
+
+      - name: Delete adhoc branch
+        run: |
+          ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
+            cd sampay
+            export ADHOC_BRANCH_NAME="${{ env.ADHOC_BRANCH_NAME }}"
+            git branch -D "$ADHOC_BRANCH_NAME"
+          EOF
 
       - name: Rollback
         if: ${{ failure() }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
+          ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
             cd sampay
             git checkout -
             sudo systemctl restart sampay-api

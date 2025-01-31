@@ -4,12 +4,13 @@ import { createConnectTransport } from "@connectrpc/connect-web";
 import {
   createI18NInterceptor,
   loggingInterceptor,
-} from "~/lib/api/interceptors";
-import { isBrowser } from "~/lib/utils";
+} from "~/lib/api/interceptors.server";
 
-export const API_BASE_URL: string = isBrowser()
-  ? window.ENV.PUBLIC_API_BASE_URL
-  : process.env.PUBLIC_API_BASE_URL;
+const baseURL = process.env.API_BASE_URL;
+if (!baseURL) {
+  throw new Error("API_BASE_URL is not set");
+}
+export const API_BASE_URL = baseURL;
 
 export function getClient<T extends DescService>({
   service,

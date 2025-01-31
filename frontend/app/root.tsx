@@ -33,9 +33,6 @@ export const links: Route.LinksFunction = () => [
 interface LoaderData {
   locale: string;
   title: string;
-  ENV: {
-    PUBLIC_API_BASE_URL: string;
-  };
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -52,15 +49,12 @@ export const loader: LoaderFunction = async ({ request }) => {
   const data: LoaderData = {
     locale,
     title,
-    ENV: {
-      PUBLIC_API_BASE_URL: process.env.PUBLIC_API_BASE_URL,
-    },
   };
   return data;
 };
 
 export function Layout({ children }: { children: ReactNode }) {
-  const { locale, title, ENV } = useLoaderData<LoaderData>();
+  const { locale, title } = useLoaderData<LoaderData>();
   const { i18n, ready } = useTranslation();
   useEffect(() => {
     if (i18n.language !== locale) {
@@ -77,14 +71,8 @@ export function Layout({ children }: { children: ReactNode }) {
         <Links />
         <title>{title}</title>
       </head>
-      <body>
+      <body className="overscroll-x-auto overscroll-y-none">
         {ready ? children : null}
-        <script
-          // biome-ignore lint: suspicious/no-dangerously-set-inner-html
-          dangerouslySetInnerHTML={{
-            __html: `window.ENV = ${JSON.stringify(ENV)}`,
-          }}
-        />
         <ScrollRestoration />
         <Scripts />
         <Toaster />

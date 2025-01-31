@@ -1,6 +1,6 @@
 import { UserService } from "@buf/mickamy_sampay.bufbuild_es/user/v1/user_pb";
 import type { LoaderFunction } from "react-router";
-import { withAuthentication } from "~/lib/api/request";
+import { withAuthentication } from "~/lib/api/request.server";
 import { convertToUser } from "~/models/user/user-model";
 import UserScreen, {
   type LoaderData,

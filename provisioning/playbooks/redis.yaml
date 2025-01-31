@@ -1,80 +1,95 @@
 - name: Install Redis on Amazon Linux 2023
   hosts: all
+  gather_facts: false
   become: true
+  vars:
+    redis_version: "7.0.15"
+    redis_install_dir: "/usr/local/bin/redis-server"
+    redis_data_dir: "/var/lib/redis"
+    redis_service_file: "/etc/systemd/system/redis.service"
+    redis_password: "{{ lookup('env', 'KVS_PASSWORD') }}"
+
   tasks:
-    - name: Install required dependencies
-      ansible.builtin.dnf:
-        name:
-          - gcc
-          - make
-          - tar
-          - wget
-        state: present
+    - name: Check if Redis is installed and its version
+      ansible.builtin.command: "{{ redis_install_dir }} --version"
+      register: redis_version_check
+      ignore_errors: true
+      changed_when: false
 
-    - name: Download Redis source code
-      ansible.builtin.get_url:
-        url: https://download.redis.io/releases/redis-{{ redis_version }}.tar.gz
-        dest: /tmp/redis-{{ redis_version }}.tar.gz
-        mode: '0644'
+    - name: Install Redis if not installed or version mismatch
+      when: >
+        redis_version_check.failed or
+        "Redis server v=" + redis_version not in redis_version_check.stdout
+      block:
+        - name: Install required dependencies
+          ansible.builtin.dnf:
+            name:
+              - gcc
+              - make
+              - tar
+              - wget
+            state: present
 
-    - name: Set permissions for Redis source
-      ansible.builtin.file:
-        path: /tmp/redis-{{ redis_version }}.tar.gz
-        mode: '0755'
+        - name: Download Redis source code
+          ansible.builtin.get_url:
+            url: https://download.redis.io/releases/redis-{{ redis_version }}.tar.gz
+            dest: /tmp/redis-{{ redis_version }}.tar.gz
+            mode: '0644'
 
-    - name: Unzip Redis source
-      ansible.builtin.unarchive:
-        src: /tmp/redis-{{ redis_version }}.tar.gz
-        dest: /tmp
-        remote_src: true
+        - name: Set permissions for Redis source
+          ansible.builtin.file:
+            path: /tmp/redis-{{ redis_version }}.tar.gz
+            mode: '0755'
 
-    - name: Build Redis
-      community.general.make:
-        chdir: /tmp/redis-{{ redis_version }}
+        - name: Unzip Redis source
+          ansible.builtin.unarchive:
+            src: /tmp/redis-{{ redis_version }}.tar.gz
+            dest: /tmp
+            remote_src: true
 
-    - name: Install Redis
-      community.general.make:
-        chdir: /tmp/redis-{{ redis_version }}
-        target: install
+        - name: Copy Redis configuration file
+          ansible.builtin.copy:
+            src: /tmp/redis-{{ redis_version }}/redis.conf
+            dest: /etc/redis.conf
+            remote_src: true
+            owner: root
+            group: root
+            mode: '0644'
 
-    - name: Copy Redis configuration file
-      ansible.builtin.command:
-        cmd: cp /tmp/redis-{{ redis_version }}/redis.conf /etc/redis.conf
-      args:
-        creates: /etc/redis.conf
+        - name: Build Redis
+          community.general.make:
+            chdir: /tmp/redis-{{ redis_version }}
 
-    - name: Set ownership and permissions for Redis configuration
-      ansible.builtin.file:
-        path: /etc/redis.conf
-        owner: root
-        group: root
-        mode: '0644'
+        - name: Install Redis
+          community.general.make:
+            chdir: /tmp/redis-{{ redis_version }}
+            target: install
 
-    - name: Remove Redis archive
-      ansible.builtin.file:
-        path: /tmp/redis-{{ redis_version }}.tar.gz
-        state: absent
+        - name: Remove Redis archive and source directory
+          ansible.builtin.file:
+            path: "{{ item }}"
+            state: absent
+          loop:
+            - /tmp/redis-{{ redis_version }}.tar.gz
+            - /tmp/redis-{{ redis_version }}
 
-    - name: Remove Redis source directory
-      ansible.builtin.file:
-        path: /tmp/redis-{{ redis_version }}
-        state: absent
+    - name: Create Redis group and user
+      block:
+        - name: Create Redis group
+          ansible.builtin.group:
+            name: redis
+            system: true
 
-    - name: Create Redis group
-      ansible.builtin.group:
-        name: redis
-        system: true
-
-    - name: Create Redis user
-      ansible.builtin.user:
-        name: redis
-        group: redis
-        system: true
-        create_home: false
+        - name: Create Redis user
+          ansible.builtin.user:
+            name: redis
+            group: redis
+            system: true
+            create_home: false
 
     - name: Create redis data directory
       ansible.builtin.file:
-        path: /var/lib/redis
+        path: "{{ redis_data_dir }}"
         state: directory
         owner: redis
         group: redis
@@ -82,7 +97,7 @@
 
     - name: Create Redis systemd service
       ansible.builtin.copy:
-        dest: /etc/systemd/system/redis.service
+        dest: "{{ redis_service_file }}"
         content: |
           [Unit]
           Description=Redis In-Memory Data Store
@@ -101,23 +116,29 @@
         group: root
         mode: '0644'
 
-    - name: Reload systemd
-      ansible.builtin.systemd:
-        daemon_reload: true
+    - name: Set Redis password in configuration file
+      ansible.builtin.lineinfile:
+        path: /etc/redis.conf
+        regexp: '^requirepass'
+        line: 'requirepass {{ redis_password }}'
+        state: present
+        owner: root
+        group: root
+        mode: '0644'
 
-    - name: Enable and start Redis service
+    - name: Restart Redis service
       ansible.builtin.systemd:
         name: redis
-        state: started
-        enabled: true
+        state: restarted
+        daemon_reload: true
 
-    - name: Verify Redis is running
+    - name: Verify Redis password is set
       ansible.builtin.command:
-        cmd: redis-cli ping
-      register: redis_status
+        cmd: redis-cli -a {{ redis_password }} ping
+      register: redis_password_status
+      failed_when: "'PONG' not in redis_password_status.stdout"
       changed_when: false
-      ignore_errors: true
 
-    - name: Print Redis status
+    - name: Print Redis password verification status
       ansible.builtin.debug:
-        msg: "Redis status: {{ redis_status.stdout }}"
+        msg: "Redis password status: {{ redis_password_status.stdout if not redis_password_status.failed else 'Password not set or verification failed' }}"

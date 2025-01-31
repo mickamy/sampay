@@ -1,17 +1,13 @@
 ########################################################################################################################
 # Deploy key
 ########################################################################################################################
-locals {
-  repository = "sampay"
-}
-
 resource "tls_private_key" "deploy_key" {
   algorithm = "RSA"
   rsa_bits  = 2048
 }
 
 resource "github_repository_deploy_key" "main" {
-  repository = local.repository
+  repository = var.github_repo
   title      = "Terraform Deploy Key"
   key        = tls_private_key.deploy_key.public_key_openssh
   read_only  = true
@@ -54,7 +50,7 @@ data "aws_ami" "amazon_linux_2023" {
   }
 }
 
-resource "aws_instance" "web" {
+resource "aws_instance" "main" {
   ami                         = data.aws_ami.amazon_linux_2023.id
   associate_public_ip_address = true
   iam_instance_profile        = aws_iam_instance_profile.ec2_instance_profile.name
@@ -69,17 +65,17 @@ resource "aws_instance" "web" {
   }
 
   user_data = templatefile("${path.module}/user_data.sh.tpl", {
-    aws_region : var.aws_region,
     deploy_key : tls_private_key.deploy_key.private_key_openssh,
+    ssh_port = var.ssh_port,
   })
 
   tags = merge(local.common_tags, {
-    Name = "${local.instance_name}-web"
+    Name = local.instance_name
   })
 }
 
 resource "aws_eip" "web_eip" {
-  instance = aws_instance.web.id
+  instance = aws_instance.main.id
 
   tags = local.common_tags
 }
@@ -112,6 +108,23 @@ resource "aws_route53_record" "records" {
   lifecycle {
     create_before_destroy = true
   }
+}
+
+########################################################################################################################
+# Github Actions secrets
+########################################################################################################################
+resource "github_actions_secret" "ec2_public_ip" {
+  repository      = var.github_repo
+  secret_name     = "EC2_PUBLIC_IP_${upper(var.env)}"
+  plaintext_value = aws_instance.main.public_ip
+}
+
+resource "github_actions_secret" "ec2_ssh_key" {
+  depends_on = [aws_key_pair.ssh]
+
+  repository  = var.github_repo
+  secret_name = "EC2_SSH_KEY_${upper(var.env)}"
+  plaintext_value = base64encode(var.ssh_private_key)
 }
 
 ########################################################################################################################

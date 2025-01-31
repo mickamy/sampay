@@ -41,10 +41,21 @@ apply-stg:
 	cd ./environments/stg && terraform apply
 
 destroy-stg:
-	cd ./environments/stg && terraform destroy
+	cd ./environments/stg && \
+	bash -c 'while read -r resource; do \
+		terraform destroy -target="$${resource}" -auto-approve; \
+	done < <( \
+		terraform state list | \
+		grep -vE "^data\\." | \
+		grep -vE "module.ssm.aws_ssm_parameter.random_values|module.ssm.random_password.secure_values|module.s3.aws_cloudfront_distribution.cdn" \
+	)'
+
+
+reapply-stg: destroy-stg apply-stg
+	@echo "Reapply completed"
 
 reapply-ec2-stg:
-	cd ./environments/stg && terraform destroy -target=module.ec2.aws_instance.web
+	cd ./environments/stg && terraform destroy -target=module.ec2
 	cd ./environments/stg && terraform apply -target=module.ec2
 
 lint-init:

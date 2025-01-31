@@ -1,6 +1,10 @@
 - name: Install PostgreSQL on Amazon Linux 2023
   hosts: all
+  gather_facts: false
   become: true
+  vars:
+    postgres_version: "16.5"
+
   tasks:
     - name: Install required Python library for PostgreSQL
       ansible.builtin.dnf:
@@ -36,7 +40,7 @@
     - name: Set password for postgres user
       community.postgresql.postgresql_user:
         name: postgres
-        password: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
+        password: "{{ lookup('env', 'POSTGRES_PASSWORD') | urlencode() }}"
         encrypted: true
       when: lookup('env', 'POSTGRES_PASSWORD') != ''
 

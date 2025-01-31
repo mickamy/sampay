@@ -10,7 +10,7 @@ import {
 } from "react-router";
 import { requestEmailVerificationSchema } from "~/components/email-verification/request-form";
 import { verifyEmailSchema } from "~/components/email-verification/verify-form";
-import { getClient } from "~/lib/api/client";
+import { getClient } from "~/lib/api/client.server";
 import { convertToAPIError } from "~/lib/api/response";
 import { isLoggedIn } from "~/lib/cookie/authenticated.server";
 import {

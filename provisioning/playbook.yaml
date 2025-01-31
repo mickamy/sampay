@@ -6,7 +6,6 @@
     - name: Install necessary packages
       ansible.builtin.dnf:
         name:
-          - ec2-instance-connect
           - git
           - vim
         state: present
@@ -27,3 +26,5 @@
   import_playbook: playbooks/backend.yaml
 - name: Import frontend Playbook
   import_playbook: playbooks/frontend.yaml
+- name: Import log Playbook
+  import_playbook: playbooks/log.yaml

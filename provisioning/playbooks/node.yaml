@@ -1,30 +1,53 @@
 - name: Install Node.js on Amazon Linux 2023
   hosts: all
+  gather_facts: false
   become: true
+
   tasks:
-    - name: Download nvm install script
-      ansible.builtin.get_url:
-        url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh
-        dest: /tmp/install_nvm.sh
-        mode: '0755'
-
-    - name: Install nvm
+    - name: Check installed Node.js version
       ansible.builtin.shell: |
-        set -o pipefail
-        /tmp/install_nvm.sh
-      args:
-        creates: /home/ec2-user/.nvm
-
-    - name: Load nvm and install Node.js
-      ansible.builtin.shell: |
-        set -o pipefail
         export NVM_DIR="/home/ec2-user/.nvm"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-        nvm install {{ node_version }}
-        nvm alias default {{ node_version }}
+        node --version
       args:
         executable: /bin/bash
-        creates: /home/ec2-user/.nvm/versions/node/{{ node_version }}
+      register: node_installed_version
+      ignore_errors: true
+      changed_when: false
+
+    - name: Install Node.js if not installed or version mismatch
+      when: >
+        node_installed_version.failed or
+        node_installed_version.stdout.strip() != "v" + node_version
+      block:
+        - name: Download nvm install script
+          ansible.builtin.get_url:
+            url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh
+            dest: /tmp/install_nvm.sh
+            mode: '0755'
+
+        - name: Install nvm for ec2-user
+          ansible.builtin.shell: |
+            set -o pipefail
+            export NVM_DIR="/home/ec2-user/.nvm"
+            mkdir -p "$NVM_DIR"
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+          args:
+            executable: /bin/bash
+            creates: /home/ec2-user/.nvm
+          become: true
+          become_user: ec2-user
+
+        - name: Load nvm and install Node.js
+          ansible.builtin.shell: |
+            set -o pipefail
+            export NVM_DIR="/home/ec2-user/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install {{ node_version }}
+            nvm alias default {{ node_version }}
+          args:
+            executable: /bin/bash
+            creates: /home/ec2-user/.nvm/versions/node/{{ node_version }}
 
     - name: Verify Node.js installation
       ansible.builtin.shell: |
@@ -38,4 +61,4 @@
 
     - name: Print Node.js version
       ansible.builtin.debug:
-        msg: "Node.js version: {{ node_version_output.stdout }}"
+        msg: "Node.js version: {{ node_version_output.stdout.strip() }}"
