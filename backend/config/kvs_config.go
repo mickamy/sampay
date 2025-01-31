@@ -15,7 +15,10 @@ type KVSConfig struct {
 }
 
 func (c KVSConfig) URL() string {
-	return fmt.Sprintf("redis://:%s@%s:%d", url.QueryEscape(c.Password), c.Host, c.Port)
+	if c.Password != "" {
+		return fmt.Sprintf("redis://:%s@%s:%d", url.QueryEscape(c.Password), c.Host, c.Port)
+	}
+	return fmt.Sprintf("redis://%s:%d", c.Host, c.Port)
 }
 
 var (

@@ -97,8 +97,7 @@ services:
       - redis:/data
     ports:
       - "6379:6379"
-    environment:
-      REDIS_PASSWORD: password
+    command: ["redis-server", "--requirepass", "password"]
     healthcheck:
       test: [ "CMD-SHELL", "redis-cli -a password ping || exit 1" ]
       interval: 1s
