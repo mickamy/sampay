@@ -9,12 +9,12 @@ import { createConnectTransport } from "@connectrpc/connect-web";
 import { SessionService } from "@buf/mickamy_sampay.bufbuild_es/auth/v1/session_pb";
 import type { DescService } from "@bufbuild/protobuf";
 import { redirect } from "react-router";
-import { API_BASE_URL, getClient } from "~/lib/api/client";
+import { API_BASE_URL, getClient } from "~/lib/api/client.server";
 import {
   createAuthenticateInterceptor,
   createI18NInterceptor,
   loggingInterceptor,
-} from "~/lib/api/interceptors";
+} from "~/lib/api/interceptors.server";
 import { type APIError, convertToAPIError } from "~/lib/api/response";
 import {
   type AuthenticatedSession,

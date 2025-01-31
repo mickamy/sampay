@@ -1,5 +1,5 @@
 import { DirectUploadURLService } from "@buf/mickamy_sampay.bufbuild_es/common/v1/direct_upload_url_pb";
-import type { getClientType } from "~/lib/api/request";
+import type { getClientType } from "~/lib/api/request.server";
 import logger from "~/lib/logger";
 import { randomUUID } from "~/lib/polyfill/crypto";
 import type { S3Object } from "~/models/common/s3-object-model";

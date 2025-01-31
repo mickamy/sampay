@@ -5,7 +5,7 @@ import {
   type LoaderFunction,
   redirect,
 } from "react-router";
-import { getClient } from "~/lib/api/client";
+import { getClient } from "~/lib/api/client.server";
 import { convertToAPIError } from "~/lib/api/response";
 import {
   isLoggedIn,

@@ -6,7 +6,10 @@ import {
   redirect,
 } from "react-router";
 import { userProfileSchema } from "~/components/user-profile-form";
-import { withAuthentication, withEmailVerification } from "~/lib/api/request";
+import {
+  withAuthentication,
+  withEmailVerification,
+} from "~/lib/api/request.server";
 import { setAuthenticatedSession } from "~/lib/cookie/authenticated.server";
 import { destroyEmailVerificationSession } from "~/lib/cookie/email-verification.server";
 import { convertTokensToSession } from "~/models/auth/session-model";
