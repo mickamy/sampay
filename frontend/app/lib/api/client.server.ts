@@ -6,16 +6,18 @@ import {
   loggingInterceptor,
 } from "~/lib/api/interceptors.server";
 
+const baseURL = process.env.API_BASE_URL;
+if (!baseURL) {
+  throw new Error("API_BASE_URL is not set");
+}
+export const API_BASE_URL = baseURL;
+
 export function getClient<T extends DescService>({
   service,
   request,
 }: { service: T; request: Request }): Client<T> {
-  const baseURL = process.env.API_BASE_URL;
-  if (!baseURL) {
-    throw new Error("API_BASE_URL is not set");
-  }
   const transport = createConnectTransport({
-    baseUrl: baseURL,
+    baseUrl: API_BASE_URL,
     interceptors: [createI18NInterceptor(request), loggingInterceptor],
   });
   return createClient(service, transport);

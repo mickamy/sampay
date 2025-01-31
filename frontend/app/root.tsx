@@ -54,7 +54,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export function Layout({ children }: { children: ReactNode }) {
-  const { locale, title, ENV } = useLoaderData<LoaderData>();
+  const { locale, title } = useLoaderData<LoaderData>();
   const { i18n, ready } = useTranslation();
   useEffect(() => {
     if (i18n.language !== locale) {
