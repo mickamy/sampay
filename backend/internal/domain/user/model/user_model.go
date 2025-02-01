@@ -21,6 +21,7 @@ var (
 type User struct {
 	ID        string
 	Slug      string
+	Email     string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 

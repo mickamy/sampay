@@ -8,7 +8,8 @@ import (
 
 func User(setter func(m *model.User)) model.User {
 	m := model.User{
-		Slug: gofakeit.GlobalFaker.Username(),
+		Slug:  gofakeit.GlobalFaker.Username(),
+		Email: gofakeit.GlobalFaker.Email(),
 	}
 
 	if setter != nil {

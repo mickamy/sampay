@@ -109,7 +109,9 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 			return fmt.Errorf("failed to create email verification: %w", err)
 		}
 
-		user := userModel.User{}
+		user := userModel.User{
+			Email: payload.Email,
+		}
 		if err := uc.userRepo.WithTx(tx.WriterDB()).Create(ctx, &user); err != nil {
 			return fmt.Errorf("failed to create user: %w", err)
 		}
