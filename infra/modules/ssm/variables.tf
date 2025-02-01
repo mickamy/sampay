@@ -44,6 +44,16 @@ variable "github_repo" {
   type        = string
 }
 
+variable "google_client_id" {
+  description = "Google client ID"
+  type        = string
+}
+
+variable "google_client_secret" {
+  description = "Google client secret"
+  type        = string
+}
+
 variable "ssh_private_key_path" {
   description = "Path to the private key"
   type        = string

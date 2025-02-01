@@ -96,6 +96,8 @@ module "ssm" {
   db_timezone           = var.db_timezone
   frontend_base_url     = var.frontend_base_url
   github_repo           = var.github_repo
+  google_client_id      = var.google_client_id
+  google_client_secret  = var.google_client_secret
   ssh_private_key_path  = var.ssh_private_key_path
   ssh_public_key_path   = var.ssh_public_key_path
   redis_host            = var.redis_host
