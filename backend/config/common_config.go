@@ -10,6 +10,10 @@ import (
 
 type Env string
 
+func (e Env) String() string {
+	return string(e)
+}
+
 func (e Env) ShortName() string {
 	switch e {
 	case Development:

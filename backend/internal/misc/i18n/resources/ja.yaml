@@ -32,6 +32,7 @@ auth:
     verify_email:
       error:
         invalid_pin_code: '無効な PIN コードです。'
+
 common:
   format:
     minute: '{{.Minute}}分'
@@ -41,6 +42,16 @@ common:
   handler:
     error:
       internal: 'ただいまアクセスが集中しております。しばらくしてから再度お試しください。'
+
+message:
+  usecase:
+    create_message:
+      email:
+        subject: '{{ .SenderName }}からメッセージを受信しました'
+        body: |-
+          {{ .SenderName }}からメッセージを受信しました。
+          
+          「{{ .Content }}」
 
 oauth:
   handler:

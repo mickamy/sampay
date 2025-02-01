@@ -72,6 +72,11 @@ variable "instance_type" {
   default     = "t2.medium"
 }
 
+variable "oauth_redirect_url" {
+  description = "OAuth redirect URL"
+  type = string
+}
+
 variable "redis_host" {
   description = "Redis host"
   type        = string

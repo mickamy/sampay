@@ -10,6 +10,7 @@ import (
 	"mickamy.com/sampay/internal/cli/infra/storage/kvs"
 	auth "mickamy.com/sampay/internal/domain/auth/di"
 	common "mickamy.com/sampay/internal/domain/common/di"
+	message "mickamy.com/sampay/internal/domain/message/di"
 	oauth "mickamy.com/sampay/internal/domain/oauth/di"
 	registration "mickamy.com/sampay/internal/domain/registration/di"
 	user "mickamy.com/sampay/internal/domain/user/di"
@@ -115,6 +116,39 @@ func InitCommonHandlers(db *database.DB, readWriter *database.ReadWriter, writer
 		wire.Struct(new(common.Handlers), "*"),
 	)
 	return common.Handlers{}
+}
+
+func InitMessageRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) message.Repositories {
+	wire.Build(
+		message.RepositorySet,
+		wire.Struct(new(message.Repositories), "*"),
+	)
+	return message.Repositories{}
+}
+
+func InitMessageUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) message.UseCases {
+	wire.Build(
+		message.UseCaseSet,
+		configSet,
+		producerSet,
+		user.RepositorySet,
+		message.RepositorySet,
+		wire.Struct(new(message.UseCases), "*"),
+	)
+	return message.UseCases{}
+}
+
+func InitMessageHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) message.Handlers {
+	wire.Build(
+		message.HandlerSet,
+		configSet,
+		producerSet,
+		user.RepositorySet,
+		message.RepositorySet,
+		message.UseCaseSet,
+		wire.Struct(new(message.Handlers), "*"),
+	)
+	return message.Handlers{}
 }
 
 func InitOAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) oauth.UseCases {
