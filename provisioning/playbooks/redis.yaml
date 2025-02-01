@@ -6,6 +6,7 @@
     redis_version: "7.0.15"
     redis_install_dir: "/usr/local/bin/redis-server"
     redis_data_dir: "/var/lib/redis"
+    redis_log_dir: "/var/log/redis"
     redis_service_file: "/etc/systemd/system/redis.service"
     redis_password: "{{ lookup('env', 'KVS_PASSWORD') }}"
 
@@ -119,12 +120,29 @@
           Restart=always
           User=redis
           Group=redis
-          
-          StandardOutput=append:/var/log/redis/redis.log
-          StandardError=append:/var/log/redis/error.log
+
+          StandardOutput=append:{{ redis_log_dir }}/redis.log
+          StandardError=append:{{ redis_log_dir }}/error.log
 
           [Install]
           WantedBy=multi-user.target
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Ensure log directory exists
+      ansible.builtin.file:
+        path: "{{ redis_log_dir }}"
+        state: directory
+        owner: redis
+        group: redis
+        mode: '0755'
+
+    - name: Set data directory in configuration file
+      ansible.builtin.lineinfile:
+        path: /etc/redis.conf
+        line: 'dir {{ redis_data_dir }}'
+        state: present
         owner: root
         group: root
         mode: '0644'
@@ -134,15 +152,6 @@
         path: /etc/redis.conf
         regexp: '^requirepass'
         line: 'requirepass {{ redis_password }}'
-        state: present
-        owner: root
-        group: root
-        mode: '0644'
-
-    - name: Set data directory in configuration file
-      ansible.builtin.lineinfile:
-        path: /etc/redis.conf
-        line: 'dir {{ redis_data_dir }}'
         state: present
         owner: root
         group: root
