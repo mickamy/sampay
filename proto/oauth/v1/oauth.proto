@@ -5,24 +5,26 @@ package oauth.v1;
 import "buf/validate/validate.proto";
 
 message SignInRequest {
+  enum Provider {
+    PROVIDER_UNSPECIFIED = 0;
+    PROVIDER_GOOGLE = 1;
+  }
+
+  Provider provider = 1 [(buf.validate.field).enum.defined_only = true];
 }
 
 message SignInResponse {
   string authorization_url = 1 [(buf.validate.field).string.uri = true];
 }
 
-message CallbackRequest {
+message GoogleCallbackRequest {
   string code = 1 [(buf.validate.field).string.min_len = 1];
 }
 
-message CallbackResponse {
-  string token = 1 [(buf.validate.field).string.min_len = 1];
-  string email = 2 [(buf.validate.field).string.email = true];
-  string name = 3;
-  string picture = 4;
+message GoogleCallbackResponse {
 }
 
 service OAuthService {
   rpc SignIn(SignInRequest) returns (SignInResponse) {}
-  rpc Callback(CallbackRequest) returns (CallbackResponse) {}
+  rpc GoogleCallback(GoogleCallbackRequest) returns (GoogleCallbackResponse) {}
 }

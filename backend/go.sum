@@ -8,12 +8,16 @@ buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250201022245-a234a316864
 buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250201022245-a234a3168648.1/go.mod h1:IcCWsRzDgXxYBw5scgfMjZsQiXHtnZfoQ8aQW+8oudc=
 buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250201022806-2ff2afb67d4f.1 h1:ez9jV9r88naWrsrmZ6NBATDschvVfp0+9Y7t9Liqf4M=
 buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250201022806-2ff2afb67d4f.1/go.mod h1:S/oNe2NsUrOF+rN0n55csi5FyZQ+Q2weljehCA5BGsA=
+buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250201032031-1f18f3aca533.1 h1:sHrhZCxxO4dkLdfYfTStgXvuz26fO09RAbY6U8W7AFE=
+buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250201032031-1f18f3aca533.1/go.mod h1:iX3EKhVTBSsYHjsWEuaAvKEGq/p/+CsRX5pFJnHMUMU=
 buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.3-20250120114142-386ddef4b6b7.1 h1:6IwN7fXGyEjTniqvSWxjAOJN1j0qw9OBfre2MHC3WLc=
 buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.3-20250120114142-386ddef4b6b7.1/go.mod h1:DlOMlNuL3zq1js5ZpRbGbZh84A2tX6NOSSNzMF/oYTI=
 buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250201022245-a234a3168648.1 h1:25sAXMGCRmRaCwATWjtJvVD9a4bnxKaAsrmp9lit0a8=
 buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250201022245-a234a3168648.1/go.mod h1:OUvJgK43IEzMyXfmX4mfRqTMfK7tDHgmIsoV0azAQQQ=
 buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250201022806-2ff2afb67d4f.1 h1:xBSDXDt9YJ3B1vdW+kI3/1pf+Q7p+oaH+qdNM3ob8Lc=
 buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250201022806-2ff2afb67d4f.1/go.mod h1:OUvJgK43IEzMyXfmX4mfRqTMfK7tDHgmIsoV0azAQQQ=
+buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250201032031-1f18f3aca533.1 h1:2JT8Xm9j6QGY5ubsyMBpxMe0oQsByuIfRPAc23mOYk4=
+buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250201032031-1f18f3aca533.1/go.mod h1:OUvJgK43IEzMyXfmX4mfRqTMfK7tDHgmIsoV0azAQQQ=
 cloud.google.com/go v0.112.1 h1:uJSeirPke5UNZHIb4SxfZklVSiWWVqW4oXlETwZziwM=
 cloud.google.com/go/compute v1.25.1 h1:ZRpHJedLtTpKgr3RV1Fx23NuaAEN1Zfx9hw1u4aJdjU=
 cloud.google.com/go/compute/metadata v0.3.0 h1:Tz+eQXMEqDIKRsmY3cHTL6FVaynIjX2QxYC4trgAKZc=
