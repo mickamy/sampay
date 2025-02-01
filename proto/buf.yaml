@@ -3,7 +3,6 @@ modules:
   - name: buf.build/mickamy/sampay
 deps:
   - buf.build/bufbuild/protovalidate
-  - buf.build/googleapis/googleapis
   - buf.build/protocolbuffers/wellknowntypes
 lint:
   use:
