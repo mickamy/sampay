@@ -14,6 +14,6 @@ func NewOAuthProvider(pb oauthv1.SignInRequest_Provider) (*model.OAuthProvider, 
 	case oauthv1.SignInRequest_PROVIDER_GOOGLE:
 		return ptr.Of(model.OAuthProviderGoogle), nil
 	default:
-		return nil, fmt.Errorf("unsupported provider: %s", pb)
+		return nil, fmt.Errorf("request with unsupported provider: %s", pb)
 	}
 }

@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useActionData } from "react-router";
+import { Link, useActionData } from "react-router";
 import RequestEmailVerificationForm, {
   type ActionData as RequestEmailVerificationFormActionData,
   requestEmailVerificationSchema,
@@ -47,15 +47,17 @@ export default function SignUpScreen() {
             </span>
           </div>
         </div>
-        <Button variant="outline">
-          <Image
-            src="/oauth-provider/google.svg"
-            alt="Google"
-            width={24}
-            height={24}
-          />
-          {t("account.sign_up.with_google")}
-        </Button>
+        <Link to="/oauth/google">
+          <Button variant="outline" className="w-full">
+            <Image
+              src="/oauth-provider/google.svg"
+              alt="Google"
+              width={24}
+              height={24}
+            />
+            {t("account.sign_up.with_google")}
+          </Button>
+        </Link>
         <Separator />
         <p className="flex flex-col space-y-4 px-8 text-center text-sm text-muted-foreground">
           <UnderlinedLink to="/terms">

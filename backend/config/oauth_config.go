@@ -10,7 +10,7 @@ import (
 type OAuthConfig struct {
 	GoogleClientID     string `env:"GOOGLE_CLIENT_ID"`
 	GoogleClientSecret string `env:"GOOGLE_CLIENT_SECRET"`
-	RedirectURL        string `env:"GOOGLE_REDIRECT_URL" envDefault:"https://sampay.lvh.me/auth/callback/google"`
+	RedirectURL        string `env:"GOOGLE_REDIRECT_URL" envDefault:"https://sampay.lvh.me/oauth/callback"`
 }
 
 var (

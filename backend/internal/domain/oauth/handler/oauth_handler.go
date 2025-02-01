@@ -2,8 +2,6 @@ package handler
 
 import (
 	"context"
-	"net/http"
-	"time"
 
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/oauth/v1/oauthv1connect"
 	oauthv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/oauth/v1"
@@ -12,6 +10,7 @@ import (
 
 	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 	"mickamy.com/sampay/internal/domain/oauth/dto/request"
+	"mickamy.com/sampay/internal/domain/oauth/model"
 	"mickamy.com/sampay/internal/domain/oauth/usecase"
 	"mickamy.com/sampay/internal/lib/contexts"
 	"mickamy.com/sampay/internal/misc/i18n"
@@ -67,7 +66,8 @@ func (h *OAuth) GoogleCallback(
 	req *connect.Request[oauthv1.GoogleCallbackRequest],
 ) (*connect.Response[oauthv1.GoogleCallbackResponse], error) {
 	out, err := h.callback.Do(ctx, usecase.OAuthCallbackInput{
-		Code: req.Msg.Code,
+		Provider: model.OAuthProviderGoogle,
+		Code:     req.Msg.Code,
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
@@ -78,21 +78,10 @@ func (h *OAuth) GoogleCallback(
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
-	res := connect.NewResponse(&oauthv1.GoogleCallbackResponse{})
-	res.Header().Add("Set-Cookie", newVerifiedCookie(out.VerifiedToken).String())
+	res := connect.NewResponse(&oauthv1.GoogleCallbackResponse{
+		VerificationToken: out.VerifiedToken,
+	})
 	return res, nil
-}
-
-func newVerifiedCookie(token string) *http.Cookie {
-	return &http.Cookie{
-		Name:     "verified",
-		Value:    token,
-		Path:     "/",
-		Expires:  time.Now().Add(5 * time.Second),
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
-	}
 }
 
 var _ oauthv1connect.OAuthServiceHandler = (*OAuth)(nil)

@@ -15,7 +15,7 @@ import (
 type AuthenticationType string
 
 const (
-	AuthenticationTypeEmailPassword AuthenticationType = "email_password"
+	AuthenticationTypeEmailPassword AuthenticationType = "password"
 	AuthenticationTypeGoogle        AuthenticationType = "google"
 )
 
