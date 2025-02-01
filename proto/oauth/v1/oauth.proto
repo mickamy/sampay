@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package oauth.v1;
+
+import "buf/validate/validate.proto";
+
+message SignInRequest {
+}
+
+message SignInResponse {
+  string authorization_url = 1 [(buf.validate.field).string.uri = true];
+}
+
+message CallbackRequest {
+  string code = 1 [(buf.validate.field).string.min_len = 1];
+}
+
+message CallbackResponse {
+  string token = 1 [(buf.validate.field).string.min_len = 1];
+  string email = 2 [(buf.validate.field).string.email = true];
+  string name = 3;
+  string picture = 4;
+}
+
+service OAuthService {
+  rpc SignIn(SignInRequest) returns (SignInResponse) {}
+  rpc Callback(CallbackRequest) returns (CallbackResponse) {}
+}
