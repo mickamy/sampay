@@ -5,7 +5,9 @@
       "terms": "利用規約",
       "privacy": "プライバシーポリシー",
       "have_account": "すでにアカウントをお持ちの方は",
-      "sign_in": "ログイン"
+      "sign_in": "ログイン",
+      "with_google": "Google で登録",
+      "or": "または"
     }
   },
   "admin": {

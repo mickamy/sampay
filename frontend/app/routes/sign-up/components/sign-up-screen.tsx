@@ -8,6 +8,8 @@ import {
   type ActionData as VerifyEmailFormActionData,
   verifyEmailSchema,
 } from "~/components/email-verification/verify-form";
+import Image from "~/components/image";
+import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import UnderlinedLink from "~/components/underlined-link";
 import { useJsonSubmit } from "~/hooks/use-submit";
@@ -35,6 +37,26 @@ export default function SignUpScreen() {
           onVerifyEmail={verify}
           actionData={actionData}
         />
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <Separator className="w-full" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">
+              {t("account.sign_up.or")}
+            </span>
+          </div>
+        </div>
+        <Button variant="outline">
+          <Image
+            src="/oauth-provider/google.svg"
+            alt="Google"
+            width={24}
+            height={24}
+          />
+          {t("account.sign_up.with_google")}
+        </Button>
+        <Separator />
         <p className="flex flex-col space-y-4 px-8 text-center text-sm text-muted-foreground">
           <UnderlinedLink to="/terms">
             {t("account.sign_up.terms")}
