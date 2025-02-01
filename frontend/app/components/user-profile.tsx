@@ -7,6 +7,7 @@ import React, {
 import { useTranslation } from "react-i18next";
 import Avatar from "~/components/avatar";
 import ExpandableText from "~/components/expandable-text";
+import Spacer from "~/components/spacer";
 import { underlinedLinkStyle } from "~/components/underlined-link";
 import { cn } from "~/lib/utils";
 import type { User } from "~/models/user/user-model";
@@ -54,13 +55,16 @@ export default function UserProfile({
         )}
       </div>
       {admin && (
-        <button
-          type="button"
-          onClick={onClickEdit}
-          className={cn("text-center underline mt-4", underlinedLinkStyle)}
-        >
-          {t("admin.index.edit_profile")}
-        </button>
+        <div className="text-center">
+          <Spacer size={2} />
+          <button
+            type="button"
+            onClick={onClickEdit}
+            className={cn("text-center underline mt-4", underlinedLinkStyle)}
+          >
+            {t("admin.index.edit_profile")}
+          </button>
+        </div>
       )}
     </div>
   );
