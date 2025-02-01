@@ -140,6 +140,12 @@ func InitMessageUseCases(db *database.DB, readWriter *database.ReadWriter, write
 
 func InitMessageHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) message.Handlers {
 	wire.Build(
+		message.HandlerSet,
+		configSet,
+		producerSet,
+		user.RepositorySet,
+		message.RepositorySet,
+		message.UseCaseSet,
 		wire.Struct(new(message.Handlers), "*"),
 	)
 	return message.Handlers{}

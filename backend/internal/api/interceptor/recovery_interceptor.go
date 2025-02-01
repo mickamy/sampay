@@ -22,7 +22,8 @@ func Recovery() connect.UnaryInterceptorFunc {
 				if r := recover(); r != nil {
 					stack := string(debug.Stack())
 					slogger.ErrorCtx(ctx, "recovered from panic", "err", r, "stack", stack)
-					if config.Common().Env == config.Development {
+					env := config.Common().Env
+					if env == config.Development || env == config.Test {
 						fmt.Println(stack)
 					}
 					err = commonResponse.NewInternalError(ctx, r.(error)).AsConnectError()

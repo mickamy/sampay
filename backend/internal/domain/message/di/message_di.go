@@ -3,6 +3,7 @@ package di
 import (
 	"github.com/google/wire"
 
+	"mickamy.com/sampay/internal/domain/message/handler"
 	"mickamy.com/sampay/internal/domain/message/repository"
 	"mickamy.com/sampay/internal/domain/message/usecase"
 )
@@ -26,7 +27,10 @@ var UseCaseSet = wire.NewSet(
 )
 
 type Handlers struct {
+	*handler.Message
 }
 
 //lint:ignore U1000 used by wire
-var HandlerSet = wire.NewSet()
+var HandlerSet = wire.NewSet(
+	handler.NewMessage,
+)
