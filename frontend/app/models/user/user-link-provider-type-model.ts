@@ -31,3 +31,18 @@ export function getUserLinkProviderTypeByURI(
   }
   return "other";
 }
+
+export function getUserLinkProviderName(
+  provider: UserLinkProviderType,
+): string {
+  switch (provider) {
+    case "kyash":
+      return "Kyash";
+    case "paypay":
+      return "PayPay";
+    case "amazon":
+      return "Amazon";
+    default:
+      return "Other";
+  }
+}

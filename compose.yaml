@@ -45,7 +45,7 @@ services:
     environment:
       API_BASE_URL: http://api:8080
       ENVIRONMENT: development
-      PUBLIC_BUCKET_NAME: sampay-public
+      S3_PUBLIC_BUCKET_NAME: sampay-public
       SESSION_SECRET: secret
     command: sh -c "npm ci && npm run dev"
     volumes:

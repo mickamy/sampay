@@ -47,5 +47,5 @@ func NewContentType(s string) (ContentType, error) {
 		}
 	}
 
-	return "", fmt.Errorf("unsupported content type: %s", s)
+	return "", fmt.Errorf("unsupported content type: [%s]", s)
 }

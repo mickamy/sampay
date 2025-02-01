@@ -23,6 +23,7 @@ import { parseQRCode } from "~/lib/polyfill/image/index.client";
 import type { UserLink } from "~/models/user/user-link-model";
 import {
   UserLinkProviderTypes,
+  getUserLinkProviderName,
   getUserLinkProviderTypeByURI,
 } from "~/models/user/user-link-provider-type-model";
 
@@ -31,7 +32,7 @@ type mode = "post" | "put";
 export const userLinkSchema = z.object({
   intent: z.enum(["post_link", "put_link"]),
   id: z.string().length(26).optional(),
-  qr_code: z
+  qrCode: z
     .any()
     .refine((file) => isFileLike(file), {
       params: { i18n: "form.choose_file" },
@@ -99,7 +100,7 @@ export default function UserLinkForm({
     [setPreviewImage],
   );
 
-  const qrCode = form.watch("qr_code");
+  const qrCode = form.watch("qrCode");
   const uri = form.watch("uri");
   const { setValue, clearErrors, setError } = form;
   const { t } = useTranslation();
@@ -115,7 +116,7 @@ export default function UserLinkForm({
         if (!isCancelled) {
           const type = getUserLinkProviderTypeByURI(parsedURI);
           setValue("provider_type", type);
-          clearErrors("qr_code");
+          clearErrors("qrCode");
         }
         if (!uri) {
           setValue("uri", parsedURI);
@@ -123,7 +124,7 @@ export default function UserLinkForm({
       })
       .catch((e) => {
         if (!isCancelled) {
-          setError("qr_code", {
+          setError("qrCode", {
             type: "invalid",
             message: t("form.error.invalid_qr_code"),
           });
@@ -144,7 +145,7 @@ export default function UserLinkForm({
     const type = getUserLinkProviderTypeByURI(uri);
     setValue("provider_type", type);
     if (!name) {
-      setValue("name", type);
+      setValue("name", getUserLinkProviderName(type));
     }
   }, [uri, name, setValue]);
 
@@ -156,16 +157,16 @@ export default function UserLinkForm({
         {...props}
       >
         <BaseFormField
-          name="qr_code"
+          name="qrCode"
           render={({ field }) => (
             <FormItem>
               <div className="flex flex-col space-y-4">
-                <FormLabel htmlFor="qr_code" className="font-bold">
+                <FormLabel htmlFor="qrCode" className="font-bold">
                   {t("form.qr_code")}
                 </FormLabel>
                 <Avatar src={imageURL} className="self-center" />
                 <Input
-                  id="qr_code"
+                  id="qrCode"
                   type="file"
                   onChange={(e) => {
                     const files = (e.target as HTMLInputElement).files;

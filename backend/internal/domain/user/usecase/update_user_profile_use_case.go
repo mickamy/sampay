@@ -44,10 +44,6 @@ func NewUpdateUserProfile(
 
 func (uc *updateUserProfile) Do(ctx context.Context, input UpdateUserProfileInput) (UpdateUserProfileOutput, error) {
 	id := contexts.MustAuthenticatedUserID(ctx)
-	user := userModel.User{
-		ID:   id,
-		Slug: input.Slug,
-	}
 	profile := userModel.UserProfile{
 		UserID: id,
 		Name:   input.Name,
@@ -56,7 +52,16 @@ func (uc *updateUserProfile) Do(ctx context.Context, input UpdateUserProfileInpu
 		profile.Bio = input.Bio
 	}
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
-		if err := uc.userRepo.WithTx(tx.WriterDB()).Update(ctx, &user); err != nil {
+		user, err := uc.userRepo.WithTx(tx.WriterDB()).Find(ctx, id)
+		if err != nil {
+			return fmt.Errorf("failed to find user: %w", err)
+		}
+		if user == nil {
+			return fmt.Errorf("user not found: id=[%s]", id)
+		}
+
+		user.Slug = input.Slug
+		if err := uc.userRepo.WithTx(tx.WriterDB()).Update(ctx, user); err != nil {
 			return fmt.Errorf("failed to update user: %w", err)
 		}
 
