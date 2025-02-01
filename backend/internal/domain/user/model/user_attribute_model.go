@@ -41,7 +41,7 @@ func (m UserAttribute) ValidateExistence(db *gorm.DB) error {
 	if err := db.Model(&UserAttribute{}).Where("user_id = ?", m.UserID).Limit(1).Pluck("user_id", &existingID).Error; err != nil {
 		return fmt.Errorf("failed to validate existence: %w", err)
 	}
-	if existingID != "" {
+	if existingID != "" && existingID != m.UserID {
 		return ErrUserAttributeDuplicated
 	}
 	return nil

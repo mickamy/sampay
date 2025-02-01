@@ -94,6 +94,10 @@ const (
 	*/
 	UserHandlerUser_linkErrorInvalid_provider_type MessageID = "user.handler.user_link.error.invalid_provider_type"
 	/*
+		このメールアドレスは既に使用されています。
+	*/
+	UserModelUserErrorEmail_already_exists MessageID = "user.model.user.error.email_already_exists"
+	/*
 		このリンクは既に使用されています。
 	*/
 	UserModelUserErrorSlug_already_exists MessageID = "user.model.user.error.slug_already_exists"

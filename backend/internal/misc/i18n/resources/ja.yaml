@@ -62,6 +62,7 @@ user:
     user:
       error:
         slug_already_exists: 'このリンクは既に使用されています。'
+        email_already_exists: 'このメールアドレスは既に使用されています。'
     user_attribute:
       error:
         duplicated: '既に登録済みです。'
