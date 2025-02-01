@@ -3,9 +3,6 @@ ARG GO_VERSION=1.23.4
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS build
 WORKDIR /src
 
-ARG GH_PAT
-RUN git config --global url."https://${GH_PAT}@github.com/".insteadOf "https://github.com/"
-
 ADD Makefile ./
 RUN make install-build
 

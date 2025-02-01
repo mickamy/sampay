@@ -6,9 +6,8 @@ services:
       args:
         MAIN_GO_FILE: /src/cmd/api/main.go
         BIN_NAME: api
-        GH_PAT: ${GH_PAT}
-    environment:
-      - GH_PAT=${GH_PAT}
+        GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+        GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
     env_file:
       - .env.docker
     volumes:
@@ -28,9 +27,6 @@ services:
       args:
         MAIN_GO_FILE: /src/cmd/worker/main.go
         BIN_NAME: worker
-        GH_PAT: ${GH_PAT}
-    environment:
-      - GH_PAT=${GH_PAT}
     env_file:
       - .env.docker
     volumes:

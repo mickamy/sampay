@@ -45,10 +45,6 @@ jobs:
 
       - uses: bufbuild/buf-setup-action@v1
 
-      - name: Configure Git for Private Modules
-        run: |
-          git config --global url."https://${{ secrets.GH_PAT }}@github.com/".insteadOf "https://github.com/"
-
       - name: Install dependencies
         run: cd backend && make install
 
