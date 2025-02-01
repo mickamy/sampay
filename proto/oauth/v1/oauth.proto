@@ -23,7 +23,8 @@ message GoogleCallbackRequest {
 }
 
 message GoogleCallbackResponse {
-  auth.v1.Tokens tokens = 1;
+  string verification_token = 1 [(buf.validate.field).string.len = 64];
+  auth.v1.Tokens session_tokens = 2;
 }
 
 service OAuthService {
