@@ -166,6 +166,10 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 			return fmt.Errorf("failed to create session: %w", err)
 		}
 
+		if err := uc.sessionRepo.Create(ctx, session); err != nil {
+			return fmt.Errorf("failed to create session: %w", err)
+		}
+
 		verificationToken = verification.Verified.Token
 
 		return nil
