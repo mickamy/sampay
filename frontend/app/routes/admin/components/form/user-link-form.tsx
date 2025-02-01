@@ -156,7 +156,7 @@ export default function UserLinkForm({
         {...props}
       >
         <BaseFormField
-          name={"qr_code"}
+          name="qr_code"
           render={({ field }) => (
             <FormItem>
               <div className="flex flex-col space-y-4">

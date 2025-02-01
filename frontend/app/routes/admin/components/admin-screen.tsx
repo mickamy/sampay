@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { useLoaderData } from "react-router";
+import Header from "~/components/header";
 import ShareButton from "~/components/share-button";
 import Spacer from "~/components/spacer";
 import UserLinkButtons from "~/components/user-link-buttons";
@@ -84,50 +85,53 @@ export default function AdminScreen() {
   );
 
   return (
-    <div className="container mx-auto flex flex-col items-center p-6 min-w-[375px] max-w-[600px] lg:p-4">
-      <div className="flex justify-end w-full">
-        <ShareButton url={url} />
+    <>
+      <Header isLoggedIn />
+      <div className="container mx-auto flex flex-col items-center p-6 min-w-[375px] max-w-[600px] lg:p-4">
+        <div className="flex justify-end w-full">
+          <ShareButton url={url} />
+        </div>
+        <UserProfile
+          admin
+          url={url}
+          user={user}
+          onClickAvatar={openProfileImageFormDialog}
+          onClickEdit={openProfileFormDialog}
+        />
+        <Spacer size={6} />
+        <AddLinkButton onClick={openAddLinkFormDialog} />
+        <Spacer size={6} />
+        <UserLinkButtons admin links={user.links} onEdit={onEdit} />
+        <AddUserLinkFormDialog
+          isOpen={isAddLinkFormDialogOpen}
+          onClose={closeAddLinkFormDialog}
+          onSubmit={submitAddLinkForm}
+          actionData={addLinkFormDialogActionData}
+        />
+        <UserProfileImageFormDialog
+          profile={user.profile}
+          isOpen={isProfileImageFormDialogOpen}
+          onClose={closeProfileImageFormDialog}
+          onSubmit={submitProfileImageForm}
+          actionData={profileImageFormDialogActionData}
+        />
+        <UserProfileFormDialog
+          user={user}
+          isOpen={isProfileFormDialogOpen}
+          onClose={closeProfileFormDialog}
+          onSubmit={submitProfileForm}
+          actionData={profileFormDialogActionData}
+        />
+        <EditUserLinkFormDialog
+          /* biome-ignore lint: style/noNonNullAssertion */
+          link={linkToEdit!}
+          isOpen={isEditLinkFormDialogOpen}
+          onClose={closeEditLinkFormDialog}
+          onSubmit={submitLinkForm}
+          actionData={editLinkFormDialogActionData}
+        />
+        <Spacer size={20} />
       </div>
-      <UserProfile
-        admin
-        url={url}
-        user={user}
-        onClickAvatar={openProfileImageFormDialog}
-        onClickEdit={openProfileFormDialog}
-      />
-      <Spacer size={6} />
-      <AddLinkButton onClick={openAddLinkFormDialog} />
-      <Spacer size={6} />
-      <UserLinkButtons admin links={user.links} onEdit={onEdit} />
-      <AddUserLinkFormDialog
-        isOpen={isAddLinkFormDialogOpen}
-        onClose={closeAddLinkFormDialog}
-        onSubmit={submitAddLinkForm}
-        actionData={addLinkFormDialogActionData}
-      />
-      <UserProfileImageFormDialog
-        profile={user.profile}
-        isOpen={isProfileImageFormDialogOpen}
-        onClose={closeProfileImageFormDialog}
-        onSubmit={submitProfileImageForm}
-        actionData={profileImageFormDialogActionData}
-      />
-      <UserProfileFormDialog
-        user={user}
-        isOpen={isProfileFormDialogOpen}
-        onClose={closeProfileFormDialog}
-        onSubmit={submitProfileForm}
-        actionData={profileFormDialogActionData}
-      />
-      <EditUserLinkFormDialog
-        /* biome-ignore lint: style/noNonNullAssertion */
-        link={linkToEdit!}
-        isOpen={isEditLinkFormDialogOpen}
-        onClose={closeEditLinkFormDialog}
-        onSubmit={submitLinkForm}
-        actionData={editLinkFormDialogActionData}
-      />
-      <Spacer size={20} />
-    </div>
+    </>
   );
 }
