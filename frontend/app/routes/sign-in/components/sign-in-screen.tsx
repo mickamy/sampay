@@ -27,7 +27,6 @@ export default function SignInScreen() {
         <h1 className="text-2xl font-semibold">{t("auth.sign_in.title")}</h1>
       </div>
       <SignInForm onSubmitData={submit} error={actionData?.error} />
-      <Separator />
       <p className="flex flex-col space-y-4 px-8 text-center text-sm text-muted-foreground">
         <UnderlinedLink to="/reset-password">
           {t("auth.sign_in.forgot_password")}
