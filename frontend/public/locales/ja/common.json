@@ -163,5 +163,14 @@
     "profile": {
       "title": "プロフィールを設定"
     }
+  },
+  "user": {
+    "index": {
+      "content": "メッセージ",
+      "send_message": "メッセージを送る",
+      "send_message_dialog_title": "メッセージを送る",
+      "send_message_dialog_description": "メッセージを入力してください。",
+      "sender_name": "あなたの名前"
+    }
   }
 }
