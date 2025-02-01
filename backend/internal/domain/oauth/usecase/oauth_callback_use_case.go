@@ -105,6 +105,32 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 	var verificationToken string
 	var session authModel.Session
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
+		existing, err := uc.userRepo.WithTx(tx.WriterDB()).FindByEmail(ctx, payload.Email)
+		if err != nil {
+			return fmt.Errorf("failed to find user by email: %w", err)
+		}
+		if existing != nil {
+			session, err = authModel.NewSession(existing.ID)
+			if err != nil {
+				return fmt.Errorf("failed to create session: %w", err)
+			}
+
+			if err := uc.sessionRepo.Create(ctx, session); err != nil {
+				return fmt.Errorf("failed to create session: %w", err)
+			}
+
+			verification, err := uc.emailVerificationRepo.WithTx(tx.WriterDB()).FindByEmail(ctx, payload.Email, authRepository.EmailVerificationJoinVerified)
+			if err != nil {
+				return fmt.Errorf("failed to find email verification: %w", err)
+			}
+			if verification == nil || verification.Verified == nil {
+				return fmt.Errorf("email verification not found: email=[%s]", payload.Email)
+			}
+
+			verificationToken = verification.Verified.Token
+			return nil
+		}
+
 		verification := authModel.EmailVerification{
 			IntentType: authModel.EmailVerificationIntentTypeSignUp,
 			Email:      payload.Email,

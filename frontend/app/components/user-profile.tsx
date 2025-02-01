@@ -46,8 +46,9 @@ export default function UserProfile({
         <ExpandableText>{user.profile.bio}</ExpandableText>
         {admin && (
           <div className="flex flex-col space-y-2">
-            <div>
-              <strong>{t("model.user.slug")}</strong>: {url}
+            <div className="text-center">
+              <strong>{t("model.user.slug")}</strong>
+              <br /> {url}
             </div>
           </div>
         )}
