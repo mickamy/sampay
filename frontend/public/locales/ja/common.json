@@ -1,15 +1,4 @@
 {
-  "account": {
-    "sign_up": {
-      "title": "新規登録",
-      "terms": "利用規約",
-      "privacy": "プライバシーポリシー",
-      "have_account": "すでにアカウントをお持ちの方は",
-      "sign_in": "ログイン",
-      "with_google": "Google で登録",
-      "or": "または"
-    }
-  },
   "admin": {
     "index": {
       "add_link": "リンクを追加",
@@ -26,11 +15,22 @@
     "title": "Sampay | 個人間決済をたったひとつのリンクで"
   },
   "auth": {
+    "sign_up": {
+      "title": "新規登録",
+      "terms": "利用規約",
+      "privacy": "プライバシーポリシー",
+      "have_account": "すでにアカウントをお持ちの方は",
+      "sign_in": "ログイン",
+      "with_google": "Google で登録",
+      "or": "または"
+    },
     "sign_in": {
       "title": "ログイン",
       "forgot_password": "パスワードをお忘れですか？",
       "have_no_account": "アカウントをお持ちでない方は",
-      "sign_up": "新規登録"
+      "sign_up": "新規登録",
+      "with_google": "Google でログイン",
+      "or": "または"
     },
     "reset_password": {
       "title": "パスワードをリセット",

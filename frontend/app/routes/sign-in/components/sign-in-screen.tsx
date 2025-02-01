@@ -1,5 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { useActionData } from "react-router";
+import { Link, useActionData } from "react-router";
+import Image from "~/components/image";
+import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import UnderlinedLink from "~/components/underlined-link";
 import { useJsonSubmit } from "~/hooks/use-submit";
@@ -31,6 +33,27 @@ export default function SignInScreen() {
           {t("auth.sign_in.forgot_password")}
         </UnderlinedLink>
       </p>
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <Separator className="w-full" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-muted-foreground">
+            {t("auth.sign_in.or")}
+          </span>
+        </div>
+      </div>
+      <Link to="/oauth/google">
+        <Button variant="outline" className="w-full">
+          <Image
+            src="/oauth-provider/google.svg"
+            alt="Google"
+            width={24}
+            height={24}
+          />
+          {t("auth.sign_in.with_google")}
+        </Button>
+      </Link>
       <Separator />
       <p className="flex flex-row justify-center text-sm text-muted-foreground">
         {t("auth.sign_in.have_no_account")}
