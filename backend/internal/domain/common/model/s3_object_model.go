@@ -10,9 +10,10 @@ import (
 )
 
 type S3Object struct {
-	ID     string
-	Bucket string
-	Key    string
+	ID          string
+	Bucket      string
+	Key         string
+	ContentType ContentType
 }
 
 func (m S3Object) URL() string {
