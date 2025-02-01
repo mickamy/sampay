@@ -23,7 +23,7 @@
     }
   },
   "app": {
-    "title": "Sampay | 個人間決済リンクをたったひとつのリンクで"
+    "title": "Sampay | 個人間決済をたったひとつのリンクで"
   },
   "auth": {
     "sign_in": {
@@ -92,7 +92,7 @@
     "uri": "リンク"
   },
   "lp": {
-    "tagline": "Sampay\n個人間決済リンクを\nひとつのリンクで",
+    "tagline": "Sampay\n個人間決済を\nひとつのリンクで",
     "tagline_description_1": "個人でもビジネスでも、支払い受け取りをシンプルに。",
     "tagline_description_2": "一つのリンクで、すべての支払い方法を管理。",
     "get_started": "今すぐ始める",
