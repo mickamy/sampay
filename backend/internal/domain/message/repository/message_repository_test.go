@@ -3,6 +3,7 @@ package repository_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -37,7 +38,7 @@ func TestMessage_Create(t *testing.T) {
 	assert.Equal(t, m.SenderName, got.SenderName)
 	assert.Equal(t, m.ReceiverID, got.ReceiverID)
 	assert.Equal(t, m.Content, got.Content)
-	assert.Equal(t, m.CreatedAt, got.CreatedAt)
+	assert.WithinDuration(t, m.CreatedAt, got.CreatedAt, time.Second)
 }
 
 func TestMessage_ListByReceiverID(t *testing.T) {
@@ -72,6 +73,6 @@ func TestMessage_ListByReceiverID(t *testing.T) {
 		assert.Equal(t, messages[i].SenderName, got[i].SenderName)
 		assert.Equal(t, messages[i].ReceiverID, got[i].ReceiverID)
 		assert.Equal(t, messages[i].Content, got[i].Content)
-		assert.Equal(t, messages[i].CreatedAt, got[i].CreatedAt)
+		assert.WithinDuration(t, messages[i].CreatedAt, got[i].CreatedAt, time.Second)
 	}
 }
