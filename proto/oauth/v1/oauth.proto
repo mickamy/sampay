@@ -22,9 +22,10 @@ message GoogleCallbackRequest {
 }
 
 message GoogleCallbackResponse {
+  string verification_token = 1 [(buf.validate.field).string.len = 64];
 }
 
 service OAuthService {
-  rpc SignIn(SignInRequest) returns (SignInResponse) {}
-  rpc GoogleCallback(GoogleCallbackRequest) returns (GoogleCallbackResponse)
+  rpc SignIn(SignInRequest) returns (SignInResponse);
+  rpc GoogleCallback(GoogleCallbackRequest) returns (GoogleCallbackResponse);w
 }
