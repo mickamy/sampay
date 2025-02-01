@@ -54,6 +54,11 @@ variable "google_client_secret" {
   type        = string
 }
 
+variable "oauth_redirect_url" {
+  description = "OAuth redirect URL"
+  type = string
+}
+
 variable "ssh_private_key_path" {
   description = "Path to the private key"
   type        = string

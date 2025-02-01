@@ -86,6 +86,11 @@ locals {
       description = "KVS port"
       value       = var.redis_port
     }
+    "oauth_redirect_url" = {
+      name        = "OAUTH_REDIRECT_URL"
+      description = "OAuth redirect URL"
+      value       = var.oauth_redirect_url
+    }
     "s3_public_bucket_name" = {
       name        = "S3_PUBLIC_BUCKET_NAME"
       description = "S3 public bucket name"

@@ -98,6 +98,7 @@ module "ssm" {
   github_repo           = var.github_repo
   google_client_id      = var.google_client_id
   google_client_secret  = var.google_client_secret
+  oauth_redirect_url    = var.oauth_redirect_url
   ssh_private_key_path  = var.ssh_private_key_path
   ssh_public_key_path   = var.ssh_public_key_path
   redis_host            = var.redis_host
