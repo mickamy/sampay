@@ -2,6 +2,8 @@ package model
 
 import (
 	"fmt"
+
+	"mickamy.com/sampay/internal/lib/either"
 )
 
 type ContentType string
@@ -24,6 +26,10 @@ const (
 )
 
 func MustNewContentType(s string) ContentType {
+	return either.Must(NewContentType(s))
+}
+
+func NewContentType(s string) (ContentType, error) {
 	for _, messageType := range []ContentType{
 		ContentTypeAudioMPEG,
 		ContentTypeImageJPEG,
@@ -37,9 +43,9 @@ func MustNewContentType(s string) ContentType {
 		ContentTypeVideoMPEG,
 	} {
 		if s == messageType.String() {
-			return messageType
+			return messageType, nil
 		}
 	}
 
-	panic(fmt.Sprintf("invalid content type: %s", s))
+	return "", fmt.Errorf("unsupported content type: %s", s)
 }

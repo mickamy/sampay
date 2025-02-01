@@ -6,12 +6,19 @@ import (
 	commonModel "mickamy.com/sampay/internal/domain/common/model"
 )
 
-func NewS3Object(pb *commonv1.S3Object) *commonModel.S3Object {
+func NewS3Object(pb *commonv1.S3Object) (*commonModel.S3Object, error) {
 	if pb == nil {
-		return nil
+		return nil, nil
 	}
+
+	contentType, err := commonModel.NewContentType(pb.ContentType)
+	if err != nil {
+		return nil, err
+	}
+
 	return &commonModel.S3Object{
-		Bucket: pb.Bucket,
-		Key:    pb.Key,
-	}
+		Bucket:      pb.Bucket,
+		Key:         pb.Key,
+		ContentType: contentType,
+	}, nil
 }

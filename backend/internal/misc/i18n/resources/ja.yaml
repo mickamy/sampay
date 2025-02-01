@@ -35,12 +35,12 @@ auth:
 common:
   format:
     minute: '{{.Minute}}分'
+  request:
+    error:
+      invalid_s3_object: '無効な S3 オブジェクトです。'
   handler:
     error:
       internal: 'ただいまアクセスが集中しております。しばらくしてから再度お試しください。'
-    direct_upload_url:
-      error:
-        invalid_s3_object: '無効なS3オブジェクトです。'
 
 oauth:
   handler:

@@ -66,13 +66,13 @@ const (
 	*/
 	CommonFormatMinute MessageID = "common.format.minute"
 	/*
-		無効なS3オブジェクトです。
-	*/
-	CommonHandlerDirect_upload_urlErrorInvalid_s3_object MessageID = "common.handler.direct_upload_url.error.invalid_s3_object"
-	/*
 		ただいまアクセスが集中しております。しばらくしてから再度お試しください。
 	*/
 	CommonHandlerErrorInternal MessageID = "common.handler.error.internal"
+	/*
+		無効な S3 オブジェクトです。
+	*/
+	CommonRequestErrorInvalid_s3_object MessageID = "common.request.error.invalid_s3_object"
 	/*
 		無効な OAuth プロバイダです。
 	*/

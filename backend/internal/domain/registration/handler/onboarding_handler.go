@@ -15,6 +15,7 @@ import (
 	"mickamy.com/sampay/internal/domain/registration/usecase"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/lib/contexts"
+	"mickamy.com/sampay/internal/misc/i18n"
 )
 
 type Onboarding struct {
@@ -108,14 +109,21 @@ func (h *Onboarding) CreateUserProfile(
 	ctx context.Context,
 	req *connect.Request[registrationv1.CreateUserProfileRequest],
 ) (*connect.Response[registrationv1.CreateUserProfileResponse], error) {
-	_, err := h.createProfile.Do(ctx, usecase.CreateUserProfileInput{
+	lang := contexts.MustLanguage(ctx)
+	obj, err := commonRequest.NewS3Object(req.Msg.Image)
+	if err != nil {
+		return nil, commonResponse.NewBadRequest(errors.New("invalid s3 object")).
+			WithFieldViolation("image", i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.CommonRequestErrorInvalid_s3_object})).
+			AsConnectError()
+	}
+
+	_, err = h.createProfile.Do(ctx, usecase.CreateUserProfileInput{
 		Name:  req.Msg.Name,
 		Slug:  req.Msg.Slug,
 		Bio:   req.Msg.Bio,
-		Image: commonRequest.NewS3Object(req.Msg.Image),
+		Image: obj,
 	})
 	if err != nil {
-		lang := contexts.MustLanguage(ctx)
 		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
 			if errors.Is(err, userModel.ErrUserSlugAlreadyExists) {
 				return nil, localizable.AsFieldViolations("slug").AsConnectError()

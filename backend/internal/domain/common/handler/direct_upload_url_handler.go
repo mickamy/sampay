@@ -33,10 +33,10 @@ func (h *DirectUploadURL) CreateDirectUploadURL(
 	req *connect.Request[commonv1.CreateDirectUploadURLRequest],
 ) (*connect.Response[commonv1.CreateDirectUploadURLResponse], error) {
 	lang := contexts.MustLanguage(ctx)
-	obj := commonRequest.NewS3Object(req.Msg.S3Object)
-	if obj == nil {
+	obj, err := commonRequest.NewS3Object(req.Msg.S3Object)
+	if err != nil || obj == nil {
 		return nil, commonResponse.NewBadRequest(errors.New("invalid s3 object")).
-			WithMessage(i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.CommonHandlerDirect_upload_urlErrorInvalid_s3_object})).
+			WithFieldViolation("s3_object", i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.CommonRequestErrorInvalid_s3_object})).
 			AsConnectError()
 	}
 	out, err := h.create.Do(ctx, usecase.CreateDirectUploadURLInput{

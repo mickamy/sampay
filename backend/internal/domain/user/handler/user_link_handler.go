@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/user/v1/userv1connect"
 	userv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/user/v1"
@@ -121,9 +122,17 @@ func (h UserLink) UpdateUserLink(ctx context.Context, req *connect.Request[userv
 }
 
 func (h UserLink) UpdateUserLinkQRCode(ctx context.Context, req *connect.Request[userv1.UpdateUserLinkQRCodeRequest]) (*connect.Response[userv1.UpdateUserLinkQRCodeResponse], error) {
-	_, err := h.updateQRCode.Do(ctx, usecase.UpdateUserLinkQRCodeInput{
+	lang := contexts.MustLanguage(ctx)
+	obj, err := commonRequest.NewS3Object(req.Msg.QrCode)
+	if err != nil {
+		return nil, commonResponse.NewBadRequest(errors.New("invalid s3 object")).
+			WithFieldViolation("qr_code", i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.CommonRequestErrorInvalid_s3_object})).
+			AsConnectError()
+	}
+
+	_, err = h.updateQRCode.Do(ctx, usecase.UpdateUserLinkQRCodeInput{
 		ID:     req.Msg.Id,
-		QRCode: commonRequest.NewS3Object(req.Msg.QrCode),
+		QRCode: obj,
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
