@@ -21,6 +21,9 @@
           User=ec2-user
           Group=ec2-user
 
+          StandardOutput=append:/var/log/sampay/api.log
+          StandardError=append:/var/log/redis/api.log
+
           [Install]
           WantedBy=multi-user.target
         owner: root
@@ -44,6 +47,9 @@
           Environment="PACKAGE_ROOT=/home/ec2-user/sampay/backend"
           User=ec2-user
           Group=ec2-user
+
+          StandardOutput=append:/var/log/sampay/worker.log
+          StandardError=append:/var/log/redis/worker.log
 
           [Install]
           WantedBy=multi-user.target

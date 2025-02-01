@@ -119,6 +119,9 @@
           Restart=always
           User=redis
           Group=redis
+          
+          StandardOutput=append:/var/log/redis/redis.log
+          StandardError=append:/var/log/redis/error.log
 
           [Install]
           WantedBy=multi-user.target
