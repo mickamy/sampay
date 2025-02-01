@@ -74,6 +74,10 @@ const (
 	*/
 	CommonHandlerErrorInternal MessageID = "common.handler.error.internal"
 	/*
+		無効な OAuth プロバイダです。
+	*/
+	OauthHandlerErrorInvalid_provider_type MessageID = "oauth.handler.error.invalid_provider_type"
+	/*
 		このメールアドレスは既に登録されています。
 	*/
 	RegistrationUsecaseCreate_accountErrorEmail_already_exists MessageID = "registration.usecase.create_account.error.email_already_exists"
