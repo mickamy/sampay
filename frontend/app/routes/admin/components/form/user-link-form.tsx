@@ -23,6 +23,7 @@ import { parseQRCode } from "~/lib/polyfill/image/index.client";
 import type { UserLink } from "~/models/user/user-link-model";
 import {
   UserLinkProviderTypes,
+  getUserLinkProviderName,
   getUserLinkProviderTypeByURI,
 } from "~/models/user/user-link-provider-type-model";
 
@@ -144,7 +145,7 @@ export default function UserLinkForm({
     const type = getUserLinkProviderTypeByURI(uri);
     setValue("provider_type", type);
     if (!name) {
-      setValue("name", type);
+      setValue("name", getUserLinkProviderName(type));
     }
   }, [uri, name, setValue]);
 

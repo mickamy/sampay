@@ -16,7 +16,7 @@ export async function directUpload({
   getClient: getClientType;
 }): Promise<S3Object> {
   try {
-    const obj = {
+    const obj: S3Object = {
       bucket: bucket(type),
       key: await key(type),
       contentType: file.type,
