@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/auth/v1/authv1connect"
+	"buf.build/gen/go/mickamy/sampay/connectrpc/go/message/v1/messagev1connect"
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/oauth/v1/oauthv1connect"
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/registration/v1/registrationv1connect"
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/user/v1/userv1connect"
@@ -25,6 +26,7 @@ var authSkippingProcedures = []string{
 	authv1connect.EmailVerificationServiceVerifyEmailProcedure,
 	authv1connect.SessionServiceSignInProcedure,
 	authv1connect.SessionServiceRefreshProcedure,
+	messagev1connect.MessageServiceSendMessageProcedure,
 	oauthv1connect.OAuthServiceSignInProcedure,
 	oauthv1connect.OAuthServiceGoogleCallbackProcedure,
 	userv1connect.UserServiceGetUserProcedure,
