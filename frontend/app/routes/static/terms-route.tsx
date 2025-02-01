@@ -1,6 +1,4 @@
-import { readFile } from "node:fs/promises";
-import * as path from "node:path";
-import { fileURLToPath } from "node:url";
+import termsMd from "public/assets/terms.md?raw";
 import ReactMarkdown from "react-markdown";
 import { type LoaderFunction, useLoaderData } from "react-router";
 import remarkGfm from "remark-gfm";
@@ -10,12 +8,7 @@ interface LoaderData {
 }
 
 export const loader: LoaderFunction = async () => {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-
-  const file = path.resolve(__dirname, "./.server/terms.md");
-  const md = await readFile(file, "utf-8");
-  return { md };
+  return { md: termsMd };
 };
 
 export default function TermsRoute() {
