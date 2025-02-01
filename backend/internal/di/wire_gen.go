@@ -231,9 +231,9 @@ func InitOAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer 
 	oAuthConfig := config.OAuth()
 	google := oauth.NewGoogle(oAuthConfig)
 	oAuthSignIn := usecase3.NewOAuthSignIn(google)
-	handlerOAuthSignIn := handler3.NewOAuthSignIn(oAuthSignIn)
+	oAuth := handler3.NewOAuth(oAuthSignIn)
 	handlers := di3.Handlers{
-		OAuthSignIn: handlerOAuthSignIn,
+		OAuth: oAuth,
 	}
 	return handlers
 }
