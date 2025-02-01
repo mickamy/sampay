@@ -74,6 +74,16 @@ const (
 	*/
 	CommonRequestErrorInvalid_s3_object MessageID = "common.request.error.invalid_s3_object"
 	/*
+		{{ .SenderName }}からメッセージを受信しました。
+
+		「{{ .Content }}」
+	*/
+	MessageUsecaseCreate_messageEmailBody MessageID = "message.usecase.create_message.email.body"
+	/*
+		{{ .SenderName }}からメッセージを受信しました
+	*/
+	MessageUsecaseCreate_messageEmailSubject MessageID = "message.usecase.create_message.email.subject"
+	/*
 		無効な OAuth プロバイダです。
 	*/
 	OauthHandlerErrorInvalid_provider_type MessageID = "oauth.handler.error.invalid_provider_type"
