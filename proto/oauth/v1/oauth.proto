@@ -27,5 +27,5 @@ message GoogleCallbackResponse {
 
 service OAuthService {
   rpc SignIn(SignInRequest) returns (SignInResponse);
-  rpc GoogleCallback(GoogleCallbackRequest) returns (GoogleCallbackResponse);w
+  rpc GoogleCallback(GoogleCallbackRequest) returns (GoogleCallbackResponse);
 }
