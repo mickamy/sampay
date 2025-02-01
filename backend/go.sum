@@ -1,15 +1,7 @@
 buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.4-20250130201111-63bb56e20495.1 h1:4erM3WLgEG/HIBrpBDmRbs1puhd7p0z7kNXDuhHthwM=
 buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.4-20250130201111-63bb56e20495.1/go.mod h1:novQBstnxcGpfKf8qGRATqn1anQKwMJIbH5Q581jibU=
-buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250201110557-13d628bbc1bb.1 h1:jDQvwbgW5MalY4gHklY0tDw36pgn6Lh5kceJlHT/BCA=
-buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250201110557-13d628bbc1bb.1/go.mod h1:LdzqdRq0GMud3UOI3N6HbHKdTEq6TE7FA/yeppp4rMw=
-buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250201135359-432cc80cba1f.1 h1:q1D+IK+fzqqJlivJaXt7VpyS0OAlUfhHItkaR61Ocjc=
-buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250201135359-432cc80cba1f.1/go.mod h1:PGSy4hvtMl6IkUgznZwEVvnJvnJs3lwjKe+dPejx3X8=
 buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250201140336-b81c7f5066b6.1 h1:KclqU+us+5j6FaBXUztejT1wpHhijObIOicQpJRn/Nw=
 buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250201140336-b81c7f5066b6.1/go.mod h1:npLcnxgO1gCAYJCaljpT1CP2McZhjSBGVaup/efQNNE=
-buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250201110557-13d628bbc1bb.1 h1:rPbg1Hs1fErYoNVaUU8NnICldi7cIjYRlPHneF0b1x0=
-buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250201110557-13d628bbc1bb.1/go.mod h1:uQos/rB81oaO/vbIOmdh88lteRYZaXfUqInLeEgQ3AA=
-buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250201135359-432cc80cba1f.1 h1:CqDYncXB2ldDud8HiaF2DGgnmTrIO+GV55exhdVqXSQ=
-buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250201135359-432cc80cba1f.1/go.mod h1:uQos/rB81oaO/vbIOmdh88lteRYZaXfUqInLeEgQ3AA=
 buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250201140336-b81c7f5066b6.1 h1:3vRGfUDGZU30hb5i5R5k4P74FBkf2dBM97QhveFD/qU=
 buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250201140336-b81c7f5066b6.1/go.mod h1:uQos/rB81oaO/vbIOmdh88lteRYZaXfUqInLeEgQ3AA=
 cloud.google.com/go/auth v0.14.0 h1:A5C4dKV/Spdvxcl0ggWwWEzzP7AZMJSEIgrkngwhGYM=
