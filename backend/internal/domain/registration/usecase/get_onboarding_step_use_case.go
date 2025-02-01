@@ -52,7 +52,7 @@ func (uc *getOnboardingStep) Do(ctx context.Context, input GetOnboardingStepInpu
 		userID, err := contexts.AuthenticatedUserID(ctx)
 		if userID != "" {
 			// check if user has password
-			auth, err := uc.authRepo.WithTx(tx.ReaderDB()).FindByUserIDAndType(ctx, userID, authModel.AuthenticationTypeEmailPassword)
+			auth, err := uc.authRepo.WithTx(tx.ReaderDB()).FindByUserIDAndType(ctx, userID, authModel.AuthenticationTypePassword)
 			if err != nil {
 				return fmt.Errorf("failed to find auth: %w", err)
 			}
@@ -77,7 +77,7 @@ func (uc *getOnboardingStep) Do(ctx context.Context, input GetOnboardingStepInpu
 			}
 
 			// check if user has password
-			auth, err := uc.authRepo.FindByTypeAndIdentifier(ctx, authModel.AuthenticationTypeEmailPassword, verification.Email)
+			auth, err := uc.authRepo.FindByTypeAndIdentifier(ctx, authModel.AuthenticationTypePassword, verification.Email)
 			if err != nil {
 				return fmt.Errorf("failed to find auth: %w", err)
 			}

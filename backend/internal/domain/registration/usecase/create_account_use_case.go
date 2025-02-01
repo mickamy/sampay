@@ -59,7 +59,7 @@ func (uc *createAccount) Do(ctx context.Context, input CreateAccountInput) (Crea
 	var session authModel.Session
 
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
-		existingAuth, err := uc.authenticationRepo.WithTx(tx.WriterDB()).FindByTypeAndIdentifier(ctx, authModel.AuthenticationTypeEmailPassword, input.Email)
+		existingAuth, err := uc.authenticationRepo.WithTx(tx.WriterDB()).FindByTypeAndIdentifier(ctx, authModel.AuthenticationTypePassword, input.Email)
 		if err != nil {
 			return fmt.Errorf("failed to find authentication: %w", err)
 		}

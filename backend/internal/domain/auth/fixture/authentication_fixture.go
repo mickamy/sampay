@@ -20,7 +20,7 @@ func Authentication(setter func(m *model.Authentication)) model.Authentication {
 
 func AuthenticationEmailPassword(setter func(m *model.Authentication)) model.Authentication {
 	m := Authentication(func(m *model.Authentication) {
-		m.Type = model.AuthenticationTypeEmailPassword
+		m.Type = model.AuthenticationTypePassword
 		m.Identifier = gofakeit.GlobalFaker.Email()
 		m.Secret = passwd.MustNew(commonFixture.Password, 16)
 	})

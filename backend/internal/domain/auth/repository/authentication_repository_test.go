@@ -107,7 +107,7 @@ func TestAuthentication_FindByTypeAndIdentifier(t *testing.T) {
 		{
 			name: "not found",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) (authModel.AuthenticationType, string) {
-				return authModel.AuthenticationTypeEmailPassword, gofakeit.GlobalFaker.Email()
+				return authModel.AuthenticationTypePassword, gofakeit.GlobalFaker.Email()
 			},
 			assert: func(t *testing.T, got *authModel.Authentication, err error) {
 				require.NoError(t, err)
@@ -203,7 +203,7 @@ func TestAuthentication_FindByUserIDAndType(t *testing.T) {
 		{
 			name: "not found",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) (string, authModel.AuthenticationType) {
-				return gofakeit.UUID(), authModel.AuthenticationTypeEmailPassword
+				return gofakeit.UUID(), authModel.AuthenticationTypePassword
 			},
 			assert: func(t *testing.T, got *authModel.Authentication, err error) {
 				require.NoError(t, err)
@@ -259,7 +259,7 @@ func TestAuthentication_ExistsByTypeAndIdentifier(t *testing.T) {
 		{
 			name: "not exists",
 			arrange: func(t *testing.T, ctx context.Context, db *database.DB) (authModel.AuthenticationType, string) {
-				return authModel.AuthenticationTypeEmailPassword, gofakeit.GlobalFaker.Email()
+				return authModel.AuthenticationTypePassword, gofakeit.GlobalFaker.Email()
 			},
 			assert: func(t *testing.T, got bool, err error) {
 				require.NoError(t, err)

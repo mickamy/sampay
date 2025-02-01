@@ -15,8 +15,8 @@ import (
 type AuthenticationType string
 
 const (
-	AuthenticationTypeEmailPassword AuthenticationType = "password"
-	AuthenticationTypeGoogle        AuthenticationType = "google"
+	AuthenticationTypePassword AuthenticationType = "password"
+	AuthenticationTypeGoogle   AuthenticationType = "google"
 )
 
 var (
@@ -41,7 +41,7 @@ func NewAuthenticationEmailPassword(userID, email, password string) (Authenticat
 	}
 	return Authentication{
 		UserID:     userID,
-		Type:       AuthenticationTypeEmailPassword,
+		Type:       AuthenticationTypePassword,
 		Identifier: email,
 		Secret:     hash,
 	}, nil
@@ -62,7 +62,7 @@ func NewAuthenticationOAuth(payload oauth.Payload) (Authentication, error) {
 }
 
 func (m Authentication) AuthenticateByEmailAndPassword(email string, password string) (bool, error) {
-	if m.Type != AuthenticationTypeEmailPassword {
+	if m.Type != AuthenticationTypePassword {
 		return false, ErrAuthenticationDifferentType
 	}
 	if m.Identifier != email {

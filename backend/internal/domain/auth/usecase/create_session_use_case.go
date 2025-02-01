@@ -71,7 +71,7 @@ func (uc *createSession) Do(ctx context.Context, input CreateSessionInput) (Crea
 			return err
 		}
 
-		emailPasswordAuth := authModel.Authentications(auths).FindByType(authModel.AuthenticationTypeEmailPassword)
+		emailPasswordAuth := authModel.Authentications(auths).FindByType(authModel.AuthenticationTypePassword)
 		if emailPasswordAuth == nil {
 			return ErrCreateSessionPasswordNotMatch
 		}

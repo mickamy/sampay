@@ -73,7 +73,7 @@ func (uc *requestEmailVerification) Do(ctx context.Context, input RequestEmailVe
 		return RequestEmailVerificationOutput{}, fmt.Errorf("failed to request email verification: %w", err)
 	}
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
-		exists, err := uc.authenticationRepo.WithTx(tx.WriterDB()).ExistsByTypeAndIdentifier(ctx, authModel.AuthenticationTypeEmailPassword, m.Email)
+		exists, err := uc.authenticationRepo.WithTx(tx.WriterDB()).ExistsByTypeAndIdentifier(ctx, authModel.AuthenticationTypePassword, m.Email)
 		if err != nil {
 			return fmt.Errorf("failed to check email existence: %w", err)
 		}

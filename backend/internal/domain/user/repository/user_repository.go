@@ -78,7 +78,7 @@ func (repo *user) FindByEmail(ctx context.Context, emailOrSlug string, scopes ..
 	var m model.User
 	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
 		Joins("LEFT OUTER JOIN authentications ON users.id = authentications.user_id").
-		Where("(authentications.identifier = ? AND authentications.type = ?)", emailOrSlug, authModel.AuthenticationTypeEmailPassword).
+		Where("(authentications.identifier = ? AND authentications.type = ?)", emailOrSlug, authModel.AuthenticationTypePassword).
 		First(&m).
 		Error
 	if err != nil {
@@ -94,7 +94,7 @@ func (repo *user) FindByEmailOrSlug(ctx context.Context, emailOrSlug string, sco
 	var m model.User
 	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
 		Joins("LEFT OUTER JOIN authentications ON users.id = authentications.user_id").
-		Where("(authentications.identifier = ? AND authentications.type = ?) OR users.slug = ?", emailOrSlug, authModel.AuthenticationTypeEmailPassword, emailOrSlug).
+		Where("(authentications.identifier = ? AND authentications.type = ?) OR users.slug = ?", emailOrSlug, authModel.AuthenticationTypePassword, emailOrSlug).
 		First(&m).
 		Error
 	if err != nil {
