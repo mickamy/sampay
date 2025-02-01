@@ -14,6 +14,9 @@ ENV GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET
 
 WORKDIR /src
 
+ADD Makefile ./
+RUN make install-build install-dev
+
 ADD . .
 
 CMD ["air", "--build.cmd", "go build -o ./build/$BIN_NAME $MAIN_GO_FILE", "--build.bin", "./build/$BIN_NAME"]
