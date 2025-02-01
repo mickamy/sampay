@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package message.v1;
+
+import "buf/validate/validate.proto";
+
+message SendMessageRequest {
+  string sender_name = 1 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.max_len = 32];
+  string receiver_slug = 2 [(buf.validate.field).string.min_len = 1];
+  string content = 3 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.max_len = 256];
+}
+
+message SendMessageResponse {
+}
+
+service MessageService {
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
+}
