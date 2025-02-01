@@ -136,6 +136,15 @@
         group: root
         mode: '0644'
 
+    - name: Set data directory in configuration file
+      ansible.builtin.lineinfile:
+        path: /etc/redis.conf
+        line: 'dir {{ redis_data_dir }}'
+        state: present
+        owner: root
+        group: root
+        mode: '0644'
+
     - name: Restart Redis service
       ansible.builtin.systemd:
         name: redis
