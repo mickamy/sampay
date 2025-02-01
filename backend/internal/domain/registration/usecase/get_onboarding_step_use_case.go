@@ -52,11 +52,11 @@ func (uc *getOnboardingStep) Do(ctx context.Context, input GetOnboardingStepInpu
 		userID, err := contexts.AuthenticatedUserID(ctx)
 		if userID != "" {
 			// check if user has password
-			auth, err := uc.authRepo.WithTx(tx.ReaderDB()).FindByUserIDAndType(ctx, userID, authModel.AuthenticationTypePassword)
+			auths, err := uc.authRepo.WithTx(tx.ReaderDB()).FindByUserIDAndType(ctx, userID, authModel.AuthenticationTypePassword)
 			if err != nil {
 				return fmt.Errorf("failed to find auth: %w", err)
 			}
-			if auth == nil {
+			if auths == nil {
 				step = registrationModel.OnboardingStepPassword
 				return nil
 			}
@@ -82,11 +82,17 @@ func (uc *getOnboardingStep) Do(ctx context.Context, input GetOnboardingStepInpu
 				return fmt.Errorf("failed to find auth: %w", err)
 			}
 			if auth == nil {
-				step = registrationModel.OnboardingStepPassword
-				return nil
+				user, err := uc.userRepo.FindByEmail(ctx, verification.Email)
+				if err != nil {
+					return fmt.Errorf("failed to find user by email: %w", err)
+				}
+				if user == nil {
+					return fmt.Errorf("user not found: email=[%s]", verification.Email)
+				}
+				userID = user.ID
+			} else {
+				userID = auth.UserID
 			}
-
-			userID = auth.UserID
 		}
 
 		user, err := uc.userRepo.WithTx(tx.ReaderDB()).Get(ctx, userID, userRepository.UserJoinAttribute, userRepository.UserJoinProfile)
