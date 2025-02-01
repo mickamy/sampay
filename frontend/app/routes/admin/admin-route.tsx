@@ -186,15 +186,15 @@ async function postLink({
   body,
 }: { request: Request; body: FormData }) {
   return withAuthentication({ request }, async ({ getClient }) => {
-    const { qr_code, ...data } = userLinkSchema.parse(Object.fromEntries(body));
+    const { qrCode, ...data } = userLinkSchema.parse(Object.fromEntries(body));
 
     const client = getClient(UserLinkService);
 
     let imageObj: S3Object | undefined;
-    if (qr_code) {
+    if (qrCode) {
       imageObj = await directUpload({
         type: "qr_code",
-        file: qr_code,
+        file: qrCode,
         getClient,
       });
     }
@@ -227,14 +227,14 @@ async function putLink({
   body,
 }: { request: Request; body: FormData }) {
   return withAuthentication({ request }, async ({ getClient }) => {
-    const { qr_code, ...data } = userLinkSchema.parse(Object.fromEntries(body));
+    const { qrCode, ...data } = userLinkSchema.parse(Object.fromEntries(body));
 
     const client = getClient(UserLinkService);
 
-    if (qr_code) {
+    if (qrCode) {
       const imageObj = await directUpload({
         type: "qr_code",
-        file: qr_code,
+        file: qrCode,
         getClient,
       });
       client.updateUserLinkQRCode({
