@@ -10,7 +10,6 @@ import (
 	commonv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/common/v1"
 	userv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/user/v1"
 	"connectrpc.com/connect"
-	"github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -271,11 +270,13 @@ func TestUserLink_UpdateUserLinkQRCode(t *testing.T) {
 		{
 			name: "success (image is not nil)",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, linkID string) *userv1.UpdateUserLinkQRCodeRequest {
+				s3Obj := commonFixture.S3Object(nil)
 				return &userv1.UpdateUserLinkQRCodeRequest{
 					Id: linkID,
 					QrCode: &commonv1.S3Object{
-						Bucket: gofakeit.GlobalFaker.ProductName(),
-						Key:    gofakeit.GlobalFaker.UUID(),
+						Bucket:      s3Obj.Bucket,
+						Key:         s3Obj.Key,
+						ContentType: s3Obj.ContentType.String(),
 					},
 				}
 			},

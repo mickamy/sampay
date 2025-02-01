@@ -15,6 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"mickamy.com/sampay/internal/di"
+	commonFixture "mickamy.com/sampay/internal/domain/common/fixture"
 	"mickamy.com/sampay/internal/lib/ptr"
 )
 
@@ -78,12 +79,14 @@ func createUserProfile(t *testing.T, s *httptest.Server, accessToken string, f f
 	t.Helper()
 
 	client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, s.URL)
+	s3Obj := commonFixture.S3Object(nil)
 	req := connect.NewRequest(&registrationv1.CreateUserProfileRequest{
 		Name: gofakeit.GlobalFaker.Name(),
 		Bio:  ptr.Of(gofakeit.GlobalFaker.Sentence(10)),
 		Image: &commonv1.S3Object{
-			Bucket: gofakeit.GlobalFaker.ProductName(),
-			Key:    gofakeit.GlobalFaker.UUID(),
+			Bucket:      s3Obj.Bucket,
+			Key:         s3Obj.Key,
+			ContentType: s3Obj.ContentType.String(),
 		},
 	})
 	req.Header().Add("Authorization", "Bearer "+accessToken)
