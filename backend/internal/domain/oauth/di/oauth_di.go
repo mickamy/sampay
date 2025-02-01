@@ -9,11 +9,13 @@ import (
 
 type UseCases struct {
 	usecase.OAuthSignIn
+	usecase.OAuthCallback
 }
 
 //lint:ignore U1000 used by wire
 var UseCaseSet = wire.NewSet(
 	usecase.NewOAuthSignIn,
+	usecase.NewOAuthCallback,
 )
 
 type Handlers struct {

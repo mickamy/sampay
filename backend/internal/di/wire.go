@@ -122,6 +122,8 @@ func InitOAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer 
 		oauth.UseCaseSet,
 		configSet,
 		libSet,
+		auth.RepositorySet,
+		user.RepositorySet,
 		wire.Struct(new(oauth.UseCases), "*"),
 	)
 	return oauth.UseCases{}
@@ -132,6 +134,8 @@ func InitOAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer 
 		oauth.HandlerSet,
 		configSet,
 		libSet,
+		auth.RepositorySet,
+		user.RepositorySet,
 		oauth.UseCaseSet,
 		wire.Struct(new(oauth.Handlers), "*"),
 	)
