@@ -13,6 +13,7 @@
 	db-prepare \
 	db-reset \
 	gen \
+	i18n \
 	wire \
 	fmt \
 	lint \
@@ -85,6 +86,10 @@ gen: ## Generate all files
 	find ./ -type d -name "mock_*" -exec rm -r {} +
 	go generate ./...
 	templ generate
+	gofmt -s -w .
+
+i18n:
+	cd ./internal/misc/i18n && go run generate.go
 	gofmt -s -w .
 
 wire: ## Generate wire files
