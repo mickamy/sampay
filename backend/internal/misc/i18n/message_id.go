@@ -106,11 +106,11 @@ const (
 	/*
 		このメールアドレスは既に使用されています。
 	*/
-	UserModelUserErrorEmail_already_exists MessageID = "user.model.user.error.email_already_exists"
+	UserModelUserErrorEmail_already_taken MessageID = "user.model.user.error.email_already_taken"
 	/*
 		このリンクは既に使用されています。
 	*/
-	UserModelUserErrorSlug_already_exists MessageID = "user.model.user.error.slug_already_exists"
+	UserModelUserErrorSlug_already_taken MessageID = "user.model.user.error.slug_already_taken"
 	/*
 		既に登録済みです。
 	*/
