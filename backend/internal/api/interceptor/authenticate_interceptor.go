@@ -27,7 +27,6 @@ var authSkippingProcedures = []string{
 	authv1connect.SessionServiceRefreshProcedure,
 	oauthv1connect.OAuthServiceSignInProcedure,
 	oauthv1connect.OAuthServiceGoogleCallbackProcedure,
-	registrationv1connect.AccountServiceSignUpProcedure,
 	userv1connect.UserServiceGetUserProcedure,
 }
 
