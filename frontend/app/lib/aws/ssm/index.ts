@@ -1,6 +1,9 @@
 import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm";
 
-type ParameterName = "SESSION_SECRET";
+type ParameterName =
+  | "SESSION_SECRET"
+  | "S3_PUBLIC_BUCKET_NAME"
+  | "S3_PRIVATE_BUCKET_NAME";
 
 export async function getParameter({
   name,

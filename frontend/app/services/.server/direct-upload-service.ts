@@ -1,5 +1,6 @@
 import { DirectUploadURLService } from "@buf/mickamy_sampay.bufbuild_es/common/v1/direct_upload_url_pb";
 import type { getClientType } from "~/lib/api/request.server";
+import { getParameter } from "~/lib/aws/ssm";
 import logger from "~/lib/logger";
 import { randomUUID } from "~/lib/polyfill/crypto";
 import type { S3Object } from "~/models/common/s3-object-model";
@@ -17,7 +18,7 @@ export async function directUpload({
 }): Promise<S3Object> {
   try {
     const obj: S3Object = {
-      bucket: bucket(type),
+      bucket: await bucket(type),
       key: await key(type),
       contentType: file.type,
     };
@@ -66,9 +67,22 @@ async function key(type: DirectUploadFileType) {
   }
 }
 
-function publicBucketName(): string {
-  if (process.env.PUBLIC_BUCKET_NAME) {
-    return process.env.PUBLIC_BUCKET_NAME;
+async function publicBucketName(): Promise<string> {
+  if (!global.environment?.S3_PUBLIC_BUCKET_NAME) {
+    try {
+      const sessionSecret = await getParameter({ name: "SESSION_SECRET" });
+      global.environment = {
+        ...global.environment,
+        SESSION_SECRET: sessionSecret,
+      };
+    } catch (e) {
+      logger.error({ error: e }, "failed to retrieve SSM parameters");
+      throw e;
+    }
   }
-  throw new Error("missing PUBLIC_BUCKET_NAME");
+
+  if (!global.environment.S3_PUBLIC_BUCKET_NAME) {
+    throw new Error("S3_PUBLIC_BUCKET_NAME is not set");
+  }
+  return global.environment.S3_PUBLIC_BUCKET_NAME;
 }

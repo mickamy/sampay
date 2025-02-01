@@ -6,6 +6,7 @@ declare global {
 
   interface Environment {
     API_BASE_URL?: string;
+    S3_PUBLIC_BUCKET_NAME?: string;
     SESSION_SECRET?: string;
   }
 
