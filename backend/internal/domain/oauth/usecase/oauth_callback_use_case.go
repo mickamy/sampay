@@ -26,7 +26,8 @@ type OAuthCallbackInput struct {
 }
 
 type OAuthCallbackOutput struct {
-	Session authModel.Session
+	VerificationToken string
+	Session           authModel.Session
 }
 
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
@@ -101,6 +102,7 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 		pictureReader = bytes.NewReader(buf.Bytes())
 	}
 
+	var verificationToken string
 	var session authModel.Session
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
 		verification := authModel.EmailVerification{
@@ -164,10 +166,12 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 			return fmt.Errorf("failed to create session: %w", err)
 		}
 
+		verificationToken = verification.Verified.Token
+
 		return nil
 	}); err != nil {
 		return OAuthCallbackOutput{}, err
 	}
 
-	return OAuthCallbackOutput{Session: session}, nil
+	return OAuthCallbackOutput{VerificationToken: verificationToken, Session: session}, nil
 }

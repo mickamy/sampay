@@ -59,6 +59,7 @@ func TestOauthCallback_Do(t *testing.T) {
 
 		// assert
 		require.NoError(t, err)
+		assert.NotEmpty(t, got.VerificationToken)
 		assert.NotEmpty(t, got.Session.UserID)
 		assert.NotEmpty(t, got.Session.Tokens.Access)
 		assert.NotEmpty(t, got.Session.Tokens.Refresh)

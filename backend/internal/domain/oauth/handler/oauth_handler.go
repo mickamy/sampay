@@ -80,7 +80,8 @@ func (h *OAuth) GoogleCallback(
 		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&oauthv1.GoogleCallbackResponse{
-		Tokens: authResponse.NewTokens(out.Session.Tokens),
+		VerificationToken: out.VerificationToken,
+		SessionTokens:     authResponse.NewTokens(out.Session.Tokens),
 	})
 	return res, nil
 }
