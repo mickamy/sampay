@@ -3,6 +3,7 @@ syntax = "proto3";
 package oauth.v1;
 
 import "buf/validate/validate.proto";
+import "google/api/annotations.proto";
 
 message SignInRequest {
   enum Provider {
@@ -26,5 +27,9 @@ message GoogleCallbackResponse {
 
 service OAuthService {
   rpc SignIn(SignInRequest) returns (SignInResponse) {}
-  rpc GoogleCallback(GoogleCallbackRequest) returns (GoogleCallbackResponse) {}
+  rpc GoogleCallback(GoogleCallbackRequest) returns (GoogleCallbackResponse) {
+    option (google.api.http) = {
+      get: "/oauth/callback/google"
+    };
+  }
 }
