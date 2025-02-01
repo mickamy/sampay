@@ -56,6 +56,16 @@
             group: root
             mode: '0644'
 
+        - name: Allow only localhost to connect to Redis
+          ansible.builtin.lineinfile:
+            path: /etc/redis.conf
+            regexp: '^# bind 127.0.0.1'
+            line: 'bind 127.0.0.1'
+            state: present
+            owner: root
+            group: root
+            mode: '0644'
+
         - name: Build Redis
           community.general.make:
             chdir: /tmp/redis-{{ redis_version }}
