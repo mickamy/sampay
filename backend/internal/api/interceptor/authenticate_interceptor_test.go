@@ -246,15 +246,12 @@ func TestAuthenticate(t *testing.T) {
 				ctx := context.Background()
 				db := newReadWriter(t)
 				kvStore := newKVS(t)
-				if tc.arrange == nil {
-					require.Fail(t, "name="+tc.name)
-				}
 				authorization := tc.arrange(t, ctx, db.WriterDB(), kvStore)
 				mux := http.NewServeMux()
 				ucs := di.InitAuthUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), kvStore)
 				sut := interceptor.Authenticate(ucs.AuthenticateUser, ucs.AuthenticateAnonymousUser)
 				interceptors := connect.WithInterceptors(sut)
-				onboarding := di.InitRegistrationHandlers(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).Onboarding
+				onboarding := di.InitRegistrationHandlers(db.WriterDB(), db, db.Writer(), db.Reader(), kvStore).Onboarding
 				mux.Handle(registrationv1connect.NewOnboardingServiceHandler(onboarding, interceptors))
 				server := httptest.NewServer(mux)
 				defer server.Close()

@@ -8,6 +8,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/mickamy/slogger"
 
+	authResponse "mickamy.com/sampay/internal/domain/auth/dto/response"
 	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 	"mickamy.com/sampay/internal/domain/oauth/dto/request"
 	"mickamy.com/sampay/internal/domain/oauth/model"
@@ -79,7 +80,7 @@ func (h *OAuth) GoogleCallback(
 		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&oauthv1.GoogleCallbackResponse{
-		VerificationToken: out.VerifiedToken,
+		Tokens: authResponse.NewTokens(out.Session.Tokens),
 	})
 	return res, nil
 }

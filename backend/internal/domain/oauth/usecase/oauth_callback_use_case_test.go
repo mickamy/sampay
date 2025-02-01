@@ -9,14 +9,13 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
-	"mickamy.com/sampay/internal/lib/oauth/mock_oauth"
-
 	"mickamy.com/sampay/internal/di"
 	authRepository "mickamy.com/sampay/internal/domain/auth/repository"
 	commonFixture "mickamy.com/sampay/internal/domain/common/fixture"
 	oauthModel "mickamy.com/sampay/internal/domain/oauth/model"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
 	oauthLib "mickamy.com/sampay/internal/lib/oauth"
+	"mickamy.com/sampay/internal/lib/oauth/mock_oauth"
 
 	"mickamy.com/sampay/internal/domain/oauth/usecase"
 )
@@ -47,7 +46,9 @@ func TestOauthCallback_Do(t *testing.T) {
 			mockGoogle,
 			di.InitLibs().S3,
 			db.Writer(),
+			authRepository.NewAuthentication(db.WriterDB()),
 			authRepository.NewEmailVerification(db.WriterDB()),
+			authRepository.NewSession(newKVS(t)),
 			userRepository.NewUser(db.WriterDB()),
 			userRepository.NewUserProfile(db.WriterDB()),
 		)
@@ -58,6 +59,8 @@ func TestOauthCallback_Do(t *testing.T) {
 
 		// assert
 		require.NoError(t, err)
-		assert.NotEmpty(t, got.VerifiedToken)
+		assert.NotEmpty(t, got.Session.UserID)
+		assert.NotEmpty(t, got.Session.Tokens.Access)
+		assert.NotEmpty(t, got.Session.Tokens.Refresh)
 	})
 }

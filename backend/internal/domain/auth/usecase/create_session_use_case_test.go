@@ -24,6 +24,7 @@ func TestCreateSessionUseCase_Do(t *testing.T) {
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
 	auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
 		m.UserID = user.ID
+		m.Identifier = user.Email
 	})
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&auth).Error)
 

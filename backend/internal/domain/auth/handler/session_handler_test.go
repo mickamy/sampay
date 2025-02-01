@@ -20,6 +20,7 @@ import (
 	authRepository "mickamy.com/sampay/internal/domain/auth/repository"
 	commonFixture "mickamy.com/sampay/internal/domain/common/fixture"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
+	userModel "mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/lib/contexts"
 	"mickamy.com/sampay/internal/lib/either"
 	"mickamy.com/sampay/internal/lib/ptr"
@@ -32,14 +33,15 @@ func TestSession_SignIn(t *testing.T) {
 
 	tsc := []struct {
 		name    string
-		arrange func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.SignInRequest
+		arrange func(t *testing.T, ctx context.Context, infras di.Infras, user userModel.User) *authv1.SignInRequest
 		assert  func(t *testing.T, got *connect.Response[authv1.SignInResponse], err error)
 	}{
 		{
 			name: "success",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.SignInRequest {
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, user userModel.User) *authv1.SignInRequest {
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
-					m.UserID = userID
+					m.UserID = user.ID
+					m.Identifier = user.Email
 				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&auth).Error)
 				return &authv1.SignInRequest{
@@ -58,9 +60,9 @@ func TestSession_SignIn(t *testing.T) {
 		},
 		{
 			name: "fail (email not found)",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.SignInRequest {
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, user userModel.User) *authv1.SignInRequest {
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
-					m.UserID = userID
+					m.UserID = user.ID
 				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&auth).Error)
 				return &authv1.SignInRequest{
@@ -85,9 +87,9 @@ func TestSession_SignIn(t *testing.T) {
 		},
 		{
 			name: "fail (password not found)",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.SignInRequest {
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, user userModel.User) *authv1.SignInRequest {
 				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
-					m.UserID = userID
+					m.UserID = user.ID
 				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&auth).Error)
 				return &authv1.SignInRequest{
@@ -123,7 +125,7 @@ func TestSession_SignIn(t *testing.T) {
 			user := userFixture.User(nil)
 			require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
 			ctx = contexts.SetAuthenticatedUserID(ctx, user.ID)
-			req := tc.arrange(t, ctx, infras, user.ID)
+			req := tc.arrange(t, ctx, infras, user)
 			server := newSessionServer(t, infras)
 
 			// act
@@ -145,13 +147,13 @@ func TestSession_Refresh(t *testing.T) {
 	t.Run("in message", func(t *testing.T) {
 		tsc := []struct {
 			name    string
-			arrange func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.RefreshRequest
+			arrange func(t *testing.T, ctx context.Context, infras di.Infras, user userModel.User) *authv1.RefreshRequest
 			assert  func(t *testing.T, got *connect.Response[authv1.RefreshResponse], err error)
 		}{
 			{
 				name: "success",
-				arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.RefreshRequest {
-					session := authModel.MustNewSession(userID)
+				arrange: func(t *testing.T, ctx context.Context, infras di.Infras, user userModel.User) *authv1.RefreshRequest {
+					session := authModel.MustNewSession(user.ID)
 					require.NoError(t, authRepository.NewSession(infras.KVS).Create(ctx, session))
 					return &authv1.RefreshRequest{
 						RefreshToken: ptr.Of(session.Tokens.Refresh.Value),
@@ -167,8 +169,8 @@ func TestSession_Refresh(t *testing.T) {
 			},
 			{
 				name: "fail (refresh token not found)",
-				arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.RefreshRequest {
-					session := authModel.MustNewSession(userID)
+				arrange: func(t *testing.T, ctx context.Context, infras di.Infras, user userModel.User) *authv1.RefreshRequest {
+					session := authModel.MustNewSession(user.ID)
 					require.NoError(t, authRepository.NewSession(infras.KVS).Create(ctx, session))
 					return &authv1.RefreshRequest{}
 				},
@@ -189,8 +191,8 @@ func TestSession_Refresh(t *testing.T) {
 			},
 			{
 				name: "fail (invalid refresh token)",
-				arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.RefreshRequest {
-					session := authModel.MustNewSession(userID)
+				arrange: func(t *testing.T, ctx context.Context, infras di.Infras, user userModel.User) *authv1.RefreshRequest {
+					session := authModel.MustNewSession(user.ID)
 					require.NoError(t, authRepository.NewSession(infras.KVS).Create(ctx, session))
 					return &authv1.RefreshRequest{
 						RefreshToken: ptr.Of(session.Tokens.Refresh.Value + "invalid"),
@@ -222,7 +224,7 @@ func TestSession_Refresh(t *testing.T) {
 				ctx := context.Background()
 				infras := di.NewInfras(newReadWriter(t), newKVS(t))
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
-				req := tc.arrange(t, ctx, infras, user.ID)
+				req := tc.arrange(t, ctx, infras, user)
 				server := newSessionServer(t, infras)
 
 				// act
@@ -239,13 +241,13 @@ func TestSession_Refresh(t *testing.T) {
 	t.Run("in cookie", func(t *testing.T) {
 		tsc := []struct {
 			name    string
-			arrange func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *http.Cookie
+			arrange func(t *testing.T, ctx context.Context, infras di.Infras, user userModel.User) *http.Cookie
 			assert  func(t *testing.T, got *connect.Response[authv1.RefreshResponse], err error)
 		}{
 			{
 				name: "success",
-				arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *http.Cookie {
-					session := authModel.MustNewSession(userID)
+				arrange: func(t *testing.T, ctx context.Context, infras di.Infras, user userModel.User) *http.Cookie {
+					session := authModel.MustNewSession(user.ID)
 					require.NoError(t, authRepository.NewSession(infras.KVS).Create(ctx, session))
 					return &http.Cookie{
 						Name:  "refresh_token",
@@ -262,7 +264,7 @@ func TestSession_Refresh(t *testing.T) {
 			},
 			{
 				name: "fail (refresh token not found)",
-				arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *http.Cookie {
+				arrange: func(t *testing.T, ctx context.Context, infras di.Infras, user userModel.User) *http.Cookie {
 					return &http.Cookie{
 						Name:  "refresh_token",
 						Value: "",
@@ -285,8 +287,8 @@ func TestSession_Refresh(t *testing.T) {
 			},
 			{
 				name: "fail (invalid refresh token)",
-				arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *http.Cookie {
-					session := authModel.MustNewSession(userID)
+				arrange: func(t *testing.T, ctx context.Context, infras di.Infras, user userModel.User) *http.Cookie {
+					session := authModel.MustNewSession(user.ID)
 					require.NoError(t, authRepository.NewSession(infras.KVS).Create(ctx, session))
 					return &http.Cookie{
 						Name:  "refresh_token",
@@ -319,7 +321,7 @@ func TestSession_Refresh(t *testing.T) {
 				ctx := context.Background()
 				infras := di.NewInfras(newReadWriter(t), newKVS(t))
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
-				cookie := tc.arrange(t, ctx, infras, user.ID)
+				cookie := tc.arrange(t, ctx, infras, user)
 				server := newSessionServer(t, infras)
 
 				// act
@@ -343,13 +345,13 @@ func TestSession_SignOut(t *testing.T) {
 
 	tsc := []struct {
 		name    string
-		arrange func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.SignOutRequest
+		arrange func(t *testing.T, ctx context.Context, infras di.Infras, user userModel.User) *authv1.SignOutRequest
 		assert  func(t *testing.T, got *connect.Response[authv1.SignOutResponse], err error)
 	}{
 		{
 			name: "success",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.SignOutRequest {
-				session := authModel.MustNewSession(userID)
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, user userModel.User) *authv1.SignOutRequest {
+				session := authModel.MustNewSession(user.ID)
 				require.NoError(t, authRepository.NewSession(infras.KVS).Create(ctx, session))
 				return &authv1.SignOutRequest{
 					AccessToken:  session.Tokens.Access.Value,
@@ -366,7 +368,7 @@ func TestSession_SignOut(t *testing.T) {
 		},
 		{
 			name: "fail (session not found)",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *authv1.SignOutRequest {
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, user userModel.User) *authv1.SignOutRequest {
 				return &authv1.SignOutRequest{
 					AccessToken:  gofakeit.UUID(),
 					RefreshToken: gofakeit.UUID(),
@@ -398,7 +400,7 @@ func TestSession_SignOut(t *testing.T) {
 			ctx := context.Background()
 			infras := di.NewInfras(newReadWriter(t), newKVS(t))
 			require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
-			req := tc.arrange(t, ctx, infras, user.ID)
+			req := tc.arrange(t, ctx, infras, user)
 			server := newSessionServer(t, infras)
 
 			// act

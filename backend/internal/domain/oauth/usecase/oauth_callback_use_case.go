@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -25,7 +26,7 @@ type OAuthCallbackInput struct {
 }
 
 type OAuthCallbackOutput struct {
-	VerifiedToken string
+	Session authModel.Session
 }
 
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
@@ -39,6 +40,7 @@ type oauthCallback struct {
 	writer                *database.Writer
 	authRepo              authRepository.Authentication
 	emailVerificationRepo authRepository.EmailVerification
+	sessionRepo           authRepository.Session
 	userRepo              userRepository.User
 	userProfileRepo       userRepository.UserProfile
 }
@@ -49,6 +51,7 @@ func NewOAuthCallback(
 	writer *database.Writer,
 	authRepo authRepository.Authentication,
 	emailVerificationRepo authRepository.EmailVerification,
+	sessionRepo authRepository.Session,
 	userRepo userRepository.User,
 	userProfileRepo userRepository.UserProfile,
 ) OAuthCallback {
@@ -58,6 +61,7 @@ func NewOAuthCallback(
 		writer:                writer,
 		authRepo:              authRepo,
 		emailVerificationRepo: emailVerificationRepo,
+		sessionRepo:           sessionRepo,
 		userRepo:              userRepo,
 		userProfileRepo:       userProfileRepo,
 	}
@@ -80,7 +84,7 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 		return OAuthCallbackOutput{}, fmt.Errorf("failed to validate code: %s", input.Code)
 	}
 
-	var pictureReader io.Reader
+	var pictureReader io.ReadSeeker
 	if payload.Picture != "" {
 		picture, err := http.Get(payload.Picture)
 		if err != nil {
@@ -89,10 +93,15 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 		defer func(Body io.ReadCloser) {
 			_ = Body.Close()
 		}(picture.Body)
-		pictureReader = picture.Body
+
+		buf := new(bytes.Buffer)
+		if _, err := io.Copy(buf, picture.Body); err != nil {
+			return OAuthCallbackOutput{}, fmt.Errorf("failed to read picture body: %w", err)
+		}
+		pictureReader = bytes.NewReader(buf.Bytes())
 	}
 
-	var verifiedToken string
+	var session authModel.Session
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
 		verification := authModel.EmailVerification{
 			IntentType: authModel.EmailVerificationIntentTypeSignUp,
@@ -150,12 +159,15 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 			return fmt.Errorf("failed to create authentication: %w", err)
 		}
 
-		verifiedToken = verification.Verified.Token
+		session, err = authModel.NewSession(user.ID)
+		if err != nil {
+			return fmt.Errorf("failed to create session: %w", err)
+		}
 
 		return nil
 	}); err != nil {
 		return OAuthCallbackOutput{}, err
 	}
 
-	return OAuthCallbackOutput{VerifiedToken: verifiedToken}, nil
+	return OAuthCallbackOutput{Session: session}, nil
 }

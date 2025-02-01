@@ -87,7 +87,8 @@ func (uc *getOnboardingStep) Do(ctx context.Context, input GetOnboardingStepInpu
 					return fmt.Errorf("failed to find user by email: %w", err)
 				}
 				if user == nil {
-					return fmt.Errorf("user not found: email=[%s]", verification.Email)
+					step = registrationModel.OnboardingStepPassword
+					return nil
 				}
 				userID = user.ID
 			} else {
