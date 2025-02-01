@@ -14,6 +14,7 @@ import (
 	userModel "mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/domain/user/usecase"
 	"mickamy.com/sampay/internal/lib/contexts"
+	"mickamy.com/sampay/internal/misc/i18n"
 )
 
 type UserProfile struct {
@@ -54,11 +55,18 @@ func (h UserProfile) UpdateUserProfile(ctx context.Context, req *connect.Request
 }
 
 func (h UserProfile) UpdateUserProfileImage(ctx context.Context, req *connect.Request[userv1.UpdateUserProfileImageRequest]) (*connect.Response[userv1.UpdateUserProfileImageResponse], error) {
-	_, err := h.updateImage.Do(ctx, usecase.UpdateUserProfileImageInput{
-		Image: request.NewS3Object(req.Msg.Image),
+	lang := contexts.MustLanguage(ctx)
+	obj, err := request.NewS3Object(req.Msg.Image)
+	if err != nil {
+		return nil, commonResponse.NewBadRequest(errors.New("invalid s3 object")).
+			WithFieldViolation("s3_object", i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.CommonRequestErrorInvalid_s3_object})).
+			AsConnectError()
+	}
+
+	_, err = h.updateImage.Do(ctx, usecase.UpdateUserProfileImageInput{
+		Image: obj,
 	})
 	if err != nil {
-		lang := contexts.MustLanguage(ctx)
 		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
 			return nil, localizable.AsConnectError()
 		}

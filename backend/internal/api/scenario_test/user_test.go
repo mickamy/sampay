@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"mickamy.com/sampay/internal/di"
+	userModel "mickamy.com/sampay/internal/domain/user/model"
 )
 
 func TestUser(t *testing.T) {
@@ -31,12 +32,18 @@ func TestUser(t *testing.T) {
 		assert.NotEmpty(t, res.Msg.User.Profile)
 		assert.Len(t, res.Msg.User.Links, 0)
 	})
-	getUser(t, server, func(res *connect.Response[userv1.GetUserResponse], err error) {
+
+	var slug string
+	{
+		infras.DB.Model(&userModel.User{}).Limit(1).Pluck("slug", &slug)
+	}
+
+	getUser(t, server, slug, func(res *connect.Response[userv1.GetUserResponse], err error) {
 		require.NoError(t, err)
 		assert.NoError(t, err)
 		assert.NotEmpty(t, res.Msg.User)
 		assert.NotEmpty(t, res.Msg.User.Profile)
-		assert.Len(t, res.Msg.User.Links, 4)
+		assert.Len(t, res.Msg.User.Links, 0)
 	})
 }
 
@@ -50,12 +57,12 @@ func getMe(t *testing.T, s *httptest.Server, accessToken string, f func(res *con
 	f(res, err)
 }
 
-func getUser(t *testing.T, s *httptest.Server, f func(res *connect.Response[userv1.GetUserResponse], err error)) {
+func getUser(t *testing.T, s *httptest.Server, slug string, f func(res *connect.Response[userv1.GetUserResponse], err error)) {
 	t.Helper()
 
 	client := userv1connect.NewUserServiceClient(http.DefaultClient, s.URL)
 	req := connect.NewRequest(&userv1.GetUserRequest{
-		Slug: "mickamy",
+		Slug: slug,
 	})
 	res, err := client.GetUser(context.Background(), req)
 	f(res, err)

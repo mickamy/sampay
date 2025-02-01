@@ -56,6 +56,16 @@ variable "geo_locations" {
   default = ["JP"]
 }
 
+variable "google_client_id" {
+  description = "Google client ID"
+  type        = string
+}
+
+variable "google_client_secret" {
+  description = "Google client secret"
+  type        = string
+}
+
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string

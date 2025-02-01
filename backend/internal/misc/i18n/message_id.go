@@ -66,13 +66,17 @@ const (
 	*/
 	CommonFormatMinute MessageID = "common.format.minute"
 	/*
-		無効なS3オブジェクトです。
-	*/
-	CommonHandlerDirect_upload_urlErrorInvalid_s3_object MessageID = "common.handler.direct_upload_url.error.invalid_s3_object"
-	/*
 		ただいまアクセスが集中しております。しばらくしてから再度お試しください。
 	*/
 	CommonHandlerErrorInternal MessageID = "common.handler.error.internal"
+	/*
+		無効な S3 オブジェクトです。
+	*/
+	CommonRequestErrorInvalid_s3_object MessageID = "common.request.error.invalid_s3_object"
+	/*
+		無効な OAuth プロバイダです。
+	*/
+	OauthHandlerErrorInvalid_provider_type MessageID = "oauth.handler.error.invalid_provider_type"
 	/*
 		このメールアドレスは既に登録されています。
 	*/
@@ -89,6 +93,10 @@ const (
 		無効なリンク提供業者です。
 	*/
 	UserHandlerUser_linkErrorInvalid_provider_type MessageID = "user.handler.user_link.error.invalid_provider_type"
+	/*
+		このメールアドレスは既に使用されています。
+	*/
+	UserModelUserErrorEmail_already_exists MessageID = "user.model.user.error.email_already_exists"
 	/*
 		このリンクは既に使用されています。
 	*/

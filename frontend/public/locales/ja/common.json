@@ -1,13 +1,4 @@
 {
-  "account": {
-    "sign_up": {
-      "title": "新規登録",
-      "terms": "利用規約",
-      "privacy": "プライバシーポリシー",
-      "have_account": "すでにアカウントをお持ちの方は",
-      "sign_in": "ログイン"
-    }
-  },
   "admin": {
     "index": {
       "add_link": "リンクを追加",
@@ -21,14 +12,25 @@
     }
   },
   "app": {
-    "title": "Sampay | 個人間決済リンクをたったひとつのリンクで"
+    "title": "Sampay | 個人間決済をたったひとつのリンクで"
   },
   "auth": {
+    "sign_up": {
+      "title": "新規登録",
+      "terms": "利用規約",
+      "privacy": "プライバシーポリシー",
+      "have_account": "すでにアカウントをお持ちの方は",
+      "sign_in": "ログイン",
+      "with_google": "Google で登録",
+      "or": "または"
+    },
     "sign_in": {
       "title": "ログイン",
       "forgot_password": "パスワードをお忘れですか？",
       "have_no_account": "アカウントをお持ちでない方は",
-      "sign_up": "新規登録"
+      "sign_up": "新規登録",
+      "with_google": "Google でログイン",
+      "or": "または"
     },
     "reset_password": {
       "title": "パスワードをリセット",
@@ -90,7 +92,7 @@
     "uri": "リンク"
   },
   "lp": {
-    "tagline": "Sampay\n個人間決済リンクを\nひとつのリンクで",
+    "tagline": "Sampay\n個人間決済を\nひとつのリンクで",
     "tagline_description_1": "個人でもビジネスでも、支払い受け取りをシンプルに。",
     "tagline_description_2": "一つのリンクで、すべての支払い方法を管理。",
     "get_started": "今すぐ始める",

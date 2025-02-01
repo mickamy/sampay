@@ -81,7 +81,7 @@ resource "aws_route53_record" "dmarc" {
   type    = "TXT"
   ttl     = 300
   records = [
-    "v=DMARC1; p=reject; rua=mailto:dmarc-reports@${aws_ses_domain_identity.domain.domain}; ruf=mailto:dmarc-reports@${aws_ses_domain_identity.domain.domain}; sp=none; adkim=s; aspf=s"
+    "v=DMARC1; p=none;"
   ]
 }
 

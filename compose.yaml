@@ -6,9 +6,8 @@ services:
       args:
         MAIN_GO_FILE: /src/cmd/api/main.go
         BIN_NAME: api
-        GH_PAT: ${GH_PAT}
-    environment:
-      - GH_PAT=${GH_PAT}
+        GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+        GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
     env_file:
       - .env.docker
     volumes:
@@ -28,9 +27,6 @@ services:
       args:
         MAIN_GO_FILE: /src/cmd/worker/main.go
         BIN_NAME: worker
-        GH_PAT: ${GH_PAT}
-    environment:
-      - GH_PAT=${GH_PAT}
     env_file:
       - .env.docker
     volumes:
@@ -129,7 +125,7 @@ services:
   cloudfront:
     image: nginx:alpine
     ports:
-      - "80:80"
+      - "8000:8000"
     volumes:
       - ./cloudfront/nginx.conf:/etc/nginx/nginx.conf
       - ./cloudfront/default.conf:/etc/nginx/conf.d/default.conf
@@ -148,6 +144,26 @@ services:
     depends_on:
       localstack:
         condition: service_healthy
+    networks:
+      default:
+
+  https-portal:
+    image: steveltn/https-portal:1
+    ports:
+      - '80:80'
+      - '443:443'
+    links:
+      - api
+      - web
+    environment:
+      DOMAINS: 'api.sampay.lvh.me -> http://api:8080, sampay.lvh.me -> http://web:5173'
+      STAGE: local
+      WEBSOCKET: true
+    volumes:
+      - ./https-portal/ssl_certs:/var/lib/https-portal
+    depends_on:
+      - api
+      - web
     networks:
       default:
 

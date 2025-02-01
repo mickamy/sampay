@@ -45,10 +45,6 @@ jobs:
 
       - uses: bufbuild/buf-setup-action@v1
 
-      - name: Configure Git for Private Modules
-        run: |
-          git config --global url."https://${{ secrets.GH_PAT }}@github.com/".insteadOf "https://github.com/"
-
       - name: Install dependencies
         run: cd backend && make install
 
@@ -110,7 +106,7 @@ jobs:
             AWS_REGION=ap-northeast-1
             AWS_ACCESS_KEY_ID=test
             AWS_ACCESS_KEY_SECRET=test
-            CLOUDFRONT_DOMAIN=localhost
+            CLOUDFRONT_DOMAIN=localhost:8000
             LOCALSTACK_ENDPOINT=http://localhost:4566
             S3_PUBLIC_BUCKET_NAME=sampay-public
             SES_ENDPOINT=http://localhost:8005

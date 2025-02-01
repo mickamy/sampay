@@ -95,10 +95,12 @@ func TestUserProfile_UpdateUserProfileImage(t *testing.T) {
 		{
 			name: "success (image is not nil)",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *userv1.UpdateUserProfileImageRequest {
+				s3Obj := commonFixture.S3Object(nil)
 				return &userv1.UpdateUserProfileImageRequest{
 					Image: &commonv1.S3Object{
-						Bucket: gofakeit.GlobalFaker.ProductName(),
-						Key:    gofakeit.GlobalFaker.UUID(),
+						Bucket:      s3Obj.Bucket,
+						Key:         s3Obj.Key,
+						ContentType: s3Obj.ContentType.String(),
 					},
 				}
 			},

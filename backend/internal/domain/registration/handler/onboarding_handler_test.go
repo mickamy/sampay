@@ -17,6 +17,7 @@ import (
 	"mickamy.com/sampay/internal/di"
 	authFixture "mickamy.com/sampay/internal/domain/auth/fixture"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
+	commonFixture "mickamy.com/sampay/internal/domain/common/fixture"
 	registrationModel "mickamy.com/sampay/internal/domain/registration/model"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/domain/user/model"
@@ -350,11 +351,13 @@ func TestOnboarding_CreateUserProfile(t *testing.T) {
 		{
 			name: "success with image",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreateUserProfileRequest {
+				s3Obj := commonFixture.S3Object(nil)
 				return &registrationv1.CreateUserProfileRequest{
 					Name: gofakeit.GlobalFaker.Name(),
 					Image: &commonv1.S3Object{
-						Bucket: gofakeit.GlobalFaker.ProductName(),
-						Key:    gofakeit.GlobalFaker.UUID(),
+						Bucket:      s3Obj.Bucket,
+						Key:         s3Obj.Key,
+						ContentType: s3Obj.ContentType.String(),
 					},
 				}
 			},

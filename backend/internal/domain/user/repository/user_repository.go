@@ -7,7 +7,6 @@ import (
 	"gorm.io/gorm"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
-	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	"mickamy.com/sampay/internal/domain/user/model"
 )
 
@@ -74,13 +73,9 @@ func (repo *user) FindBySlug(ctx context.Context, slug string, scopes ...databas
 	return &m, err
 }
 
-func (repo *user) FindByEmail(ctx context.Context, emailOrSlug string, scopes ...database.Scope) (*model.User, error) {
+func (repo *user) FindByEmail(ctx context.Context, email string, scopes ...database.Scope) (*model.User, error) {
 	var m model.User
-	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
-		Joins("LEFT OUTER JOIN authentications ON users.id = authentications.user_id").
-		Where("(authentications.identifier = ? AND authentications.type = ?)", emailOrSlug, authModel.AuthenticationTypeEmailPassword).
-		First(&m).
-		Error
+	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).First(&m, "email = ?", email).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -93,8 +88,7 @@ func (repo *user) FindByEmail(ctx context.Context, emailOrSlug string, scopes ..
 func (repo *user) FindByEmailOrSlug(ctx context.Context, emailOrSlug string, scopes ...database.Scope) (*model.User, error) {
 	var m model.User
 	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).
-		Joins("LEFT OUTER JOIN authentications ON users.id = authentications.user_id").
-		Where("(authentications.identifier = ? AND authentications.type = ?) OR users.slug = ?", emailOrSlug, authModel.AuthenticationTypeEmailPassword, emailOrSlug).
+		Where("email = ? OR users.slug = ?", emailOrSlug, emailOrSlug).
 		First(&m).
 		Error
 	if err != nil {

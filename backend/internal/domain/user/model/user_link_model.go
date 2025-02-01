@@ -8,7 +8,6 @@ import (
 	"gorm.io/gorm"
 
 	commonModel "mickamy.com/sampay/internal/domain/common/model"
-	"mickamy.com/sampay/internal/lib/ptr"
 	"mickamy.com/sampay/internal/lib/ulid"
 )
 
@@ -37,7 +36,7 @@ func (m *UserLink) SetQRCode(qrCode *commonModel.S3Object) {
 	}
 
 	m.QRCode = qrCode
-	m.QRCodeID = ptr.Of(qrCode.ID)
+	m.QRCodeID = &qrCode.ID
 }
 
 func (m UserLink) Validate() error {

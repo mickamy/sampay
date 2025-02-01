@@ -35,12 +35,18 @@ auth:
 common:
   format:
     minute: '{{.Minute}}分'
+  request:
+    error:
+      invalid_s3_object: '無効な S3 オブジェクトです。'
   handler:
     error:
       internal: 'ただいまアクセスが集中しております。しばらくしてから再度お試しください。'
-    direct_upload_url:
-      error:
-        invalid_s3_object: '無効なS3オブジェクトです。'
+
+oauth:
+  handler:
+    error:
+      invalid_provider_type: "無効な OAuth プロバイダです。"
+
 registration:
   usecase:
     create_account:
@@ -50,11 +56,13 @@ registration:
       error:
         email_verification_invalid_token: '無効なメールアドレス認証トークンです。'
         email_verification_already_consumed: '再度メールアドレス認証を行ってください'
+
 user:
   model:
     user:
       error:
         slug_already_exists: 'このリンクは既に使用されています。'
+        email_already_exists: 'このメールアドレスは既に使用されています。'
     user_attribute:
       error:
         duplicated: '既に登録済みです。'

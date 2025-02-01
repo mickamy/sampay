@@ -66,6 +66,16 @@ locals {
       description = "Frontend base URL"
       value       = var.frontend_base_url
     }
+    "google_client_id" = {
+      name        = "GOOGLE_CLIENT_ID"
+      description = "Google client ID"
+      value       = var.google_client_id
+    }
+    "google_client_secret" = {
+      name        = "GOOGLE_CLIENT_SECRET"
+      description = "Google client secret"
+      value       = var.google_client_secret
+    }
     "kvs_host" = {
       name        = "KVS_HOST"
       description = "KVS host"

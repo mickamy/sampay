@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package oauth.v1;
+
+import "buf/validate/validate.proto";
+import "auth/v1/common.proto";
+
+message SignInRequest {
+  enum Provider {
+    PROVIDER_UNSPECIFIED = 0;
+    PROVIDER_GOOGLE = 1;
+  }
+
+  Provider provider = 1 [(buf.validate.field).enum.defined_only = true];
+}
+
+message SignInResponse {
+  string authorization_url = 1 [(buf.validate.field).string.uri = true];
+}
+
+message GoogleCallbackRequest {
+  string code = 1 [(buf.validate.field).string.min_len = 1];
+}
+
+message GoogleCallbackResponse {
+  string verification_token = 1 [(buf.validate.field).string.len = 64];
+  auth.v1.Tokens session_tokens = 2;
+}
+
+service OAuthService {
+  rpc SignIn(SignInRequest) returns (SignInResponse);
+  rpc GoogleCallback(GoogleCallbackRequest) returns (GoogleCallbackResponse);
+}

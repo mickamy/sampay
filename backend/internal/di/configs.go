@@ -11,6 +11,7 @@ type Configs struct {
 	Common   config.CommonConfig
 	Database config.DatabaseConfig
 	KVS      config.KVSConfig
+	OAuth    config.OAuthConfig
 }
 
 //lint:ignore U1000 used by wire
@@ -19,4 +20,5 @@ var configSet = wire.NewSet(
 	config.Common,
 	config.Database,
 	config.KVS,
+	config.OAuth,
 )

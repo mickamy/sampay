@@ -9,12 +9,12 @@ import (
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/common/v1/commonv1connect"
 	commonv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/common/v1"
 	"connectrpc.com/connect"
-	"github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"mickamy.com/sampay/internal/di"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
+	commonFixture "mickamy.com/sampay/internal/domain/common/fixture"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/lib/contexts"
 	"mickamy.com/sampay/internal/lib/either"
@@ -33,10 +33,12 @@ func TestSession_SignIn(t *testing.T) {
 		{
 			name: "success",
 			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *commonv1.CreateDirectUploadURLRequest {
+				s3Obj := commonFixture.S3Object(nil)
 				return &commonv1.CreateDirectUploadURLRequest{
 					S3Object: &commonv1.S3Object{
-						Bucket: gofakeit.GlobalFaker.ProductName(),
-						Key:    gofakeit.UUID(),
+						Bucket:      s3Obj.Bucket,
+						Key:         s3Obj.Key,
+						ContentType: s3Obj.ContentType.String(),
 					},
 				}
 			},
@@ -59,9 +61,11 @@ func TestSession_SignIn(t *testing.T) {
 				require.ErrorAs(t, err, &connErr)
 				require.Len(t, connErr.Details(), 1)
 				detail := either.Must(connErr.Details()[0].Value())
-				if errMsg, ok := detail.(*commonv1.ErrorMessage); ok {
-					expectedMsg := i18n.MustJapaneseMessage(i18n.Config{MessageID: i18n.CommonHandlerDirect_upload_urlErrorInvalid_s3_object})
-					assert.Equal(t, expectedMsg, errMsg.Message)
+				if errMsg, ok := detail.(*commonv1.BadRequestError); ok {
+					require.Len(t, errMsg.FieldViolations, 1)
+					require.Equal(t, "s3_object", errMsg.FieldViolations[0].Field)
+					require.Len(t, errMsg.FieldViolations[0].Descriptions, 1)
+					require.Equal(t, i18n.MustJapaneseMessage(i18n.Config{MessageID: i18n.CommonRequestErrorInvalid_s3_object}), errMsg.FieldViolations[0].Descriptions[0])
 				} else {
 					require.Failf(t, "unexpected detail type", "got=%T", detail)
 				}

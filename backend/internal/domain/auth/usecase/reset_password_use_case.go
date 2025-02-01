@@ -70,7 +70,7 @@ func (uc *resetPassword) Do(ctx context.Context, input ResetPasswordInput) (Rese
 			return fmt.Errorf("failed to update email verification: %w", err)
 		}
 
-		auth, err := uc.authenticationRepo.WithTx(tx.WriterDB()).FindByTypeAndIdentifier(ctx, authModel.AuthenticationTypeEmailPassword, verification.Email)
+		auth, err := uc.authenticationRepo.WithTx(tx.WriterDB()).FindByTypeAndIdentifier(ctx, authModel.AuthenticationTypePassword, verification.Email)
 		if err != nil {
 			return fmt.Errorf("failed to find authentication: %w", err)
 		}

@@ -8,8 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	authFixture "mickamy.com/sampay/internal/domain/auth/fixture"
-	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/domain/user/repository"
@@ -82,14 +80,10 @@ func TestUser_FindByEmail(t *testing.T) {
 	user := userFixture.User(nil)
 	db := newReadWriter(t)
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
-	auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
-		m.UserID = user.ID
-	})
-	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&auth).Error)
 
 	// act
 	sut := repository.NewUser(db.WriterDB())
-	got, err := sut.FindByEmail(ctx, auth.Identifier)
+	got, err := sut.FindByEmail(ctx, user.Email)
 
 	// assert
 	require.NoError(t, err)
@@ -125,17 +119,11 @@ func TestUser_FindByEmailOrSlug(t *testing.T) {
 			// arrange
 			ctx := context.Background()
 			user := userFixture.User(func(m *model.User) {
+				m.Email = email
 				m.Slug = slug
 			})
 			db := newReadWriter(t)
 			require.NoError(t, db.WriterDB().WithContext(ctx).Create(&user).Error)
-			if tc.emailOrSlug == email {
-				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
-					m.UserID = user.ID
-					m.Identifier = email
-				})
-				require.NoError(t, db.WriterDB().WithContext(ctx).Create(&auth).Error)
-			}
 
 			// act
 			sut := repository.NewUser(db.WriterDB())

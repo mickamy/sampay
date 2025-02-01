@@ -102,7 +102,7 @@ function Navigation({ isLoggedIn, className, ...props }: NavigationProps) {
   }
   return (
     <div className={cn("", className)} {...props}>
-      <Form method="delete" action="sign-out" className="w-full">
+      <Form method="delete" action="/sign-out" className="w-full">
         <Button variant="ghost" className="w-full">
           {t("header.sign_out")}
         </Button>

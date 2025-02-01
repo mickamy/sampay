@@ -6,6 +6,8 @@ import (
 
 	"gorm.io/gorm"
 
+	oauthModel "mickamy.com/sampay/internal/domain/oauth/model"
+	"mickamy.com/sampay/internal/lib/oauth"
 	"mickamy.com/sampay/internal/lib/passwd"
 	"mickamy.com/sampay/internal/lib/ulid"
 )
@@ -13,7 +15,8 @@ import (
 type AuthenticationType string
 
 const (
-	AuthenticationTypeEmailPassword AuthenticationType = "email_password"
+	AuthenticationTypePassword AuthenticationType = "password"
+	AuthenticationTypeGoogle   AuthenticationType = "google"
 )
 
 var (
@@ -38,14 +41,28 @@ func NewAuthenticationEmailPassword(userID, email, password string) (Authenticat
 	}
 	return Authentication{
 		UserID:     userID,
-		Type:       AuthenticationTypeEmailPassword,
+		Type:       AuthenticationTypePassword,
 		Identifier: email,
 		Secret:     hash,
 	}, nil
 }
 
+func NewAuthenticationOAuth(payload oauth.Payload) (Authentication, error) {
+	var provider AuthenticationType
+	switch payload.Provider.String() {
+	case oauthModel.OAuthProviderGoogle.String():
+		provider = AuthenticationTypeGoogle
+	default:
+		return Authentication{}, fmt.Errorf("unsupported provider: %s", payload.Provider)
+	}
+	return Authentication{
+		Type:       provider,
+		Identifier: payload.UID,
+	}, nil
+}
+
 func (m Authentication) AuthenticateByEmailAndPassword(email string, password string) (bool, error) {
-	if m.Type != AuthenticationTypeEmailPassword {
+	if m.Type != AuthenticationTypePassword {
 		return false, ErrAuthenticationDifferentType
 	}
 	if m.Identifier != email {

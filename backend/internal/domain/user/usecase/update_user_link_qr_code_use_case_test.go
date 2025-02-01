@@ -69,6 +69,10 @@ func TestUpdateUserLinkQRCode_Do(t *testing.T) {
 			db := newReadWriter(t)
 			user := fixture.User(nil)
 			require.NoError(t, db.Writer().WithContext(ctx).Create(&user).Error)
+			profile := fixture.UserProfile(func(m *model.UserProfile) {
+				m.UserID = user.ID
+			})
+			require.NoError(t, db.Writer().WithContext(ctx).Create(&profile).Error)
 			ctx = contexts.SetAuthenticatedUserID(ctx, user.ID)
 			m := fixture.UserLink(func(m *model.UserLink) {
 				m.UserID = user.ID

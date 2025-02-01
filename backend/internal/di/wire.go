@@ -10,6 +10,7 @@ import (
 	"mickamy.com/sampay/internal/cli/infra/storage/kvs"
 	auth "mickamy.com/sampay/internal/domain/auth/di"
 	common "mickamy.com/sampay/internal/domain/common/di"
+	oauth "mickamy.com/sampay/internal/domain/oauth/di"
 	registration "mickamy.com/sampay/internal/domain/registration/di"
 	user "mickamy.com/sampay/internal/domain/user/di"
 	"mickamy.com/sampay/internal/job"
@@ -114,6 +115,31 @@ func InitCommonHandlers(db *database.DB, readWriter *database.ReadWriter, writer
 		wire.Struct(new(common.Handlers), "*"),
 	)
 	return common.Handlers{}
+}
+
+func InitOAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) oauth.UseCases {
+	wire.Build(
+		oauth.UseCaseSet,
+		configSet,
+		libSet,
+		auth.RepositorySet,
+		user.RepositorySet,
+		wire.Struct(new(oauth.UseCases), "*"),
+	)
+	return oauth.UseCases{}
+}
+
+func InitOAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) oauth.Handlers {
+	wire.Build(
+		oauth.HandlerSet,
+		configSet,
+		libSet,
+		auth.RepositorySet,
+		user.RepositorySet,
+		oauth.UseCaseSet,
+		wire.Struct(new(oauth.Handlers), "*"),
+	)
+	return oauth.Handlers{}
 }
 
 func InitRegistrationRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) registration.Repositories {

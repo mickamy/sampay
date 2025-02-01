@@ -2,8 +2,8 @@ version: v2
 modules:
   - name: buf.build/mickamy/sampay
 deps:
-  - buf.build/protocolbuffers/wellknowntypes
   - buf.build/bufbuild/protovalidate
+  - buf.build/protocolbuffers/wellknowntypes
 lint:
   use:
     - STANDARD

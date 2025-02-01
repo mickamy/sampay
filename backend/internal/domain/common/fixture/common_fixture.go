@@ -62,3 +62,7 @@ func RandomStringer[T fmt.Stringer](a []T) T {
 func EmailOrSlug() string {
 	return gofakeit.RandomString([]string{gofakeit.GlobalFaker.Email(), gofakeit.GlobalFaker.Username()})
 }
+
+func ImageURL() string {
+	return "https://picsum.photos/200"
+}
