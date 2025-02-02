@@ -3,8 +3,8 @@ module mickamy.com/sampay
 go 1.23.4
 
 require (
-	buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250202021915-b73cc8a6baae.1
-	buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250202021915-b73cc8a6baae.1
+	buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250202042313-7fbc701f44c3.1
+	buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250202042313-7fbc701f44c3.1
 	connectrpc.com/connect v1.18.1
 	github.com/DATA-DOG/go-txdb v0.2.0
 	github.com/alicebob/miniredis/v2 v2.34.0
@@ -25,6 +25,7 @@ require (
 	github.com/google/wire v0.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
+	github.com/mattn/go-gimei v0.0.4
 	github.com/mickamy/go-sqs-worker v1.0.3
 	github.com/mickamy/slogger v0.0.6
 	github.com/nicksnyder/go-i18n/v2 v2.5.0
@@ -103,7 +104,6 @@ require (
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20240909124753-873cd0166683 // indirect
 	github.com/magiconair/properties v1.8.9 // indirect
-	github.com/mattn/go-gimei v0.0.4 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect
 	github.com/moby/patternmatcher v0.6.0 // indirect
 	github.com/moby/sys/sequential v0.6.0 // indirect

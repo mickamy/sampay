@@ -4,19 +4,23 @@ package notification.v1;
 
 import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
+import "common/v1/paging.proto";
 
 message Notification {
   string id = 1 [(buf.validate.field).string.len = 26];
   string subject = 2 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.max_len = 64];
   string body = 3 [(buf.validate.field).string.min_len = 1];
   google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp read_at = 5;
 }
 
 message ListNotificationsRequest {
+  common.v1.Page page = 1;
 }
 
 message ListNotificationsResponse {
   repeated Notification notifications = 1;
+  common.v1.NextPage next_page = 2;
 }
 
 message ReadNotificationRequest {
@@ -26,7 +30,15 @@ message ReadNotificationRequest {
 message ReadNotificationResponse {
 }
 
+message UnreadNotificationsCountRequest {
+}
+
+message UnreadNotificationsCountResponse {
+  int32 count = 1;
+}
+
 service NotificationService {
   rpc ListNotifications(ListNotificationsRequest) returns (ListNotificationsResponse);
   rpc ReadNotification(ReadNotificationRequest) returns (ReadNotificationResponse);
+  rpc UnreadNotificationsCount(UnreadNotificationsCountRequest) returns (UnreadNotificationsCountResponse);
 }

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package common.v1;
+
+import "buf/validate/validate.proto";
+
+message Page {
+  int32 index = 1 [(buf.validate.field).int32.gte = 0];
+  int32 limit = 2 [(buf.validate.field).int32.gte = 1, (buf.validate.field).int32.lte = 100];
+}
+
+message NextPage {
+  int32 index = 1 [(buf.validate.field).int32.gte = 0];
+  int32 limit = 2 [(buf.validate.field).int32.gte = 1, (buf.validate.field).int32.lte = 100];
+  int32 total = 3 [(buf.validate.field).int32.gte = 0];
+}
