@@ -65,6 +65,10 @@ func NotificationJoinReadStatus(db *database.DB) *database.DB {
 	return &database.DB{DB: db.Joins("ReadStatus")}
 }
 
+func NotificationUnread(db *database.DB) *database.DB {
+	return &database.DB{DB: db.Joins("ReadStatus").Where(`"ReadStatus".read_at IS NULL`)}
+}
+
 func NotificationOrderByIDDesc(db *database.DB) *database.DB {
 	return &database.DB{DB: db.Order("id DESC")}
 }
