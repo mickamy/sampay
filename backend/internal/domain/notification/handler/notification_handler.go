@@ -21,17 +21,20 @@ import (
 )
 
 type Notification struct {
-	list usecase.ListNotifications
-	read usecase.ReadNotification
+	list  usecase.ListNotifications
+	read  usecase.ReadNotification
+	count usecase.CountUnreadNotifications
 }
 
 func NewNotification(
 	list usecase.ListNotifications,
 	read usecase.ReadNotification,
+	count usecase.CountUnreadNotifications,
 ) *Notification {
 	return &Notification{
-		list: list,
-		read: read,
+		list:  list,
+		read:  read,
+		count: count,
 	}
 }
 
@@ -102,7 +105,20 @@ func (h *Notification) ReadNotification(
 }
 
 func (h *Notification) UnreadNotificationsCount(ctx context.Context, req *connect.Request[notificationv1.UnreadNotificationsCountRequest]) (*connect.Response[notificationv1.UnreadNotificationsCountResponse], error) {
-	panic("implement me")
+	out, err := h.count.Do(ctx, usecase.CountUnreadNotificationsInput{})
+	if err != nil {
+		lang := contexts.MustLanguage(ctx)
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
+			return nil, localizable.AsConnectError()
+		}
+
+		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
+	}
+	res := connect.NewResponse(&notificationv1.UnreadNotificationsCountResponse{
+		Count: int32(out.Count),
+	})
+	return res, nil
 }
 
 var _ notificationv1connect.NotificationServiceHandler = (*Notification)(nil)

@@ -175,6 +175,63 @@ func TestNotification_ReadNotification(t *testing.T) {
 	}
 }
 
+func TestNotification_UnreadNotificationsCount(t *testing.T) {
+	t.Parallel()
+
+	tsc := []struct {
+		name    string
+		arrange func(t *testing.T, ctx context.Context, infras di.Infras) *notificationv1.UnreadNotificationsCountRequest
+		assert  func(t *testing.T, got *connect.Response[notificationv1.UnreadNotificationsCountResponse], err error)
+	}{
+		{
+			name: "success",
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *notificationv1.UnreadNotificationsCountRequest {
+				userID := contexts.MustAuthenticatedUserID(ctx)
+				m1 := fixture.Notification(func(m *model.Notification) {
+					m.UserID = userID
+				})
+				m2 := fixture.Notification(func(m *model.Notification) {
+					m.UserID = userID
+					m.ReadStatus = fixture.NotificationReadStatusRead(func(m *model.NotificationReadStatus) {
+						m.UserID = userID
+					})
+				})
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&m1).Error)
+				require.NoError(t, infras.Writer.WithContext(ctx).Create(&m2).Error)
+				return &notificationv1.UnreadNotificationsCountRequest{}
+			},
+			assert: func(t *testing.T, got *connect.Response[notificationv1.UnreadNotificationsCountResponse], err error) {
+				require.NoError(t, err)
+				assert.Equal(t, int32(1), got.Msg.Count)
+			},
+		},
+	}
+
+	for _, tc := range tsc {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			// arrange
+			ctx := context.Background()
+			infras := di.NewInfras(newReadWriter(t), newKVS(t))
+			server := newMessageServer(t, infras)
+			user := userFixture.User(nil)
+			require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
+			ctx = contexts.SetAuthenticatedUserID(ctx, user.ID)
+			req := tc.arrange(t, ctx, infras)
+
+			// act
+			client := notificationv1connect.NewNotificationServiceClient(http.DefaultClient, server.URL)
+			connReq := connecttest.NewAuthenticatedRequest(t, ctx, req, nil, authModel.MustNewSession(user.ID), infras.KVS)
+			got, err := client.UnreadNotificationsCount(ctx, connReq)
+
+			// assert
+			tc.assert(t, got, err)
+		})
+	}
+}
+
 func newMessageServer(t *testing.T, infras di.Infras) *httptest.Server {
 	return connecttest.NewServer(t, infras, func(interceptors []connect.Interceptor) (string, http.Handler) {
 		h := di.InitNotificationHandlers(infras.Writer.DB, infras.ReadWriter, infras.Writer, infras.Reader, infras.KVS).Notification

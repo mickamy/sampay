@@ -289,7 +289,8 @@ func InitNotificationHandlers(db *database.DB, readWriter *database.ReadWriter, 
 	notification := repository5.NewNotification(db)
 	listNotifications := usecase4.NewListNotifications(reader, notification)
 	readNotification := usecase4.NewReadNotification(writer, notification)
-	handlerNotification := handler4.NewNotification(listNotifications, readNotification)
+	countUnreadNotifications := usecase4.NewCountUnreadNotifications(reader, notification)
+	handlerNotification := handler4.NewNotification(listNotifications, readNotification, countUnreadNotifications)
 	handlers := di4.Handlers{
 		Notification: handlerNotification,
 	}
