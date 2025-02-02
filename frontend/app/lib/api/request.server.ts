@@ -119,7 +119,7 @@ export async function withAuthentication(
       return new Right(convertToAPIError(e));
     }
     if (e instanceof Response) {
-      return new Left(e);
+      throw e;
     }
     logger.error({ error: e }, "unexpected error");
     throw e;

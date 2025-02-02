@@ -241,7 +241,8 @@ func InitMessageUseCases(db *database.DB, readWriter *database.ReadWriter, write
 	producer := provideProducer(producerConfig, client)
 	user := repository2.NewUser(db)
 	message := repository4.NewMessage(db)
-	sendMessage := usecase3.NewSendMessage(producer, writer, user, message)
+	notification := repository5.NewNotification(db)
+	sendMessage := usecase3.NewSendMessage(producer, writer, user, message, notification)
 	useCases := di3.UseCases{
 		SendMessage: sendMessage,
 	}
@@ -256,7 +257,8 @@ func InitMessageHandlers(db *database.DB, readWriter *database.ReadWriter, write
 	producer := provideProducer(producerConfig, client)
 	user := repository2.NewUser(db)
 	message := repository4.NewMessage(db)
-	sendMessage := usecase3.NewSendMessage(producer, writer, user, message)
+	notification := repository5.NewNotification(db)
+	sendMessage := usecase3.NewSendMessage(producer, writer, user, message, notification)
 	handlerMessage := handler3.NewMessage(sendMessage)
 	handlers := di3.Handlers{
 		Message: handlerMessage,
@@ -274,11 +276,13 @@ func InitNotificationRepositories(db *database.DB, readWriter *database.ReadWrit
 
 func InitNotificationUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di4.UseCases {
 	notification := repository5.NewNotification(db)
+	countUnreadNotifications := usecase4.NewCountUnreadNotifications(reader, notification)
 	listNotifications := usecase4.NewListNotifications(reader, notification)
 	readNotification := usecase4.NewReadNotification(writer, notification)
 	useCases := di4.UseCases{
-		ListNotifications: listNotifications,
-		ReadNotification:  readNotification,
+		CountUnreadNotifications: countUnreadNotifications,
+		ListNotifications:        listNotifications,
+		ReadNotification:         readNotification,
 	}
 	return useCases
 }
@@ -287,7 +291,8 @@ func InitNotificationHandlers(db *database.DB, readWriter *database.ReadWriter, 
 	notification := repository5.NewNotification(db)
 	listNotifications := usecase4.NewListNotifications(reader, notification)
 	readNotification := usecase4.NewReadNotification(writer, notification)
-	handlerNotification := handler4.NewNotification(listNotifications, readNotification)
+	countUnreadNotifications := usecase4.NewCountUnreadNotifications(reader, notification)
+	handlerNotification := handler4.NewNotification(listNotifications, readNotification, countUnreadNotifications)
 	handlers := di4.Handlers{
 		Notification: handlerNotification,
 	}

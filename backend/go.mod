@@ -3,8 +3,8 @@ module mickamy.com/sampay
 go 1.23.4
 
 require (
-	buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250202021915-b73cc8a6baae.1
-	buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250202021915-b73cc8a6baae.1
+	buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250202050944-78db5a9eba8a.1
+	buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250202050944-78db5a9eba8a.1
 	connectrpc.com/connect v1.18.1
 	github.com/DATA-DOG/go-txdb v0.2.0
 	github.com/alicebob/miniredis/v2 v2.34.0
@@ -25,6 +25,7 @@ require (
 	github.com/google/wire v0.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
+	github.com/mattn/go-gimei v0.0.4
 	github.com/mickamy/go-sqs-worker v1.0.3
 	github.com/mickamy/slogger v0.0.6
 	github.com/nicksnyder/go-i18n/v2 v2.5.0
@@ -133,4 +134,5 @@ require (
 	golang.org/x/sys v0.29.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250127172529-29210b9bc287 // indirect
 	google.golang.org/grpc v1.70.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

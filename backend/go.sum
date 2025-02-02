@@ -1,9 +1,9 @@
 buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.4-20250130201111-63bb56e20495.1 h1:4erM3WLgEG/HIBrpBDmRbs1puhd7p0z7kNXDuhHthwM=
 buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.4-20250130201111-63bb56e20495.1/go.mod h1:novQBstnxcGpfKf8qGRATqn1anQKwMJIbH5Q581jibU=
-buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250202021915-b73cc8a6baae.1 h1:aBHf6q4Om3y/fl4hvxkR9/jwXxsAl6XficHITx9wMm4=
-buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250202021915-b73cc8a6baae.1/go.mod h1:TnLLBA8o2oBCwwN34RB9Hluc07Mw+0uiTQhLgHgFQmo=
-buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250202021915-b73cc8a6baae.1 h1:ldLfnFDmNH8fDet8y+WGOKRitM6CvJqF8E1P+7kfr+w=
-buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250202021915-b73cc8a6baae.1/go.mod h1:uQos/rB81oaO/vbIOmdh88lteRYZaXfUqInLeEgQ3AA=
+buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250202050944-78db5a9eba8a.1 h1:x5H/RiSm3MgsdevIUAvGDWhSNbcGI9dG20O8FMCIPPM=
+buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250202050944-78db5a9eba8a.1/go.mod h1:+rdXh5LSwoszw2LuH/mV4uBlRJuiVqTfbDMOI2azaKs=
+buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250202050944-78db5a9eba8a.1 h1:fEHR12Zc5Yi5lXfree3uLUNyfsXiEl67DbQAGycygEY=
+buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250202050944-78db5a9eba8a.1/go.mod h1:uQos/rB81oaO/vbIOmdh88lteRYZaXfUqInLeEgQ3AA=
 cloud.google.com/go/auth v0.14.1 h1:AwoJbzUdxA/whv1qj3TLKwh3XX5sikny2fc40wUl+h0=
 cloud.google.com/go/auth v0.14.1/go.mod h1:4JHUxlGXisL0AW8kXPtUF6ztuOksyfUQNFjfsOCXkPM=
 cloud.google.com/go/auth/oauth2adapt v0.2.7 h1:/Lc7xODdqcEw8IrZ9SvwnlLX6j9FHQM74z6cBk9Rw6M=
@@ -189,6 +189,8 @@ github.com/lufia/plan9stats v0.0.0-20240909124753-873cd0166683 h1:7UMa6KCCMjZEMD
 github.com/lufia/plan9stats v0.0.0-20240909124753-873cd0166683/go.mod h1:ilwx/Dta8jXAgpFYFvSWEMwxmbWXyiUHkd5FwyKhb5k=
 github.com/magiconair/properties v1.8.9 h1:nWcCbLq1N2v/cpNsy5WvQ37Fb+YElfq20WJ/a8RkpQM=
 github.com/magiconair/properties v1.8.9/go.mod h1:Dhd985XPs7jluiymwWYZ0G4Z61jb3vdS329zhj2hYo0=
+github.com/mattn/go-gimei v0.0.4 h1:bW+/59oHuGk3hvZz4n7OxSr1D801/m4zFdK0UOCLttQ=
+github.com/mattn/go-gimei v0.0.4/go.mod h1:EOUfDJNA9Icqfdi6+BEZYIf/Bs8P+dSem2/mX5adh4Q=
 github.com/mickamy/go-sqs-worker v1.0.3 h1:niUhOZe0AmD2bA4dg+qNNU1M5NI1alckaWK26XfmAKg=
 github.com/mickamy/go-sqs-worker v1.0.3/go.mod h1:YzISt9dgMcsFZ3Pwvfh9HiN7jsOMgklRTxjJp+T1AuU=
 github.com/mickamy/slogger v0.0.6 h1:rMLYsFOf+ZWYx5Yxn34y5sRb25DQn+5trflw2MR3y9M=
@@ -392,6 +394,8 @@ gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c h1:Hei/4ADfdWqJk1ZMxUNpqntN
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c/go.mod h1:JHkPIbrfpd72SG/EVd6muEfDQjcINNoR0C8j2r3qZ4Q=
 gopkg.in/natefinch/lumberjack.v2 v2.2.1 h1:bBRl1b0OH9s/DuPhuXpNl+VtCaJXFZ5/uEFST95x9zc=
 gopkg.in/natefinch/lumberjack.v2 v2.2.1/go.mod h1:YD8tP3GAjkrDg1eZH7EGmyESg/lsYskCTPBJVb9jqSc=
+gopkg.in/yaml.v2 v2.4.0 h1:D8xgwECY7CYvx+Y2n4sBz93Jn9JRvxdiyyo8CTfuKaY=
+gopkg.in/yaml.v2 v2.4.0/go.mod h1:RDklbk79AGWmwhnvt/jBztapEOGDOx6ZbXqjP6csGnQ=
 gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=

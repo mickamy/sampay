@@ -70,6 +70,10 @@ const (
 	*/
 	CommonHandlerErrorInternal MessageID = "common.handler.error.internal"
 	/*
+		無効なページです。
+	*/
+	CommonHandlerErrorInvalid_page MessageID = "common.handler.error.invalid_page"
+	/*
 		無効な S3 オブジェクトです。
 	*/
 	CommonRequestErrorInvalid_s3_object MessageID = "common.request.error.invalid_s3_object"

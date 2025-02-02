@@ -131,6 +131,32 @@ func TestNotification_ListByUserID(t *testing.T) {
 	assert.Equal(t, m2.Body, got[1].Body)
 }
 
+func TestNotification_CountByUserID(t *testing.T) {
+	t.Parallel()
+
+	// arrange
+	ctx := context.Background()
+	db := newReadWriter(t)
+	user := userFixture.User(nil)
+	require.NoError(t, db.Writer().WithContext(ctx).Create(&user).Error)
+	m1 := fixture.Notification(func(m *model.Notification) {
+		m.UserID = user.ID
+	})
+	m2 := fixture.Notification(func(m *model.Notification) {
+		m.UserID = user.ID
+	})
+	require.NoError(t, db.Writer().WithContext(ctx).Create(&m1).Error)
+	require.NoError(t, db.Writer().WithContext(ctx).Create(&m2).Error)
+
+	// act
+	sut := repository.NewNotification(db.ReaderDB())
+	got, err := sut.CountByUserID(ctx, user.ID)
+
+	// assert
+	require.NoError(t, err)
+	assert.Equal(t, 2, got)
+}
+
 func TestNotification_Update(t *testing.T) {
 	t.Parallel()
 

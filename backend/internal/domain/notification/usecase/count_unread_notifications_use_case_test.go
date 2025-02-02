@@ -13,10 +13,9 @@ import (
 	"mickamy.com/sampay/internal/domain/notification/usecase"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/lib/contexts"
-	"mickamy.com/sampay/internal/lib/paging"
 )
 
-func TestListNotification_Do(t *testing.T) {
+func TestCountUnreadNotifications_Do(t *testing.T) {
 	t.Parallel()
 
 	// arrange
@@ -24,26 +23,24 @@ func TestListNotification_Do(t *testing.T) {
 	db := newReadWriter(t)
 	user := userFixture.User(nil)
 	require.NoError(t, db.Writer().WithContext(ctx).Create(&user).Error)
-	m1 := fixture.Notification(func(m *model.Notification) {
+	ctx = contexts.SetAuthenticatedUserID(ctx, user.ID)
+	unread := fixture.Notification(func(m *model.Notification) {
 		m.UserID = user.ID
 	})
-	m2 := fixture.Notification(func(m *model.Notification) {
+	require.NoError(t, db.Writer().WithContext(ctx).Create(&unread).Error)
+	read := fixture.Notification(func(m *model.Notification) {
 		m.UserID = user.ID
 		m.ReadStatus = fixture.NotificationReadStatusRead(func(m *model.NotificationReadStatus) {
 			m.UserID = user.ID
 		})
 	})
-	require.NoError(t, db.Writer().WithContext(ctx).Create(&m1).Error)
-	require.NoError(t, db.Writer().WithContext(ctx).Create(&m2).Error)
-	ctx = contexts.SetAuthenticatedUserID(ctx, user.ID)
+	require.NoError(t, db.Writer().WithContext(ctx).Create(&read).Error)
 
 	// act
-	sut := di.InitNotificationUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).ListNotifications
-	got, err := sut.Do(ctx, usecase.ListNotificationsInput{
-		Page: paging.New(0, 10),
-	})
+	sut := di.InitNotificationUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).CountUnreadNotifications
+	got, err := sut.Do(ctx, usecase.CountUnreadNotificationsInput{})
 
 	// assert
 	require.NoError(t, err)
-	assert.Len(t, got.Notifications, 2)
+	assert.Equal(t, 1, got.Count)
 }

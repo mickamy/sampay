@@ -1,3 +1,4 @@
+import { NotificationService } from "@buf/mickamy_sampay.bufbuild_es/notification/v1/notification_pb";
 import { OnboardingService } from "@buf/mickamy_sampay.bufbuild_es/registration/v1/onboarding_pb";
 import { UserLinkService } from "@buf/mickamy_sampay.bufbuild_es/user/v1/user_link_pb";
 import { UserService } from "@buf/mickamy_sampay.bufbuild_es/user/v1/user_pb";
@@ -21,19 +22,34 @@ import { directUpload } from "~/services/.server/direct-upload-service";
 
 export const loader: LoaderFunction = async ({ request }) => {
   return withAuthentication({ request }, async ({ getClient }) => {
-    const { step } = await getClient(OnboardingService).getOnboardingStep({});
-    if (step !== "completed") {
-      throw redirect("/onboarding");
+    {
+      const { step } = await getClient(OnboardingService).getOnboardingStep({});
+      if (step !== "completed") {
+        throw redirect("/onboarding");
+      }
     }
 
-    const { user } = await getClient(UserService).getMe({});
-    if (!user) {
-      throw new Error("user not found");
-    }
+    const user = await getClient(UserService)
+      .getMe({})
+      .then((it) => {
+        if (!it.user) {
+          throw new Error("user not found");
+        }
+        return convertToUser(it.user);
+      });
 
     const url = new URL(request.url);
     url.pathname = `/u/${user.slug}`;
-    const data: LoaderData = { user: convertToUser(user), url: url.toString() };
+
+    const { count } = await getClient(
+      NotificationService,
+    ).countUnreadNotification({});
+
+    const data: LoaderData = {
+      user,
+      url: url.toString(),
+      unreadNotificationsCount: count,
+    };
     return Response.json(data);
   })
     .then((it) => {

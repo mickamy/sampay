@@ -43,6 +43,26 @@ func (m *MockNotification) EXPECT() *MockNotificationMockRecorder {
 	return m.recorder
 }
 
+// CountByUserID mocks base method.
+func (m *MockNotification) CountByUserID(ctx context.Context, userID string, scopes ...database.Scope) (int, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{ctx, userID}
+	for _, a := range scopes {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "CountByUserID", varargs...)
+	ret0, _ := ret[0].(int)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountByUserID indicates an expected call of CountByUserID.
+func (mr *MockNotificationMockRecorder) CountByUserID(ctx, userID any, scopes ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]any{ctx, userID}, scopes...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountByUserID", reflect.TypeOf((*MockNotification)(nil).CountByUserID), varargs...)
+}
+
 // Create mocks base method.
 func (m_2 *MockNotification) Create(ctx context.Context, m *model.Notification) error {
 	m_2.ctrl.T.Helper()

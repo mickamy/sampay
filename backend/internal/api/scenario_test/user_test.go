@@ -35,7 +35,7 @@ func TestUser(t *testing.T) {
 
 	var slug string
 	{
-		infras.DB.Model(&userModel.User{}).Limit(1).Pluck("slug", &slug)
+		infras.DB.Model(&userModel.User{}).Order("id DESC").Limit(1).Pluck("slug", &slug)
 	}
 
 	getUser(t, server, slug, func(res *connect.Response[userv1.GetUserResponse], err error) {
