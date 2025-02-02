@@ -20,7 +20,11 @@ type Notification struct {
 }
 
 func (m *Notification) Read() {
-	m.ReadStatus.ReadAt = ptr.Of(time.Now())
+	m.ReadStatus = NotificationReadStatus{
+		NotificationID: m.ID,
+		UserID:         m.UserID,
+		ReadAt:         ptr.Of(time.Now()),
+	}
 }
 
 func (m *Notification) BeforeCreate(tx *gorm.DB) error {

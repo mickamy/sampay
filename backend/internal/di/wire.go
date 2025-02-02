@@ -171,6 +171,9 @@ func InitNotificationUseCases(db *database.DB, readWriter *database.ReadWriter, 
 
 func InitNotificationHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) notification.Handlers {
 	wire.Build(
+		notification.HandlerSet,
+		notification.RepositorySet,
+		notification.UseCaseSet,
 		wire.Struct(new(notification.Handlers), "*"),
 	)
 	return notification.Handlers{}

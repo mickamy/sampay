@@ -28,6 +28,9 @@ func TestListNotification_Do(t *testing.T) {
 	})
 	m2 := fixture.Notification(func(m *model.Notification) {
 		m.UserID = user.ID
+		m.ReadStatus = fixture.NotificationReadStatusRead(func(m *model.NotificationReadStatus) {
+			m.UserID = user.ID
+		})
 	})
 	require.NoError(t, db.Writer().WithContext(ctx).Create(&m1).Error)
 	require.NoError(t, db.Writer().WithContext(ctx).Create(&m2).Error)

@@ -23,17 +23,18 @@ import (
 	repository4 "mickamy.com/sampay/internal/domain/message/repository"
 	usecase3 "mickamy.com/sampay/internal/domain/message/usecase"
 	di4 "mickamy.com/sampay/internal/domain/notification/di"
+	handler4 "mickamy.com/sampay/internal/domain/notification/handler"
 	repository5 "mickamy.com/sampay/internal/domain/notification/repository"
 	usecase4 "mickamy.com/sampay/internal/domain/notification/usecase"
 	di5 "mickamy.com/sampay/internal/domain/oauth/di"
-	handler4 "mickamy.com/sampay/internal/domain/oauth/handler"
+	handler5 "mickamy.com/sampay/internal/domain/oauth/handler"
 	usecase5 "mickamy.com/sampay/internal/domain/oauth/usecase"
 	di6 "mickamy.com/sampay/internal/domain/registration/di"
-	handler5 "mickamy.com/sampay/internal/domain/registration/handler"
+	handler6 "mickamy.com/sampay/internal/domain/registration/handler"
 	repository6 "mickamy.com/sampay/internal/domain/registration/repository"
 	usecase6 "mickamy.com/sampay/internal/domain/registration/usecase"
 	di7 "mickamy.com/sampay/internal/domain/user/di"
-	handler6 "mickamy.com/sampay/internal/domain/user/handler"
+	handler7 "mickamy.com/sampay/internal/domain/user/handler"
 	repository2 "mickamy.com/sampay/internal/domain/user/repository"
 	usecase7 "mickamy.com/sampay/internal/domain/user/usecase"
 	"mickamy.com/sampay/internal/job"
@@ -281,7 +282,12 @@ func InitNotificationUseCases(db *database.DB, readWriter *database.ReadWriter, 
 }
 
 func InitNotificationHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di4.Handlers {
-	handlers := di4.Handlers{}
+	notification := repository5.NewNotification(db)
+	listNotifications := usecase4.NewListNotifications(reader, notification)
+	handlerNotification := handler4.NewNotification(listNotifications)
+	handlers := di4.Handlers{
+		Notification: handlerNotification,
+	}
 	return handlers
 }
 
@@ -316,7 +322,7 @@ func InitOAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer 
 	user := repository2.NewUser(db)
 	userProfile := repository2.NewUserProfile(db)
 	oAuthCallback := usecase5.NewOAuthCallback(google, client, writer, authentication, emailVerification, session, user, userProfile)
-	oAuth := handler4.NewOAuth(oAuthSignIn, oAuthCallback)
+	oAuth := handler5.NewOAuth(oAuthSignIn, oAuthCallback)
 	handlers := di5.Handlers{
 		OAuth: oAuth,
 	}
@@ -365,10 +371,10 @@ func InitRegistrationHandlers(db *database.DB, readWriter *database.ReadWriter, 
 	createUserAttribute := usecase6.NewCreateUserAttribute(writer, userAttribute)
 	userProfile := repository2.NewUserProfile(db)
 	createUserProfile := usecase6.NewCreateUserProfile(writer, user, userProfile)
-	onboarding := handler5.NewOnboarding(getOnboardingStep, createPassword, createUserAttribute, createUserProfile)
+	onboarding := handler6.NewOnboarding(getOnboardingStep, createPassword, createUserAttribute, createUserProfile)
 	usageCategory := repository6.NewUsageCategory(db)
 	listUsageCategories := usecase6.NewListUsageCategories(reader, usageCategory)
-	handlerUsageCategory := handler5.NewUsageCategory(listUsageCategories)
+	handlerUsageCategory := handler6.NewUsageCategory(listUsageCategories)
 	handlers := di6.Handlers{
 		Onboarding:    onboarding,
 		UsageCategory: handlerUsageCategory,
@@ -424,7 +430,7 @@ func InitUserHandler(db *database.DB, readWriter *database.ReadWriter, writer *d
 	user := repository2.NewUser(db)
 	getMe := usecase7.NewGetMe(reader, user)
 	getUser := usecase7.NewGetUser(reader, user)
-	handlerUser := handler6.NewUser(getMe, getUser)
+	handlerUser := handler7.NewUser(getMe, getUser)
 	userLink := repository2.NewUserLink(db)
 	createUserLink := usecase7.NewCreateUserLink(writer, userLink)
 	listUserLink := usecase7.NewListUserLink(reader, userLink)
@@ -432,11 +438,11 @@ func InitUserHandler(db *database.DB, readWriter *database.ReadWriter, writer *d
 	s3Object := repository3.NewS3Object(db)
 	updateUserLinkQRCode := usecase7.NewUpdateUserLinkQRCode(writer, userLink, s3Object)
 	deleteUserLink := usecase7.NewDeleteUserLink(writer, userLink)
-	handlerUserLink := handler6.NewUserLink(createUserLink, listUserLink, updateUserLink, updateUserLinkQRCode, deleteUserLink)
+	handlerUserLink := handler7.NewUserLink(createUserLink, listUserLink, updateUserLink, updateUserLinkQRCode, deleteUserLink)
 	userProfile := repository2.NewUserProfile(db)
 	updateUserProfile := usecase7.NewUpdateUserProfile(writer, user, userProfile)
 	updateUserProfileImage := usecase7.NewUpdateUserProfileImage(writer, userProfile, s3Object)
-	handlerUserProfile := handler6.NewUserProfile(updateUserProfile, updateUserProfileImage)
+	handlerUserProfile := handler7.NewUserProfile(updateUserProfile, updateUserProfileImage)
 	handlers := di7.Handlers{
 		User:        handlerUser,
 		UserLink:    handlerUserLink,

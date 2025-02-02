@@ -18,15 +18,3 @@ func Notification(setter func(m *model.Notification)) model.Notification {
 
 	return m
 }
-
-func NotificationRead(setter func(m *model.Notification)) model.Notification {
-	m := Notification(func(m *model.Notification) {
-		m.Read()
-	})
-
-	if setter != nil {
-		setter(&m)
-	}
-
-	return m
-}
