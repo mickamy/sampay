@@ -5,8 +5,10 @@ import (
 	"fmt"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
+	commonModel "mickamy.com/sampay/internal/domain/common/model"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
+	"mickamy.com/sampay/internal/lib/aws/s3"
 	"mickamy.com/sampay/internal/lib/contexts"
 )
 
@@ -14,6 +16,7 @@ type CreateUserLinkInput struct {
 	ProviderType userModel.UserLinkProviderType
 	URI          string
 	Name         string
+	QRCode       *commonModel.S3Object
 }
 
 type CreateUserLinkOutput struct {
@@ -26,15 +29,18 @@ type CreateUserLink interface {
 
 type createUserLink struct {
 	writer       *database.Writer
+	s3           s3.Client
 	userLinkRepo userRepository.UserLink
 }
 
 func NewCreateUserLink(
 	writer *database.Writer,
+	s3 s3.Client,
 	userLinkRepo userRepository.UserLink,
 ) CreateUserLink {
 	return &createUserLink{
 		writer:       writer,
+		s3:           s3,
 		userLinkRepo: userLinkRepo,
 	}
 }
@@ -48,7 +54,9 @@ func (uc *createUserLink) Do(ctx context.Context, input CreateUserLinkInput) (Cr
 			Name: input.Name,
 		},
 	}
+	m.SetQRCode(input.QRCode)
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
+
 		order, err := uc.userLinkRepo.WithTx(tx.WriterDB()).GetLastDisplayOrderByUserID(ctx, m.UserID)
 		if err != nil {
 			return fmt.Errorf("failed to get last display order by user id: %w", err)

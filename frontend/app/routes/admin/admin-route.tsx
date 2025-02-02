@@ -204,8 +204,6 @@ async function postLink({
   return withAuthentication({ request }, async ({ getClient }) => {
     const { qrCode, ...data } = userLinkSchema.parse(Object.fromEntries(body));
 
-    const client = getClient(UserLinkService);
-
     let imageObj: S3Object | undefined;
     if (qrCode) {
       imageObj = await directUpload({
@@ -215,7 +213,7 @@ async function postLink({
       });
     }
 
-    await client.createUserLink({
+    await getClient(UserLinkService).createUserLink({
       providerType: data.provider_type,
       uri: data.uri,
       name: data.name,
@@ -223,7 +221,6 @@ async function postLink({
     });
     const actionData: ActionData = {
       postLinkSuccess: true,
-      postLinkError: undefined,
     };
     return Response.json(actionData);
   })
@@ -247,8 +244,9 @@ async function putLink({
 
     const client = getClient(UserLinkService);
 
+    let imageObj: S3Object | undefined;
     if (qrCode) {
-      const imageObj = await directUpload({
+      imageObj = await directUpload({
         type: "qr_code",
         file: qrCode,
         getClient,
@@ -264,6 +262,7 @@ async function putLink({
       providerType: data.provider_type,
       uri: data.uri,
       name: data.name,
+      qrCode: imageObj,
     });
     const actionData: ActionData = {
       putLinkSuccess: true,

@@ -88,7 +88,7 @@ export default function UserLinkButton({
           </DropdownMenuItem>
           {link.qrCodeURL && (
             <DropdownMenuItem onClick={openQRCode}>
-              {t("components.user_link_button.open_qr_code")}
+              {t("components.user_link_button.open_image")}
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>

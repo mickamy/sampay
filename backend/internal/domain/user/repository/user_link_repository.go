@@ -52,18 +52,21 @@ func (repo *userLink) Find(ctx context.Context, id string, scopes ...database.Sc
 }
 
 func (repo *userLink) GetLastDisplayOrderByUserID(ctx context.Context, userID string) (int, error) {
-	var m model.UserLink
+	var order int
 	err := repo.db.WithContext(ctx).
-		Joins("DisplayAttribute").
+		Model(&model.UserLink{}).
+		InnerJoins("DisplayAttribute").
+		Where("user_id = ?", userID).
 		Order(`"DisplayAttribute".display_order DESC`).
-		First(&m, "user_id = ?", userID).Error
+		Limit(1).
+		Pluck("display_order", &order).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return -1, nil
 		}
 		return -1, err
 	}
-	return m.DisplayAttribute.DisplayOrder, err
+	return order, err
 }
 
 func (repo *userLink) Update(ctx context.Context, m *model.UserLink) error {

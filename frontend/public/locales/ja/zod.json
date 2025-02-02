@@ -1,6 +1,5 @@
 {
   "invalid_file_type": "ファイル形式が無効です",
-  "invalid_qr_code": "QR コードが無効です",
   "invalid_slug": "英数字と . - _ のみ使用できます",
   "too_large_file": "ファイルサイズが大きすぎます。{{size}} 以下のファイルを選択してください"
 }

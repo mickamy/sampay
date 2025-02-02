@@ -125,10 +125,6 @@ export default function UserLinkForm({
       })
       .catch((e) => {
         if (!isCancelled) {
-          setError("qrCode", {
-            type: "invalid",
-            message: t("form.error.invalid_qr_code"),
-          });
           setValue("provider_type", "other");
         }
       });

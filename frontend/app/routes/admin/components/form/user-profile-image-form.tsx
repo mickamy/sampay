@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 import { underlinedLinkStyle } from "~/components/underlined-link";
 import useImagePreview from "~/hooks/use-image-preview";
 import type { APIError } from "~/lib/api/response";
@@ -103,7 +104,9 @@ export default function UserProfileImageForm({
               </FormLabel>
               <FormControl>
                 <div className="relative flex flex-col items-center">
-                  <Avatar src={imageURL} className="w-32 h-32" />
+                  <Label htmlFor="image">
+                    <Avatar src={imageURL} className="w-32 h-32" />
+                  </Label>
                   <Spacer />
                   <button
                     type="button"
