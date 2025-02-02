@@ -7,9 +7,9 @@
 package di
 
 import (
+	"github.com/redis/go-redis/v9"
 	"mickamy.com/sampay/config"
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
-	"mickamy.com/sampay/internal/cli/infra/storage/kvs"
 	"mickamy.com/sampay/internal/domain/auth/di"
 	"mickamy.com/sampay/internal/domain/auth/handler"
 	"mickamy.com/sampay/internal/domain/auth/repository"
@@ -22,17 +22,20 @@ import (
 	handler3 "mickamy.com/sampay/internal/domain/message/handler"
 	repository4 "mickamy.com/sampay/internal/domain/message/repository"
 	usecase3 "mickamy.com/sampay/internal/domain/message/usecase"
-	di4 "mickamy.com/sampay/internal/domain/oauth/di"
+	di4 "mickamy.com/sampay/internal/domain/notification/di"
+	repository5 "mickamy.com/sampay/internal/domain/notification/repository"
+	usecase4 "mickamy.com/sampay/internal/domain/notification/usecase"
+	di5 "mickamy.com/sampay/internal/domain/oauth/di"
 	handler4 "mickamy.com/sampay/internal/domain/oauth/handler"
-	usecase4 "mickamy.com/sampay/internal/domain/oauth/usecase"
-	di5 "mickamy.com/sampay/internal/domain/registration/di"
+	usecase5 "mickamy.com/sampay/internal/domain/oauth/usecase"
+	di6 "mickamy.com/sampay/internal/domain/registration/di"
 	handler5 "mickamy.com/sampay/internal/domain/registration/handler"
-	repository5 "mickamy.com/sampay/internal/domain/registration/repository"
-	usecase5 "mickamy.com/sampay/internal/domain/registration/usecase"
-	di6 "mickamy.com/sampay/internal/domain/user/di"
+	repository6 "mickamy.com/sampay/internal/domain/registration/repository"
+	usecase6 "mickamy.com/sampay/internal/domain/registration/usecase"
+	di7 "mickamy.com/sampay/internal/domain/user/di"
 	handler6 "mickamy.com/sampay/internal/domain/user/handler"
 	repository2 "mickamy.com/sampay/internal/domain/user/repository"
-	usecase6 "mickamy.com/sampay/internal/domain/user/usecase"
+	usecase7 "mickamy.com/sampay/internal/domain/user/usecase"
 	"mickamy.com/sampay/internal/job"
 	"mickamy.com/sampay/internal/lib/aws/s3"
 	"mickamy.com/sampay/internal/lib/aws/ses"
@@ -60,7 +63,7 @@ func InitInfras() (Infras, error) {
 		return Infras{}, err
 	}
 	kvsConfig := config.KVS()
-	v, err := provideKVS(kvsConfig)
+	client, err := provideKVS(kvsConfig)
 	if err != nil {
 		return Infras{}, err
 	}
@@ -69,7 +72,7 @@ func InitInfras() (Infras, error) {
 		ReadWriter: readWriter,
 		Writer:     writer,
 		Reader:     reader,
-		KVS:        v,
+		KVS:        client,
 	}
 	return infras, nil
 }
@@ -122,10 +125,10 @@ func InitConsumers() Consumers {
 	return consumers
 }
 
-func InitAuthRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di.Repositories {
+func InitAuthRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di.Repositories {
 	authentication := repository.NewAuthentication(db)
 	emailVerification := repository.NewEmailVerification(db)
-	session := repository.NewSession(kvs2)
+	session := repository.NewSession(kvs)
 	repositories := di.Repositories{
 		Authentication:    authentication,
 		EmailVerification: emailVerification,
@@ -134,10 +137,10 @@ func InitAuthRepositories(db *database.DB, readWriter *database.ReadWriter, writ
 	return repositories
 }
 
-func InitAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di.UseCases {
+func InitAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di.UseCases {
 	emailVerification := repository.NewEmailVerification(db)
 	authenticateAnonymousUser := usecase.NewAuthenticateAnonymousUser(reader, emailVerification)
-	session := repository.NewSession(kvs2)
+	session := repository.NewSession(kvs)
 	user := repository2.NewUser(db)
 	authenticateUser := usecase.NewAuthenticateUser(reader, session, user)
 	authentication := repository.NewAuthentication(db)
@@ -165,7 +168,7 @@ func InitAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *
 	return useCases
 }
 
-func InitAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di.Handlers {
+func InitAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di.Handlers {
 	awsConfig := config.AWS()
 	kvsConfig := config.KVS()
 	producerConfig := provideProducerConfig(awsConfig, kvsConfig)
@@ -178,7 +181,7 @@ func InitAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *
 	handlerEmailVerification := handler.NewEmailVerification(requestEmailVerification, verifyEmail)
 	resetPassword := usecase.NewResetPassword(writer, emailVerification, authentication)
 	passwordReset := handler.NewPasswordReset(resetPassword)
-	session := repository.NewSession(kvs2)
+	session := repository.NewSession(kvs)
 	user := repository2.NewUser(db)
 	createSession := usecase.NewCreateSession(reader, authentication, session, user)
 	refreshSession := usecase.NewRefreshSession(session)
@@ -192,7 +195,7 @@ func InitAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *
 	return handlers
 }
 
-func InitCommonRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di2.Repositories {
+func InitCommonRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di2.Repositories {
 	s3Object := repository3.NewS3Object(db)
 	repositories := di2.Repositories{
 		S3Object: s3Object,
@@ -200,7 +203,7 @@ func InitCommonRepositories(db *database.DB, readWriter *database.ReadWriter, wr
 	return repositories
 }
 
-func InitCommonUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di2.UseCases {
+func InitCommonUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di2.UseCases {
 	awsConfig := config.AWS()
 	client := s3.New(awsConfig)
 	createDirectUploadURL := usecase2.NewCreateDirectUploadURL(client)
@@ -210,7 +213,7 @@ func InitCommonUseCases(db *database.DB, readWriter *database.ReadWriter, writer
 	return useCases
 }
 
-func InitCommonHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di2.Handlers {
+func InitCommonHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di2.Handlers {
 	awsConfig := config.AWS()
 	client := s3.New(awsConfig)
 	createDirectUploadURL := usecase2.NewCreateDirectUploadURL(client)
@@ -221,7 +224,7 @@ func InitCommonHandlers(db *database.DB, readWriter *database.ReadWriter, writer
 	return handlers
 }
 
-func InitMessageRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di3.Repositories {
+func InitMessageRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di3.Repositories {
 	message := repository4.NewMessage(db)
 	repositories := di3.Repositories{
 		Message: message,
@@ -229,7 +232,7 @@ func InitMessageRepositories(db *database.DB, readWriter *database.ReadWriter, w
 	return repositories
 }
 
-func InitMessageUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di3.UseCases {
+func InitMessageUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di3.UseCases {
 	awsConfig := config.AWS()
 	kvsConfig := config.KVS()
 	producerConfig := provideProducerConfig(awsConfig, kvsConfig)
@@ -244,7 +247,7 @@ func InitMessageUseCases(db *database.DB, readWriter *database.ReadWriter, write
 	return useCases
 }
 
-func InitMessageHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di3.Handlers {
+func InitMessageHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di3.Handlers {
 	awsConfig := config.AWS()
 	kvsConfig := config.KVS()
 	producerConfig := provideProducerConfig(awsConfig, kvsConfig)
@@ -260,66 +263,88 @@ func InitMessageHandlers(db *database.DB, readWriter *database.ReadWriter, write
 	return handlers
 }
 
-func InitOAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di4.UseCases {
+func InitNotificationRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di4.Repositories {
+	notification := repository5.NewNotification(db)
+	repositories := di4.Repositories{
+		Notification: notification,
+	}
+	return repositories
+}
+
+func InitNotificationUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di4.UseCases {
+	notification := repository5.NewNotification(db)
+	listNotifications := usecase4.NewListNotifications(reader, notification)
+	useCases := di4.UseCases{
+		ListNotifications: listNotifications,
+	}
+	return useCases
+}
+
+func InitNotificationHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di4.Handlers {
+	handlers := di4.Handlers{}
+	return handlers
+}
+
+func InitOAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di5.UseCases {
 	oAuthConfig := config.OAuth()
 	google := oauth.NewGoogle(oAuthConfig)
-	oAuthSignIn := usecase4.NewOAuthSignIn(google)
+	oAuthSignIn := usecase5.NewOAuthSignIn(google)
 	awsConfig := config.AWS()
 	client := s3.New(awsConfig)
 	authentication := repository.NewAuthentication(db)
 	emailVerification := repository.NewEmailVerification(db)
-	session := repository.NewSession(kvs2)
+	session := repository.NewSession(kvs)
 	user := repository2.NewUser(db)
 	userProfile := repository2.NewUserProfile(db)
-	oAuthCallback := usecase4.NewOAuthCallback(google, client, writer, authentication, emailVerification, session, user, userProfile)
-	useCases := di4.UseCases{
+	oAuthCallback := usecase5.NewOAuthCallback(google, client, writer, authentication, emailVerification, session, user, userProfile)
+	useCases := di5.UseCases{
 		OAuthSignIn:   oAuthSignIn,
 		OAuthCallback: oAuthCallback,
 	}
 	return useCases
 }
 
-func InitOAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di4.Handlers {
+func InitOAuthHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di5.Handlers {
 	oAuthConfig := config.OAuth()
 	google := oauth.NewGoogle(oAuthConfig)
-	oAuthSignIn := usecase4.NewOAuthSignIn(google)
+	oAuthSignIn := usecase5.NewOAuthSignIn(google)
 	awsConfig := config.AWS()
 	client := s3.New(awsConfig)
 	authentication := repository.NewAuthentication(db)
 	emailVerification := repository.NewEmailVerification(db)
-	session := repository.NewSession(kvs2)
+	session := repository.NewSession(kvs)
 	user := repository2.NewUser(db)
 	userProfile := repository2.NewUserProfile(db)
-	oAuthCallback := usecase4.NewOAuthCallback(google, client, writer, authentication, emailVerification, session, user, userProfile)
+	oAuthCallback := usecase5.NewOAuthCallback(google, client, writer, authentication, emailVerification, session, user, userProfile)
 	oAuth := handler4.NewOAuth(oAuthSignIn, oAuthCallback)
-	handlers := di4.Handlers{
+	handlers := di5.Handlers{
 		OAuth: oAuth,
 	}
 	return handlers
 }
 
-func InitRegistrationRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di5.Repositories {
-	usageCategory := repository5.NewUsageCategory(db)
-	repositories := di5.Repositories{
+func InitRegistrationRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di6.Repositories {
+	usageCategory := repository6.NewUsageCategory(db)
+	repositories := di6.Repositories{
 		UsageCategory: usageCategory,
 	}
 	return repositories
 }
 
-func InitRegistrationUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di5.UseCases {
+func InitRegistrationUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di6.UseCases {
 	emailVerification := repository.NewEmailVerification(db)
 	authentication := repository.NewAuthentication(db)
 	user := repository2.NewUser(db)
-	session := repository.NewSession(kvs2)
-	createPassword := usecase5.NewCreatePassword(writer, emailVerification, authentication, user, session)
+	session := repository.NewSession(kvs)
+	createPassword := usecase6.NewCreatePassword(writer, emailVerification, authentication, user, session)
 	userAttribute := repository2.NewUserAttribute(db)
-	createUserAttribute := usecase5.NewCreateUserAttribute(writer, userAttribute)
+	createUserAttribute := usecase6.NewCreateUserAttribute(writer, userAttribute)
 	userProfile := repository2.NewUserProfile(db)
-	createUserProfile := usecase5.NewCreateUserProfile(writer, user, userProfile)
-	getOnboardingStep := usecase5.NewGetOnboardingStep(reader, emailVerification, authentication, user)
-	usageCategory := repository5.NewUsageCategory(db)
-	listUsageCategories := usecase5.NewListUsageCategories(reader, usageCategory)
-	useCases := di5.UseCases{
+	createUserProfile := usecase6.NewCreateUserProfile(writer, user, userProfile)
+	getOnboardingStep := usecase6.NewGetOnboardingStep(reader, emailVerification, authentication, user)
+	usageCategory := repository6.NewUsageCategory(db)
+	listUsageCategories := usecase6.NewListUsageCategories(reader, usageCategory)
+	useCases := di6.UseCases{
 		CreatePassword:      createPassword,
 		CreateUserAttribute: createUserAttribute,
 		CreateUserProfile:   createUserProfile,
@@ -329,35 +354,35 @@ func InitRegistrationUseCases(db *database.DB, readWriter *database.ReadWriter, 
 	return useCases
 }
 
-func InitRegistrationHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di5.Handlers {
+func InitRegistrationHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di6.Handlers {
 	emailVerification := repository.NewEmailVerification(db)
 	authentication := repository.NewAuthentication(db)
 	user := repository2.NewUser(db)
-	getOnboardingStep := usecase5.NewGetOnboardingStep(reader, emailVerification, authentication, user)
-	session := repository.NewSession(kvs2)
-	createPassword := usecase5.NewCreatePassword(writer, emailVerification, authentication, user, session)
+	getOnboardingStep := usecase6.NewGetOnboardingStep(reader, emailVerification, authentication, user)
+	session := repository.NewSession(kvs)
+	createPassword := usecase6.NewCreatePassword(writer, emailVerification, authentication, user, session)
 	userAttribute := repository2.NewUserAttribute(db)
-	createUserAttribute := usecase5.NewCreateUserAttribute(writer, userAttribute)
+	createUserAttribute := usecase6.NewCreateUserAttribute(writer, userAttribute)
 	userProfile := repository2.NewUserProfile(db)
-	createUserProfile := usecase5.NewCreateUserProfile(writer, user, userProfile)
+	createUserProfile := usecase6.NewCreateUserProfile(writer, user, userProfile)
 	onboarding := handler5.NewOnboarding(getOnboardingStep, createPassword, createUserAttribute, createUserProfile)
-	usageCategory := repository5.NewUsageCategory(db)
-	listUsageCategories := usecase5.NewListUsageCategories(reader, usageCategory)
+	usageCategory := repository6.NewUsageCategory(db)
+	listUsageCategories := usecase6.NewListUsageCategories(reader, usageCategory)
 	handlerUsageCategory := handler5.NewUsageCategory(listUsageCategories)
-	handlers := di5.Handlers{
+	handlers := di6.Handlers{
 		Onboarding:    onboarding,
 		UsageCategory: handlerUsageCategory,
 	}
 	return handlers
 }
 
-func InitUserRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di6.Repositories {
+func InitUserRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di7.Repositories {
 	user := repository2.NewUser(db)
 	userAttribute := repository2.NewUserAttribute(db)
 	userLinkProvider := repository2.NewUserLinkProvider(db)
 	userLink := repository2.NewUserLink(db)
 	userProfile := repository2.NewUserProfile(db)
-	repositories := di6.Repositories{
+	repositories := di7.Repositories{
 		User:             user,
 		UserAttribute:    userAttribute,
 		UserLinkProvider: userLinkProvider,
@@ -367,21 +392,21 @@ func InitUserRepositories(db *database.DB, readWriter *database.ReadWriter, writ
 	return repositories
 }
 
-func InitUserUseCase(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di6.UseCases {
+func InitUserUseCase(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di7.UseCases {
 	userLink := repository2.NewUserLink(db)
-	createUserLink := usecase6.NewCreateUserLink(writer, userLink)
-	deleteUserLink := usecase6.NewDeleteUserLink(writer, userLink)
+	createUserLink := usecase7.NewCreateUserLink(writer, userLink)
+	deleteUserLink := usecase7.NewDeleteUserLink(writer, userLink)
 	user := repository2.NewUser(db)
-	getMe := usecase6.NewGetMe(reader, user)
-	getUser := usecase6.NewGetUser(reader, user)
-	listUserLink := usecase6.NewListUserLink(reader, userLink)
+	getMe := usecase7.NewGetMe(reader, user)
+	getUser := usecase7.NewGetUser(reader, user)
+	listUserLink := usecase7.NewListUserLink(reader, userLink)
 	s3Object := repository3.NewS3Object(db)
-	updateUserLinkQRCode := usecase6.NewUpdateUserLinkQRCode(writer, userLink, s3Object)
-	updateUserLink := usecase6.NewUpdateUserLink(writer, userLink)
+	updateUserLinkQRCode := usecase7.NewUpdateUserLinkQRCode(writer, userLink, s3Object)
+	updateUserLink := usecase7.NewUpdateUserLink(writer, userLink)
 	userProfile := repository2.NewUserProfile(db)
-	updateUserProfile := usecase6.NewUpdateUserProfile(writer, user, userProfile)
-	updateUserProfileImage := usecase6.NewUpdateUserProfileImage(writer, userProfile, s3Object)
-	useCases := di6.UseCases{
+	updateUserProfile := usecase7.NewUpdateUserProfile(writer, user, userProfile)
+	updateUserProfileImage := usecase7.NewUpdateUserProfileImage(writer, userProfile, s3Object)
+	useCases := di7.UseCases{
 		CreateUserLink:         createUserLink,
 		DeleteUserLink:         deleteUserLink,
 		GetMe:                  getMe,
@@ -395,24 +420,24 @@ func InitUserUseCase(db *database.DB, readWriter *database.ReadWriter, writer *d
 	return useCases
 }
 
-func InitUserHandler(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di6.Handlers {
+func InitUserHandler(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *redis.Client) di7.Handlers {
 	user := repository2.NewUser(db)
-	getMe := usecase6.NewGetMe(reader, user)
-	getUser := usecase6.NewGetUser(reader, user)
+	getMe := usecase7.NewGetMe(reader, user)
+	getUser := usecase7.NewGetUser(reader, user)
 	handlerUser := handler6.NewUser(getMe, getUser)
 	userLink := repository2.NewUserLink(db)
-	createUserLink := usecase6.NewCreateUserLink(writer, userLink)
-	listUserLink := usecase6.NewListUserLink(reader, userLink)
-	updateUserLink := usecase6.NewUpdateUserLink(writer, userLink)
+	createUserLink := usecase7.NewCreateUserLink(writer, userLink)
+	listUserLink := usecase7.NewListUserLink(reader, userLink)
+	updateUserLink := usecase7.NewUpdateUserLink(writer, userLink)
 	s3Object := repository3.NewS3Object(db)
-	updateUserLinkQRCode := usecase6.NewUpdateUserLinkQRCode(writer, userLink, s3Object)
-	deleteUserLink := usecase6.NewDeleteUserLink(writer, userLink)
+	updateUserLinkQRCode := usecase7.NewUpdateUserLinkQRCode(writer, userLink, s3Object)
+	deleteUserLink := usecase7.NewDeleteUserLink(writer, userLink)
 	handlerUserLink := handler6.NewUserLink(createUserLink, listUserLink, updateUserLink, updateUserLinkQRCode, deleteUserLink)
 	userProfile := repository2.NewUserProfile(db)
-	updateUserProfile := usecase6.NewUpdateUserProfile(writer, user, userProfile)
-	updateUserProfileImage := usecase6.NewUpdateUserProfileImage(writer, userProfile, s3Object)
+	updateUserProfile := usecase7.NewUpdateUserProfile(writer, user, userProfile)
+	updateUserProfileImage := usecase7.NewUpdateUserProfileImage(writer, userProfile, s3Object)
 	handlerUserProfile := handler6.NewUserProfile(updateUserProfile, updateUserProfileImage)
-	handlers := di6.Handlers{
+	handlers := di7.Handlers{
 		User:        handlerUser,
 		UserLink:    handlerUserLink,
 		UserProfile: handlerUserProfile,
