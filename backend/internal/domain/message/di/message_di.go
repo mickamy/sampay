@@ -18,12 +18,12 @@ var RepositorySet = wire.NewSet(
 )
 
 type UseCases struct {
-	usecase.CreateMessage
+	usecase.SendMessage
 }
 
 //lint:ignore U1000 used by wire
 var UseCaseSet = wire.NewSet(
-	usecase.NewCreateMessage,
+	usecase.NewSendMessage,
 )
 
 type Handlers struct {
