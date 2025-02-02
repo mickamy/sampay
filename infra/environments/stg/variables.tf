@@ -30,6 +30,11 @@ variable "domain" {
   type        = string
 }
 
+variable "email_from" {
+  description = "Email from"
+  type        = string
+}
+
 variable "frontend_base_url" {
   description = "Frontend base URL"
   type        = string

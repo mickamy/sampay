@@ -34,6 +34,11 @@ variable "env" {
   type        = string
 }
 
+variable "email_from" {
+  description = "Email from"
+  type        = string
+}
+
 variable "frontend_base_url" {
   description = "Frontend base URL"
   type        = string
@@ -56,7 +61,7 @@ variable "google_client_secret" {
 
 variable "oauth_redirect_url" {
   description = "OAuth redirect URL"
-  type = string
+  type        = string
 }
 
 variable "ssh_private_key_path" {

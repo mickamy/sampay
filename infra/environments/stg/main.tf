@@ -94,6 +94,7 @@ module "ssm" {
   db_host               = var.db_host
   db_port               = var.db_port
   db_timezone           = var.db_timezone
+  email_from            = var.email_from
   frontend_base_url     = var.frontend_base_url
   github_repo           = var.github_repo
   google_client_id      = var.google_client_id
