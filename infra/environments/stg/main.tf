@@ -78,6 +78,7 @@ module "sg" {
 
   github_repo = var.github_repo
   ssh_port    = var.ssh_port
+  trusted_ip  = var.trusted_ip
   vpc_id      = module.vpc.vpc_id
 }
 

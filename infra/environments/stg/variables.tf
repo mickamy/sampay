@@ -107,6 +107,11 @@ variable "ssh_public_key_path" {
   type        = string
 }
 
+variable "trusted_ip" {
+  description = "Trusted IP address"
+  type        = string
+}
+
 variable "volume_size" {
   description = "Volume size in GB"
   type        = number

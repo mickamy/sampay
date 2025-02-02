@@ -20,6 +20,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::590183691452:role/GitHubActionsRole-590183691452
+          aws-region: ap-northeast-1
+
+      - name: Get Public IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+
+      - name: Allow IP in Security Group
+        run: |
+          aws ec2 authorize-security-group-ingress \
+          --group-id ${{ secrets.SECURITY_GROUP_ID_STG }} \
+          --protocol tcp \
+          --port ${{ secrets.SSH_PORT_STG }} \
+          --cidr ${{ steps.ip.outputs.ipv4 }}/32
+
       - name: Set up SSH
         run: |
           echo "${{ secrets.EC2_SSH_KEY_STG }}" | base64 --decode > key.pem
@@ -43,16 +61,6 @@ jobs:
           
           ansible-playbook -i ./inventory/web.yaml playbook.yaml \
           --vault-password-file ./secrets/ansible_vault_pass --limit stg \
-
-      - name: Public IP
-        id: ip
-        uses: haythem/public-ip@v1.3
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::590183691452:role/GitHubActionsRole-590183691452
-          aws-region: ap-northeast-1
 
       - name: Set adhoc branch name
         run: |
@@ -104,3 +112,12 @@ jobs:
             sudo systemctl restart sampay-worker
             sudo systemctl restart sampay-frontend
           EOF
+
+      - name: Revoke IP from Security Group
+        if: ${{ always() }}
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id ${{ secrets.SECURITY_GROUP_ID_STG }} \
+            --protocol tcp \
+            --port ${{ secrets.SSH_PORT_STG }} \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32

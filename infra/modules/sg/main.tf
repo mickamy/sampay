@@ -36,11 +36,11 @@ resource "aws_security_group" "ssh" {
   vpc_id      = var.vpc_id
 
   ingress {
-    description = "Allow SSH"
+    description = "Allow SSH from trusted IP"
     from_port   = var.ssh_port
     to_port     = var.ssh_port
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.trusted_ip]
   }
 
   egress {
