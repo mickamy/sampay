@@ -407,8 +407,10 @@ func InitUserRepositories(db *database.DB, readWriter *database.ReadWriter, writ
 }
 
 func InitUserUseCase(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di7.UseCases {
+	awsConfig := config.AWS()
+	client := s3.New(awsConfig)
 	userLink := repository2.NewUserLink(db)
-	createUserLink := usecase7.NewCreateUserLink(writer, userLink)
+	createUserLink := usecase7.NewCreateUserLink(writer, client, userLink)
 	deleteUserLink := usecase7.NewDeleteUserLink(writer, userLink)
 	user := repository2.NewUser(db)
 	getMe := usecase7.NewGetMe(reader, user)
@@ -439,8 +441,10 @@ func InitUserHandler(db *database.DB, readWriter *database.ReadWriter, writer *d
 	getMe := usecase7.NewGetMe(reader, user)
 	getUser := usecase7.NewGetUser(reader, user)
 	handlerUser := handler7.NewUser(getMe, getUser)
+	awsConfig := config.AWS()
+	client := s3.New(awsConfig)
 	userLink := repository2.NewUserLink(db)
-	createUserLink := usecase7.NewCreateUserLink(writer, userLink)
+	createUserLink := usecase7.NewCreateUserLink(writer, client, userLink)
 	listUserLink := usecase7.NewListUserLink(reader, userLink)
 	updateUserLink := usecase7.NewUpdateUserLink(writer, userLink)
 	s3Object := repository3.NewS3Object(db)

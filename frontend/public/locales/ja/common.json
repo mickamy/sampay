@@ -61,7 +61,7 @@
       "copy_to_clipboard": "クリップボードにコピー",
       "copied_to_clipboard": "コピーしました",
       "open_uri": "リンクを開く",
-      "open_qr_code": "QR コードを開く"
+      "open_image": "画像を開く"
     }
   },
   "header": {
@@ -152,6 +152,10 @@
         "other": "その他"
       }
     }
+  },
+  "notification": {
+    "empty_title": "通知はありません",
+    "empty_description": "新しい通知が届くと、ここに表示されます。"
   },
   "onboarding": {
     "attribute": {

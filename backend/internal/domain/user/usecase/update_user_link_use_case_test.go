@@ -9,10 +9,12 @@ import (
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/di"
+	commonFixture "mickamy.com/sampay/internal/domain/common/fixture"
 	"mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/domain/user/repository"
 	"mickamy.com/sampay/internal/domain/user/usecase"
+	"mickamy.com/sampay/internal/lib/ptr"
 )
 
 func TestUpdateUserLink_Do(t *testing.T) {
@@ -29,19 +31,14 @@ func TestUpdateUserLink_Do(t *testing.T) {
 	})
 	require.NoError(t, db.WriterDB().WithContext(ctx).Create(&m).Error)
 
-	m.ProviderType = model.UserLinkProviderTypeOther
-	m.URI = "https://example.com"
-	m.DisplayAttribute.Name = "example"
-	m.DisplayAttribute.DisplayOrder = m.DisplayAttribute.DisplayOrder + 1
-
 	// act
 	sut := di.InitUserUseCase(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).UpdateUserLink
 	got, err := sut.Do(ctx, usecase.UpdateUserLinkInput{
 		ID:           m.ID,
-		ProviderType: &m.ProviderType,
-		URI:          &m.URI,
-		Name:         &m.DisplayAttribute.Name,
-		DisplayOrder: &m.DisplayAttribute.DisplayOrder,
+		ProviderType: ptr.Of(model.UserLinkProviderTypeOther),
+		URI:          ptr.Of("https://example.com"),
+		Name:         ptr.Of("updated"),
+		QRImage:      ptr.Of(commonFixture.S3Object(nil)),
 	})
 
 	// assert
@@ -50,8 +47,8 @@ func TestUpdateUserLink_Do(t *testing.T) {
 	var updated model.UserLink
 	require.NoError(t, db.ReaderDB().WithContext(ctx).Scopes(database.Scope(repository.UserLinkJoinDisplayAttribute).Gorm()).First(&updated, "id = ?", m.ID).Error)
 	assert.Equal(t, m.ID, updated.ID)
-	assert.Equal(t, m.ProviderType, updated.ProviderType)
-	assert.Equal(t, m.URI, updated.URI)
-	assert.Equal(t, m.DisplayAttribute.Name, updated.DisplayAttribute.Name)
-	assert.Equal(t, m.DisplayAttribute.DisplayOrder, updated.DisplayAttribute.DisplayOrder)
+	assert.Equal(t, model.UserLinkProviderTypeOther, updated.ProviderType)
+	assert.Equal(t, "https://example.com", updated.URI)
+	assert.Equal(t, "updated", updated.DisplayAttribute.Name)
+	assert.NotEmpty(t, updated.QRCodeID)
 }

@@ -39,7 +39,7 @@ func requestEmailVerification(t *testing.T, s *httptest.Server, intentType authM
 	default:
 		t.Fatalf("unexpected intent type: %v", intentType)
 	}
-	client := authv1connect.NewEmailVerificationServiceClient(http.DefaultClient, s.URL)
+	client := authv1connect.NewEmailVerificationServiceClient(http.DefaultClient, s.URL+"/api")
 	req := connect.NewRequest(&authv1.RequestVerificationRequest{
 		IntentType: intent,
 		Email:      email,
@@ -51,7 +51,7 @@ func requestEmailVerification(t *testing.T, s *httptest.Server, intentType authM
 func verifyEmail(t *testing.T, s *httptest.Server, requestToken string, pinCode string, f func(res *connect.Response[authv1.VerifyEmailResponse], err error)) {
 	t.Helper()
 
-	client := authv1connect.NewEmailVerificationServiceClient(http.DefaultClient, s.URL)
+	client := authv1connect.NewEmailVerificationServiceClient(http.DefaultClient, s.URL+"/api")
 	req := connect.NewRequest(&authv1.VerifyEmailRequest{
 		Token:   requestToken,
 		PinCode: pinCode,

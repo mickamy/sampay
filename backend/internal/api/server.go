@@ -23,8 +23,6 @@ import (
 )
 
 func NewServer(infras di.Infras) http.Server {
-	mux := http.NewServeMux()
-
 	authUCs := di.InitAuthUseCases(infras.DB, infras.ReadWriter, infras.Writer, infras.Reader, infras.KVS)
 	interceptors := connect.WithInterceptors(
 		interceptor.Logging(),
@@ -34,6 +32,7 @@ func NewServer(infras di.Infras) http.Server {
 		interceptor.Cookie(),
 	)
 
+	api := http.NewServeMux()
 	for _, route := range []func(mux *http.ServeMux, infras di.Infras, options ...connect.HandlerOption){
 		authRouter.Route,
 		commonRouter.Route,
@@ -43,10 +42,10 @@ func NewServer(infras di.Infras) http.Server {
 		registrationRouter.Route,
 		userRouter.Route,
 	} {
-		route(mux, infras, interceptors)
+		route(api, infras, interceptors)
 	}
 
-	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+	api.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		if err := infras.Writer.Exec("SELECT 1").Error; err != nil {
 			slogger.ErrorCtx(r.Context(), "failed to ping database", "err", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -65,6 +64,8 @@ func NewServer(infras di.Infras) http.Server {
 		w.WriteHeader(http.StatusOK)
 	})
 
+	mux := http.NewServeMux()
+	mux.Handle("/api/", http.StripPrefix("/api", api))
 	corsHandler := cors.AllowAll().Handler(mux)
 
 	return http.Server{

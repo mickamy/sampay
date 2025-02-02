@@ -54,7 +54,11 @@ export const loader: LoaderFunction = async ({ request }) => {
         return Response.json(data);
       }
       case "completed":
-        return redirect("/admin");
+        return redirect("/admin", {
+          headers: {
+            "set-cookie": await destroyEmailVerificationSession(request),
+          },
+        });
       default:
         throw new Error(`unknown step: ${step}`);
     }

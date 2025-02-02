@@ -1,6 +1,5 @@
 import { type HTMLAttributes, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import Image from "~/components/image";
 import Spacer from "~/components/spacer";
 import { Button, buttonVariants } from "~/components/ui/button";
@@ -10,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { useToast } from "~/hooks/use-toast";
 import { cn } from "~/lib/utils";
 import type { UserLink } from "~/models/user/user-link-model";
 import { getUserLinkProviderTypeImage } from "~/models/user/user-link-provider-type-model";
@@ -37,6 +37,7 @@ export default function UserLinkButton({
     }
   }, [admin, link, onEdit]);
 
+  const { toast } = useToast();
   const { t } = useTranslation();
 
   if (admin) {
@@ -55,10 +56,13 @@ export default function UserLinkButton({
   }
 
   const copyToClipboard = useCallback(() => {
-    navigator.clipboard
-      .writeText(link.uri)
-      .then(() => toast(t("components.user_link_button.copied_to_clipboard")));
-  }, [t, link.uri]);
+    navigator.clipboard.writeText(link.uri).then(() =>
+      toast({
+        title: t("components.user_link_button.copied_to_clipboard"),
+        duration: 2000,
+      }),
+    );
+  }, [toast, t, link.uri]);
 
   const openURI = useCallback(() => {
     window.open(link.uri, "_blank");
@@ -88,7 +92,7 @@ export default function UserLinkButton({
           </DropdownMenuItem>
           {link.qrCodeURL && (
             <DropdownMenuItem onClick={openQRCode}>
-              {t("components.user_link_button.open_qr_code")}
+              {t("components.user_link_button.open_image")}
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>

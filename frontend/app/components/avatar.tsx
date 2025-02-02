@@ -7,13 +7,19 @@ import {
 
 interface Props extends HTMLAttributes<HTMLImageElement> {
   src?: string;
+  imageClassName?: string;
 }
 
-export default function Avatar({ src, className, ...props }: Props) {
+export default function Avatar({
+  src,
+  className,
+  imageClassName,
+  ...props
+}: Props) {
   return (
     <Base className={className}>
-      <AvatarImage src={src} className={className} {...props} />
-      <AvatarFallback />
+      <AvatarImage src={src} className={imageClassName} {...props} />
+      <AvatarFallback className={imageClassName} />
     </Base>
   );
 }

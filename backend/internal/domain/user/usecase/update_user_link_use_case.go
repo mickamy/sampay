@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
+	commonModel "mickamy.com/sampay/internal/domain/common/model"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
 )
@@ -15,7 +16,7 @@ type UpdateUserLinkInput struct {
 	ProviderType *userModel.UserLinkProviderType
 	URI          *string
 	Name         *string
-	DisplayOrder *int
+	QRImage      *commonModel.S3Object
 }
 
 type UpdateUserLinkOutput struct {
@@ -60,9 +61,7 @@ func (uc *updateUserLink) Do(ctx context.Context, input UpdateUserLinkInput) (Up
 		if input.Name != nil {
 			m.DisplayAttribute.Name = *input.Name
 		}
-		if input.DisplayOrder != nil {
-			m.DisplayAttribute.DisplayOrder = *input.DisplayOrder
-		}
+		m.SetQRCode(input.QRImage)
 
 		if err := uc.userLinkRepo.WithTx(tx.WriterDB().FullSaveAssociations()).Update(ctx, m); err != nil {
 			return err

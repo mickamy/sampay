@@ -24,7 +24,7 @@ retry_interval=5
 while [ $retry_count -lt $max_retries ]; do
     if systemctl is-active --quiet sampay-api; then
         echo "sampay-api service is active."
-        if wget -q --spider http://localhost:8080/health; then
+        if wget -q --spider http://localhost:8080/api/health; then
             echo "Health check passed successfully."
             exit 0
         else

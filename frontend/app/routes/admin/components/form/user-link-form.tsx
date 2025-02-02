@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 import useImagePreview from "~/hooks/use-image-preview";
 import type { APIError } from "~/lib/api/response";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
@@ -124,10 +125,6 @@ export default function UserLinkForm({
       })
       .catch((e) => {
         if (!isCancelled) {
-          setError("qrCode", {
-            type: "invalid",
-            message: t("form.error.invalid_qr_code"),
-          });
           setValue("provider_type", "other");
         }
       });
@@ -135,7 +132,7 @@ export default function UserLinkForm({
     return () => {
       isCancelled = true;
     };
-  }, [t, qrCode, uri, setValue, setError, clearErrors]);
+  }, [qrCode, uri, setValue, clearErrors]);
 
   const name = form.watch("name");
   useEffect(() => {
@@ -164,7 +161,13 @@ export default function UserLinkForm({
                 <FormLabel htmlFor="qrCode" className="font-bold">
                   {t("form.qr_code")}
                 </FormLabel>
-                <Avatar src={imageURL} className="self-center" />
+                <Label htmlFor="qrCode" className="flex justify-center">
+                  <Avatar
+                    src={imageURL}
+                    className="rounded-none w-40 h-40"
+                    imageClassName="rounded-none object-contain"
+                  />
+                </Label>
                 <Input
                   id="qrCode"
                   type="file"

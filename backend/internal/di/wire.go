@@ -248,6 +248,8 @@ func InitUserRepositories(db *database.DB, readWriter *database.ReadWriter, writ
 func InitUserUseCase(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) user.UseCases {
 	wire.Build(
 		user.UseCaseSet,
+		configSet,
+		libSet,
 		common.RepositorySet,
 		user.RepositorySet,
 		wire.Struct(new(user.UseCases), "*"),
@@ -258,6 +260,8 @@ func InitUserUseCase(db *database.DB, readWriter *database.ReadWriter, writer *d
 func InitUserHandler(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) user.Handlers {
 	wire.Build(
 		user.HandlerSet,
+		configSet,
+		libSet,
 		common.RepositorySet,
 		user.RepositorySet,
 		user.UseCaseSet,

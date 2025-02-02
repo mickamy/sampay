@@ -156,7 +156,7 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 		var image commonModel.S3Object
 		if pictureReader != nil {
 			bucket := config.AWS().S3PublicBucket
-			key := fmt.Sprintf("profile_image/%s", user.ID)
+			key := fmt.Sprintf("profile_images/%s", user.ID)
 			if err := uc.s3.PutObject(ctx, bucket, key, pictureReader); err != nil {
 				return fmt.Errorf("failed to upload picture to s3: %w", err)
 			}

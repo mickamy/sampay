@@ -34,7 +34,7 @@ func TestOnboarding(t *testing.T) {
 func getOnboardingStep(t *testing.T, s *httptest.Server, verifyToken string, f func(res *connect.Response[registrationv1.GetOnboardingStepResponse], err error)) {
 	t.Helper()
 
-	client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, s.URL)
+	client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, s.URL+"/api")
 	req := connect.NewRequest(&registrationv1.GetOnboardingStepRequest{})
 	req.Header().Add("Authorization", "Bearer "+verifyToken)
 	res, err := client.GetOnboardingStep(context.Background(), req)
@@ -44,7 +44,7 @@ func getOnboardingStep(t *testing.T, s *httptest.Server, verifyToken string, f f
 func createPassword(t *testing.T, s *httptest.Server, verifyToken string, f func(res *connect.Response[registrationv1.CreatePasswordResponse], err error)) {
 	t.Helper()
 
-	client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, s.URL)
+	client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, s.URL+"/api")
 	req := connect.NewRequest(&registrationv1.CreatePasswordRequest{
 		Password: password,
 	})
@@ -56,7 +56,7 @@ func createPassword(t *testing.T, s *httptest.Server, verifyToken string, f func
 func getUsageCategories(t *testing.T, s *httptest.Server, accessToken string, f func(res *connect.Response[registrationv1.ListUsageCategoriesResponse], err error)) {
 	t.Helper()
 
-	client := registrationv1connect.NewUsageCategoryServiceClient(http.DefaultClient, s.URL)
+	client := registrationv1connect.NewUsageCategoryServiceClient(http.DefaultClient, s.URL+"/api")
 	req := connect.NewRequest(&registrationv1.ListUsageCategoriesRequest{})
 	req.Header().Add("Authorization", "Bearer "+accessToken)
 	res, err := client.ListUsageCategories(context.Background(), req)
@@ -66,7 +66,7 @@ func getUsageCategories(t *testing.T, s *httptest.Server, accessToken string, f 
 func createUserAttribute(t *testing.T, s *httptest.Server, accessToken string, f func(res *connect.Response[registrationv1.CreateUserAttributeResponse], err error)) {
 	t.Helper()
 
-	client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, s.URL)
+	client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, s.URL+"/api")
 	req := connect.NewRequest(&registrationv1.CreateUserAttributeRequest{
 		CategoryType: "other",
 	})
@@ -78,7 +78,7 @@ func createUserAttribute(t *testing.T, s *httptest.Server, accessToken string, f
 func createUserProfile(t *testing.T, s *httptest.Server, accessToken string, f func(res *connect.Response[registrationv1.CreateUserProfileResponse], err error)) {
 	t.Helper()
 
-	client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, s.URL)
+	client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, s.URL+"/api")
 	s3Obj := commonFixture.S3Object(nil)
 	req := connect.NewRequest(&registrationv1.CreateUserProfileRequest{
 		Name: gofakeit.GlobalFaker.Name(),
