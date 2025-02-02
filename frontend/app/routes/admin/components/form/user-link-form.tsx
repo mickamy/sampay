@@ -132,7 +132,7 @@ export default function UserLinkForm({
     return () => {
       isCancelled = true;
     };
-  }, [t, qrCode, uri, setValue, setError, clearErrors]);
+  }, [qrCode, uri, setValue, clearErrors]);
 
   const name = form.watch("name");
   useEffect(() => {
