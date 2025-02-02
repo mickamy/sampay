@@ -153,6 +153,10 @@
       }
     }
   },
+  "notification": {
+    "empty_title": "通知はありません",
+    "empty_description": "新しい通知が届くと、ここに表示されます。"
+  },
   "onboarding": {
     "attribute": {
       "title": "あなたの利用目的に近いものを1つ選んでください"
