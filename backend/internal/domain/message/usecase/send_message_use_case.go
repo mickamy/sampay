@@ -11,6 +11,8 @@ import (
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	messageModel "mickamy.com/sampay/internal/domain/message/model"
 	messageRepository "mickamy.com/sampay/internal/domain/message/repository"
+	notificationModel "mickamy.com/sampay/internal/domain/notification/model"
+	notificationRepository "mickamy.com/sampay/internal/domain/notification/repository"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
 	"mickamy.com/sampay/internal/job"
 	"mickamy.com/sampay/internal/lib/contexts"
@@ -32,10 +34,11 @@ type SendMessage interface {
 }
 
 type sendMessage struct {
-	producer    *producer.Producer
-	writer      *database.Writer
-	userRepo    userRepository.User
-	messageRepo messageRepository.Message
+	producer         *producer.Producer
+	writer           *database.Writer
+	userRepo         userRepository.User
+	messageRepo      messageRepository.Message
+	notificationRepo notificationRepository.Notification
 }
 
 func NewSendMessage(
@@ -43,12 +46,14 @@ func NewSendMessage(
 	writer *database.Writer,
 	userRepo userRepository.User,
 	messageRepo messageRepository.Message,
+	notificationRepo notificationRepository.Notification,
 ) SendMessage {
 	return &sendMessage{
-		producer:    producer,
-		writer:      writer,
-		userRepo:    userRepo,
-		messageRepo: messageRepo,
+		producer:         producer,
+		writer:           writer,
+		userRepo:         userRepo,
+		messageRepo:      messageRepo,
+		notificationRepo: notificationRepo,
 	}
 }
 
@@ -72,17 +77,29 @@ func (uc *sendMessage) Do(ctx context.Context, input SendMessageInput) (SendMess
 		}
 
 		lang := contexts.MustLanguage(ctx)
+		subject := i18n.MustLocalizeMessage(lang, i18n.Config{
+			MessageID:    i18n.MessageUsecaseCreate_messageEmailSubject,
+			TemplateData: map[string]string{"SenderName": input.SenderName},
+		})
+		body := i18n.MustLocalizeMessage(lang, i18n.Config{
+			MessageID:    i18n.MessageUsecaseCreate_messageEmailBody,
+			TemplateData: map[string]string{"SenderName": input.SenderName, "Content": input.Content},
+		})
+
+		notification := notificationModel.Notification{
+			UserID:  receiver.ID,
+			Subject: subject,
+			Body:    body,
+		}
+		if err := uc.notificationRepo.WithTx(tx.WriterDB()).Create(ctx, &notification); err != nil {
+			return fmt.Errorf("failed to create notification: %w", err)
+		}
+
 		jobMsg, err := message.New(ctx, job.SendEmailJob.String(), job.SendEmailPayload{
-			From: config.Email().From,
-			To:   receiver.Email,
-			Subject: i18n.MustLocalizeMessage(lang, i18n.Config{
-				MessageID:    i18n.MessageUsecaseCreate_messageEmailSubject,
-				TemplateData: map[string]string{"SenderName": input.SenderName},
-			}),
-			Body: i18n.MustLocalizeMessage(lang, i18n.Config{
-				MessageID:    i18n.MessageUsecaseCreate_messageEmailBody,
-				TemplateData: map[string]string{"SenderName": input.SenderName, "Content": input.Content},
-			}),
+			From:    config.Email().From,
+			To:      receiver.Email,
+			Subject: subject,
+			Body:    body,
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create job message: %w", err)
