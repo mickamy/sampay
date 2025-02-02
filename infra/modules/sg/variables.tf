@@ -8,6 +8,11 @@ variable "github_repo" {
   type        = string
 }
 
+variable "trusted_ip" {
+  description = "Trusted IP address"
+  type        = string
+}
+
 variable "ssh_port" {
   description = "SSH port"
   type        = number
