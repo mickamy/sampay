@@ -8,7 +8,8 @@ import { useTranslation } from "react-i18next";
 import Avatar from "~/components/avatar";
 import ExpandableText from "~/components/expandable-text";
 import Spacer from "~/components/spacer";
-import { underlinedLinkStyle } from "~/components/underlined-link";
+import { Button } from "~/components/ui/button";
+import UnderlinedLink from "~/components/underlined-link";
 import { cn } from "~/lib/utils";
 import type { User } from "~/models/user/user-model";
 
@@ -44,26 +45,27 @@ export default function UserProfile({
           onClick={onClickAvatar}
         />
         <h2 className="font-bold">{user.profile.name}</h2>
-        <ExpandableText>{user.profile.bio}</ExpandableText>
+        {user.profile.bio && (
+          <ExpandableText>{user.profile.bio}</ExpandableText>
+        )}
         {admin && (
           <div className="flex flex-col space-y-2">
             <div className="text-center">
               <strong>{t("model.user.slug")}</strong>
-              <br /> {url}
+              <br />
+              <UnderlinedLink to={url} className="break-all">
+                {url}
+              </UnderlinedLink>
             </div>
           </div>
         )}
       </div>
       {admin && (
         <div className="text-center">
-          <Spacer size={2} />
-          <button
-            type="button"
-            onClick={onClickEdit}
-            className={cn("text-center underline mt-4", underlinedLinkStyle)}
-          >
+          <Spacer size={6} />
+          <Button variant="ghost" onClick={onClickEdit}>
             {t("admin.index.edit_profile")}
-          </button>
+          </Button>
         </div>
       )}
     </div>
