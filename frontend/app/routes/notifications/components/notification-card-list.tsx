@@ -33,9 +33,14 @@ export default function NotificationCardList({
   return (
     <div className={cn("max-w-full", className)} {...props}>
       <Accordion type="single" collapsible className="space-y-4">
-        {notifications.map((item, index) => (
+        {notifications.map((item) => (
           <AccordionItem key={item.id} value={`item-${item.id}`}>
-            <Card className={item.readAt ? "bg-gray-50" : "bg-white"}>
+            <Card
+              className={cn(
+                "transition-colors",
+                item.readAt ? "bg-gray-50" : "bg-white",
+              )}
+            >
               <AccordionTrigger className="w-full px-4">
                 <CardHeader
                   className={cn(
