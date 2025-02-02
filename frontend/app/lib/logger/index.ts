@@ -18,12 +18,7 @@ async function init() {
     });
   }
 
-  return pino(
-    { level },
-    pino.multistream([
-      { stream: process.stdout, level },
-    ]),
-  );
+  return pino({ level }, pino.multistream([{ stream: process.stdout, level }]));
 }
 
 const logger = await init();
