@@ -36,7 +36,7 @@ export default function UserScreen() {
   const { t } = useTranslation();
 
   return (
-    <div className="container mx-auto flex flex-col items-center p-6 min-w-[375px] max-w-[600px] min-h-screen lg:p-4">
+    <div className="container mx-auto flex flex-col items-center p-6 min-w-[375px] max-w-[33%] min-h-screen lg:p-4">
       <div className="flex justify-end w-full">
         <ShareButton url={url} />
       </div>
