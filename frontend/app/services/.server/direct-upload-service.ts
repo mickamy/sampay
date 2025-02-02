@@ -70,10 +70,12 @@ async function key(type: DirectUploadFileType) {
 async function publicBucketName(): Promise<string> {
   if (!global.environment?.S3_PUBLIC_BUCKET_NAME) {
     try {
-      const sessionSecret = await getParameter({ name: "SESSION_SECRET" });
+      const publicBucketName = await getParameter({
+        name: "S3_PUBLIC_BUCKET_NAME",
+      });
       global.environment = {
         ...global.environment,
-        SESSION_SECRET: sessionSecret,
+        S3_PUBLIC_BUCKET_NAME: publicBucketName,
       };
     } catch (e) {
       logger.error({ error: e }, "failed to retrieve SSM parameters");
