@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"time"
 
 	"gorm.io/gorm"
 
@@ -14,6 +15,7 @@ type S3Object struct {
 	Bucket      string
 	Key         string
 	ContentType ContentType
+	CreatedAt   time.Time
 }
 
 func (m S3Object) URL() string {
