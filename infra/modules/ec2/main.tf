@@ -203,7 +203,7 @@ resource "aws_iam_policy" "ses_access_policy" {
           "ses:SendEmail",
         ],
         Resource = [
-          "arn:aws:ses:${var.aws_region}:${data.aws_caller_identity.default.account_id}:identity/${var.domain}",
+          "arn:aws:ses:${var.aws_region}:${data.aws_caller_identity.default.account_id}:identity/${var.email_from}",
         ],
       },
     ],

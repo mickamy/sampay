@@ -32,6 +32,7 @@ module "ec2" {
 
   aws_region               = var.aws_region
   domain                   = var.domain
+  email_from               = var.email_from
   github_repo              = var.github_repo
   instance_type            = var.instance_type
   ssh_port                 = var.ssh_port
