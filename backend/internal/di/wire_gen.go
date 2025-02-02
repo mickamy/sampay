@@ -286,7 +286,8 @@ func InitNotificationUseCases(db *database.DB, readWriter *database.ReadWriter, 
 func InitNotificationHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di4.Handlers {
 	notification := repository5.NewNotification(db)
 	listNotifications := usecase4.NewListNotifications(reader, notification)
-	handlerNotification := handler4.NewNotification(listNotifications)
+	readNotification := usecase4.NewReadNotification(writer, notification)
+	handlerNotification := handler4.NewNotification(listNotifications, readNotification)
 	handlers := di4.Handlers{
 		Notification: handlerNotification,
 	}
