@@ -8,6 +8,11 @@ variable "domain" {
   type        = string
 }
 
+variable "email_from" {
+  description = "Email from"
+  type        = string
+}
+
 variable "env" {
   description = "Environment name (e.g., stg, prod)"
   type        = string

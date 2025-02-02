@@ -75,7 +75,15 @@ func provideConsumerConfig(aws config.AWSConfig, kvs config.KVSConfig) consumer.
 			return nil
 		},
 		AfterProcessFunc: func(ctx context.Context, output consumer.Output) error {
-			slogger.InfoCtx(ctx, "processed message", "output", output)
+			if fatalErr := output.FatalError(); fatalErr != nil {
+				slogger.ErrorCtx(ctx, "failed to process message", "err", fatalErr)
+				return fatalErr
+			} else if nonFatalErr := output.NonFatalError(); nonFatalErr != nil {
+				slogger.WarnCtx(ctx, "failed to process message", "err", nonFatalErr)
+				return nonFatalErr
+			} else {
+				slogger.InfoCtx(ctx, "processed message", "output", output)
+			}
 			return nil
 		},
 	}

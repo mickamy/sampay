@@ -61,6 +61,11 @@ locals {
       description = "Database timezone"
       value       = var.db_timezone
     }
+    "email_from" = {
+      name        = "EMAIL_FROM"
+      description = "Email from"
+      value       = var.email_from
+    }
     "frontend_base_url" = {
       name        = "FRONTEND_BASE_URL"
       description = "Frontend base URL"

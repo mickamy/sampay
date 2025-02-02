@@ -35,7 +35,7 @@ func (j SendEmail) Execute(ctx context.Context, payloadStr string) error {
 	}
 
 	input := &sesv2.SendEmailInput{
-		FromEmailAddress: aws.String(payload.From),
+		FromEmailAddress: aws.String("\"Sampay\" <" + payload.From + ">"),
 		Destination: &types.Destination{
 			ToAddresses: []string{payload.To},
 		},
