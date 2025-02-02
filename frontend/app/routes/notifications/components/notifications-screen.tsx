@@ -8,8 +8,6 @@ export interface LoaderData {
 export default function NotificationsScreen() {
   const { notifications } = useLoaderData<LoaderData>();
 
-  console.log("notifications", notifications);
-
   return (
     <div>
       {notifications.map((notification) => (
