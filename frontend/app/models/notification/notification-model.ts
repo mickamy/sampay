@@ -6,6 +6,7 @@ export interface Notification {
   subject: string;
   body: string;
   createdAt: string;
+  readAt?: string;
 }
 
 export function convertToNotification(pb: NotificationPB): Notification {
@@ -17,6 +18,9 @@ export function convertToNotification(pb: NotificationPB): Notification {
     subject: pb.subject,
     body: pb.body,
     createdAt: convertTimestampToDate(pb.createdAt).toISOString(),
+    readAt: pb.readAt
+      ? convertTimestampToDate(pb.readAt).toISOString()
+      : undefined,
   };
 }
 

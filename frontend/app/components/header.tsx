@@ -38,7 +38,10 @@ export default function Header({
             <BrandLogo size={24} />
           </Link>
           <nav>
-            <Navigation isLoggedIn={isLoggedIn} />
+            <Navigation
+              isLoggedIn={isLoggedIn}
+              hasUnreadNotification={hasUnreadNotification}
+            />
           </nav>
         </div>
       </div>
