@@ -50,7 +50,7 @@ func TestUser(t *testing.T) {
 func getMe(t *testing.T, s *httptest.Server, accessToken string, f func(res *connect.Response[userv1.GetMeResponse], err error)) {
 	t.Helper()
 
-	client := userv1connect.NewUserServiceClient(http.DefaultClient, s.URL)
+	client := userv1connect.NewUserServiceClient(http.DefaultClient, s.URL+"/api")
 	req := connect.NewRequest(&userv1.GetMeRequest{})
 	req.Header().Add("Authorization", "Bearer "+accessToken)
 	res, err := client.GetMe(context.Background(), req)
@@ -60,7 +60,7 @@ func getMe(t *testing.T, s *httptest.Server, accessToken string, f func(res *con
 func getUser(t *testing.T, s *httptest.Server, slug string, f func(res *connect.Response[userv1.GetUserResponse], err error)) {
 	t.Helper()
 
-	client := userv1connect.NewUserServiceClient(http.DefaultClient, s.URL)
+	client := userv1connect.NewUserServiceClient(http.DefaultClient, s.URL+"/api")
 	req := connect.NewRequest(&userv1.GetUserRequest{
 		Slug: slug,
 	})
