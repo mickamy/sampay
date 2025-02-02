@@ -86,3 +86,19 @@
         create: true
         state: present
         mode: '0644'
+
+    - name: Set PACKAGE_ROOT to /etc/environment
+      ansible.builtin.lineinfile:
+        path: /etc/environment
+        line: "PACKAGE_ROOT=/home/ec2-user/sampay/backend"
+        create: true
+        state: present
+        mode: '0644'
+
+    - name: Create directory
+      ansible.builtin.file:
+        path: /home/ec2-user/sampay
+        state: directory
+        owner: ec2-user
+        group: ec2-user
+        mode: '0755'
