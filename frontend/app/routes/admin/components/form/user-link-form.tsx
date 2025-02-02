@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 import useImagePreview from "~/hooks/use-image-preview";
 import type { APIError } from "~/lib/api/response";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
@@ -164,7 +165,13 @@ export default function UserLinkForm({
                 <FormLabel htmlFor="qrCode" className="font-bold">
                   {t("form.qr_code")}
                 </FormLabel>
-                <Avatar src={imageURL} className="self-center" />
+                <Label htmlFor="qrCode" className="flex justify-center">
+                  <Avatar
+                    src={imageURL}
+                    className="rounded-none w-40 h-40"
+                    imageClassName="rounded-none object-contain"
+                  />
+                </Label>
                 <Input
                   id="qrCode"
                   type="file"
