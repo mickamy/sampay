@@ -16,6 +16,7 @@ import (
 	authRouter "mickamy.com/sampay/internal/domain/auth/router"
 	commonRouter "mickamy.com/sampay/internal/domain/common/router"
 	messageRouter "mickamy.com/sampay/internal/domain/message/router"
+	notificationRouter "mickamy.com/sampay/internal/domain/notification/router"
 	oauthRouter "mickamy.com/sampay/internal/domain/oauth/router"
 	registrationRouter "mickamy.com/sampay/internal/domain/registration/router"
 	userRouter "mickamy.com/sampay/internal/domain/user/router"
@@ -37,6 +38,7 @@ func NewServer(infras di.Infras) http.Server {
 		authRouter.Route,
 		commonRouter.Route,
 		messageRouter.Route,
+		notificationRouter.Route,
 		oauthRouter.Route,
 		registrationRouter.Route,
 		userRouter.Route,

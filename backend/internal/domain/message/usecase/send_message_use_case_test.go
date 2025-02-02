@@ -15,7 +15,7 @@ import (
 	"mickamy.com/sampay/internal/lib/language"
 )
 
-func TestCreateMessage_Do(t *testing.T) {
+func TestSendMessage_Do(t *testing.T) {
 	t.Parallel()
 
 	// arrange
@@ -26,8 +26,8 @@ func TestCreateMessage_Do(t *testing.T) {
 	require.NoError(t, db.Writer().WithContext(ctx).Create(&receiver).Error)
 
 	// act
-	sut := di.InitMessageUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).CreateMessage
-	got, err := sut.Do(ctx, usecase.CreateMessageInput{
+	sut := di.InitMessageUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).SendMessage
+	got, err := sut.Do(ctx, usecase.SendMessageInput{
 		SenderName:   "sender",
 		ReceiverSlug: receiver.Slug,
 		Content:      "content",

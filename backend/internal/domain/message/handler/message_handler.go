@@ -14,14 +14,14 @@ import (
 )
 
 type Message struct {
-	create usecase.CreateMessage
+	send usecase.SendMessage
 }
 
 func NewMessage(
-	create usecase.CreateMessage,
+	send usecase.SendMessage,
 ) *Message {
 	return &Message{
-		create: create,
+		send: send,
 	}
 }
 
@@ -29,7 +29,7 @@ func (h *Message) SendMessage(
 	ctx context.Context,
 	req *connect.Request[messagev1.SendMessageRequest],
 ) (*connect.Response[messagev1.SendMessageResponse], error) {
-	_, err := h.create.Do(ctx, usecase.CreateMessageInput{
+	_, err := h.send.Do(ctx, usecase.SendMessageInput{
 		SenderName:   req.Msg.SenderName,
 		ReceiverSlug: req.Msg.ReceiverSlug,
 		Content:      req.Msg.Content,

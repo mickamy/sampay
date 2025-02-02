@@ -11,6 +11,7 @@ import (
 	auth "mickamy.com/sampay/internal/domain/auth/di"
 	common "mickamy.com/sampay/internal/domain/common/di"
 	message "mickamy.com/sampay/internal/domain/message/di"
+	notification "mickamy.com/sampay/internal/domain/notification/di"
 	oauth "mickamy.com/sampay/internal/domain/oauth/di"
 	registration "mickamy.com/sampay/internal/domain/registration/di"
 	user "mickamy.com/sampay/internal/domain/user/di"
@@ -149,6 +150,33 @@ func InitMessageHandlers(db *database.DB, readWriter *database.ReadWriter, write
 		wire.Struct(new(message.Handlers), "*"),
 	)
 	return message.Handlers{}
+}
+
+func InitNotificationRepositories(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) notification.Repositories {
+	wire.Build(
+		notification.RepositorySet,
+		wire.Struct(new(notification.Repositories), "*"),
+	)
+	return notification.Repositories{}
+}
+
+func InitNotificationUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) notification.UseCases {
+	wire.Build(
+		notification.UseCaseSet,
+		notification.RepositorySet,
+		wire.Struct(new(notification.UseCases), "*"),
+	)
+	return notification.UseCases{}
+}
+
+func InitNotificationHandlers(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) notification.Handlers {
+	wire.Build(
+		notification.HandlerSet,
+		notification.RepositorySet,
+		notification.UseCaseSet,
+		wire.Struct(new(notification.Handlers), "*"),
+	)
+	return notification.Handlers{}
 }
 
 func InitOAuthUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs *kvs.KVS) oauth.UseCases {

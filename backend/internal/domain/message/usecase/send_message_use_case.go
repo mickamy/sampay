@@ -17,34 +17,34 @@ import (
 	"mickamy.com/sampay/internal/misc/i18n"
 )
 
-type CreateMessageInput struct {
+type SendMessageInput struct {
 	SenderName   string
 	ReceiverSlug string
 	Content      string
 }
 
-type CreateMessageOutput struct {
+type SendMessageOutput struct {
 }
 
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
-type CreateMessage interface {
-	Do(ctx context.Context, input CreateMessageInput) (CreateMessageOutput, error)
+type SendMessage interface {
+	Do(ctx context.Context, input SendMessageInput) (SendMessageOutput, error)
 }
 
-type createMessage struct {
+type sendMessage struct {
 	producer    *producer.Producer
 	writer      *database.Writer
 	userRepo    userRepository.User
 	messageRepo messageRepository.Message
 }
 
-func NewCreateMessage(
+func NewSendMessage(
 	producer *producer.Producer,
 	writer *database.Writer,
 	userRepo userRepository.User,
 	messageRepo messageRepository.Message,
-) CreateMessage {
-	return &createMessage{
+) SendMessage {
+	return &sendMessage{
 		producer:    producer,
 		writer:      writer,
 		userRepo:    userRepo,
@@ -52,7 +52,7 @@ func NewCreateMessage(
 	}
 }
 
-func (uc *createMessage) Do(ctx context.Context, input CreateMessageInput) (CreateMessageOutput, error) {
+func (uc *sendMessage) Do(ctx context.Context, input SendMessageInput) (SendMessageOutput, error) {
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
 		receiver, err := uc.userRepo.WithTx(tx.WriterDB()).FindBySlug(ctx, input.ReceiverSlug)
 		if err != nil {
@@ -94,8 +94,8 @@ func (uc *createMessage) Do(ctx context.Context, input CreateMessageInput) (Crea
 
 		return nil
 	}); err != nil {
-		return CreateMessageOutput{}, err
+		return SendMessageOutput{}, err
 	}
 
-	return CreateMessageOutput{}, nil
+	return SendMessageOutput{}, nil
 }

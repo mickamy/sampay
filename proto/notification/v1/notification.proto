@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package notification.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+message Notification {
+  string id = 1 [(buf.validate.field).string.len = 26];
+  string subject = 2 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.max_len = 64];
+  string body = 3 [(buf.validate.field).string.min_len = 1];
+  google.protobuf.Timestamp created_at = 4;
+}
+
+message ListNotificationsRequest {
+}
+
+message ListNotificationsResponse {
+  repeated Notification notifications = 1;
+}
+
+message ReadNotificationRequest {
+  string id = 1 [(buf.validate.field).string.len = 26];
+}
+
+message ReadNotificationResponse {
+}
+
+service NotificationService {
+  rpc ListNotifications(ListNotificationsRequest) returns (ListNotificationsResponse);
+  rpc ReadNotification(ReadNotificationRequest) returns (ReadNotificationResponse);
+}
