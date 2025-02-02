@@ -13,6 +13,7 @@ import (
 	"mickamy.com/sampay/internal/domain/notification/usecase"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/lib/contexts"
+	"mickamy.com/sampay/internal/lib/paging"
 )
 
 func TestListNotification_Do(t *testing.T) {
@@ -38,7 +39,9 @@ func TestListNotification_Do(t *testing.T) {
 
 	// act
 	sut := di.InitNotificationUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).ListNotifications
-	got, err := sut.Do(ctx, usecase.ListNotificationsInput{})
+	got, err := sut.Do(ctx, usecase.ListNotificationsInput{
+		Page: paging.New(0, 10),
+	})
 
 	// assert
 	require.NoError(t, err)

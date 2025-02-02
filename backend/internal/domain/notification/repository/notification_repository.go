@@ -15,6 +15,7 @@ type Notification interface {
 	Create(ctx context.Context, m *model.Notification) error
 	Find(ctx context.Context, id string, scopes ...database.Scope) (*model.Notification, error)
 	ListByUserID(ctx context.Context, userID string, scopes ...database.Scope) ([]model.Notification, error)
+	CountByUserID(ctx context.Context, userID string, scopes ...database.Scope) (int, error)
 	Update(ctx context.Context, m *model.Notification) error
 	WithTx(tx *database.DB) Notification
 }
@@ -42,8 +43,14 @@ func (repo *notification) Find(ctx context.Context, id string, scopes ...databas
 
 func (repo *notification) ListByUserID(ctx context.Context, userID string, scopes ...database.Scope) ([]model.Notification, error) {
 	var notifications []model.Notification
-	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).Find(&notifications, "user_id = ?", userID).Error
+	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).Find(&notifications, "notifications.user_id = ?", userID).Error
 	return notifications, err
+}
+
+func (repo *notification) CountByUserID(ctx context.Context, userID string, scopes ...database.Scope) (int, error) {
+	var count int64
+	err := repo.db.WithContext(ctx).Scopes(database.Scopes(scopes).Gorm()...).Model(&model.Notification{}).Where("notifications.user_id = ?", userID).Count(&count).Error
+	return int(count), err
 }
 
 func (repo *notification) Update(ctx context.Context, m *model.Notification) error {
@@ -56,4 +63,8 @@ func (repo *notification) WithTx(tx *database.DB) Notification {
 
 func NotificationJoinReadStatus(db *database.DB) *database.DB {
 	return &database.DB{DB: db.Joins("ReadStatus")}
+}
+
+func NotificationOrderByIDDesc(db *database.DB) *database.DB {
+	return &database.DB{DB: db.Order("id DESC")}
 }

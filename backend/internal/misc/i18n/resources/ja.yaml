@@ -42,6 +42,7 @@ common:
   handler:
     error:
       internal: 'ただいまアクセスが集中しております。しばらくしてから再度お試しください。'
+      invalid_page: '無効なページです。'
 
 message:
   usecase:

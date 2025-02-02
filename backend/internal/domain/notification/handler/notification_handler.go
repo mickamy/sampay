@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/notification/v1/notificationv1connect"
 	notificationv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/notification/v1"
@@ -9,11 +10,14 @@ import (
 	"github.com/mickamy/slogger"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	commonRequest "mickamy.com/sampay/internal/domain/common/dto/request"
 	commonResponse "mickamy.com/sampay/internal/domain/common/dto/response"
 	"mickamy.com/sampay/internal/domain/notification/model"
 	"mickamy.com/sampay/internal/domain/notification/usecase"
 	"mickamy.com/sampay/internal/lib/contexts"
+	"mickamy.com/sampay/internal/lib/operator"
 	"mickamy.com/sampay/internal/lib/slices"
+	"mickamy.com/sampay/internal/misc/i18n"
 )
 
 type Notification struct {
@@ -35,7 +39,18 @@ func (h *Notification) ListNotifications(
 	ctx context.Context,
 	req *connect.Request[notificationv1.ListNotificationsRequest],
 ) (*connect.Response[notificationv1.ListNotificationsResponse], error) {
-	out, err := h.list.Do(ctx, usecase.ListNotificationsInput{})
+	lang := contexts.MustLanguage(ctx)
+
+	page := commonRequest.NewPage(req.Msg.Page)
+	if page == nil {
+		return nil, commonResponse.NewBadRequest(errors.New("invalid page")).
+			WithFieldViolation("page", i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.CommonHandlerErrorInvalid_page})).
+			AsConnectError()
+	}
+
+	out, err := h.list.Do(ctx, usecase.ListNotificationsInput{
+		Page: *page,
+	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
 		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
@@ -52,6 +67,14 @@ func (h *Notification) ListNotifications(
 				Subject:   m.Subject,
 				Body:      m.Body,
 				CreatedAt: timestamppb.New(m.CreatedAt),
+				ReadAt: operator.TernaryFunc(
+					m.ReadStatus.ReadAt != nil,
+					func() *timestamppb.Timestamp {
+						return timestamppb.New(*m.ReadStatus.ReadAt)
+					}, func() *timestamppb.Timestamp {
+						return nil
+					},
+				),
 			}
 		}),
 	})
@@ -76,6 +99,10 @@ func (h *Notification) ReadNotification(
 	}
 	res := connect.NewResponse(&notificationv1.ReadNotificationResponse{})
 	return res, nil
+}
+
+func (h *Notification) UnreadNotificationsCount(ctx context.Context, req *connect.Request[notificationv1.UnreadNotificationsCountRequest]) (*connect.Response[notificationv1.UnreadNotificationsCountResponse], error) {
+	panic("implement me")
 }
 
 var _ notificationv1connect.NotificationServiceHandler = (*Notification)(nil)
