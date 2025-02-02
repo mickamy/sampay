@@ -275,8 +275,10 @@ func InitNotificationRepositories(db *database.DB, readWriter *database.ReadWrit
 func InitNotificationUseCases(db *database.DB, readWriter *database.ReadWriter, writer *database.Writer, reader *database.Reader, kvs2 *kvs.KVS) di4.UseCases {
 	notification := repository5.NewNotification(db)
 	listNotifications := usecase4.NewListNotifications(reader, notification)
+	readNotification := usecase4.NewReadNotification(writer, notification)
 	useCases := di4.UseCases{
 		ListNotifications: listNotifications,
+		ReadNotification:  readNotification,
 	}
 	return useCases
 }

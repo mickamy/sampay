@@ -19,11 +19,13 @@ var RepositorySet = wire.NewSet(
 
 type UseCases struct {
 	usecase.ListNotifications
+	usecase.ReadNotification
 }
 
 //lint:ignore U1000 used by wire
 var UseCaseSet = wire.NewSet(
 	usecase.NewListNotifications,
+	usecase.NewReadNotification,
 )
 
 type Handlers struct {
