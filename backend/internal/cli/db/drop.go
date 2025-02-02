@@ -28,7 +28,7 @@ func Drop(ctx context.Context) error {
 			slogger.Warn("failed to close DB connection", "err", err)
 		}
 	}(db)
-	if _, err := db.ExecContext(ctx, fmt.Sprintf("DROP DATABASE IF EXISTS %s (FORCE)", cfg.Name)); err != nil {
+	if _, err := db.ExecContext(ctx, fmt.Sprintf("DROP DATABASE IF EXISTS \"%s\" (FORCE)", cfg.Name)); err != nil {
 		return fmt.Errorf("failed to drop database: %w", err)
 	}
 
