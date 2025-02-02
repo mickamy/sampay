@@ -45,7 +45,7 @@ export default function UserProfile({
           onClick={onClickAvatar}
         />
         <h2 className="font-bold">{user.profile.name}</h2>
-        {user.profile.bio && (
+        {(user.profile.bio?.length || 0) > 0 && (
           <ExpandableText>{user.profile.bio}</ExpandableText>
         )}
         {admin && (
