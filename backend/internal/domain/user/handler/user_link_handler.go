@@ -110,11 +110,19 @@ func (h UserLink) UpdateUserLink(ctx context.Context, req *connect.Request[userv
 		providerType = &pt
 	}
 
-	_, err := h.update.Do(ctx, usecase.UpdateUserLinkInput{
+	qrCode, err := commonRequest.NewS3Object(req.Msg.QrCode)
+	if err != nil {
+		return nil, commonResponse.NewBadRequest(errors.New("invalid s3 object")).
+			WithFieldViolation("qr_code", i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.CommonRequestErrorInvalid_s3_object})).
+			AsConnectError()
+	}
+
+	_, err = h.update.Do(ctx, usecase.UpdateUserLinkInput{
 		ID:           req.Msg.Id,
 		ProviderType: providerType,
 		URI:          req.Msg.Uri,
 		Name:         req.Msg.Name,
+		QRImage:      qrCode,
 	})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)

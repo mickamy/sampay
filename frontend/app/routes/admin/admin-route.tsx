@@ -10,6 +10,7 @@ import {
 } from "react-router";
 import { userProfileSchema } from "~/components/user-profile-form";
 import { withAuthentication } from "~/lib/api/request.server";
+import logger from "~/lib/logger";
 import type { S3Object } from "~/models/common/s3-object-model";
 import { convertToUser } from "~/models/user/user-model";
 import AdminScreen, {
@@ -54,6 +55,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   })
     .then((it) => {
       if (it.isRight()) {
+        logger.error({ error: it.value }, "failed to load data");
         throw new Error(`failed to load data: ${it.value}`);
       }
       return it;
@@ -242,8 +244,6 @@ async function putLink({
   return withAuthentication({ request }, async ({ getClient }) => {
     const { qrCode, ...data } = userLinkSchema.parse(Object.fromEntries(body));
 
-    const client = getClient(UserLinkService);
-
     let imageObj: S3Object | undefined;
     if (qrCode) {
       imageObj = await directUpload({
@@ -251,29 +251,22 @@ async function putLink({
         file: qrCode,
         getClient,
       });
-      client.updateUserLinkQRCode({
-        id: data.id,
-        qrCode: imageObj,
-      });
     }
 
-    await client.updateUserLink({
+    await getClient(UserLinkService).updateUserLink({
       id: data.id,
       providerType: data.provider_type,
       uri: data.uri,
       name: data.name,
-      qrCode: imageObj,
     });
     const actionData: ActionData = {
       putLinkSuccess: true,
-      putLinkError: undefined,
     };
     return Response.json(actionData);
   })
     .then((it) =>
       it.map((error) =>
         Response.json({
-          putLinkSuccess: false,
           putLinkError: error,
         }),
       ),
