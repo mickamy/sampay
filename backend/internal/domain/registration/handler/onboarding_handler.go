@@ -125,7 +125,7 @@ func (h *Onboarding) CreateUserProfile(
 	})
 	if err != nil {
 		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
-			if errors.Is(err, userModel.ErrUserSlugAlreadyExists) {
+			if errors.Is(err, userModel.ErrUserSlugAlreadyTaken) {
 				return nil, localizable.AsFieldViolations("slug").AsConnectError()
 			}
 			return nil, localizable.AsConnectError()

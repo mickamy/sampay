@@ -41,7 +41,7 @@ func (h UserProfile) UpdateUserProfile(ctx context.Context, req *connect.Request
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
 		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
-			if errors.Is(err, userModel.ErrUserSlugAlreadyExists) {
+			if errors.Is(err, userModel.ErrUserSlugAlreadyTaken) {
 				return nil, localizable.AsFieldViolations("slug").AsConnectError()
 			}
 			return nil, localizable.AsConnectError()

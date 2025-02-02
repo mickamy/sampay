@@ -7,3 +7,6 @@ CREATE TABLE users
     updated_at TIMESTAMPTZ  NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uq_users_slug UNIQUE (slug)
 );
+
+CREATE INDEX idx_users_slug ON users (slug);
+CREATE INDEX idx_users_email ON users (email);

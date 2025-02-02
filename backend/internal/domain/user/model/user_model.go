@@ -14,10 +14,10 @@ import (
 )
 
 var (
-	ErrUserSlugAlreadyExists = commonModel.NewLocalizableError(errors.New("slug already exists")).
-					WithMessages(i18n.Config{MessageID: i18n.UserModelUserErrorSlug_already_exists})
-	ErrUserEmailAlreadyExists = commonModel.NewLocalizableError(errors.New("email already exists")).
-					WithMessages(i18n.Config{MessageID: i18n.UserModelUserErrorEmail_already_exists})
+	ErrUserSlugAlreadyTaken = commonModel.NewLocalizableError(errors.New("slug already taken")).
+				WithMessages(i18n.Config{MessageID: i18n.UserModelUserErrorSlug_already_taken})
+	ErrUserEmailAlreadyTaken = commonModel.NewLocalizableError(errors.New("email already taken")).
+					WithMessages(i18n.Config{MessageID: i18n.UserModelUserErrorEmail_already_taken})
 )
 
 type User struct {
@@ -38,7 +38,7 @@ func (m User) validateSlugExistence(tx *gorm.DB) error {
 		return fmt.Errorf("failed to check user existence: %w", err)
 	}
 	if existingID != "" && existingID != m.ID {
-		return ErrUserSlugAlreadyExists
+		return ErrUserSlugAlreadyTaken
 	}
 	return nil
 }
@@ -49,7 +49,7 @@ func (m User) validateEmailExistence(tx *gorm.DB) error {
 		return fmt.Errorf("failed to check user existence: %w", err)
 	}
 	if existingID != "" && existingID != m.ID {
-		return ErrUserEmailAlreadyExists
+		return ErrUserEmailAlreadyTaken
 	}
 	return nil
 }
@@ -77,5 +77,12 @@ func (m *User) BeforeCreate(tx *gorm.DB) error {
 }
 
 func (m *User) BeforeUpdate(tx *gorm.DB) error {
-	return m.validateSlugExistence(tx)
+	if err := m.validateSlugExistence(tx); err != nil {
+		return err
+	}
+	if err := m.validateEmailExistence(tx); err != nil {
+		return err
+	}
+
+	return nil
 }
