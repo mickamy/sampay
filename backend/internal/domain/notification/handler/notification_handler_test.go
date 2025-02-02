@@ -180,12 +180,12 @@ func TestNotification_UnreadNotificationsCount(t *testing.T) {
 
 	tsc := []struct {
 		name    string
-		arrange func(t *testing.T, ctx context.Context, infras di.Infras) *notificationv1.UnreadNotificationsCountRequest
-		assert  func(t *testing.T, got *connect.Response[notificationv1.UnreadNotificationsCountResponse], err error)
+		arrange func(t *testing.T, ctx context.Context, infras di.Infras) *notificationv1.CountUnreadNotificationRequest
+		assert  func(t *testing.T, got *connect.Response[notificationv1.CountUnreadNotificationResponse], err error)
 	}{
 		{
 			name: "success",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *notificationv1.UnreadNotificationsCountRequest {
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras) *notificationv1.CountUnreadNotificationRequest {
 				userID := contexts.MustAuthenticatedUserID(ctx)
 				m1 := fixture.Notification(func(m *model.Notification) {
 					m.UserID = userID
@@ -198,9 +198,9 @@ func TestNotification_UnreadNotificationsCount(t *testing.T) {
 				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&m1).Error)
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&m2).Error)
-				return &notificationv1.UnreadNotificationsCountRequest{}
+				return &notificationv1.CountUnreadNotificationRequest{}
 			},
-			assert: func(t *testing.T, got *connect.Response[notificationv1.UnreadNotificationsCountResponse], err error) {
+			assert: func(t *testing.T, got *connect.Response[notificationv1.CountUnreadNotificationResponse], err error) {
 				require.NoError(t, err)
 				assert.Equal(t, int32(1), got.Msg.Count)
 			},
@@ -224,7 +224,7 @@ func TestNotification_UnreadNotificationsCount(t *testing.T) {
 			// act
 			client := notificationv1connect.NewNotificationServiceClient(http.DefaultClient, server.URL)
 			connReq := connecttest.NewAuthenticatedRequest(t, ctx, req, nil, authModel.MustNewSession(user.ID), infras.KVS)
-			got, err := client.UnreadNotificationsCount(ctx, connReq)
+			got, err := client.CountUnreadNotification(ctx, connReq)
 
 			// assert
 			tc.assert(t, got, err)

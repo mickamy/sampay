@@ -29,6 +29,7 @@ import UserProfileImageFormDialog, {
 export interface LoaderData {
   user: User;
   url: string;
+  unreadNotificationsCount: number;
 }
 
 export interface ActionData
@@ -38,7 +39,7 @@ export interface ActionData
     PutUserLinkFormDialogActionData {}
 
 export default function AdminScreen() {
-  const { user, url } = useLoaderData<LoaderData>();
+  const { user, url, unreadNotificationsCount } = useLoaderData<LoaderData>();
 
   const {
     isDialogOpen: isAddLinkFormDialogOpen,
@@ -86,7 +87,7 @@ export default function AdminScreen() {
 
   return (
     <>
-      <Header isLoggedIn />
+      <Header isLoggedIn hasUnreadNotification={unreadNotificationsCount > 0} />
       <div className="container mx-auto flex flex-col items-center p-6 min-w-[375px] max-w-[600px] lg:p-4">
         <div className="flex justify-end w-full">
           <ShareButton url={url} />

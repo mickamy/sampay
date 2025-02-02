@@ -30,15 +30,15 @@ message ReadNotificationRequest {
 message ReadNotificationResponse {
 }
 
-message UnreadNotificationsCountRequest {
+message CountUnreadNotificationRequest {
 }
 
-message UnreadNotificationsCountResponse {
+message CountUnreadNotificationResponse {
   int32 count = 1;
 }
 
 service NotificationService {
   rpc ListNotifications(ListNotificationsRequest) returns (ListNotificationsResponse);
   rpc ReadNotification(ReadNotificationRequest) returns (ReadNotificationResponse);
-  rpc UnreadNotificationsCount(UnreadNotificationsCountRequest) returns (UnreadNotificationsCountResponse);
+  rpc CountUnreadNotification(CountUnreadNotificationRequest) returns (CountUnreadNotificationResponse);
 }

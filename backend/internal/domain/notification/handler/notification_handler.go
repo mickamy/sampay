@@ -104,7 +104,7 @@ func (h *Notification) ReadNotification(
 	return res, nil
 }
 
-func (h *Notification) UnreadNotificationsCount(ctx context.Context, req *connect.Request[notificationv1.UnreadNotificationsCountRequest]) (*connect.Response[notificationv1.UnreadNotificationsCountResponse], error) {
+func (h *Notification) CountUnreadNotification(ctx context.Context, req *connect.Request[notificationv1.CountUnreadNotificationRequest]) (*connect.Response[notificationv1.CountUnreadNotificationResponse], error) {
 	out, err := h.count.Do(ctx, usecase.CountUnreadNotificationsInput{})
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)
@@ -115,7 +115,7 @@ func (h *Notification) UnreadNotificationsCount(ctx context.Context, req *connec
 		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
 		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
-	res := connect.NewResponse(&notificationv1.UnreadNotificationsCountResponse{
+	res := connect.NewResponse(&notificationv1.CountUnreadNotificationResponse{
 		Count: int32(out.Count),
 	})
 	return res, nil
