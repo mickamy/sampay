@@ -22,7 +22,7 @@
           Group=ec2-user
 
           StandardOutput=append:/var/log/sampay/api.log
-          StandardError=append:/var/log/redis/api.log
+          StandardError=append:/var/log/sampay/api.log
 
           [Install]
           WantedBy=multi-user.target
@@ -49,7 +49,7 @@
           Group=ec2-user
 
           StandardOutput=append:/var/log/sampay/worker.log
-          StandardError=append:/var/log/redis/worker.log
+          StandardError=append:/var/log/sampay/worker.log
 
           [Install]
           WantedBy=multi-user.target
