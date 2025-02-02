@@ -6,6 +6,7 @@ export default [
   route("terms", "routes/static/terms-route.tsx"),
 
   route("admin", "routes/admin/admin-route.tsx"),
+  route("notifications", "routes/notifications/notifications-route.tsx"),
   route("onboarding", "routes/onboarding/onboarding-route.tsx"),
   route("oauth/callback/google", "routes/oauth/oauth-callback-route.tsx"),
   route("oauth/google", "routes/oauth/google/oauth-google-route.tsx"),

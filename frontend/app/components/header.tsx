@@ -1,4 +1,4 @@
-import { Menu, X } from "lucide-react";
+import { Bell, BellDot, Menu, X } from "lucide-react";
 import type React from "react";
 import { type HTMLAttributes, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -15,9 +15,14 @@ import { cn } from "~/lib/utils";
 
 interface Props extends HTMLAttributes<HTMLHeadElement> {
   isLoggedIn: boolean;
+  hasUnreadNotification?: boolean;
 }
 
-export default function Header({ isLoggedIn, ...props }: Props) {
+export default function Header({
+  isLoggedIn,
+  hasUnreadNotification = false,
+  ...props
+}: Props) {
   const to = isLoggedIn ? "/admin" : "/";
   return (
     <header
@@ -43,9 +48,15 @@ export default function Header({ isLoggedIn, ...props }: Props) {
 
 interface NavigationProps extends HTMLAttributes<HTMLDivElement> {
   isLoggedIn: boolean;
+  hasUnreadNotification: boolean;
 }
 
-function Navigation({ isLoggedIn, className, ...props }: NavigationProps) {
+function Navigation({
+  isLoggedIn,
+  hasUnreadNotification,
+  className,
+  ...props
+}: NavigationProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const closeMenu = useCallback(() => {
@@ -101,7 +112,16 @@ function Navigation({ isLoggedIn, className, ...props }: NavigationProps) {
     );
   }
   return (
-    <div className={cn("", className)} {...props}>
+    <div className={cn("flex items-center space-x-2", className)} {...props}>
+      <Link to="/notifications">
+        <Button
+          size="icon"
+          variant="ghost"
+          className="rounded-full [&_svg]:size-5"
+        >
+          {hasUnreadNotification ? <BellDot /> : <Bell />}
+        </Button>
+      </Link>
       <Form method="delete" action="/sign-out" className="w-full">
         <Button variant="ghost" className="w-full">
           {t("header.sign_out")}
