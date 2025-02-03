@@ -47,12 +47,34 @@ if ! sudo systemctl restart sampay-frontend; then
 fi
 
 echo "Waiting for sampay-frontend service to become active..."
-if timeout 10s bash -c 'until systemctl is-active --quiet sampay-frontend; do sleep 1; done'; then
-    echo "sampay-frontend service is now active."
-else
-    echo "Timed out waiting for sampay-frontend service to become active."
-    rollback
-fi
+retry_count=0
+max_retries=3
+retry_interval=5
+while [ $retry_count -lt $max_retries ]; do
+    if systemctl is-active --quiet sampay-api; then
+        echo "sampay-frontend service is active."
+        if wget -q --spider http://localhost:3000; then
+            echo "Health check passed successfully."
+            break
+        else
+            echo "Health check failed. Retrying..."
+        fi
+    else
+        echo "sampay-frontend service is not yet active. Waiting..."
+    fi
+
+    retry_count=$((retry_count + 1))
+
+    if [ $retry_count -lt $max_retries ]; then
+        echo "Retrying in $retry_interval seconds... (Attempt $retry_count of $max_retries)"
+        sleep $retry_interval
+    fi
+
+    if [ $retry_count -eq $max_retries ]; then
+        echo "Error: Failed to start sampay-frontend service."
+        rollback
+    fi
+done
 
 echo "Deployment completed successfully."
 echo "Removing old version directory: $PREVIOUS_VERSION_LINK"
