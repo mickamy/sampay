@@ -26,7 +26,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   if (loggedIn) {
     return redirect("/admin");
   }
-  return null;
+  return new Response(null);
 };
 
 export default function SignUp() {
