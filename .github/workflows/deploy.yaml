@@ -58,6 +58,8 @@ jobs:
           export CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}
           export POSTGRES_PASSWORD=${{ secrets.POSTGRES_ADMIN_PASSWORD_STG }}
           export KVS_PASSWORD=${{ secrets.KVS_PASSWORD_STG }}
+          export BASIC_USER=${{ secrets.BASIC_USER }}
+          export BASIC_PASSWORD=${{ secrets.BASIC_PASSWORD }}
 
           ansible-playbook -i ./inventory/web.yaml playbook.yaml \
           --vault-password-file ./secrets/ansible_vault_pass --limit stg \

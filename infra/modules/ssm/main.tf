@@ -181,3 +181,20 @@ resource "github_actions_secret" "kvs_password" {
   secret_name     = "KVS_PASSWORD_${upper(var.env)}"
   plaintext_value = aws_ssm_parameter.random_values["KVS_PASSWORD"].value
 }
+
+resource "random_password" "basic" {
+  for_each         = var.env == "stg" ? toset(["user", "password"]) : toset([])
+  length           = 16
+  special          = true
+  override_special = "-_"
+  upper            = true
+  lower            = true
+  numeric          = true
+}
+
+resource "github_actions_secret" "basic" {
+  for_each        = var.env == "stg" ? random_password.basic : {}
+  repository      = var.github_repo
+  secret_name     = upper("BASIC_${each.key}")
+  plaintext_value = each.value
+}
