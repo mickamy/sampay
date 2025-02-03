@@ -1,8 +1,12 @@
 import type { Notification as NotificationPB } from "@buf/mickamy_sampay.bufbuild_es/notification/v1/notification_pb";
 import { convertTimestampToDate } from "~/lib/protobuf/timestamp";
 
+export const NotificationTypes = ["announcement", "message"] as const;
+export type NotificationType = (typeof NotificationTypes)[number];
+
 export interface Notification {
   id: string;
+  type: NotificationType;
   subject: string;
   body: string;
   createdAt: string;
@@ -15,6 +19,7 @@ export function convertToNotification(pb: NotificationPB): Notification {
   }
   return {
     id: pb.id,
+    type: pb.type as NotificationType,
     subject: pb.subject,
     body: pb.body,
     createdAt: convertTimestampToDate(pb.createdAt).toISOString(),
