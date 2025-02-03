@@ -11,6 +11,7 @@ import (
 
 type Notification struct {
 	ID        string
+	Type      NotificationType
 	UserID    string
 	Subject   string
 	Body      string
