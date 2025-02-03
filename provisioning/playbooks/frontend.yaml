@@ -22,7 +22,7 @@
           Group=ec2-user
 
           StandardOutput=append:/var/log/sampay/frontend.log
-          StandardError=append:/var/log/redis/frontend.log
+          StandardError=append:/var/log/sampay/frontend.log
 
           [Install]
           WantedBy=multi-user.target
