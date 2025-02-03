@@ -196,5 +196,5 @@ resource "github_actions_secret" "basic" {
   for_each        = var.env == "stg" ? random_password.basic : {}
   repository      = var.github_repo
   secret_name     = upper("BASIC_${each.key}")
-  plaintext_value = each.value
+  plaintext_value = each.value.result
 }
