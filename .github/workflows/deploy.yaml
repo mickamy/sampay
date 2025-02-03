@@ -46,72 +46,66 @@ jobs:
       - name: Set ansible vault password
         run: |
           mkdir -p provisioning/secrets
-          echo "${{ secrets.ANSIBLE_VAULT_PASS }}" > ./provisioning/secrets/ansible_vault_pass 
+          echo "${{ secrets.ANSIBLE_VAULT_PASS }}" > ./provisioning/secrets/ansible_vault_pass
 
       - name: Execute ansible playbook
         run: |
           cd ./provisioning
-          
+
           export ANSIBLE_SSH_KEY="${GITHUB_WORKSPACE}/key.pem"
           export ANSIBLE_SSH_PORT=${{ secrets.SSH_PORT_STG }}
           export AWS_REGION=${{ env.AWS_REGION }}
           export CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}
           export POSTGRES_PASSWORD=${{ secrets.POSTGRES_ADMIN_PASSWORD_STG }}
           export KVS_PASSWORD=${{ secrets.KVS_PASSWORD_STG }}
-          
+
           ansible-playbook -i ./inventory/web.yaml playbook.yaml \
           --vault-password-file ./secrets/ansible_vault_pass --limit stg \
 
-      - name: Set adhoc branch name
-        run: |
-          echo "ADHOC_BRANCH_NAME=adhoc/${{ github.sha }}-$(echo ${{ github.event.repository.updated_at }} | sed 's/[:]/_/g')" >> $GITHUB_ENV
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: ./backend/go.mod
+          cache-dependency-path: ./backend/go.sum
 
-      - name: Checkout repository on EC2
+      - name: Set directory suffix
         run: |
-          ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
-            set -eux -o pipefail
-            export ADHOC_BRANCH_NAME="${{ env.ADHOC_BRANCH_NAME }}"
-            if [ ! -d "sampay" ]; then
-              git clone git@github.com:mickamy/sampay.git
-            fi
-            cd sampay
-            git checkout -b "$ADHOC_BRANCH_NAME" 
-            git add .
-            git stash
-            git branch --merged | grep -v \* | xargs git branch -D
-            git fetch origin --prune
-            git branch -D ${{ github.ref_name }} || true
-            git checkout ${{ github.ref_name }}
-          EOF
+          echo "DIR_SUFFIX=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+
+      - name: Build backend binaries
+        run: cd backend && make build
+
+      - name: Ensure app directory exists
+        run: |
+          ssh -p ${{ secrets.SSH_PORT_STG }} -i key.pem ec2-user@${{ env.DOMAIN }} -o StrictHostKeyChecking=no '
+            mkdir -p /home/ec2-user/sampay
+          '
+
+      - name: Copy binaries to EC2 (build & db)
+        run: |
+          scp -r -i key.pem -P ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no \
+            ./backend/build ./backend/db ec2-user@${{ env.DOMAIN }}:/home/ec2-user/sampay/backend-${{ env.DIR_SUFFIX }}/
 
       - name: Deploy backend application
         run: |
-          ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} \
-            "bash ~/sampay/backend/bin/deploy.sh"
+          cat "${GITHUB_WORKSPACE}/backend/bin/deploy.sh" |
+          ssh -p ${{ secrets.SSH_PORT_STG }} -i key.pem ec2-user@${{ env.DOMAIN }} -o StrictHostKeyChecking=no '
+            export DIR_SUFFIX="${{ env.DIR_SUFFIX }}";
+            bash -s
+          '
+
+      - name: Copy frontend files to EC2
+        run: |
+          scp -C -r -i key.pem -P ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no \
+            ./frontend ec2-user@${{ env.DOMAIN }}:/home/ec2-user/sampay/frontend-${{ env.DIR_SUFFIX }}
 
       - name: Deploy frontend application
         run: |
-          ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} \
-            "bash ~/sampay/frontend/bin/deploy.sh"
-
-      - name: Delete adhoc branch
-        run: |
-          ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
-            cd sampay
-            export ADHOC_BRANCH_NAME="${{ env.ADHOC_BRANCH_NAME }}"
-            git branch -D "$ADHOC_BRANCH_NAME"
-          EOF
-
-      - name: Rollback
-        if: ${{ failure() }}
-        run: |
-          ssh -p ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no -i key.pem ec2-user@${{ env.DOMAIN }} << 'EOF'
-            cd sampay
-            git checkout -
-            sudo systemctl restart sampay-api
-            sudo systemctl restart sampay-worker
-            sudo systemctl restart sampay-frontend
-          EOF
+          cat "${GITHUB_WORKSPACE}/frontend/bin/deploy.sh" |
+          ssh -p ${{ secrets.SSH_PORT_STG }} -i key.pem ec2-user@${{ env.DOMAIN }} -o StrictHostKeyChecking=no '
+            export DIR_SUFFIX="${{ env.DIR_SUFFIX }}";
+            bash -s
+          '
 
       - name: Revoke IP from Security Group
         if: ${{ always() }}
