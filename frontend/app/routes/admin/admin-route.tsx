@@ -10,6 +10,8 @@ import {
 } from "react-router";
 import { userProfileSchema } from "~/components/user-profile-form";
 import { withAuthentication } from "~/lib/api/request.server";
+import { destroyAuthenticatedSession } from "~/lib/cookie/authenticated.server";
+import { destroyEmailVerificationSession } from "~/lib/cookie/email-verification.server";
 import logger from "~/lib/logger";
 import type { S3Object } from "~/models/common/s3-object-model";
 import { convertToUser } from "~/models/user/user-model";
@@ -22,6 +24,16 @@ import { userProfileImageSchema } from "~/routes/admin/components/form/user-prof
 import { directUpload } from "~/services/.server/direct-upload-service";
 
 export const loader: LoaderFunction = async ({ request }) => {
+  const referer = request.headers.get("Referer");
+  const headers = new Headers();
+  if (referer?.includes("/sign-in") || referer?.includes("/sign-up")) {
+    headers.append("set-cookie", await destroyAuthenticatedSession(request));
+    headers.append(
+      "set-cookie",
+      await destroyEmailVerificationSession(request),
+    );
+  }
+
   return withAuthentication({ request }, async ({ getClient }) => {
     {
       const { step } = await getClient(OnboardingService).getOnboardingStep({});
@@ -51,7 +63,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       url: url.toString(),
       unreadNotificationsCount: count,
     };
-    return Response.json(data);
+    return Response.json(data, { headers });
   })
     .then((it) => {
       if (it.isRight()) {

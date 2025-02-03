@@ -18,10 +18,14 @@ import {
 import { type APIError, convertToAPIError } from "~/lib/api/response";
 import {
   type AuthenticatedSession,
+  destroyAuthenticatedSession,
   getAuthenticatedSession,
   setAuthenticatedSession,
 } from "~/lib/cookie/authenticated.server";
-import { getEmailVerificationSession } from "~/lib/cookie/email-verification.server";
+import {
+  destroyEmailVerificationSession,
+  getEmailVerificationSession,
+} from "~/lib/cookie/email-verification.server";
 import { type Either, Left, Right } from "~/lib/either/either";
 import logger from "~/lib/logger";
 import { convertTokensToSession } from "~/models/auth/session-model";
@@ -114,7 +118,16 @@ export async function withAuthentication(
   } catch (e) {
     if (e instanceof ConnectError) {
       if (e.code === Code.Unauthenticated) {
-        throw redirect("/sign-in");
+        const headers = new Headers();
+        headers.append(
+          "set-cookie",
+          await destroyAuthenticatedSession(request),
+        );
+        headers.append(
+          "set-cookie",
+          await destroyEmailVerificationSession(request),
+        );
+        throw redirect("/sign-in", { headers });
       }
       return new Right(convertToAPIError(e));
     }
