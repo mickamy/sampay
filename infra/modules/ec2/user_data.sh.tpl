@@ -1,5 +1,7 @@
 #!/bin/bash
 
+ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+
 yum update -y
 
 yum install -y ec2-instance-connect
