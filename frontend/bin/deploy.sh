@@ -53,7 +53,7 @@ fi
 function rollback() {
     echo "Rolling back to previous version..."
     if [ -n "$PREVIOUS_VERSION_LINK" ]; then
-        ln -sfn "$PREVIOUS_VERSION_LINK" "$APP_DIR"
+#        ln -sfn "$PREVIOUS_VERSION_LINK" "$APP_DIR"
         sudo systemctl restart "${APP_NAME}-${ACTIVE_ENV}"
     fi
 #    rm -rf "$NEW_DIR"
