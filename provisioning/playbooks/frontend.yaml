@@ -60,7 +60,7 @@
 
     - name: Create frontend green service
       ansible.builtin.copy:
-        dest: /etc/systemd/system/sampay-frontend.service
+        dest: /etc/systemd/system/sampay-frontend-green.service
         content: |
           [Unit]
           Description=Sampay frontend green Service
@@ -97,7 +97,7 @@
 
     - name: Enable frontend green service
       ansible.builtin.systemd:
-        name: sampay-frontend
+        name: sampay-frontend-green
         enabled: true
 
     - name: Create directory
