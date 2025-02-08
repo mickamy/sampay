@@ -10,6 +10,7 @@ APP_NAME="sampay-frontend"
 APP_DIR="/home/ec2-user/sampay/frontend"
 BLUE_DIR="/home/ec2-user/sampay/frontend-blue"
 GREEN_DIR="/home/ec2-user/sampay/frontend-green"
+NEW_DIR="/home/ec2-user/sampay/frontend-$DIR_SUFFIX"
 
 BLUE_PORT=3000
 GREEN_PORT=3001
@@ -19,13 +20,13 @@ if systemctl is-active --quiet "${APP_NAME}-blue"; then
     DEPLOY_ENV="green"
     DEPLOY_PORT=$GREEN_PORT
     ACTIVE_PORT=$BLUE_PORT
-    NEW_DIR="$GREEN_DIR"
+    APP_DIR="$GREEN_DIR"
 else
     ACTIVE_ENV="green"
     DEPLOY_ENV="blue"
     DEPLOY_PORT=$BLUE_PORT
     ACTIVE_PORT=$GREEN_PORT
-    NEW_DIR="$BLUE_DIR"
+    APP_DIR="$BLUE_DIR"
 fi
 
 PREVIOUS_VERSION_LINK=$(readlink -f "$APP_DIR" || echo "")
