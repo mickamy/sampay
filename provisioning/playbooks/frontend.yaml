@@ -39,7 +39,7 @@
           After=network.target
 
           [Service]
-          WorkingDirectory=/home/ec2-user/sampay/frontend
+          WorkingDirectory=/home/ec2-user/sampay/frontend-blue
           ExecStart=/home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/node \
             /home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/npm run start
           EnvironmentFile=/etc/systemd/system/sampay-frontend.env
@@ -49,8 +49,8 @@
           User=ec2-user
           Group=ec2-user
 
-          StandardOutput=append:/var/log/sampay/frontend.log
-          StandardError=append:/var/log/sampay/frontend.log
+          StandardOutput=append:/var/log/sampay/frontend-blue.log
+          StandardError=append:/var/log/sampay/frontend-blue.log
 
           [Install]
           WantedBy=multi-user.target
@@ -67,7 +67,7 @@
           After=network.target
 
           [Service]
-          WorkingDirectory=/home/ec2-user/sampay/frontend
+          WorkingDirectory=/home/ec2-user/sampay/frontend-green
           ExecStart=/home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/node \
             /home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/npm run start
           EnvironmentFile=/etc/systemd/system/sampay-frontend.env
@@ -77,8 +77,8 @@
           User=ec2-user
           Group=ec2-user
 
-          StandardOutput=append:/var/log/sampay/frontend.log
-          StandardError=append:/var/log/sampay/frontend.log
+          StandardOutput=append:/var/log/sampay/frontend-green.log
+          StandardError=append:/var/log/sampay/frontend-green.log
 
           [Install]
           WantedBy=multi-user.target
