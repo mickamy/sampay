@@ -79,7 +79,7 @@ variable "instance_type" {
 
 variable "oauth_redirect_url" {
   description = "OAuth redirect URL"
-  type = string
+  type        = string
 }
 
 variable "redis_host" {
