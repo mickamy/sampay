@@ -63,38 +63,38 @@ jobs:
 
           ansible-playbook -i ./inventory/web.yaml playbook.yaml \
           --vault-password-file ./secrets/ansible_vault_pass --limit stg \
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: ./backend/go.mod
-          cache-dependency-path: ./backend/go.sum
+#
+#      - name: Set up Go
+#        uses: actions/setup-go@v5
+#        with:
+#          go-version-file: ./backend/go.mod
+#          cache-dependency-path: ./backend/go.sum
 
       - name: Set directory suffix
         run: |
           echo "DIR_SUFFIX=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
 
-      - name: Build backend binaries
-        run: cd backend && make build
-
-      - name: Ensure app directory exists
-        run: |
-          ssh -p ${{ secrets.SSH_PORT_STG }} -i key.pem ec2-user@${{ env.DOMAIN }} -o StrictHostKeyChecking=no '
-            mkdir -p /home/ec2-user/sampay
-          '
-
-      - name: Copy binaries to EC2 (build & db)
-        run: |
-          scp -r -i key.pem -P ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no \
-            ./backend/build ./backend/db ec2-user@${{ env.DOMAIN }}:/home/ec2-user/sampay/backend-${{ env.DIR_SUFFIX }}/
-
-      - name: Deploy backend application
-        run: |
-          cat "${GITHUB_WORKSPACE}/backend/bin/deploy.sh" |
-          ssh -p ${{ secrets.SSH_PORT_STG }} -i key.pem ec2-user@${{ env.DOMAIN }} -o StrictHostKeyChecking=no '
-            export DIR_SUFFIX="${{ env.DIR_SUFFIX }}";
-            bash -s
-          '
+#      - name: Build backend binaries
+#        run: cd backend && make build
+#
+#      - name: Ensure app directory exists
+#        run: |
+#          ssh -p ${{ secrets.SSH_PORT_STG }} -i key.pem ec2-user@${{ env.DOMAIN }} -o StrictHostKeyChecking=no '
+#            mkdir -p /home/ec2-user/sampay
+#          '
+#
+#      - name: Copy binaries to EC2 (build & db)
+#        run: |
+#          scp -r -i key.pem -P ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no \
+#            ./backend/build ./backend/db ec2-user@${{ env.DOMAIN }}:/home/ec2-user/sampay/backend-${{ env.DIR_SUFFIX }}/
+#
+#      - name: Deploy backend application
+#        run: |
+#          cat "${GITHUB_WORKSPACE}/backend/bin/deploy.sh" |
+#          ssh -p ${{ secrets.SSH_PORT_STG }} -i key.pem ec2-user@${{ env.DOMAIN }} -o StrictHostKeyChecking=no '
+#            export DIR_SUFFIX="${{ env.DIR_SUFFIX }}";
+#            bash -s
+#          '
 
       - name: Copy frontend files to EC2
         run: |

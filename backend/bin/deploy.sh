@@ -20,14 +20,14 @@ echo "Preparing database..."
 export PACKAGE_ROOT="$NEW_DIR"
 if ! ( "$NEW_DIR/build/db-create" && "$NEW_DIR/build/db-migrate" && "$NEW_DIR/build/db-seed" ); then
     echo "Error: Database preparation failed. Exiting."
-    rm -rf "$NEW_DIR"
+#    rm -rf "$NEW_DIR"
     exit 1
 fi
 
 echo "Update symlink to new version..."
 if ! ln -sfn "$NEW_DIR" "$APP_DIR"; then
     echo "Error: Failed to update symlink. Exiting."
-    rm -rf "$NEW_DIR"
+#    rm -rf "$NEW_DIR"
     exit 1
 fi
 
@@ -37,7 +37,7 @@ function rollback() {
         ln -sfn "$PREVIOUS_VERSION_LINK" "$APP_DIR"
     fi
     sudo systemctl restart sampay-api sampay-worker
-    rm -rf "$NEW_DIR"
+#    rm -rf "$NEW_DIR"
     exit 1
 }
 
