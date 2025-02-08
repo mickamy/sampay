@@ -2,6 +2,10 @@
   hosts: all
   gather_facts: false
   become: true
+  vars:
+    basic_user: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
+    basic_password: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
+
   tasks:
     - name: Create frontend systemd environment file
       ansible.builtin.copy:
@@ -10,10 +14,18 @@
           PATH=/home/ec2-user/.nvm/versions/node/{{ node_version }}/bin:/usr/local/bin:/usr/bin:/bin
           NODE_PATH=/home/ec2-user/.nvm/versions/node{{ node_version }}/lib/node_modules
           NVM_DIR=/home/ec2-user/.nvm
-          API_BASE_URL=http:localhost:8080/api
+          API_BASE_URL=http://localhost:8080/api
           export PATH
           export NODE_PATH
           export NVM_DIR
+          {% if basic_user is defined and basic_user | length > 0 %}
+          BASIC_USER={{ basic_user }}
+          export BASIC_USER
+          {% endif %}
+          {% if basic_password is defined and basic_password | length > 0 %}
+          BASIC_PASSWORD={{ basic_password }}
+          export BASIC_PASSWORD
+          {% endif %}
         owner: root
         group: root
         mode: '0644'

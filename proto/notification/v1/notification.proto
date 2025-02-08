@@ -8,10 +8,11 @@ import "common/v1/paging.proto";
 
 message Notification {
   string id = 1 [(buf.validate.field).string.len = 26];
-  string subject = 2 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.max_len = 64];
-  string body = 3 [(buf.validate.field).string.min_len = 1];
-  google.protobuf.Timestamp created_at = 4;
-  google.protobuf.Timestamp read_at = 5;
+  string type = 2 [(buf.validate.field).string.min_len = 1];
+  string subject = 3 [(buf.validate.field).string.min_len = 1, (buf.validate.field).string.max_len = 64];
+  string body = 4 [(buf.validate.field).string.min_len = 1];
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp read_at = 6;
 }
 
 message ListNotificationsRequest {

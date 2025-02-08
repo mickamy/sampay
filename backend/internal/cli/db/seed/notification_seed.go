@@ -41,6 +41,7 @@ func seedNotification(ctx context.Context, writer *database.Writer, env config.E
 	var notifications []model.Notification
 	for i := 0; i < 10; i++ {
 		notifications = append(notifications, fixture.NotificationMessageReceived(func(m *model.Notification) {
+			m.Type = model.NotificationTypeMessage
 			m.UserID = me.ID
 		}))
 	}
