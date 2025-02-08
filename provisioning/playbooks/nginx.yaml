@@ -70,11 +70,6 @@
         group: root
         mode: '0644'
 
-    - name: Reload nginx to apply Let's Encrypt configuration
-      ansible.builtin.systemd:
-        name: nginx
-        state: reloaded
-
     - name: Obtain Let's Encrypt certificate
       ansible.builtin.command:
         cmd: >
@@ -88,10 +83,18 @@
       args:
         creates: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"
 
-    - name: Configure nginx for HTTPS
+    - name: Configure nginx for HTTPS with dynamic Blue-Green deployment
       ansible.builtin.copy:
         dest: /etc/nginx/conf.d/{{ domain_name }}.conf
         content: |
+          upstream frontend {
+              server 127.0.0.1:3000;
+          }
+
+          upstream api {
+              server 127.0.0.1:8080;
+          }
+
           server {
               listen 443 ssl;
               server_name {{ domain_name }};
@@ -100,15 +103,15 @@
               ssl_certificate_key /etc/letsencrypt/live/{{ domain_name }}/privkey.pem;
 
               location /api {
-                  proxy_pass http://127.0.0.1:8080;
+                  proxy_pass http://api;
                   proxy_http_version 1.1;
                   proxy_set_header Upgrade $http_upgrade;
                   proxy_set_header Connection "upgrade";
                   proxy_set_header Host $host;
               }
-
+          
               location / {
-                  proxy_pass http://127.0.0.1:3000;
+                  proxy_pass http://frontend;
                   proxy_http_version 1.1;
                   proxy_set_header Upgrade $http_upgrade;
                   proxy_set_header Connection "upgrade";
