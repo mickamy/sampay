@@ -87,6 +87,7 @@ func (uc *sendMessage) Do(ctx context.Context, input SendMessageInput) (SendMess
 		})
 
 		notification := notificationModel.Notification{
+			Type:    notificationModel.NotificationTypeMessage,
 			UserID:  receiver.ID,
 			Subject: subject,
 			Body:    body,

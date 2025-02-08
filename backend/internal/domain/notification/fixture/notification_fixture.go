@@ -5,12 +5,14 @@ import (
 
 	"github.com/mattn/go-gimei"
 
+	commonFixture "mickamy.com/sampay/internal/domain/common/fixture"
 	"mickamy.com/sampay/internal/domain/notification/model"
 	"mickamy.com/sampay/internal/misc/i18n"
 )
 
 func Notification(setter func(m *model.Notification)) model.Notification {
 	m := model.Notification{
+		Type:    NotificationType(),
 		Subject: gofakeit.GlobalFaker.Sentence(2),
 		Body:    gofakeit.GlobalFaker.Sentence(20),
 	}
@@ -44,4 +46,8 @@ func NotificationMessageReceived(setter func(m *model.Notification)) model.Notif
 	}
 
 	return m
+}
+
+func NotificationType() model.NotificationType {
+	return commonFixture.RandomStringer(model.NotificationTypeValues())
 }
