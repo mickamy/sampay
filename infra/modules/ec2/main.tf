@@ -40,18 +40,18 @@ resource "aws_key_pair" "ssh" {
   tags = local.common_tags
 }
 
-data "aws_ami" "amazon_linux_2023" {
+data "aws_ami" "amazon_linux_2023_minimal" {
   most_recent = true
   owners = ["amazon"]
 
   filter {
     name = "name"
-    values = ["al2023-ami-*-kernel-6.1-x86_64"]
+    values = ["al2023-ami-minimal-*-kernel-6.1-x86_64"]
   }
 }
 
 resource "aws_instance" "main" {
-  ami                         = data.aws_ami.amazon_linux_2023.id
+  ami                         = data.aws_ami.amazon_linux_2023_minimal.id
   associate_public_ip_address = true
   iam_instance_profile        = aws_iam_instance_profile.ec2_instance_profile.name
   instance_type               = var.instance_type
