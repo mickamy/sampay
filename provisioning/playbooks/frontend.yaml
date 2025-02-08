@@ -3,33 +3,6 @@
   gather_facts: false
   become: true
   tasks:
-    - name: Create frontend systemd service
-      ansible.builtin.copy:
-        dest: /etc/systemd/system/sampay-frontend.service
-        content: |
-          [Unit]
-          Description=Sampay frontend Service
-          After=network.target
-
-          [Service]
-          WorkingDirectory=/home/ec2-user/sampay/frontend
-          ExecStart=/home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/node \
-            /home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/npm run start
-          EnvironmentFile=/etc/systemd/system/sampay-frontend.env
-          Environment="ENVIRONMENT={{ env }}"
-          Restart=always
-          User=ec2-user
-          Group=ec2-user
-
-          StandardOutput=append:/var/log/sampay/frontend.log
-          StandardError=append:/var/log/sampay/frontend.log
-
-          [Install]
-          WantedBy=multi-user.target
-        owner: root
-        group: root
-        mode: '0644'
-
     - name: Create frontend systemd environment file
       ansible.builtin.copy:
         dest: /etc/systemd/system/sampay-frontend.env
@@ -45,11 +18,72 @@
         group: root
         mode: '0644'
 
+    - name: Create frontend blue service
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/sampay-frontend-blue.service
+        content: |
+          [Unit]
+          Description=Sampay frontend blue Service
+          After=network.target
+
+          [Service]
+          WorkingDirectory=/home/ec2-user/sampay/frontend
+          ExecStart=/home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/node \
+            /home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/npm run start
+          EnvironmentFile=/etc/systemd/system/sampay-frontend.env
+          Environment="ENVIRONMENT={{ env }}"
+          Environment="PORT=3000"
+          Restart=always
+          User=ec2-user
+          Group=ec2-user
+
+          StandardOutput=append:/var/log/sampay/frontend.log
+          StandardError=append:/var/log/sampay/frontend.log
+
+          [Install]
+          WantedBy=multi-user.target
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Create frontend green service
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/sampay-frontend.service
+        content: |
+          [Unit]
+          Description=Sampay frontend green Service
+          After=network.target
+
+          [Service]
+          WorkingDirectory=/home/ec2-user/sampay/frontend
+          ExecStart=/home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/node \
+            /home/ec2-user/.nvm/versions/node/{{ node_version }}/bin/npm run start
+          EnvironmentFile=/etc/systemd/system/sampay-frontend.env
+          Environment="ENVIRONMENT={{ env }}"
+          Environment="PORT=3001"
+          Restart=always
+          User=ec2-user
+          Group=ec2-user
+
+          StandardOutput=append:/var/log/sampay/frontend.log
+          StandardError=append:/var/log/sampay/frontend.log
+
+          [Install]
+          WantedBy=multi-user.target
+        owner: root
+        group: root
+        mode: '0644'
+
     - name: Reload systemd
       ansible.builtin.systemd:
         daemon_reload: true
 
-    - name: Start frontend service
+    - name: Start frontend blue service
+      ansible.builtin.systemd:
+        name: sampay-frontend-blue
+        enabled: true
+
+    - name: Enable frontend green service
       ansible.builtin.systemd:
         name: sampay-frontend
         enabled: true
