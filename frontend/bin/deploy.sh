@@ -74,7 +74,7 @@ retry_interval=5
 while [ $retry_count -lt $max_retries ]; do
     if systemctl is-active --quiet "${APP_NAME}-${DEPLOY_ENV}"; then
         echo "${APP_NAME}-${DEPLOY_ENV} service is active."
-        if wget -q --spider "http://localhost:${DEPLOY_PORT}/health"; then
+        if wget -q --spider "http://localhost:${DEPLOY_PORT}"; then
             echo "Health check passed successfully on port $DEPLOY_PORT."
             break
         else
