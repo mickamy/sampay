@@ -39,14 +39,14 @@ cd "$NEW_DIR" || exit 1
 echo "Building application..."
 if ! ( npm ci && npm run build ); then
     echo "Error: Build failed. Exiting."
-    rm -rf "$NEW_DIR"
+#    rm -rf "$NEW_DIR"
     exit 1
 fi
 
 echo "Updating symlink to point to $DEPLOY_ENV..."
 if ! ln -sfn "$NEW_DIR" "$APP_DIR"; then
     echo "Error: Failed to update symlink. Exiting."
-    rm -rf "$NEW_DIR"
+#    rm -rf "$NEW_DIR"
     exit 1
 fi
 
@@ -56,7 +56,7 @@ function rollback() {
         ln -sfn "$PREVIOUS_VERSION_LINK" "$APP_DIR"
         sudo systemctl restart "${APP_NAME}-${ACTIVE_ENV}"
     fi
-    rm -rf "$NEW_DIR"
+#    rm -rf "$NEW_DIR"
     exit 1
 }
 
