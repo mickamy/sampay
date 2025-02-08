@@ -10,8 +10,6 @@
           - vim
         state: present
 
-- name: Import go Playbook
-  import_playbook: playbooks/go.yaml
 - name: Import nginx Playbook
   import_playbook: playbooks/nginx.yaml
 - name: Import node Playbook

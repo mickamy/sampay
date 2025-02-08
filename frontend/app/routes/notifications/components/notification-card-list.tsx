@@ -18,7 +18,10 @@ import {
 } from "~/components/ui/card";
 import { formatDate, formatDateTime } from "~/lib/formatter/date";
 import { cn } from "~/lib/utils";
-import type { Notification } from "~/models/notification/notification-model";
+import type {
+  Notification,
+  NotificationType,
+} from "~/models/notification/notification-model";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   notifications: Notification[];
@@ -64,7 +67,7 @@ function ContentView({
                 )}
               >
                 <div className="flex items-center space-x-2 flex-1 min-w-0">
-                  <Mail className="w-6 h-6" />
+                  <NotificationIcon type={item.type} />
                   <CardTitle className="text-base font-medium truncate">
                     {item.subject}
                   </CardTitle>
@@ -116,4 +119,13 @@ function EmptyView() {
       </p>
     </div>
   );
+}
+
+function NotificationIcon({ type }: { type: NotificationType }) {
+  switch (type) {
+    case "announcement":
+      return <Bell className="w-6 h-6" />;
+    case "message":
+      return <Mail className="w-6 h-6" />;
+  }
 }

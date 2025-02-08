@@ -39,6 +39,22 @@ export const loader: LoaderFunction = async ({ request }) => {
   if (process.env.NODE_ENV === "development") {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   }
+
+  if (process.env.BASIC_USER && process.env.BASIC_PASSWORD) {
+    const auth = request.headers.get("Authorization");
+    const validCredentials = `Basic ${btoa(
+      `${process.env.BASIC_USER}:${process.env.BASIC_PASSWORD}`,
+    )}`;
+    if (auth !== validCredentials) {
+      return new Response("Unauthorized", {
+        status: 401,
+        headers: {
+          "WWW-Authenticate": 'Basic realm="Secure Area"',
+        },
+      });
+    }
+  }
+
   const locale = await i18nServer.getLocale(request);
 
   const t = await i18nServer.getFixedT(request, "common", {

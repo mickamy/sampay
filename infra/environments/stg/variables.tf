@@ -74,7 +74,6 @@ variable "google_client_secret" {
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string
-  default     = "t2.medium"
 }
 
 variable "oauth_redirect_url" {
