@@ -93,6 +93,7 @@ jobs:
           cat "${GITHUB_WORKSPACE}/backend/bin/deploy.sh" |
           ssh -p ${{ secrets.SSH_PORT_STG }} -i key.pem ec2-user@${{ env.DOMAIN }} -o StrictHostKeyChecking=no '
             export DIR_SUFFIX="${{ env.DIR_SUFFIX }}";
+            export NGINX_CONF="/etc/nginx/conf.d/stg.sampay.link.conf";
             bash -s
           '
 
