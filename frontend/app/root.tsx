@@ -1,6 +1,7 @@
 import { type ReactNode, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  type HeadersFunction,
   Links,
   type LoaderFunction,
   Meta,
@@ -30,9 +31,14 @@ export const links: Route.LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
+export const headers: HeadersFunction = ({ loaderHeaders }) => {
+  return loaderHeaders;
+};
+
 interface LoaderData {
   locale: string;
   title: string;
+  basicAuthorized: boolean;
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -40,25 +46,25 @@ export const loader: LoaderFunction = async ({ request }) => {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   }
 
-  console.log("BASIC_USER", process.env.BASIC_USER);
-  console.log("BASIC_PASSWORD", process.env.BASIC_PASSWORD);
-
   if (
     new URL(request.url).pathname !== "/health" &&
     process.env.BASIC_USER &&
     process.env.BASIC_PASSWORD
   ) {
     const auth = request.headers.get("Authorization");
-    const validCredentials = `Basic ${btoa(
+    const validCredentials = `Basic ${Buffer.from(
       `${process.env.BASIC_USER}:${process.env.BASIC_PASSWORD}`,
-    )}`;
+    ).toString("base64")}`;
     if (auth !== validCredentials) {
-      throw new Response("Unauthorized", {
-        status: 401,
-        headers: {
-          "WWW-Authenticate": 'Basic realm="Secure Area"',
+      return Response.json(
+        { basicAuthorized: false },
+        {
+          status: 401,
+          headers: {
+            "WWW-Authenticate": 'Basic realm="Secure Area"',
+          },
         },
-      });
+      );
     }
   }
 
@@ -72,27 +78,32 @@ export const loader: LoaderFunction = async ({ request }) => {
   const data: LoaderData = {
     locale,
     title,
+    basicAuthorized: true,
   };
   return data;
 };
 
 export function Layout({ children }: { children: ReactNode }) {
-  const { locale, title } = useLoaderData<LoaderData>();
+  const data = useLoaderData<LoaderData | undefined>();
   const { i18n, ready } = useTranslation();
   useEffect(() => {
-    if (i18n.language !== locale) {
-      i18n.changeLanguage(locale);
+    if (i18n.language !== data?.locale) {
+      i18n.changeLanguage(data?.locale);
     }
-  }, [locale, i18n]);
+  }, [data, i18n]);
+
+  if (!data?.basicAuthorized) {
+    return null;
+  }
 
   return (
-    <html lang={locale} dir={i18n.dir()}>
+    <html lang={data?.locale} dir={i18n.dir()}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        <title>{title}</title>
+        <title>{data?.title}</title>
       </head>
       <body className="overscroll-x-auto overscroll-y-none">
         {ready ? children : null}
