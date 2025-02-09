@@ -62,6 +62,7 @@ export const loader: LoaderFunction = async ({ request }) => {
           status: 401,
           headers: {
             "WWW-Authenticate": 'Basic realm="Secure Area"',
+            "Acceess-Control-Allow-Headers": "WWW-Authenticate",
           },
         },
       );
