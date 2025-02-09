@@ -3,26 +3,63 @@
   gather_facts: false
   become: true
   tasks:
-    - name: Create API systemd service
+    - name: Create frontend backend environment file
       ansible.builtin.copy:
-        dest: /etc/systemd/system/sampay-api.service
+        dest: /etc/systemd/system/sampay-backend.env
+        content: |
+          AWS_REGION={{ aws_region }}
+          ENV={{ env }}
+          export AWS_REGION
+          export ENV
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Create API blue systemd service
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/sampay-api-blue.service
         content: |
           [Unit]
-          Description=Sampay API Service
+          Description=Sampay API blue Service
           After=network.target
 
           [Service]
-          WorkingDirectory=/home/ec2-user/sampay/backend
-          ExecStart=/home/ec2-user/sampay/backend/build/api
+          WorkingDirectory=/home/ec2-user/sampay/backend-blue
+          ExecStart=/home/ec2-user/sampay/backend-blue/build/api
           Restart=always
-          Environment="AWS_REGION={{ aws_region }}"
-          Environment="ENV={{ env }}"
-          Environment="PACKAGE_ROOT=/home/ec2-user/sampay/backend"
+          EnvironmentFile=/etc/systemd/system/sampay-backend.env
+          Environment="PACKAGE_ROOT=/home/ec2-user/sampay/backend-blue"
           User=ec2-user
           Group=ec2-user
 
-          StandardOutput=append:/var/log/sampay/api.log
-          StandardError=append:/var/log/sampay/api.log
+          StandardOutput=append:/var/log/sampay-blue/api.log
+          StandardError=append:/var/log/sampay-blue/api.log
+
+          [Install]
+          WantedBy=multi-user.target
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Create API green systemd service
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/sampay-api-green.service
+        content: |
+          [Unit]
+          Description=Sampay API green Service
+          After=network.target
+
+          [Service]
+          WorkingDirectory=/home/ec2-user/sampay/backend-green
+          ExecStart=/home/ec2-user/sampay/backend-green/build/api
+          Restart=always
+          EnvironmentFile=/etc/systemd/system/sampay-backend.env
+          Environment="PACKAGE_ROOT=/home/ec2-user/sampay/backend-green"
+          User=ec2-user
+          Group=ec2-user
+
+          StandardOutput=append:/var/log/sampay-green/api.log
+          StandardError=append:/var/log/sampay-green/api.log
 
           [Install]
           WantedBy=multi-user.target
