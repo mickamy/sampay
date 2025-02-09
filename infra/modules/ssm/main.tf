@@ -183,21 +183,18 @@ resource "github_actions_secret" "kvs_password" {
 }
 
 resource "random_password" "basic" {
-  for_each         = var.env == "stg" ? toset(["user", "password"]) : toset([])
+  for_each         = var.env == "stg" ? tomap({ user = "user", password = "password" }) : tomap({})
   length           = 16
   special          = true
   override_special = "-_"
   upper            = true
   lower            = true
   numeric          = true
-  keepers = {
-    key = each.key
-  }
 }
 
 resource "github_actions_secret" "basic" {
-  for_each        = var.env == "stg" ? toset(["user", "password"]) : toset([])
+  for_each        = var.env == "stg" ? tomap({ user = "user", password = "password" }) : tomap({})
   repository      = var.github_repo
-  secret_name = upper("BASIC_${each.key}")
+  secret_name     = upper("BASIC_${each.key}")
   plaintext_value = random_password.basic[each.key].result
 }
