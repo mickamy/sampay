@@ -70,6 +70,11 @@
         group: root
         mode: '0644'
 
+    - name: Reload nginx to apply Let's Encrypt configuration
+      ansible.builtin.systemd:
+        name: nginx
+        state: reloaded
+
     - name: Obtain Let's Encrypt certificate
       ansible.builtin.command:
         cmd: >
