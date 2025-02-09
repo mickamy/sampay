@@ -43,6 +43,8 @@ services:
       dockerfile: Dockerfile
       target: development-dependencies-env
     environment:
+      BASIC_USER: basic
+      BASIC_PASSWORD: password
       API_BASE_URL: http://api:8080/api
       ENVIRONMENT: development
       S3_PUBLIC_BUCKET_NAME: sampay-public

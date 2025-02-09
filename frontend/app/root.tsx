@@ -40,13 +40,20 @@ export const loader: LoaderFunction = async ({ request }) => {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   }
 
-  if (process.env.BASIC_USER && process.env.BASIC_PASSWORD) {
+  console.log("BASIC_USER", process.env.BASIC_USER);
+  console.log("BASIC_PASSWORD", process.env.BASIC_PASSWORD);
+
+  if (
+    new URL(request.url).pathname !== "/health" &&
+    process.env.BASIC_USER &&
+    process.env.BASIC_PASSWORD
+  ) {
     const auth = request.headers.get("Authorization");
     const validCredentials = `Basic ${btoa(
       `${process.env.BASIC_USER}:${process.env.BASIC_PASSWORD}`,
     )}`;
     if (auth !== validCredentials) {
-      return new Response("Unauthorized", {
+      throw new Response("Unauthorized", {
         status: 401,
         headers: {
           "WWW-Authenticate": 'Basic realm="Secure Area"',
