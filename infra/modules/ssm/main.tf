@@ -190,6 +190,9 @@ resource "random_password" "basic" {
   upper            = true
   lower            = true
   numeric          = true
+  keepers = {
+    key = each.key
+  }
 }
 
 resource "github_actions_secret" "basic" {
