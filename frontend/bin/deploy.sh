@@ -34,7 +34,10 @@ else
     APP_DIR="$BLUE_DIR"
 fi
 
-PREVIOUS_VERSION_LINK=$(readlink -f "$APP_DIR" || echo "")
+PREVIOUS_VERSION_LINK=$(readlink -f "$APP_DIR")
+if [ "$PREVIOUS_VERSION_LINK" = "$APP_DIR" ]; then
+    PREVIOUS_VERSION_LINK=""
+fi
 
 echo "Deploying to $DEPLOY_ENV environment on port $DEPLOY_PORT..."
 

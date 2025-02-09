@@ -6,28 +6,53 @@ if [ -z "${DIR_SUFFIX:-}" ]; then
     exit 1
 fi
 
-NEW_DIR="/home/ec2-user/sampay/backend-$DIR_SUFFIX"
+if [ -z "${NGINX_CONF:-}" ]; then
+    echo "NGINX_CONF is not set. Exiting."
+    exit 1
+fi
 
+APP_NAME="sampay-api"
 APP_DIR="/home/ec2-user/sampay/backend"
-PREVIOUS_VERSION_LINK=$(readlink -f "$APP_DIR" || echo "")
+BLUE_DIR="sampay-backend-blue"
+GREEN_DIR="sampay-backend-green"
+NEW_DIR="sampay-backend-$DIR_SUFFIX"
 
+BLUE_PORT=8080
+GREEN_PORT=8081
+
+if systemctl is-active --quiet "${APP_NAME}-blue"; then
+    ACTIVE_ENV="blue"
+    DEPLOY_ENV="green"
+    DEPLOY_PORT=$GREEN_PORT
+    ACTIVE_PORT=$BLUE_PORT
+    APP_DIR="$GREEN_DIR"
+else
+    ACTIVE_ENV="green"
+    DEPLOY_ENV="blue"
+    DEPLOY_PORT=$BLUE_PORT
+    ACTIVE_PORT=$GREEN_PORT
+    APP_DIR="$BLUE_DIR"
+fi
+
+PREVIOUS_VERSION_LINK=$(readlink -f "$APP_DIR")
 if [ "$PREVIOUS_VERSION_LINK" = "$APP_DIR" ]; then
     PREVIOUS_VERSION_LINK=""
 fi
 
+echo "Deploying to $DEPLOY_ENV environment on port $DEPLOY_PORT..."
 
 echo "Preparing database..."
 export PACKAGE_ROOT="$NEW_DIR"
 if ! ( "$NEW_DIR/build/db-create" && "$NEW_DIR/build/db-migrate" && "$NEW_DIR/build/db-seed" ); then
     echo "Error: Database preparation failed. Exiting."
-#    rm -rf "$NEW_DIR"
+    rm -rf "$NEW_DIR"
     exit 1
 fi
 
 echo "Update symlink to new version..."
 if ! ln -sfn "$NEW_DIR" "$APP_DIR"; then
     echo "Error: Failed to update symlink. Exiting."
-#    rm -rf "$NEW_DIR"
+    rm -rf "$NEW_DIR"
     exit 1
 fi
 
@@ -37,13 +62,13 @@ function rollback() {
         ln -sfn "$PREVIOUS_VERSION_LINK" "$APP_DIR"
     fi
     sudo systemctl restart sampay-api sampay-worker
-#    rm -rf "$NEW_DIR"
+    rm -rf "$NEW_DIR"
     exit 1
 }
 
-echo "Restarting sampay-api and sampay-worker services..."
-if ! sudo systemctl restart sampay-api sampay-worker; then
-    echo "Error: Failed to restart sampay-api and sampay-worker services."
+echo "Restarting ${APP_NAME}-${DEPLOY_ENV} and sampay-worker services..."
+if ! sudo systemctl restart "${APP_NAME}-${DEPLOY_ENV}" sampay-worker; then
+    echo "Error: Failed to restart ${APP_NAME}-${DEPLOY_ENV} and sampay-worker services."
     rollback
 fi
 
@@ -55,21 +80,21 @@ else
     rollback
 fi
 
-echo "Waiting for sampay-api service to become active..."
+echo "Waiting for ${APP_NAME}-${DEPLOY_ENV} service to become active..."
 retry_count=0
 max_retries=3
 retry_interval=5
 while [ $retry_count -lt $max_retries ]; do
     if systemctl is-active --quiet sampay-api; then
-        echo "sampay-api service is active."
-        if wget -q --spider http://localhost:8080/api/health; then
+        echo "${APP_NAME}-${DEPLOY_ENV} service is active."
+        if wget -q --spider "http://localhost:${DEPLOY_PORT}/api/health"; then
             echo "Health check passed successfully."
             break
         else
             echo "Health check failed. Retrying..."
         fi
     else
-        echo "sampay-api service is not yet active. Waiting..."
+        echo "${APP_NAME}-${DEPLOY_ENV} service is not yet active. Waiting..."
     fi
 
     retry_count=$((retry_count + 1))
@@ -80,11 +105,19 @@ while [ $retry_count -lt $max_retries ]; do
     fi
 
     if [ $retry_count -eq $max_retries ]; then
-        echo "Error: Failed to start sampay-api service."
+        echo "Error: Failed to start ${APP_NAME}-${DEPLOY_ENV} service."
         rollback
     fi
 done
 
-echo "Deployment completed successfully."
+echo "Updating Nginx to route traffic to port $DEPLOY_PORT..."
+sudo sed -i "s/server 127.0.0.1:$ACTIVE_PORT\+/server 127.0.0.1:$DEPLOY_PORT/" "$NGINX_CONF"
+sudo systemctl reload nginx
+
+echo "Stopping previous service: ${APP_NAME}-${ACTIVE_ENV}..."
+sudo systemctl stop "${APP_NAME}-${ACTIVE_ENV}"
+
 echo "Removing old version directory: $PREVIOUS_VERSION_LINK"
 rm -rf "$PREVIOUS_VERSION_LINK"
+
+echo "Deployment to $DEPLOY_ENV on port $DEPLOY_PORT completed successfully."
