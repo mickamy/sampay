@@ -76,31 +76,31 @@ retry_count=0
 max_retries=3
 retry_interval=5
 
-#while [ $retry_count -lt $max_retries ]; do
-#    if systemctl is-active --quiet "${APP_NAME}-${DEPLOY_ENV}"; then
-#        echo "${APP_NAME}-${DEPLOY_ENV} service is active."
-#        if wget -q --spider "http://localhost:${DEPLOY_PORT}/health"; then
-#            echo "Health check passed successfully on port $DEPLOY_PORT."
-#            break
-#        else
-#            echo "Health check failed on port $DEPLOY_PORT. Retrying..."
-#        fi
-#    else
-#        echo "${APP_NAME}-${DEPLOY_ENV} service is not yet active. Waiting..."
-#    fi
-#
-#    retry_count=$((retry_count + 1))
-#
-#    if [ $retry_count -lt $max_retries ]; then
-#        echo "Retrying in $retry_interval seconds... (Attempt $retry_count of $max_retries)"
-#        sleep $retry_interval
-#    fi
-#
-#    if [ $retry_count -eq $max_retries ]; then
-#        echo "Error: Health check failed after $max_retries attempts on port $DEPLOY_PORT."
-#        rollback
-#    fi
-#done
+while [ $retry_count -lt $max_retries ]; do
+    if systemctl is-active --quiet "${APP_NAME}-${DEPLOY_ENV}"; then
+        echo "${APP_NAME}-${DEPLOY_ENV} service is active."
+        if wget -q --spider "http://localhost:${DEPLOY_PORT}/health"; then
+            echo "Health check passed successfully on port $DEPLOY_PORT."
+            break
+        else
+            echo "Health check failed on port $DEPLOY_PORT. Retrying..."
+        fi
+    else
+        echo "${APP_NAME}-${DEPLOY_ENV} service is not yet active. Waiting..."
+    fi
+
+    retry_count=$((retry_count + 1))
+
+    if [ $retry_count -lt $max_retries ]; then
+        echo "Retrying in $retry_interval seconds... (Attempt $retry_count of $max_retries)"
+        sleep $retry_interval
+    fi
+
+    if [ $retry_count -eq $max_retries ]; then
+        echo "Error: Health check failed after $max_retries attempts on port $DEPLOY_PORT."
+        rollback
+    fi
+done
 
 echo "Updating Nginx to route traffic to port $DEPLOY_PORT..."
 sudo sed -i "s/server 127.0.0.1:$ACTIVE_PORT\+/server 127.0.0.1:$DEPLOY_PORT/" "$NGINX_CONF"
