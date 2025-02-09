@@ -190,11 +190,14 @@ resource "random_password" "basic" {
   upper            = true
   lower            = true
   numeric          = true
+  keepers = {
+    key = each.key
+  }
 }
 
 resource "github_actions_secret" "basic" {
-  for_each        = var.env == "stg" ? random_password.basic : {}
+  for_each        = var.env == "stg" ? toset(["user", "password"]) : toset([])
   repository      = var.github_repo
-  secret_name     = upper("BASIC_${each.key}")
-  plaintext_value = each.value.result
+  secret_name = upper("BASIC_${each.key}")
+  plaintext_value = random_password.basic[each.key].result
 }

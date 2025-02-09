@@ -14,4 +14,7 @@ export default defineConfig({
     },
   },
   plugins: [reactRouter(), tsconfigPaths()],
+  server: {
+    allowedHosts: ["sampay.lvh.me"],
+  },
 });

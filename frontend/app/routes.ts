@@ -4,6 +4,7 @@ export default [
   index("routes/static/landing-page-route.tsx"),
   route("privacy", "routes/static/privacy-route.tsx"),
   route("terms", "routes/static/terms-route.tsx"),
+  route("health", "routes/health/health-route.tsx"),
 
   route("admin", "routes/admin/admin-route.tsx"),
   route("notifications", "routes/notifications/notifications-route.tsx"),
