@@ -98,9 +98,14 @@
       ansible.builtin.systemd:
         daemon_reload: true
 
-    - name: Enable API service
+    - name: Start api blue service
       ansible.builtin.systemd:
-        name: sampay-api
+        name: sampay-api-blue
+        enabled: true
+
+    - name: Enable api green service
+      ansible.builtin.systemd:
+        name: sampay-api-green
         enabled: true
 
     - name: Enable worker service
