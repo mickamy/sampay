@@ -61,7 +61,7 @@ function rollback() {
     if [ -n "$PREVIOUS_VERSION_LINK" ]; then
         ln -sfn "$PREVIOUS_VERSION_LINK" "$APP_DIR"
     fi
-    sudo systemctl restart sampay-api sampay-worker
+    sudo systemctl restart "${APP_NAME}-${DEPLOY_ENV}" sampay-worker
     rm -rf "$NEW_DIR"
     exit 1
 }
