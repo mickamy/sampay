@@ -20,13 +20,13 @@ message CreatePasswordResponse {
   auth.v1.Tokens tokens = 1;
 }
 
-message CreateUserAttributeRequest {
+message UpdateUserAttributeRequest {
   string category_type = 1 [(buf.validate.field).string.min_len = 1];
 }
 
-message CreateUserAttributeResponse {}
+message UpdateUserAttributeResponse {}
 
-message CreateUserProfileRequest {
+message UpdateUserProfileRequest {
   string name = 1 [
     (buf.validate.field).string.min_len = 1,
     (buf.validate.field).string.max_len = 64
@@ -36,7 +36,7 @@ message CreateUserProfileRequest {
   optional common.v1.S3Object image = 4;
 }
 
-message CreateUserProfileResponse {}
+message UpdateUserProfileResponse {}
 
 message CompleteOnboardingRequest {}
 
@@ -45,7 +45,7 @@ message CompleteOnboardingResponse {}
 service OnboardingService {
   rpc GetOnboardingStep(GetOnboardingStepRequest) returns (GetOnboardingStepResponse) {}
   rpc CreatePassword(CreatePasswordRequest) returns (CreatePasswordResponse) {}
-  rpc CreateUserAttribute(CreateUserAttributeRequest) returns (CreateUserAttributeResponse) {}
-  rpc CreateUserProfile(CreateUserProfileRequest) returns (CreateUserProfileResponse) {}
+  rpc UpdateUserAttribute(UpdateUserAttributeRequest) returns (UpdateUserAttributeResponse) {}
+  rpc UpdateUserProfile(UpdateUserProfileRequest) returns (UpdateUserProfileResponse) {}
   rpc CompleteOnboarding(CompleteOnboardingRequest) returns (CompleteOnboardingResponse) {}
 }
