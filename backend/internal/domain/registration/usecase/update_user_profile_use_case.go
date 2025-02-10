@@ -11,40 +11,40 @@ import (
 	"mickamy.com/sampay/internal/lib/contexts"
 )
 
-type CreateUserProfileInput struct {
+type UpdateUserProfileInput struct {
 	Name  string
 	Slug  string
 	Bio   *string
 	Image *commonModel.S3Object
 }
 
-type CreateUserProfileOutput struct {
+type UpdateUserProfileOutput struct {
 }
 
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
-type CreateUserProfile interface {
-	Do(ctx context.Context, input CreateUserProfileInput) (CreateUserProfileOutput, error)
+type UpdateUserProfile interface {
+	Do(ctx context.Context, input UpdateUserProfileInput) (UpdateUserProfileOutput, error)
 }
 
-type createUserProfile struct {
+type updateUserProfile struct {
 	writer          *database.Writer
 	userRepo        userRepository.User
 	userProfileRepo userRepository.UserProfile
 }
 
-func NewCreateUserProfile(
+func NewUpdateUserProfile(
 	writer *database.Writer,
 	userRepo userRepository.User,
 	userProfileRepo userRepository.UserProfile,
-) CreateUserProfile {
-	return &createUserProfile{
+) UpdateUserProfile {
+	return &updateUserProfile{
 		writer:          writer,
 		userRepo:        userRepo,
 		userProfileRepo: userProfileRepo,
 	}
 }
 
-func (uc *createUserProfile) Do(ctx context.Context, input CreateUserProfileInput) (CreateUserProfileOutput, error) {
+func (uc *updateUserProfile) Do(ctx context.Context, input UpdateUserProfileInput) (UpdateUserProfileOutput, error) {
 	id := contexts.MustAuthenticatedUserID(ctx)
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
 		user, err := uc.userRepo.WithTx(tx.WriterDB()).Find(ctx, id)
@@ -73,8 +73,8 @@ func (uc *createUserProfile) Do(ctx context.Context, input CreateUserProfileInpu
 
 		return nil
 	}); err != nil {
-		return CreateUserProfileOutput{}, err
+		return UpdateUserProfileOutput{}, err
 	}
 
-	return CreateUserProfileOutput{}, nil
+	return UpdateUserProfileOutput{}, nil
 }

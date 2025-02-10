@@ -23,8 +23,8 @@ func TestCreateUserAttribute_Do(t *testing.T) {
 	ctx = contexts.SetAuthenticatedUserID(ctx, user.ID)
 
 	// act
-	sut := di.InitRegistrationUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).CreateUserAttribute
-	_, err := sut.Do(ctx, usecase.CreateUserAttributeInput{
+	sut := di.InitRegistrationUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).UpdateUserAttribute
+	_, err := sut.Do(ctx, usecase.UpdateUserAttributeInput{
 		UsageCategoryType: "other",
 	})
 

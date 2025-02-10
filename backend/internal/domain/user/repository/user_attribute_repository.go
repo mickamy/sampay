@@ -16,6 +16,7 @@ type UserAttribute interface {
 	Create(ctx context.Context, m *model.UserAttribute) error
 	Find(ctx context.Context, id string, scopes ...database.Scope) (*model.UserAttribute, error)
 	Update(ctx context.Context, m *model.UserAttribute) error
+	Upsert(ctx context.Context, m *model.UserAttribute) error
 	WithTx(tx *database.DB) UserAttribute
 }
 
@@ -42,6 +43,10 @@ func (repo *userAttribute) Find(ctx context.Context, id string, scopes ...databa
 
 func (repo *userAttribute) Update(ctx context.Context, m *model.UserAttribute) error {
 	return repo.db.WithContext(ctx).Clauses(clause.Returning{}).Where("user_id = ?", m.UserID).Save(m).Error
+}
+
+func (repo *userAttribute) Upsert(ctx context.Context, m *model.UserAttribute) error {
+	return repo.db.WithContext(ctx).Clauses(clause.Returning{}).Save(m).Error
 }
 
 func (repo *userAttribute) WithTx(tx *database.DB) UserAttribute {
