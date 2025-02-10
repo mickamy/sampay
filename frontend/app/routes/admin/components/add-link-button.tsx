@@ -10,6 +10,7 @@ import {
 import useDialog from "~/hooks/use-dialog";
 import { cn } from "~/lib/utils";
 import KyashHelpDialog from "~/routes/admin/components/kyash-help-dialog";
+import PayPayHelpDialog from "~/routes/admin/components/paypay-help-dialog";
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
   onClick: () => void;
@@ -22,6 +23,12 @@ export default function AddLinkButton({ onClick, ...props }: Props) {
     isDialogOpen: isKyashDialogOpen,
     closeDialog: closeKyashDialog,
     openDialog: openKyashDialog,
+  } = useDialog();
+
+  const {
+    isDialogOpen: isPayPayDialogOpen,
+    closeDialog: closePayPayDialog,
+    openDialog: openPayPayDialog,
   } = useDialog();
 
   return (
@@ -37,12 +44,17 @@ export default function AddLinkButton({ onClick, ...props }: Props) {
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem onClick={openKyashDialog}>Kyash</DropdownMenuItem>
-          <DropdownMenuItem>PayPay</DropdownMenuItem>
+          <DropdownMenuItem onClick={openPayPayDialog}>PayPay</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       <KyashHelpDialog
         isOpen={isKyashDialogOpen}
         onClose={closeKyashDialog}
+        openAddLinkDialog={onClick}
+      />
+      <PayPayHelpDialog
+        isOpen={isPayPayDialogOpen}
+        onClose={closePayPayDialog}
         openAddLinkDialog={onClick}
       />
     </>
