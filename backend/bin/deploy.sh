@@ -64,7 +64,7 @@ function rollback() {
         ln -sfn "$PREVIOUS_VERSION_LINK" "$WORKER_DIR"
     fi
     sudo systemctl restart "${APP_NAME}-${ACTIVE_ENV}" sampay-worker
-    rm -rf "$NEW_DIR"
+#    rm -rf "$NEW_DIR"
     exit 1
 }
 
