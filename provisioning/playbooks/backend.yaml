@@ -29,6 +29,7 @@
           Restart=always
           EnvironmentFile=/etc/systemd/system/sampay-backend.env
           Environment="PACKAGE_ROOT=/home/ec2-user/sampay/backend-blue"
+          Environment="PORT=8080"
           User=ec2-user
           Group=ec2-user
 
@@ -55,6 +56,7 @@
           Restart=always
           EnvironmentFile=/etc/systemd/system/sampay-backend.env
           Environment="PACKAGE_ROOT=/home/ec2-user/sampay/backend-green"
+          Environment="PORT=8081"
           User=ec2-user
           Group=ec2-user
 
