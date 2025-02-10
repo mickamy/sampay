@@ -36,6 +36,7 @@ fi
 
 PREVIOUS_VERSION_LINK=$(readlink -f "$APP_DIR")
 if [ "$PREVIOUS_VERSION_LINK" = "$APP_DIR" ]; then
+    echo "Previous link was APP_DIR. Setting PREVIOUS_VERSION_LINK to empty string."
     PREVIOUS_VERSION_LINK=""
 fi
 
