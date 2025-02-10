@@ -32,8 +32,8 @@
           User=ec2-user
           Group=ec2-user
 
-          StandardOutput=append:/var/log/sampay-blue/api.log
-          StandardError=append:/var/log/sampay-blue/api.log
+          StandardOutput=append:/var/log/sampay/api-blue.log
+          StandardError=append:/var/log/sampay/api-blue.log
 
           [Install]
           WantedBy=multi-user.target
@@ -58,8 +58,8 @@
           User=ec2-user
           Group=ec2-user
 
-          StandardOutput=append:/var/log/sampay-green/api.log
-          StandardError=append:/var/log/sampay-green/api.log
+          StandardOutput=append:/var/log/sampay/api-green.log
+          StandardError=append:/var/log/sampay/api-green.log
 
           [Install]
           WantedBy=multi-user.target
