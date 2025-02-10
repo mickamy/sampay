@@ -11,6 +11,11 @@ if [ -z "${NGINX_CONF:-}" ]; then
     exit 1
 fi
 
+if [ -z "${DOMAIN:-}" ]; then
+    echo "DOMAIN is not set. Exiting."
+    exit 1
+fi
+
 APP_NAME="sampay-frontend"
 APP_DIR="/home/ec2-user/sampay/frontend"
 BLUE_DIR="/home/ec2-user/sampay/frontend-blue"
@@ -34,7 +39,10 @@ else
     APP_DIR="$BLUE_DIR"
 fi
 
-PREVIOUS_VERSION_LINK=$(readlink -f "$APP_DIR" || echo "")
+PREVIOUS_VERSION_LINK=$(readlink -f "$APP_DIR" || true)
+if [ "$PREVIOUS_VERSION_LINK" = "$APP_DIR" ]; then
+    PREVIOUS_VERSION_LINK=""
+fi
 
 echo "Deploying to $DEPLOY_ENV environment on port $DEPLOY_PORT..."
 
@@ -105,6 +113,14 @@ done
 echo "Updating Nginx to route traffic to port $DEPLOY_PORT..."
 sudo sed -i "s/server 127.0.0.1:$ACTIVE_PORT\+/server 127.0.0.1:$DEPLOY_PORT/" "$NGINX_CONF"
 sudo systemctl reload nginx
+
+sleep 5
+
+echo "Verifying traffic routing after Nginx reload..."
+if ! wget -q --spider "https://${DOMAIN}/health"; then
+    echo "Error: Traffic routing failed after Nginx reload. Rolling back."
+    rollback
+fi
 
 echo "Stopping previous service: ${APP_NAME}-${ACTIVE_ENV}..."
 sudo systemctl stop "${APP_NAME}-${ACTIVE_ENV}"

@@ -11,6 +11,7 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
+	"mickamy.com/sampay/config"
 	"mickamy.com/sampay/internal/api/interceptor"
 	"mickamy.com/sampay/internal/di"
 	authRouter "mickamy.com/sampay/internal/domain/auth/router"
@@ -69,7 +70,7 @@ func NewServer(infras di.Infras) http.Server {
 	corsHandler := cors.AllowAll().Handler(mux)
 
 	return http.Server{
-		Addr:    fmt.Sprintf(":%d", 8080),
+		Addr:    fmt.Sprintf(":%d", config.Common().Port),
 		Handler: h2c.NewHandler(corsHandler, &http2.Server{}),
 	}
 }

@@ -40,6 +40,7 @@ type CommonConfig struct {
 	Env         Env    `env:"ENV"`
 	LogLevel    string `env:"LOG_LEVEL" envDefault:"info"`
 	PackageRoot string `env:"PACKAGE_ROOT"`
+	Port        int    `env:"PORT" envDefault:"8080"`
 }
 
 func (c CommonConfig) SLoggerLevel() slogger.Level {
