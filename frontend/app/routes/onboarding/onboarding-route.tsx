@@ -141,7 +141,7 @@ async function submitAttribute({
 }: { request: Request; body: unknown }): Promise<Response> {
   return withAuthentication({ request }, async ({ getClient }) => {
     const { category } = onboardingAttributeSchema.parse(body);
-    await getClient(OnboardingService).createUserAttribute({
+    await getClient(OnboardingService).updateUserAttribute({
       categoryType: category,
     });
     return redirect("/onboarding");
@@ -171,7 +171,7 @@ async function submitProfile({
       });
     }
 
-    await getClient(OnboardingService).createUserProfile({
+    await getClient(OnboardingService).updateUserProfile({
       image: imageObj,
       ...data,
     });
