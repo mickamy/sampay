@@ -59,15 +59,15 @@ fi
 
 function rollback() {
     echo "Rolling back to previous version..."
-#    if [ -n "$PREVIOUS_VERSION_LINK" ]; then
-#        ln -sfn "$PREVIOUS_VERSION_LINK" "$APP_DIR"
-#        ln -sfn "$PREVIOUS_VERSION_LINK" "$WORKER_DIR"
-#    else
-#      rm -rf "$APP_DIR"
-#      rm -rf "$WORKER_DIR"
-#    fi
-#    sudo systemctl restart "${APP_NAME}-${ACTIVE_ENV}" sampay-worker
-#    rm -rf "$NEW_DIR"
+    if [ -n "$PREVIOUS_VERSION_LINK" ]; then
+        ln -sfn "$PREVIOUS_VERSION_LINK" "$APP_DIR"
+        ln -sfn "$PREVIOUS_VERSION_LINK" "$WORKER_DIR"
+    else
+      rm -rf "$APP_DIR"
+      rm -rf "$WORKER_DIR"
+    fi
+    sudo systemctl restart "${APP_NAME}-${ACTIVE_ENV}" sampay-worker
+    rm -rf "$NEW_DIR"
     exit 1
 }
 
@@ -90,7 +90,7 @@ retry_count=0
 max_retries=3
 retry_interval=5
 while [ $retry_count -lt $max_retries ]; do
-    if systemctl is-active --quiet sampay-api; then
+    if systemctl is-active --quiet "${APP_NAME}-${DEPLOY_ENV}"; then
         echo "${APP_NAME}-${DEPLOY_ENV} service is active."
         if wget -q --spider "http://localhost:${DEPLOY_PORT}/api/health"; then
             echo "Health check passed successfully."
