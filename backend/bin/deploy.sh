@@ -14,8 +14,8 @@ fi
 APP_NAME="sampay-api"
 APP_DIR="/home/ec2-user/sampay/backend"
 WORKER_DIR="$APP_DIR"
-BLUE_DIR="sampay-backend-blue"
-GREEN_DIR="sampay-backend-green"
+BLUE_DIR="/home/ec2-user/sampay/backend-blue"
+GREEN_DIR="/home/ec2-user/sampay/backend-green"
 NEW_DIR="/home/ec2-user/sampay/backend-$DIR_SUFFIX"
 
 BLUE_PORT=8080
