@@ -119,6 +119,14 @@ echo "Updating Nginx to route traffic to port $DEPLOY_PORT..."
 sudo sed -i "s/server 127.0.0.1:$ACTIVE_PORT/server 127.0.0.1:$DEPLOY_PORT/" "$NGINX_CONF"
 sudo systemctl reload nginx
 
+sleep 5
+
+echo "Verifying traffic routing after Nginx reload..."
+if ! wget -q --spider "http://localhost/api/health"; then
+    echo "Error: Traffic routing failed after Nginx reload. Rolling back."
+    rollback
+fi
+
 echo "Stopping previous service: ${APP_NAME}-${ACTIVE_ENV}..."
 sudo systemctl stop "${APP_NAME}-${ACTIVE_ENV}"
 
