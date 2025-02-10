@@ -90,7 +90,7 @@ export default function AdminScreen() {
       <Header isLoggedIn hasUnreadNotification={unreadNotificationsCount > 0} />
       <div className="container mx-auto flex flex-col items-center p-6 min-w-[375px] max-w-[33%] lg:p-4">
         <div className="flex justify-end w-full">
-          <ShareButton url={url} />
+          <ShareButton variant="icon" url={url} />
         </div>
         <UserProfile
           admin
@@ -103,6 +103,7 @@ export default function AdminScreen() {
         <AddLinkButton onClick={openAddLinkFormDialog} />
         <Spacer size={6} />
         <UserLinkButtons admin links={user.links} onEdit={onEdit} />
+        <ShareButton variant="button" url={url} />
         <AddUserLinkFormDialog
           isOpen={isAddLinkFormDialogOpen}
           onClose={closeAddLinkFormDialog}
