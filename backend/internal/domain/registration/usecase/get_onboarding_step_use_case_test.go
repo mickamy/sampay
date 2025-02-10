@@ -65,6 +65,7 @@ func TestGetOnboardingStep_Do(t *testing.T) {
 				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
 				attribute := userFixture.UserAttribute(func(m *model.UserAttribute) {
 					m.UserID = user.ID
+					m.OnboardingCompleted = false
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&attribute).Error)
 			},
@@ -107,6 +108,33 @@ func TestGetOnboardingStep_Do(t *testing.T) {
 				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
 				attribute := userFixture.UserAttribute(func(m *model.UserAttribute) {
 					m.UserID = user.ID
+					m.OnboardingCompleted = false
+				})
+				require.NoError(t, db.WithContext(ctx).Create(&attribute).Error)
+				profile := userFixture.UserProfile(func(m *model.UserProfile) {
+					m.UserID = user.ID
+				})
+				require.NoError(t, db.WithContext(ctx).Create(&profile).Error)
+			},
+			assert: func(t *testing.T, got usecase.GetOnboardingStepOutput, err error) {
+				require.NoError(t, err)
+				assert.Equal(t, registrationModel.OnboardingStepProfile, got.Step)
+			},
+		},
+		{
+			name: "user has authentication, attribute, profile and onboarding completed",
+			arrange: func(t *testing.T, ctx context.Context, db *database.Writer, email string) {
+				user := userFixture.User(nil)
+				require.NoError(t, db.WithContext(ctx).Create(&user).Error)
+
+				auth := authFixture.AuthenticationEmailPassword(func(m *authModel.Authentication) {
+					m.Identifier = email
+					m.UserID = user.ID
+				})
+				require.NoError(t, db.WithContext(ctx).Create(&auth).Error)
+				attribute := userFixture.UserAttribute(func(m *model.UserAttribute) {
+					m.UserID = user.ID
+					m.OnboardingCompleted = true
 				})
 				require.NoError(t, db.WithContext(ctx).Create(&attribute).Error)
 				profile := userFixture.UserProfile(func(m *model.UserProfile) {
