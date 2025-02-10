@@ -391,6 +391,31 @@ func TestOnboarding_CreateUserProfile(t *testing.T) {
 	}
 }
 
+func TestOnboarding_CompleteOnboarding(t *testing.T) {
+	t.Parallel()
+
+	// arrange
+	ctx := context.Background()
+	infras := di.NewInfras(newReadWriter(t), newKVS(t))
+	user := userFixture.User(nil)
+	require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
+	attr := userFixture.UserAttribute(func(m *model.UserAttribute) {
+		m.UserID = user.ID
+		m.OnboardingCompleted = false
+	})
+	require.NoError(t, infras.Writer.WithContext(ctx).Create(&attr).Error)
+	server := newOnboardingServer(t, infras)
+
+	// act
+	client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, server.URL)
+	connReq := connecttest.NewAuthenticatedRequest(t, ctx, &registrationv1.CompleteOnboardingRequest{}, nil, authModel.MustNewSession(user.ID), infras.KVS)
+	got, err := client.CompleteOnboarding(ctx, connReq)
+
+	// assert
+	require.NoError(t, err)
+	assert.Empty(t, got.Msg.String())
+}
+
 func newOnboardingServer(t *testing.T, infras di.Infras) *httptest.Server {
 	return connecttest.NewServer(t, infras, func(interceptors []connect.Interceptor) (string, http.Handler) {
 		h := di.InitRegistrationHandlers(infras.Writer.DB, infras.ReadWriter, infras.Writer, infras.Reader, infras.KVS).Onboarding

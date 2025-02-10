@@ -355,6 +355,7 @@ func InitRegistrationUseCases(db *database.DB, readWriter *database.ReadWriter, 
 	createUserAttribute := usecase6.NewCreateUserAttribute(writer, userAttribute)
 	userProfile := repository2.NewUserProfile(db)
 	createUserProfile := usecase6.NewCreateUserProfile(writer, user, userProfile)
+	completeOnboarding := usecase6.NewCompleteOnboarding(writer, userAttribute)
 	getOnboardingStep := usecase6.NewGetOnboardingStep(reader, emailVerification, authentication, user)
 	usageCategory := repository6.NewUsageCategory(db)
 	listUsageCategories := usecase6.NewListUsageCategories(reader, usageCategory)
@@ -362,6 +363,7 @@ func InitRegistrationUseCases(db *database.DB, readWriter *database.ReadWriter, 
 		CreatePassword:      createPassword,
 		CreateUserAttribute: createUserAttribute,
 		CreateUserProfile:   createUserProfile,
+		CompleteOnboarding:  completeOnboarding,
 		GetOnboardingStep:   getOnboardingStep,
 		ListUsageCategories: listUsageCategories,
 	}
@@ -379,7 +381,8 @@ func InitRegistrationHandlers(db *database.DB, readWriter *database.ReadWriter, 
 	createUserAttribute := usecase6.NewCreateUserAttribute(writer, userAttribute)
 	userProfile := repository2.NewUserProfile(db)
 	createUserProfile := usecase6.NewCreateUserProfile(writer, user, userProfile)
-	onboarding := handler6.NewOnboarding(getOnboardingStep, createPassword, createUserAttribute, createUserProfile)
+	completeOnboarding := usecase6.NewCompleteOnboarding(writer, userAttribute)
+	onboarding := handler6.NewOnboarding(getOnboardingStep, createPassword, createUserAttribute, createUserProfile, completeOnboarding)
 	usageCategory := repository6.NewUsageCategory(db)
 	listUsageCategories := usecase6.NewListUsageCategories(reader, usageCategory)
 	handlerUsageCategory := handler6.NewUsageCategory(listUsageCategories)

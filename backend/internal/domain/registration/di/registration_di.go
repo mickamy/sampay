@@ -21,6 +21,7 @@ type UseCases struct {
 	usecase.CreatePassword
 	usecase.CreateUserAttribute
 	usecase.CreateUserProfile
+	usecase.CompleteOnboarding
 	usecase.GetOnboardingStep
 	usecase.ListUsageCategories
 }
@@ -30,6 +31,7 @@ var UseCaseSet = wire.NewSet(
 	usecase.NewCreatePassword,
 	usecase.NewCreateUserAttribute,
 	usecase.NewCreateUserProfile,
+	usecase.NewCompleteOnboarding,
 	usecase.NewGetOnboardingStep,
 	usecase.NewListUsageCategories,
 )

@@ -23,6 +23,7 @@ type Onboarding struct {
 	createPassword  usecase.CreatePassword
 	createAttribute usecase.CreateUserAttribute
 	createProfile   usecase.CreateUserProfile
+	complete        usecase.CompleteOnboarding
 }
 
 func NewOnboarding(
@@ -30,12 +31,14 @@ func NewOnboarding(
 	createPassword usecase.CreatePassword,
 	createAttribute usecase.CreateUserAttribute,
 	createProfile usecase.CreateUserProfile,
+	complete usecase.CompleteOnboarding,
 ) *Onboarding {
 	return &Onboarding{
 		getStep:         getStep,
 		createPassword:  createPassword,
 		createAttribute: createAttribute,
 		createProfile:   createProfile,
+		complete:        complete,
 	}
 }
 
@@ -135,6 +138,24 @@ func (h *Onboarding) CreateUserProfile(
 		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&registrationv1.CreateUserProfileResponse{})
+	return res, nil
+}
+
+func (h *Onboarding) CompleteOnboarding(
+	ctx context.Context,
+	req *connect.Request[registrationv1.CompleteOnboardingRequest],
+) (*connect.Response[registrationv1.CompleteOnboardingResponse], error) {
+	_, err := h.complete.Do(ctx, usecase.CompleteOnboardingInput{})
+	if err != nil {
+		lang := contexts.MustLanguage(ctx)
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
+			return nil, localizable.AsConnectError()
+		}
+
+		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
+	}
+	res := connect.NewResponse(&registrationv1.CompleteOnboardingResponse{})
 	return res, nil
 }
 
