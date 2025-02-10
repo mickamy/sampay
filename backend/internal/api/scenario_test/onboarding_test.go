@@ -63,24 +63,24 @@ func getUsageCategories(t *testing.T, s *httptest.Server, accessToken string, f 
 	f(res, err)
 }
 
-func createUserAttribute(t *testing.T, s *httptest.Server, accessToken string, f func(res *connect.Response[registrationv1.CreateUserAttributeResponse], err error)) {
+func updateUserAttribute(t *testing.T, s *httptest.Server, accessToken string, f func(res *connect.Response[registrationv1.UpdateUserAttributeResponse], err error)) {
 	t.Helper()
 
 	client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, s.URL+"/api")
-	req := connect.NewRequest(&registrationv1.CreateUserAttributeRequest{
+	req := connect.NewRequest(&registrationv1.UpdateUserAttributeRequest{
 		CategoryType: "other",
 	})
 	req.Header().Add("Authorization", "Bearer "+accessToken)
-	res, err := client.CreateUserAttribute(context.Background(), req)
+	res, err := client.UpdateUserAttribute(context.Background(), req)
 	f(res, err)
 }
 
-func createUserProfile(t *testing.T, s *httptest.Server, accessToken string, f func(res *connect.Response[registrationv1.CreateUserProfileResponse], err error)) {
+func updateUserProfile(t *testing.T, s *httptest.Server, accessToken string, f func(res *connect.Response[registrationv1.UpdateUserProfileResponse], err error)) {
 	t.Helper()
 
 	client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, s.URL+"/api")
 	s3Obj := commonFixture.S3Object(nil)
-	req := connect.NewRequest(&registrationv1.CreateUserProfileRequest{
+	req := connect.NewRequest(&registrationv1.UpdateUserProfileRequest{
 		Name: gofakeit.GlobalFaker.Name(),
 		Bio:  ptr.Of(gofakeit.GlobalFaker.Sentence(10)),
 		Image: &commonv1.S3Object{
@@ -90,7 +90,17 @@ func createUserProfile(t *testing.T, s *httptest.Server, accessToken string, f f
 		},
 	})
 	req.Header().Add("Authorization", "Bearer "+accessToken)
-	res, err := client.CreateUserProfile(context.Background(), req)
+	res, err := client.UpdateUserProfile(context.Background(), req)
+	f(res, err)
+}
+
+func completeOnboarding(t *testing.T, s *httptest.Server, accessToken string, f func(res *connect.Response[registrationv1.CompleteOnboardingResponse], err error)) {
+	t.Helper()
+
+	client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, s.URL+"/api")
+	req := connect.NewRequest(&registrationv1.CompleteOnboardingRequest{})
+	req.Header().Add("Authorization", "Bearer "+accessToken)
+	res, err := client.CompleteOnboarding(context.Background(), req)
 	f(res, err)
 }
 
@@ -128,7 +138,7 @@ func onboarding(t *testing.T, ctx context.Context, infras di.Infras, s *httptest
 	}
 
 	{
-		createUserAttribute(t, s, accessToken, func(res *connect.Response[registrationv1.CreateUserAttributeResponse], err error) {
+		updateUserAttribute(t, s, accessToken, func(res *connect.Response[registrationv1.UpdateUserAttributeResponse], err error) {
 			require.NoError(t, err)
 		})
 	}
@@ -141,7 +151,13 @@ func onboarding(t *testing.T, ctx context.Context, infras di.Infras, s *httptest
 	}
 
 	{
-		createUserProfile(t, s, accessToken, func(res *connect.Response[registrationv1.CreateUserProfileResponse], err error) {
+		updateUserProfile(t, s, accessToken, func(res *connect.Response[registrationv1.UpdateUserProfileResponse], err error) {
+			require.NoError(t, err)
+		})
+	}
+
+	{
+		completeOnboarding(t, s, accessToken, func(res *connect.Response[registrationv1.CompleteOnboardingResponse], err error) {
 			require.NoError(t, err)
 		})
 	}
