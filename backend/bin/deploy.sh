@@ -11,6 +11,11 @@ if [ -z "${NGINX_CONF:-}" ]; then
     exit 1
 fi
 
+if [ -z "${DOMAIN:-}" ]; then
+    echo "DOMAIN is not set. Exiting."
+    exit 1
+fi
+
 APP_NAME="sampay-api"
 APP_DIR="/home/ec2-user/sampay/backend"
 WORKER_DIR="$APP_DIR"
@@ -122,7 +127,7 @@ sudo systemctl reload nginx
 sleep 5
 
 echo "Verifying traffic routing after Nginx reload..."
-if ! wget -q --spider "http://localhost/api/health"; then
+if ! wget -q --spider "https://${DOMAIN}/api/health"; then
     echo "Error: Traffic routing failed after Nginx reload. Rolling back."
     rollback
 fi
