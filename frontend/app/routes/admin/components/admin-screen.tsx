@@ -102,7 +102,12 @@ export default function AdminScreen() {
         <Spacer size={6} />
         <AddLinkButton onClick={openAddLinkFormDialog} />
         <Spacer size={6} />
-        <UserLinkButtons admin links={user.links} onEdit={onEdit} />
+        {user.links.length > 0 && (
+          <>
+            <UserLinkButtons admin links={user.links} onEdit={onEdit} />
+            <Spacer size={4} />
+          </>
+        )}
         <ShareButton variant="button" url={url} />
         <AddUserLinkFormDialog
           isOpen={isAddLinkFormDialogOpen}

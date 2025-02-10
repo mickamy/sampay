@@ -21,8 +21,8 @@ export default function PayPayHelpDialog({
     <Dialog
       isOpen={isOpen}
       onClose={onClose}
-      dialogTitle={() => "Kyash のリンクの追加方法"}
-      dialogDescription={() => "Kyash のリンクの追加方法を説明します。"}
+      dialogTitle={() => "PayPay のリンクの追加方法"}
+      dialogDescription={() => "PayPay のリンクの追加方法を説明します。"}
       dialogContent={() => (
         <ul className="p-4">
           <li>1. PayPay アプリを開きます。</li>

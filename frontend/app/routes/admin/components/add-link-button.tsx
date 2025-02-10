@@ -5,6 +5,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import useDialog from "~/hooks/use-dialog";
@@ -43,6 +45,8 @@ export default function AddLinkButton({ onClick, ...props }: Props) {
           {t("admin.index.add_link")}
         </DropdownMenuTrigger>
         <DropdownMenuContent>
+          <DropdownMenuLabel>送金サービスを選択してください</DropdownMenuLabel>
+          <DropdownMenuSeparator />
           <DropdownMenuItem onClick={openKyashDialog}>Kyash</DropdownMenuItem>
           <DropdownMenuItem onClick={openPayPayDialog}>PayPay</DropdownMenuItem>
         </DropdownMenuContent>
