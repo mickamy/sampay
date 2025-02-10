@@ -106,7 +106,7 @@ func (uc *getOnboardingStep) Do(ctx context.Context, input GetOnboardingStepInpu
 			return nil
 		}
 
-		if user.Profile.IsZero() {
+		if !user.Attribute.OnboardingCompleted {
 			step = registrationModel.OnboardingStepProfile
 			return nil
 		}

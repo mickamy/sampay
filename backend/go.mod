@@ -3,8 +3,8 @@ module mickamy.com/sampay
 go 1.23.4
 
 require (
-	buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250203140736-14d9751674b0.1
-	buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250203140736-14d9751674b0.1
+	buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250210225154-755219c08ad2.1
+	buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.5-20250210225154-755219c08ad2.1
 	connectrpc.com/connect v1.18.1
 	github.com/DATA-DOG/go-txdb v0.2.0
 	github.com/alicebob/miniredis/v2 v2.34.0
@@ -40,7 +40,7 @@ require (
 	golang.org/x/oauth2 v0.25.0
 	golang.org/x/text v0.21.0
 	google.golang.org/api v0.219.0
-	google.golang.org/protobuf v1.36.4
+	google.golang.org/protobuf v1.36.5
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/postgres v1.5.11
@@ -48,7 +48,7 @@ require (
 )
 
 require (
-	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.4-20250130201111-63bb56e20495.1 // indirect
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.5-20250130201111-63bb56e20495.1 // indirect
 	cloud.google.com/go/auth v0.14.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.7 // indirect
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect

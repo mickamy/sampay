@@ -351,19 +351,21 @@ func InitRegistrationUseCases(db *database.DB, readWriter *database.ReadWriter, 
 	user := repository2.NewUser(db)
 	session := repository.NewSession(kvs2)
 	createPassword := usecase6.NewCreatePassword(writer, emailVerification, authentication, user, session)
-	userAttribute := repository2.NewUserAttribute(db)
-	createUserAttribute := usecase6.NewCreateUserAttribute(writer, userAttribute)
 	userProfile := repository2.NewUserProfile(db)
-	createUserProfile := usecase6.NewCreateUserProfile(writer, user, userProfile)
+	updateUserProfile := usecase6.NewUpdateUserProfile(writer, user, userProfile)
+	userAttribute := repository2.NewUserAttribute(db)
+	completeOnboarding := usecase6.NewCompleteOnboarding(writer, userAttribute)
 	getOnboardingStep := usecase6.NewGetOnboardingStep(reader, emailVerification, authentication, user)
 	usageCategory := repository6.NewUsageCategory(db)
 	listUsageCategories := usecase6.NewListUsageCategories(reader, usageCategory)
+	updateUserAttribute := usecase6.NewUpdateUserAttribute(writer, userAttribute)
 	useCases := di6.UseCases{
 		CreatePassword:      createPassword,
-		CreateUserAttribute: createUserAttribute,
-		CreateUserProfile:   createUserProfile,
+		UpdateUserProfile:   updateUserProfile,
+		CompleteOnboarding:  completeOnboarding,
 		GetOnboardingStep:   getOnboardingStep,
 		ListUsageCategories: listUsageCategories,
+		UpdateUserAttribute: updateUserAttribute,
 	}
 	return useCases
 }
@@ -376,10 +378,11 @@ func InitRegistrationHandlers(db *database.DB, readWriter *database.ReadWriter, 
 	session := repository.NewSession(kvs2)
 	createPassword := usecase6.NewCreatePassword(writer, emailVerification, authentication, user, session)
 	userAttribute := repository2.NewUserAttribute(db)
-	createUserAttribute := usecase6.NewCreateUserAttribute(writer, userAttribute)
+	updateUserAttribute := usecase6.NewUpdateUserAttribute(writer, userAttribute)
 	userProfile := repository2.NewUserProfile(db)
-	createUserProfile := usecase6.NewCreateUserProfile(writer, user, userProfile)
-	onboarding := handler6.NewOnboarding(getOnboardingStep, createPassword, createUserAttribute, createUserProfile)
+	updateUserProfile := usecase6.NewUpdateUserProfile(writer, user, userProfile)
+	completeOnboarding := usecase6.NewCompleteOnboarding(writer, userAttribute)
+	onboarding := handler6.NewOnboarding(getOnboardingStep, createPassword, updateUserAttribute, updateUserProfile, completeOnboarding)
 	usageCategory := repository6.NewUsageCategory(db)
 	listUsageCategories := usecase6.NewListUsageCategories(reader, usageCategory)
 	handlerUsageCategory := handler6.NewUsageCategory(listUsageCategories)

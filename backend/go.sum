@@ -1,9 +1,9 @@
-buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.4-20250130201111-63bb56e20495.1 h1:4erM3WLgEG/HIBrpBDmRbs1puhd7p0z7kNXDuhHthwM=
-buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.4-20250130201111-63bb56e20495.1/go.mod h1:novQBstnxcGpfKf8qGRATqn1anQKwMJIbH5Q581jibU=
-buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250203140736-14d9751674b0.1 h1:JBPCVamBxjpi8llA8X8SB5dZjSedD1b4xzb8VdMvt3Q=
-buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250203140736-14d9751674b0.1/go.mod h1:we4YSA6Xm++50iymL44n6wtzBmErfOXNnLq+CJzUONU=
-buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250203140736-14d9751674b0.1 h1:Nprc91TQ6O+qzJ6F9gxuls/2+9cltXZEmFy13AziTp4=
-buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.4-20250203140736-14d9751674b0.1/go.mod h1:uQos/rB81oaO/vbIOmdh88lteRYZaXfUqInLeEgQ3AA=
+buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.5-20250130201111-63bb56e20495.1 h1:cKwn1vgPveeXRDvrt2H+FI5AiBzbG5obrolK8eCAY6U=
+buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.5-20250130201111-63bb56e20495.1/go.mod h1:eOqrCVUfhh7SLo00urDe/XhJHljj0dWMZirS0aX7cmc=
+buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250210225154-755219c08ad2.1 h1:xbpZUK91tuDIs7+jOeSxyMRYyTIaDVjbJ7O4lUrfLbI=
+buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250210225154-755219c08ad2.1/go.mod h1:jB5Fj8nLRsSJwbrNgVyevX04hPeHWlz1vxOjA5Zb3LY=
+buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.5-20250210225154-755219c08ad2.1 h1:tDYZTiPiQBcO0A+JSoXGCwcZi2m5+3vIc6c8mDiJPMQ=
+buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.5-20250210225154-755219c08ad2.1/go.mod h1:HmHexDL98CtodZtpcHSjERvavQiVlDIFp2inoh/TJ5w=
 cloud.google.com/go/auth v0.14.1 h1:AwoJbzUdxA/whv1qj3TLKwh3XX5sikny2fc40wUl+h0=
 cloud.google.com/go/auth v0.14.1/go.mod h1:4JHUxlGXisL0AW8kXPtUF6ztuOksyfUQNFjfsOCXkPM=
 cloud.google.com/go/auth/oauth2adapt v0.2.7 h1:/Lc7xODdqcEw8IrZ9SvwnlLX6j9FHQM74z6cBk9Rw6M=
@@ -387,8 +387,8 @@ google.golang.org/genproto/googleapis/rpc v0.0.0-20250127172529-29210b9bc287 h1:
 google.golang.org/genproto/googleapis/rpc v0.0.0-20250127172529-29210b9bc287/go.mod h1:8BS3B93F/U1juMFq9+EDk+qOT5CO1R9IzXxG3PTqiRk=
 google.golang.org/grpc v1.70.0 h1:pWFv03aZoHzlRKHWicjsZytKAiYCtNS0dHbXnIdq7jQ=
 google.golang.org/grpc v1.70.0/go.mod h1:ofIJqVKDXx/JiXrwr2IG4/zwdH9txy3IlF40RmcJSQw=
-google.golang.org/protobuf v1.36.4 h1:6A3ZDJHn/eNqc1i+IdefRzy/9PokBTPvcqMySR7NNIM=
-google.golang.org/protobuf v1.36.4/go.mod h1:9fA7Ob0pmnwhb644+1+CVWFRbNajQ6iRojtC/QF5bRE=
+google.golang.org/protobuf v1.36.5 h1:tPhr+woSbjfYvY6/GPufUoYizxw1cF/yFoxJ2fmpwlM=
+google.golang.org/protobuf v1.36.5/go.mod h1:9fA7Ob0pmnwhb644+1+CVWFRbNajQ6iRojtC/QF5bRE=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c h1:Hei/4ADfdWqJk1ZMxUNpqntNwaWcugrBjAiHlqqRiVk=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c/go.mod h1:JHkPIbrfpd72SG/EVd6muEfDQjcINNoR0C8j2r3qZ4Q=

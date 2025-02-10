@@ -75,6 +75,7 @@ func TestOnboarding_GetOnboardingStep(t *testing.T) {
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&auth).Error)
 				attr := userFixture.UserAttribute(func(m *model.UserAttribute) {
 					m.UserID = user.ID
+					m.OnboardingCompleted = false
 				})
 				require.NoError(t, infras.Writer.WithContext(ctx).Create(&attr).Error)
 				return &registrationv1.GetOnboardingStepRequest{}
@@ -251,33 +252,33 @@ func TestOnboarding_CreateUserPassword(t *testing.T) {
 	}
 }
 
-func TestOnboarding_CreateUserAttribute(t *testing.T) {
+func TestOnboarding_UpdateUserAttribute(t *testing.T) {
 	t.Parallel()
 
 	tsc := []struct {
 		name    string
-		arrange func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreateUserAttributeRequest
-		assert  func(t *testing.T, got *connect.Response[registrationv1.CreateUserAttributeResponse], err error)
+		arrange func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.UpdateUserAttributeRequest
+		assert  func(t *testing.T, got *connect.Response[registrationv1.UpdateUserAttributeResponse], err error)
 	}{
 		{
 			name: "success",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreateUserAttributeRequest {
-				return &registrationv1.CreateUserAttributeRequest{
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.UpdateUserAttributeRequest {
+				return &registrationv1.UpdateUserAttributeRequest{
 					CategoryType: "other",
 				}
 			},
-			assert: func(t *testing.T, got *connect.Response[registrationv1.CreateUserAttributeResponse], err error) {
+			assert: func(t *testing.T, got *connect.Response[registrationv1.UpdateUserAttributeResponse], err error) {
 				require.NoError(t, err)
 			},
 		},
 		{
 			name: "fail (invalid category type)",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreateUserAttributeRequest {
-				return &registrationv1.CreateUserAttributeRequest{
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.UpdateUserAttributeRequest {
+				return &registrationv1.UpdateUserAttributeRequest{
 					CategoryType: "invalid",
 				}
 			},
-			assert: func(t *testing.T, got *connect.Response[registrationv1.CreateUserAttributeResponse], err error) {
+			assert: func(t *testing.T, got *connect.Response[registrationv1.UpdateUserAttributeResponse], err error) {
 				require.Error(t, err)
 				assert.Equalf(t, connect.CodeInternal, connect.CodeOf(err), "code=%s", connect.CodeOf(err).String())
 				connErr := new(connect.Error)
@@ -309,7 +310,7 @@ func TestOnboarding_CreateUserAttribute(t *testing.T) {
 			// act
 			client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, server.URL)
 			connReq := connecttest.NewAuthenticatedRequest(t, ctx, req, nil, authModel.MustNewSession(user.ID), infras.KVS)
-			got, err := client.CreateUserAttribute(ctx, connReq)
+			got, err := client.UpdateUserAttribute(ctx, connReq)
 
 			// assert
 			tc.assert(t, got, err)
@@ -317,42 +318,42 @@ func TestOnboarding_CreateUserAttribute(t *testing.T) {
 	}
 }
 
-func TestOnboarding_CreateUserProfile(t *testing.T) {
+func TestOnboarding_UpdateUserProfile(t *testing.T) {
 	t.Parallel()
 
 	tsc := []struct {
 		name    string
-		arrange func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreateUserProfileRequest
-		assert  func(t *testing.T, got *connect.Response[registrationv1.CreateUserProfileResponse], err error)
+		arrange func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.UpdateUserProfileRequest
+		assert  func(t *testing.T, got *connect.Response[registrationv1.UpdateUserProfileResponse], err error)
 	}{
 		{
 			name: "success",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreateUserProfileRequest {
-				return &registrationv1.CreateUserProfileRequest{
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.UpdateUserProfileRequest {
+				return &registrationv1.UpdateUserProfileRequest{
 					Name: gofakeit.GlobalFaker.Name(),
 				}
 			},
-			assert: func(t *testing.T, got *connect.Response[registrationv1.CreateUserProfileResponse], err error) {
+			assert: func(t *testing.T, got *connect.Response[registrationv1.UpdateUserProfileResponse], err error) {
 				require.NoError(t, err)
 			},
 		},
 		{
 			name: "success with bio",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreateUserProfileRequest {
-				return &registrationv1.CreateUserProfileRequest{
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.UpdateUserProfileRequest {
+				return &registrationv1.UpdateUserProfileRequest{
 					Name: gofakeit.GlobalFaker.Name(),
 					Bio:  ptr.Of(gofakeit.GlobalFaker.Sentence(20)),
 				}
 			},
-			assert: func(t *testing.T, got *connect.Response[registrationv1.CreateUserProfileResponse], err error) {
+			assert: func(t *testing.T, got *connect.Response[registrationv1.UpdateUserProfileResponse], err error) {
 				require.NoError(t, err)
 			},
 		},
 		{
 			name: "success with image",
-			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.CreateUserProfileRequest {
+			arrange: func(t *testing.T, ctx context.Context, infras di.Infras, userID string) *registrationv1.UpdateUserProfileRequest {
 				s3Obj := commonFixture.S3Object(nil)
-				return &registrationv1.CreateUserProfileRequest{
+				return &registrationv1.UpdateUserProfileRequest{
 					Name: gofakeit.GlobalFaker.Name(),
 					Image: &commonv1.S3Object{
 						Bucket:      s3Obj.Bucket,
@@ -361,7 +362,7 @@ func TestOnboarding_CreateUserProfile(t *testing.T) {
 					},
 				}
 			},
-			assert: func(t *testing.T, got *connect.Response[registrationv1.CreateUserProfileResponse], err error) {
+			assert: func(t *testing.T, got *connect.Response[registrationv1.UpdateUserProfileResponse], err error) {
 				require.NoError(t, err)
 			},
 		},
@@ -383,12 +384,37 @@ func TestOnboarding_CreateUserProfile(t *testing.T) {
 			// act
 			client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, server.URL)
 			connReq := connecttest.NewAuthenticatedRequest(t, ctx, req, nil, authModel.MustNewSession(user.ID), infras.KVS)
-			got, err := client.CreateUserProfile(ctx, connReq)
+			got, err := client.UpdateUserProfile(ctx, connReq)
 
 			// assert
 			tc.assert(t, got, err)
 		})
 	}
+}
+
+func TestOnboarding_CompleteOnboarding(t *testing.T) {
+	t.Parallel()
+
+	// arrange
+	ctx := context.Background()
+	infras := di.NewInfras(newReadWriter(t), newKVS(t))
+	user := userFixture.User(nil)
+	require.NoError(t, infras.Writer.WithContext(ctx).Create(&user).Error)
+	attr := userFixture.UserAttribute(func(m *model.UserAttribute) {
+		m.UserID = user.ID
+		m.OnboardingCompleted = false
+	})
+	require.NoError(t, infras.Writer.WithContext(ctx).Create(&attr).Error)
+	server := newOnboardingServer(t, infras)
+
+	// act
+	client := registrationv1connect.NewOnboardingServiceClient(http.DefaultClient, server.URL)
+	connReq := connecttest.NewAuthenticatedRequest(t, ctx, &registrationv1.CompleteOnboardingRequest{}, nil, authModel.MustNewSession(user.ID), infras.KVS)
+	got, err := client.CompleteOnboarding(ctx, connReq)
+
+	// assert
+	require.NoError(t, err)
+	assert.Empty(t, got.Msg.String())
 }
 
 func newOnboardingServer(t *testing.T, infras di.Infras) *httptest.Server {

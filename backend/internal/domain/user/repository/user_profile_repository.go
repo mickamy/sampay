@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/domain/user/model"
@@ -17,6 +18,7 @@ type UserProfile interface {
 	Find(ctx context.Context, id string, scopes ...database.Scope) (*model.UserProfile, error)
 	FindBySlug(ctx context.Context, slug string, scopes ...database.Scope) (*model.UserProfile, error)
 	Update(ctx context.Context, m *model.UserProfile) error
+	Upsert(ctx context.Context, m *model.UserProfile) error
 	WithTx(tx *database.DB) UserProfile
 }
 
@@ -68,6 +70,13 @@ func (repo *userProfile) Update(ctx context.Context, m *model.UserProfile) error
 		Update("bio", ptr.NullIfZero(m.Bio)).
 		Update("image_id", ptr.NullIfZero(m.ImageID)).
 		Debug().
+		Error
+}
+
+func (repo *userProfile) Upsert(ctx context.Context, m *model.UserProfile) error {
+	return repo.db.WithContext(ctx).
+		Clauses(clause.Returning{}).
+		Save(m).
 		Error
 }
 

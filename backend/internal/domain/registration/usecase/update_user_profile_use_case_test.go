@@ -26,8 +26,8 @@ func TestCreateUserProfile_Do(t *testing.T) {
 	ctx = contexts.SetAuthenticatedUserID(ctx, user.ID)
 
 	// act
-	sut := di.InitRegistrationUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).CreateUserProfile
-	_, err := sut.Do(ctx, usecase.CreateUserProfileInput{
+	sut := di.InitRegistrationUseCases(db.WriterDB(), db, db.Writer(), db.Reader(), newKVS(t)).UpdateUserProfile
+	_, err := sut.Do(ctx, usecase.UpdateUserProfileInput{
 		Name:  gofakeit.GlobalFaker.Name(),
 		Slug:  gofakeit.GlobalFaker.Username(),
 		Bio:   ptr.Of(gofakeit.GlobalFaker.Sentence(20)),

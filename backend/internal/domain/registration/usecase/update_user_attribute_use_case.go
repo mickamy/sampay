@@ -10,47 +10,47 @@ import (
 	"mickamy.com/sampay/internal/lib/contexts"
 )
 
-type CreateUserAttributeInput struct {
+type UpdateUserAttributeInput struct {
 	UsageCategoryType string
 }
 
-type CreateUserAttributeOutput struct {
+type UpdateUserAttributeOutput struct {
 }
 
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
-type CreateUserAttribute interface {
-	Do(ctx context.Context, input CreateUserAttributeInput) (CreateUserAttributeOutput, error)
+type UpdateUserAttribute interface {
+	Do(ctx context.Context, input UpdateUserAttributeInput) (UpdateUserAttributeOutput, error)
 }
 
-type createUserAttribute struct {
+type updateUserAttribute struct {
 	writer            *database.Writer
 	userAttributeRepo userRepository.UserAttribute
 }
 
-func NewCreateUserAttribute(
+func NewUpdateUserAttribute(
 	writer *database.Writer,
 	userAttributeRepo userRepository.UserAttribute,
-) CreateUserAttribute {
-	return &createUserAttribute{
+) UpdateUserAttribute {
+	return &updateUserAttribute{
 		writer:            writer,
 		userAttributeRepo: userAttributeRepo,
 	}
 }
 
-func (uc *createUserAttribute) Do(ctx context.Context, input CreateUserAttributeInput) (CreateUserAttributeOutput, error) {
+func (uc *updateUserAttribute) Do(ctx context.Context, input UpdateUserAttributeInput) (UpdateUserAttributeOutput, error) {
 	if err := uc.writer.WriterTransaction(ctx, func(tx database.WriterTransactional) error {
 		m := userModel.UserAttribute{
 			UserID:            contexts.MustAuthenticatedUserID(ctx),
 			UsageCategoryType: input.UsageCategoryType,
 		}
-		if err := uc.userAttributeRepo.WithTx(tx.WriterDB()).Create(ctx, &m); err != nil {
+		if err := uc.userAttributeRepo.WithTx(tx.WriterDB()).Upsert(ctx, &m); err != nil {
 			return fmt.Errorf("failed to persist user attribute: %w", err)
 		}
 
 		return nil
 	}); err != nil {
-		return CreateUserAttributeOutput{}, err
+		return UpdateUserAttributeOutput{}, err
 	}
 
-	return CreateUserAttributeOutput{}, nil
+	return UpdateUserAttributeOutput{}, nil
 }
