@@ -38,9 +38,14 @@ message CreateUserProfileRequest {
 
 message CreateUserProfileResponse {}
 
+message CompleteOnboardingRequest {}
+
+message CompleteOnboardingResponse {}
+
 service OnboardingService {
   rpc GetOnboardingStep(GetOnboardingStepRequest) returns (GetOnboardingStepResponse) {}
   rpc CreatePassword(CreatePasswordRequest) returns (CreatePasswordResponse) {}
   rpc CreateUserAttribute(CreateUserAttributeRequest) returns (CreateUserAttributeResponse) {}
   rpc CreateUserProfile(CreateUserProfileRequest) returns (CreateUserProfileResponse) {}
+  rpc CompleteOnboarding(CompleteOnboardingRequest) returns (CompleteOnboardingResponse) {}
 }
