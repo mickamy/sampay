@@ -1,6 +1,13 @@
 import type { HTMLAttributes } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "~/components/ui/button";
+import { buttonVariants } from "~/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import { cn } from "~/lib/utils";
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
   onClick: () => void;
@@ -9,14 +16,19 @@ interface Props extends HTMLAttributes<HTMLButtonElement> {
 export default function AddLinkButton({ onClick, ...props }: Props) {
   const { t } = useTranslation();
   return (
-    <Button
-      variant="default"
-      size="lg"
-      onClick={onClick}
-      className="w-full"
-      {...props}
-    >
-      {t("admin.index.add_link")}
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        className={cn(
+          "w-full",
+          buttonVariants({ variant: "default", size: "lg" }),
+        )}
+      >
+        {t("admin.index.add_link")}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem>Kyash</DropdownMenuItem>
+        <DropdownMenuItem>PayPay</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
