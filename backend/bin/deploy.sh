@@ -13,6 +13,7 @@ fi
 
 APP_NAME="sampay-api"
 APP_DIR="/home/ec2-user/sampay/backend"
+WORKER_DIR="$APP_DIR"
 BLUE_DIR="sampay-backend-blue"
 GREEN_DIR="sampay-backend-green"
 NEW_DIR="/home/ec2-user/sampay/backend-$DIR_SUFFIX"
@@ -34,7 +35,7 @@ else
     APP_DIR="$BLUE_DIR"
 fi
 
-PREVIOUS_VERSION_LINK=$(readlink -f "$APP_DIR" || echo "")
+PREVIOUS_VERSION_LINK=$(readlink -f "$APP_DIR" || true)
 if [ "$PREVIOUS_VERSION_LINK" = "$APP_DIR" ]; then
     PREVIOUS_VERSION_LINK=""
 fi
@@ -50,7 +51,7 @@ if ! ( "$NEW_DIR/build/db-create" && "$NEW_DIR/build/db-migrate" && "$NEW_DIR/bu
 fi
 
 echo "Update symlink to new version..."
-if ! ln -sfn "$NEW_DIR" "$APP_DIR"; then
+if ! (ln -sfn "$NEW_DIR" "$APP_DIR" && ln -sfn "$NEW_DIR" "$WORKER_DIR"); then
     echo "Error: Failed to update symlink. Exiting."
     rm -rf "$NEW_DIR"
     exit 1
@@ -60,8 +61,9 @@ function rollback() {
     echo "Rolling back to previous version..."
     if [ -n "$PREVIOUS_VERSION_LINK" ]; then
         ln -sfn "$PREVIOUS_VERSION_LINK" "$APP_DIR"
+        ln -sfn "$PREVIOUS_VERSION_LINK" "$WORKER_DIR"
     fi
-    sudo systemctl restart "${APP_NAME}-${DEPLOY_ENV}" sampay-worker
+    sudo systemctl restart "${APP_NAME}-${ACTIVE_ENV}" sampay-worker
     rm -rf "$NEW_DIR"
     exit 1
 }
@@ -111,7 +113,7 @@ while [ $retry_count -lt $max_retries ]; do
 done
 
 echo "Updating Nginx to route traffic to port $DEPLOY_PORT..."
-sudo sed -i "s/server 127.0.0.1:$ACTIVE_PORT\+/server 127.0.0.1:$DEPLOY_PORT/" "$NGINX_CONF"
+sudo sed -i "s/server 127.0.0.1:$ACTIVE_PORT/server 127.0.0.1:$DEPLOY_PORT/" "$NGINX_CONF"
 sudo systemctl reload nginx
 
 echo "Stopping previous service: ${APP_NAME}-${ACTIVE_ENV}..."
