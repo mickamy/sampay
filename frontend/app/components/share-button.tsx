@@ -2,7 +2,7 @@ import { Share } from "lucide-react";
 import { type HTMLAttributes, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { buttonVariants } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,11 +13,19 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { cn } from "~/lib/utils";
 
+type Variant = "icon" | "button";
+
 interface Props extends HTMLAttributes<HTMLButtonElement> {
+  variant: Variant;
   url: string;
 }
 
-export default function ShareButton({ url, className, ...props }: Props) {
+export default function ShareButton({
+  variant,
+  url,
+  className,
+  ...props
+}: Props) {
   const { t } = useTranslation();
 
   const copyToClipboard = useCallback(() => {
@@ -51,13 +59,8 @@ export default function ShareButton({ url, className, ...props }: Props) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Share
-          className={cn(
-            buttonVariants({ variant: "ghost", size: "icon" }),
-            "rounded-full shadow-lg p-2",
-          )}
-        />
+      <DropdownMenuTrigger className={className} {...props}>
+        <Content variant={variant} />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuLabel>
@@ -82,4 +85,24 @@ export default function ShareButton({ url, className, ...props }: Props) {
       </DropdownMenuContent>
     </DropdownMenu>
   );
+}
+
+function Content({
+  variant,
+  className,
+}: { variant: Variant; className?: string }) {
+  switch (variant) {
+    case "icon":
+      return (
+        <Share
+          className={cn(
+            buttonVariants({ variant: "ghost", size: "icon" }),
+            "rounded-full shadow-lg p-2",
+            className,
+          )}
+        />
+      );
+    case "button":
+      return <Button variant="ghost">リンクをシェアする</Button>;
+  }
 }

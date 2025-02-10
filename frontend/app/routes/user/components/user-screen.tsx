@@ -38,7 +38,7 @@ export default function UserScreen() {
   return (
     <div className="container mx-auto flex flex-col items-center p-6 min-w-[375px] max-w-[33%] min-h-screen lg:p-4">
       <div className="flex justify-end w-full">
-        <ShareButton url={url} />
+        <ShareButton variant="icon" url={url} />
       </div>
       <UserProfile user={user} url={url} />
       <Spacer size={6} />

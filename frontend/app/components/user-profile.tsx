@@ -52,7 +52,7 @@ export default function UserProfile({
           <div className="flex flex-col space-y-2">
             <div className="text-center">
               <strong>{t("model.user.slug")}</strong>
-              <br />
+              <Spacer size={2} />
               <UnderlinedLink to={url} className="break-all">
                 {url}
               </UnderlinedLink>
