@@ -78,6 +78,8 @@ export const action: ActionFunction = async ({ request }) => {
             return submitPassword({ request, body });
           case "attribute":
             return submitAttribute({ request, body });
+          case "complete":
+            return submitCompletion({ request });
           default:
             throw new Error(`unknown intent: ${body.intent}`);
         }
@@ -171,6 +173,26 @@ async function submitProfile({
     });
     const data: ActionData = { nextStep: "links" };
     return Response.json(data);
+  })
+    .then((res) => {
+      return res.map((error) => {
+        const data: ActionData = { error };
+        return Response.json(data);
+      });
+    })
+    .then((it) => it.value);
+}
+
+async function submitCompletion({
+  request,
+}: { request: Request }): Promise<Response> {
+  return withAuthentication({ request }, async ({ getClient }) => {
+    await getClient(OnboardingService).completeOnboarding({});
+    return redirect("/admin", {
+      headers: {
+        "set-cookie": await destroyEmailVerificationSession(request),
+      },
+    });
   })
     .then((res) => {
       return res.map((error) => {

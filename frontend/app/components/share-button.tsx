@@ -1,7 +1,6 @@
 import { Share } from "lucide-react";
 import { type HTMLAttributes, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import { Button, buttonVariants } from "~/components/ui/button";
 import {
   DropdownMenu,
@@ -11,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { useToast } from "~/hooks/use-toast";
 import { cn } from "~/lib/utils";
 
 type Variant = "icon" | "button";
@@ -27,12 +27,15 @@ export default function ShareButton({
   ...props
 }: Props) {
   const { t } = useTranslation();
+  const { toast } = useToast();
 
   const copyToClipboard = useCallback(() => {
     navigator.clipboard
       .writeText(url)
-      .then(() => toast(t("components.share_button.copied")));
-  }, [t, url]);
+      .then(() =>
+        toast({ title: t("components.share_button.copied"), duration: 2000 }),
+      );
+  }, [t, toast, url]);
 
   const shareToTwitter = useCallback(() => {
     const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(

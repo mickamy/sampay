@@ -3,6 +3,7 @@ export const OnboardingSteps = [
   "attribute",
   "profile",
   "links",
+  "share",
   "completed",
 ] as const;
 

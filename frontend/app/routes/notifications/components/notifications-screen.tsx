@@ -35,11 +35,13 @@ export default function NotificationsScreen() {
     if (actionData?.readSuccess) {
       toast({
         title: "通知を既読にしました",
+        duration: 2000,
       });
     } else if (actionData?.readError) {
       toast({
         title: "通知の既読化に失敗しました",
         description: actionData.readError.message,
+        duration: 2000,
       });
     }
   }, [actionData, toast]);

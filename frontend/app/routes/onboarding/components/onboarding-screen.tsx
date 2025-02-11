@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useActionData, useLoaderData } from "react-router";
+import { useActionData, useLoaderData, useSubmit } from "react-router";
+import Spacer from "~/components/spacer";
 import UserProfileForm, {
   userProfileSchema,
 } from "~/components/user-profile-form";
@@ -17,10 +18,12 @@ import OnboardingLinksForm, {
 import OnboardingPasswordForm, {
   onboardingPasswordSchema,
 } from "~/routes/onboarding/components/onboarding-password-form";
+import OnboardingShare from "~/routes/onboarding/components/onboarding-share";
 
 export interface LoaderData {
   firstStep: OnboardingStep;
   categories?: UsageCategory[];
+  url?: string;
 }
 
 export interface ActionData {
@@ -29,7 +32,7 @@ export interface ActionData {
 }
 
 export default function OnboardingScreen() {
-  const { firstStep, categories } = useLoaderData<LoaderData>();
+  const { firstStep, categories, url } = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
 
   const [step, setStep] = useState(firstStep);
@@ -46,11 +49,17 @@ export default function OnboardingScreen() {
   const submitProfile = useFormDataSubmit(userProfileSchema);
   const submitLinks = useFormDataSubmit(onboardingLinksSchema);
 
+  const submit = useSubmit();
+  const submitCompletion = useCallback(() => {
+    submit(JSON.stringify({ intent: "complete" }), {
+      encType: "application/json",
+      method: "post",
+    });
+  }, [submit]);
+
   if (step === "attribute" && !categories) {
     throw new Error("categories is required");
   }
-
-  console.log("step", step, actionData);
 
   const { t } = useTranslation();
 
@@ -58,8 +67,12 @@ export default function OnboardingScreen() {
     setStep("attribute");
   }, []);
 
+  const backToProfile = useCallback(() => {
+    setStep("profile");
+  }, []);
+
   return (
-    <div className="flex flex-col items-center justify-center h-screen w-[320px] mx-auto">
+    <div className="flex flex-col items-center justify-center min-h-screen py-12 w-[320px] mx-auto">
       {step === "password" && (
         <OnboardingPasswordForm
           onSubmitData={submitPassword}
@@ -78,7 +91,7 @@ export default function OnboardingScreen() {
           <div className="font-bold justify-self-center">
             {t("onboarding.profile.title")}
           </div>
-
+          <Spacer size={4} />
           <UserProfileForm
             onSubmitData={submitProfile}
             onBack={backToAttribute}
@@ -86,7 +99,15 @@ export default function OnboardingScreen() {
           />
         </>
       )}
-      {step === "links" && <OnboardingLinksForm onSubmitData={submitLinks} />}
+      {step === "links" && (
+        <OnboardingLinksForm
+          onSubmitData={submitLinks}
+          onBack={backToProfile}
+        />
+      )}
+      {step === "share" && url && (
+        <OnboardingShare url={url} onComplete={submitCompletion} />
+      )}
     </div>
   );
 }
