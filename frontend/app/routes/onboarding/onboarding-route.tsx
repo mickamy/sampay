@@ -98,8 +98,6 @@ export const action: ActionFunction = async ({ request }) => {
             return submitPassword({ request, body });
           case "attribute":
             return submitAttribute({ request, body });
-          case "links":
-            return submitLinks({ request, body });
           case "complete":
             return submitCompletion({ request });
           default:
@@ -109,7 +107,16 @@ export const action: ActionFunction = async ({ request }) => {
       if (
         request.headers.get("content-type")?.startsWith("multipart/form-data")
       ) {
-        return submitProfile({ request });
+        const formData: { [k: string]: FormDataEntryValue } =
+          Object.fromEntries(await request.formData());
+        switch (formData.intent) {
+          case "profile":
+            return submitProfile({ request, formData });
+          case "links":
+            return submitLinks({ request, formData });
+          default:
+            throw new Error(`unknown intent: ${formData.intent}`);
+        }
       }
       throw new Response(null, { status: 415 });
     }
@@ -175,9 +182,12 @@ async function submitAttribute({
 
 async function submitProfile({
   request,
-}: { request: Request }): Promise<Response> {
+  formData,
+}: {
+  request: Request;
+  formData: { [k: string]: FormDataEntryValue };
+}): Promise<Response> {
   return withAuthentication({ request }, async ({ getClient }) => {
-    const formData = Object.fromEntries(await request.formData());
     const { image, ...body } = userProfileSchema.parse(formData);
 
     let imageObj: S3Object | undefined;
@@ -207,9 +217,11 @@ async function submitProfile({
 
 async function submitLinks({
   request,
-  body,
-}: { request: Request; body: unknown }): Promise<Response> {
-  console.log("submitLinks", body);
+  formData,
+}: {
+  request: Request;
+  formData: { [k: string]: FormDataEntryValue };
+}): Promise<Response> {
   throw new Error("not implemented");
 }
 
