@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useActionData, useLoaderData } from "react-router";
 import UserProfileForm, {
@@ -10,32 +11,52 @@ import type { UsageCategory } from "~/models/user/usage-category-model";
 import OnboardingAttributeForm, {
   onboardingAttributeSchema,
 } from "~/routes/onboarding/components/onboarding-attribute-form";
+import OnboardingLinksForm, {
+  onboardingLinksSchema,
+} from "~/routes/onboarding/components/onboarding-links-form";
 import OnboardingPasswordForm, {
   onboardingPasswordSchema,
 } from "~/routes/onboarding/components/onboarding-password-form";
 
 export interface LoaderData {
-  step: OnboardingStep;
+  firstStep: OnboardingStep;
   categories?: UsageCategory[];
 }
 
 export interface ActionData {
+  nextStep?: OnboardingStep;
   error?: APIError;
 }
 
 export default function OnboardingScreen() {
-  const { step, categories } = useLoaderData<LoaderData>();
+  const { firstStep, categories } = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
+
+  const [step, setStep] = useState(firstStep);
+
+  // Set the next step when the action data changes
+  useEffect(() => {
+    if (actionData?.nextStep) {
+      setStep(actionData.nextStep);
+    }
+  }, [actionData?.nextStep]);
 
   const submitPassword = useJsonSubmit(onboardingPasswordSchema);
   const submitAttribute = useJsonSubmit(onboardingAttributeSchema);
   const submitProfile = useFormDataSubmit(userProfileSchema);
+  const submitLinks = useFormDataSubmit(onboardingLinksSchema);
 
   if (step === "attribute" && !categories) {
     throw new Error("categories is required");
   }
 
+  console.log("step", step, actionData);
+
   const { t } = useTranslation();
+
+  const backToAttribute = useCallback(() => {
+    setStep("attribute");
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center h-screen w-[320px] mx-auto">
@@ -60,10 +81,12 @@ export default function OnboardingScreen() {
 
           <UserProfileForm
             onSubmitData={submitProfile}
+            onBack={backToAttribute}
             error={actionData?.error}
           />
         </>
       )}
+      {step === "links" && <OnboardingLinksForm onSubmitData={submitLinks} />}
     </div>
   );
 }

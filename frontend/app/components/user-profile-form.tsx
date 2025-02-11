@@ -58,12 +58,14 @@ export const userProfileSchema = z.object({
 interface Props extends HTMLAttributes<HTMLFormElement> {
   user?: User;
   onSubmitData: (data: z.infer<typeof userProfileSchema>) => void;
+  onBack?: () => void;
   error?: APIError;
 }
 
 export default function UserProfileForm({
   user,
   onSubmitData,
+  onBack,
   error,
   className,
   ...props
@@ -134,6 +136,7 @@ export default function UserProfileForm({
           control={form.control}
           name="name"
           label={t("model.user.profile.name")}
+          placeholder="山田 太朗"
         />
         <BaseFormField
           control={form.control}
@@ -147,7 +150,7 @@ export default function UserProfileForm({
                 <FormControl>
                   <div className="flex flex-row items-center space-x-2">
                     <Label htmlFor="slug">https://sampay.link/u/</Label>
-                    <Input type="text" {...field} />
+                    <Input type="text" placeholder="example" {...field} />
                   </div>
                 </FormControl>
                 <FormMessage className="min-h-4" />
@@ -160,11 +163,22 @@ export default function UserProfileForm({
           name="bio"
           label={t("model.user.profile.bio")}
           type="textarea"
+          placeholder="Sampay の開発をしている山田です。送金待ってます！"
           inputClassName="h-32"
         />
         <ErrorMessage message={form.formState.errors.root?.message} />
         <Spacer size={1} />
         <Button className="w-full">{t("form.submit")}</Button>
+        {onBack && (
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onBack}
+            className="w-full"
+          >
+            {t("form.back")}
+          </Button>
+        )}
       </form>
     </Form>
   );

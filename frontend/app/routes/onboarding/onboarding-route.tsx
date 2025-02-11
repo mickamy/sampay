@@ -6,6 +6,7 @@ import {
   redirect,
 } from "react-router";
 import { userProfileSchema } from "~/components/user-profile-form";
+import { getClient } from "~/lib/api/client.server";
 import {
   withAuthentication,
   withEmailVerification,
@@ -24,33 +25,24 @@ import OnboardingScreen, {
 import { directUpload } from "~/services/.server/direct-upload-service";
 
 export const loader: LoaderFunction = async ({ request }) => {
+  const categoriesResponse = await getClient({
+    service: UsageCategoryService,
+    request,
+  }).listUsageCategories({});
+  const categories = convertToUsageCategories(categoriesResponse.categories);
   return withEmailVerification({ request }, async ({ getClient }) => {
     const { step } = await getClient(OnboardingService).getOnboardingStep({});
     switch (step) {
       case "password": {
-        const data: LoaderData = { step };
+        const data: LoaderData = { firstStep: step, categories };
         return Response.json(data);
       }
       case "attribute": {
-        return withAuthentication({ request }, async ({ getClient }) => {
-          const { categories } = await getClient(
-            UsageCategoryService,
-          ).listUsageCategories({});
-          const data: LoaderData = {
-            step,
-            categories: convertToUsageCategories(categories),
-          };
-          return Response.json(data);
-        })
-          .then((res) => {
-            return res.map((error) => {
-              throw error;
-            });
-          })
-          .then((it) => it.value);
+        const data: LoaderData = { firstStep: step, categories };
+        return Response.json(data);
       }
       case "profile": {
-        const data: LoaderData = { step };
+        const data: LoaderData = { firstStep: step, categories };
         return Response.json(data);
       }
       case "completed":
@@ -120,7 +112,8 @@ async function submitPassword({
       throw new Error("session not found");
     }
 
-    return redirect("/onboarding", {
+    const data: ActionData = { nextStep: "attribute" };
+    return Response.json(data, {
       headers: {
         "set-cookie": await setAuthenticatedSession(session),
       },
@@ -144,7 +137,8 @@ async function submitAttribute({
     await getClient(OnboardingService).updateUserAttribute({
       categoryType: category,
     });
-    return redirect("/onboarding");
+    const data: ActionData = { nextStep: "profile" };
+    return Response.json(data);
   })
     .then((res) => {
       return res.map((error) => {
@@ -160,7 +154,7 @@ async function submitProfile({
 }: { request: Request }): Promise<Response> {
   return withAuthentication({ request }, async ({ getClient }) => {
     const formData = Object.fromEntries(await request.formData());
-    const { image, ...data } = userProfileSchema.parse(formData);
+    const { image, ...body } = userProfileSchema.parse(formData);
 
     let imageObj: S3Object | undefined;
     if (image) {
@@ -173,13 +167,10 @@ async function submitProfile({
 
     await getClient(OnboardingService).updateUserProfile({
       image: imageObj,
-      ...data,
+      ...body,
     });
-    return redirect("/admin", {
-      headers: {
-        "set-cookie": await destroyEmailVerificationSession(request),
-      },
-    });
+    const data: ActionData = { nextStep: "links" };
+    return Response.json(data);
   })
     .then((res) => {
       return res.map((error) => {

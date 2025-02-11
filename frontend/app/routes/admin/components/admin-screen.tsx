@@ -100,7 +100,7 @@ export default function AdminScreen() {
           onClickEdit={openProfileFormDialog}
         />
         <Spacer size={6} />
-        <AddLinkButton onClick={openAddLinkFormDialog} />
+        <AddLinkButton openForm={openAddLinkFormDialog} />
         <Spacer size={6} />
         {user.links.length > 0 && (
           <>
