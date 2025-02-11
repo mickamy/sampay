@@ -1,9 +1,9 @@
 buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.5-20250130201111-63bb56e20495.1 h1:cKwn1vgPveeXRDvrt2H+FI5AiBzbG5obrolK8eCAY6U=
 buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.5-20250130201111-63bb56e20495.1/go.mod h1:eOqrCVUfhh7SLo00urDe/XhJHljj0dWMZirS0aX7cmc=
-buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250211072418-81a86af62d8f.1 h1:God44mtXZWfSZX/tpr7hWsOKKczN3TIMR7roEjSYomQ=
-buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250211072418-81a86af62d8f.1/go.mod h1:+5yOy0bSolHh9C/I3hkRzWCjC4X804lbk83ewEt2AcA=
-buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.5-20250211072418-81a86af62d8f.1 h1:QDeDJwlh3i3PLvEf+cXotHn93Ufbc5khfLGE2+4JJ28=
-buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.5-20250211072418-81a86af62d8f.1/go.mod h1:HmHexDL98CtodZtpcHSjERvavQiVlDIFp2inoh/TJ5w=
+buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250211104707-a7815b398b2f.1 h1:1nEyOpJJ3S6cagSZekWm4oCQLf9wWedo02tEmLcqpdc=
+buf.build/gen/go/mickamy/sampay/connectrpc/go v1.18.1-20250211104707-a7815b398b2f.1/go.mod h1:/4FaQz2CmqN5j2yPuAFppjKDcFE/H0ceglD022TCkVI=
+buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.5-20250211104707-a7815b398b2f.1 h1:rNblmezaApxyVq+K0YVgaTOSAQe0M3tlR5Tzdzbc8z0=
+buf.build/gen/go/mickamy/sampay/protocolbuffers/go v1.36.5-20250211104707-a7815b398b2f.1/go.mod h1:HmHexDL98CtodZtpcHSjERvavQiVlDIFp2inoh/TJ5w=
 cloud.google.com/go/auth v0.14.1 h1:AwoJbzUdxA/whv1qj3TLKwh3XX5sikny2fc40wUl+h0=
 cloud.google.com/go/auth v0.14.1/go.mod h1:4JHUxlGXisL0AW8kXPtUF6ztuOksyfUQNFjfsOCXkPM=
 cloud.google.com/go/auth/oauth2adapt v0.2.7 h1:/Lc7xODdqcEw8IrZ9SvwnlLX6j9FHQM74z6cBk9Rw6M=
