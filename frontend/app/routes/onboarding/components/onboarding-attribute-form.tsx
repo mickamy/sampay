@@ -20,6 +20,7 @@ import {
   type UsageCategory,
   UsageCategoryTypes,
 } from "~/models/user/usage-category-model";
+import type { UserAttribute } from "~/models/user/user-attribute-model";
 
 export const onboardingAttributeSchema = z.object({
   intent: z.enum(["attribute"]),
@@ -27,12 +28,14 @@ export const onboardingAttributeSchema = z.object({
 });
 
 interface Props extends HTMLAttributes<HTMLFormElement> {
+  attribute?: UserAttribute;
   categories: UsageCategory[];
   onSubmitData: (data: z.infer<typeof onboardingAttributeSchema>) => void;
   error?: APIError;
 }
 
 export default function OnboardingAttributeForm({
+  attribute,
   categories,
   onSubmitData,
   error,
@@ -43,6 +46,7 @@ export default function OnboardingAttributeForm({
       resolver: zodResolver(onboardingAttributeSchema),
       defaultValues: {
         intent: "attribute",
+        category: attribute?.category,
       },
     },
     error,
@@ -67,6 +71,7 @@ export default function OnboardingAttributeForm({
             <FormItem className="space-y-6">
               <FormControl>
                 <RadioGroup
+                  value={field.value}
                   onValueChange={field.onChange}
                   className="flex flex-col space-y-2"
                 >

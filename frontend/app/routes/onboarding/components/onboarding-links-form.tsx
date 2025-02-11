@@ -34,6 +34,7 @@ import UserLinkForm, {
 } from "~/routes/admin/components/form/user-link-form";
 
 export const onboardingLinksSchema = z.object({
+  intent: z.literal("put_links"),
   links: z.array(userLinkSchema),
 });
 
@@ -52,7 +53,9 @@ export default function OnboardingLinksForm({
   const form = useFormWithAPIError<z.infer<typeof onboardingLinksSchema>>({
     props: {
       resolver: zodResolver(onboardingLinksSchema),
-      defaultValues: {},
+      defaultValues: {
+        intent: "put_links",
+      },
     },
     error,
   });

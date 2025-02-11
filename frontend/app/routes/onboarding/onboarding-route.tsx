@@ -1,5 +1,6 @@
 import { OnboardingService } from "@buf/mickamy_sampay.bufbuild_es/registration/v1/onboarding_pb";
 import { UsageCategoryService } from "@buf/mickamy_sampay.bufbuild_es/registration/v1/usage_category_pb";
+import { UserService } from "@buf/mickamy_sampay.bufbuild_es/user/v1/user_pb";
 import {
   type ActionFunction,
   type LoaderFunction,
@@ -16,6 +17,7 @@ import { destroyEmailVerificationSession } from "~/lib/cookie/email-verification
 import { convertTokensToSession } from "~/models/auth/session-model";
 import type { S3Object } from "~/models/common/s3-object-model";
 import { convertToUsageCategories } from "~/models/user/usage-category-model";
+import { convertToUser } from "~/models/user/user-model";
 import { onboardingAttributeSchema } from "~/routes/onboarding/components/onboarding-attribute-form";
 import { onboardingPasswordSchema } from "~/routes/onboarding/components/onboarding-password-form";
 import OnboardingScreen, {
@@ -37,13 +39,31 @@ export const loader: LoaderFunction = async ({ request }) => {
         const data: LoaderData = { firstStep: step, categories };
         return Response.json(data);
       }
-      case "attribute": {
-        const data: LoaderData = { firstStep: step, categories };
-        return Response.json(data);
-      }
+      case "attribute":
       case "profile": {
-        const data: LoaderData = { firstStep: step, categories };
-        return Response.json(data);
+        return withAuthentication({ request }, async ({ getClient }) => {
+          const { user } = await getClient(UserService).getMe({});
+          if (!user) {
+            throw new Error("user not found");
+          }
+          const url = new URL(request.url);
+          const host = `${url.origin}`;
+          const link = `${host}/u/${user.slug}`;
+          const data: LoaderData = {
+            firstStep: step,
+            categories,
+            user: convertToUser(user),
+            link,
+          };
+          return Response.json(data);
+        })
+          .then((it) => {
+            if (it.isRight()) {
+              throw new Error(`failed to load data: ${it.value}`);
+            }
+            return it;
+          })
+          .then((it) => it.value);
       }
       case "completed":
         return redirect("/admin", {
@@ -78,6 +98,8 @@ export const action: ActionFunction = async ({ request }) => {
             return submitPassword({ request, body });
           case "attribute":
             return submitAttribute({ request, body });
+          case "links":
+            return submitLinks({ request, body });
           case "complete":
             return submitCompletion({ request });
           default:
@@ -181,6 +203,14 @@ async function submitProfile({
       });
     })
     .then((it) => it.value);
+}
+
+async function submitLinks({
+  request,
+  body,
+}: { request: Request; body: unknown }): Promise<Response> {
+  console.log("submitLinks", body);
+  throw new Error("not implemented");
 }
 
 async function submitCompletion({

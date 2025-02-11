@@ -7,8 +7,11 @@ import UserProfileForm, {
 } from "~/components/user-profile-form";
 import { useFormDataSubmit, useJsonSubmit } from "~/hooks/use-submit";
 import type { APIError } from "~/lib/api/response";
+import type { z } from "~/lib/form/zod";
 import type { OnboardingStep } from "~/models/onboarding/onboarding-step";
 import type { UsageCategory } from "~/models/user/usage-category-model";
+import type { UserAttribute } from "~/models/user/user-attribute-model";
+import type { User } from "~/models/user/user-model";
 import OnboardingAttributeForm, {
   onboardingAttributeSchema,
 } from "~/routes/onboarding/components/onboarding-attribute-form";
@@ -23,7 +26,8 @@ import OnboardingShare from "~/routes/onboarding/components/onboarding-share";
 export interface LoaderData {
   firstStep: OnboardingStep;
   categories?: UsageCategory[];
-  url?: string;
+  user?: User;
+  link?: string;
 }
 
 export interface ActionData {
@@ -32,7 +36,7 @@ export interface ActionData {
 }
 
 export default function OnboardingScreen() {
-  const { firstStep, categories, url } = useLoaderData<LoaderData>();
+  const { firstStep, categories, user, link } = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
 
   const [step, setStep] = useState(firstStep);
@@ -48,6 +52,17 @@ export default function OnboardingScreen() {
   const submitAttribute = useJsonSubmit(onboardingAttributeSchema);
   const submitProfile = useFormDataSubmit(userProfileSchema);
   const submitLinks = useFormDataSubmit(onboardingLinksSchema);
+
+  const [attribute, setAttribute] = useState<UserAttribute | undefined>();
+  const onSubmitAttribute = useCallback(
+    (data: z.infer<typeof onboardingAttributeSchema>) => {
+      setAttribute({
+        category: data.category,
+      });
+      submitAttribute(data);
+    },
+    [submitAttribute],
+  );
 
   const submit = useSubmit();
   const submitCompletion = useCallback(() => {
@@ -81,8 +96,9 @@ export default function OnboardingScreen() {
       )}
       {step === "attribute" && (
         <OnboardingAttributeForm
+          attribute={attribute}
           categories={categories || []}
-          onSubmitData={submitAttribute}
+          onSubmitData={onSubmitAttribute}
           error={actionData?.error}
         />
       )}
@@ -93,6 +109,7 @@ export default function OnboardingScreen() {
           </div>
           <Spacer size={4} />
           <UserProfileForm
+            user={user}
             onSubmitData={submitProfile}
             onBack={backToAttribute}
             error={actionData?.error}
@@ -105,8 +122,8 @@ export default function OnboardingScreen() {
           onBack={backToProfile}
         />
       )}
-      {step === "share" && url && (
-        <OnboardingShare url={url} onComplete={submitCompletion} />
+      {step === "share" && link && (
+        <OnboardingShare url={link} onComplete={submitCompletion} />
       )}
     </div>
   );
