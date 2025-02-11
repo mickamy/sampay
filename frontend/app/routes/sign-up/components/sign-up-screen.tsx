@@ -57,11 +57,15 @@ export default function SignUpScreen() {
           </Button>
         </Link>
         <Separator />
-        <p className="flex flex-col space-y-4 px-8 text-center text-sm text-muted-foreground">
+        <p className="space-y-4 px-8 text-center text-sm text-muted-foreground">
+          新規登録をすることで、本サービスの
+          <br />
           <UnderlinedLink to="/terms">{t("auth.sign_up.terms")}</UnderlinedLink>
+          、
           <UnderlinedLink to="/privacy">
             {t("auth.sign_up.privacy")}
           </UnderlinedLink>
+          に同意したものとみなされます。
         </p>
         <Separator />
         <p className="flex flex-row justify-center text-sm text-muted-foreground">
