@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"errors"
+	"strconv"
 
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/registration/v1/registrationv1connect"
 	registrationv1 "buf.build/gen/go/mickamy/sampay/protocolbuffers/go/registration/v1"
@@ -15,6 +16,7 @@ import (
 	"mickamy.com/sampay/internal/domain/registration/usecase"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/lib/contexts"
+	"mickamy.com/sampay/internal/lib/ptr"
 	"mickamy.com/sampay/internal/misc/i18n"
 )
 
@@ -23,6 +25,7 @@ type Onboarding struct {
 	createPassword  usecase.CreatePassword
 	updateAttribute usecase.UpdateUserAttribute
 	updateProfile   usecase.UpdateUserProfile
+	updateLinks     usecase.UpdateUserLinks
 	complete        usecase.CompleteOnboarding
 }
 
@@ -31,6 +34,7 @@ func NewOnboarding(
 	createPassword usecase.CreatePassword,
 	updateAttribute usecase.UpdateUserAttribute,
 	updateProfile usecase.UpdateUserProfile,
+	updateLinks usecase.UpdateUserLinks,
 	complete usecase.CompleteOnboarding,
 ) *Onboarding {
 	return &Onboarding{
@@ -38,6 +42,7 @@ func NewOnboarding(
 		createPassword:  createPassword,
 		updateAttribute: updateAttribute,
 		updateProfile:   updateProfile,
+		updateLinks:     updateLinks,
 		complete:        complete,
 	}
 }
@@ -138,6 +143,70 @@ func (h *Onboarding) UpdateUserProfile(
 		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
 	}
 	res := connect.NewResponse(&registrationv1.UpdateUserProfileResponse{})
+	return res, nil
+}
+
+type userLinkS3ObjectError struct {
+	index int
+	err   error
+}
+
+func (h *Onboarding) UpdateUserLinks(
+	ctx context.Context,
+	req *connect.Request[registrationv1.UpdateUserLinksRequest],
+) (*connect.Response[registrationv1.UpdateUserLinksResponse], error) {
+	var errs []userLinkS3ObjectError
+	links := make([]usecase.UserLink, len(req.Msg.Links))
+	for i, link := range req.Msg.Links {
+		obj, err := commonRequest.NewS3Object(link.QrCode)
+		if err != nil {
+			errs = append(errs, userLinkS3ObjectError{
+				index: i,
+				err:   err,
+			})
+		}
+		links = append(links, usecase.UserLink{
+			ID:           ptr.ZeroIfNull(link.Id),
+			ProviderType: userModel.UserLinkProviderType(link.ProviderType),
+			URI:          link.Uri,
+			Name:         link.Name,
+			QRCode:       obj,
+		})
+	}
+
+	if len(errs) > 0 {
+		lang := contexts.MustLanguage(ctx)
+		res := commonResponse.NewBadRequest(errors.New("invalid s3 object"))
+		for _, e := range errs {
+			res = res.WithFieldViolation(
+				"links["+strconv.Itoa(e.index)+"].qr_code",
+				i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.CommonRequestErrorInvalid_s3_object}),
+			)
+		}
+		return nil, res.AsConnectError()
+	}
+
+	_, err := h.updateLinks.Do(ctx, usecase.UpdateUserLinksInput{
+		UserLinks: links,
+	})
+
+	if len(errs) > 0 {
+		lang := contexts.MustLanguage(ctx)
+		return nil, commonResponse.NewBadRequest(errors.New("invalid s3 object")).
+			WithFieldViolation("qr_code", i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.CommonRequestErrorInvalid_s3_object})).
+			AsConnectError()
+	}
+
+	if err != nil {
+		lang := contexts.MustLanguage(ctx)
+		if localizable := commonResponse.ParseLocalizableError(lang, err); localizable != nil {
+			return nil, localizable.AsConnectError()
+		}
+
+		slogger.ErrorCtx(ctx, "failed to execute use case", "err", err)
+		return nil, commonResponse.NewInternalError(ctx, err).AsConnectError()
+	}
+	res := connect.NewResponse(&registrationv1.UpdateUserLinksResponse{})
 	return res, nil
 }
 

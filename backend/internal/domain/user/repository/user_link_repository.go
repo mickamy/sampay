@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/domain/user/model"
@@ -17,6 +18,7 @@ type UserLink interface {
 	Find(ctx context.Context, id string, scopes ...database.Scope) (*model.UserLink, error)
 	GetLastDisplayOrderByUserID(ctx context.Context, userID string) (int, error)
 	Update(ctx context.Context, m *model.UserLink) error
+	Upsert(ctx context.Context, m *model.UserLink) error
 	Delete(ctx context.Context, id string) error
 	WithTx(tx *database.DB) UserLink
 }
@@ -68,6 +70,10 @@ func (repo *userLink) GetLastDisplayOrderByUserID(ctx context.Context, userID st
 
 func (repo *userLink) Update(ctx context.Context, m *model.UserLink) error {
 	return repo.db.WithContext(ctx).Save(m).Error
+}
+
+func (repo *userLink) Upsert(ctx context.Context, m *model.UserLink) error {
+	return repo.db.WithContext(ctx).Clauses(clause.Returning{}).Save(m).Error
 }
 
 func (repo *userLink) Delete(ctx context.Context, id string) error {

@@ -140,6 +140,20 @@ func (mr *MockUserLinkMockRecorder) Update(ctx, m any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockUserLink)(nil).Update), ctx, m)
 }
 
+// Upsert mocks base method.
+func (m_2 *MockUserLink) Upsert(ctx context.Context, m *model.UserLink) error {
+	m_2.ctrl.T.Helper()
+	ret := m_2.ctrl.Call(m_2, "Upsert", ctx, m)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockUserLinkMockRecorder) Upsert(ctx, m any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockUserLink)(nil).Upsert), ctx, m)
+}
+
 // WithTx mocks base method.
 func (m *MockUserLink) WithTx(tx *database.DB) repository.UserLink {
 	m.ctrl.T.Helper()

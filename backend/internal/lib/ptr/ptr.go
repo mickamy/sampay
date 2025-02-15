@@ -28,3 +28,10 @@ func NullIfZero[T comparable](val *T) *T {
 	}
 	return val
 }
+
+func ZeroIfNull[T any](val *T) T {
+	if val == nil {
+		return *new(T)
+	}
+	return *val
+}
