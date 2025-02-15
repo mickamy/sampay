@@ -30,15 +30,15 @@ export const userProfileSchema = z.object({
   image: z
     .any()
     .refine((file) => isFileLike(file), {
-      params: { i18n: "choose_file" },
+      params: { i18n: "form.choose_file" },
     })
     .refine((file) => file?.type?.startsWith("image/"), {
-      params: { i18n: "invalid_file_type" },
+      params: { i18n: "form.invalid_file_type" },
     })
     .refine((file) => file?.size <= 5 * 1024 * 1024, {
       params: {
         i18n: {
-          key: "too_large_file",
+          key: "file.too_large_file",
           values: { size: "5MB" },
         },
       },
@@ -50,7 +50,7 @@ export const userProfileSchema = z.object({
     .min(1)
     .max(32)
     .refine((slug) => /^[a-zA-Z0-9._-]+$/.test(slug), {
-      params: { i18n: "invalid_slug" },
+      params: { i18n: "form.invalid_slug" },
     }),
   bio: z.string().optional(),
 });
@@ -106,6 +106,7 @@ export default function UserProfileForm({
                     <Input
                       id="image"
                       type="file"
+                      accept="image/*"
                       onChange={(e) => {
                         const files = (e.target as HTMLInputElement).files;
                         if (files && files.length > 0) {

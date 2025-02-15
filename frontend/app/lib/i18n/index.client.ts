@@ -7,12 +7,10 @@ import zodJa from "zod-i18n-map/locales/ja/zod.json";
 import i18nConfig from "~/lib/i18n/config";
 import logger from "~/lib/logger";
 import commonJaURL from "/locales/ja/common.json?url";
-import customZodJaURL from "/locales/ja/zod.json?url";
 
 export async function initI18NClient() {
-  const [commonJa, customZodJa] = await Promise.all([
+  const [commonJa] = await Promise.all([
     fetch(commonJaURL).then((res) => res.json()),
-    fetch(customZodJaURL).then((res) => res.json()),
   ]);
   await i18next
     .use(initReactI18next)
@@ -30,7 +28,6 @@ export async function initI18NClient() {
         resources: {
           ja: {
             zod: zodJa,
-            customZodJa,
             common: commonJa,
           },
         },
