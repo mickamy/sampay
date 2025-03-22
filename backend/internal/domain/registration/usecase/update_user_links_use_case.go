@@ -19,9 +19,10 @@ type UserLink struct {
 	QRCode       *commonModel.S3Object
 }
 
-func (l UserLink) AsModel() userModel.UserLink {
+func (l UserLink) AsModel(userID string) userModel.UserLink {
 	return userModel.UserLink{
 		ID:           l.ID,
+		UserID:       userID,
 		ProviderType: l.ProviderType,
 		URI:          l.URI,
 		QRCode:       l.QRCode,
@@ -68,12 +69,13 @@ func (uc *updateUserLinks) Do(ctx context.Context, input UpdateUserLinksInput) (
 		}
 
 		var deleted []userModel.UserLink
+		inputIDs := map[string]struct{}{}
+		for _, i := range input.UserLinks {
+			inputIDs[i.ID] = struct{}{}
+		}
 		for _, e := range existing {
-			for _, i := range input.UserLinks {
-				if e.ID == i.ID {
-					deleted = append(deleted, e)
-					break
-				}
+			if _, ok := inputIDs[e.ID]; !ok {
+				deleted = append(deleted, e)
 			}
 		}
 
@@ -84,9 +86,8 @@ func (uc *updateUserLinks) Do(ctx context.Context, input UpdateUserLinksInput) (
 		}
 
 		for _, i := range input.UserLinks {
-			m := i.AsModel()
-			m.UserID = userID
-			if err := uc.userLinkRepo.WithTx(tx.WriterDB()).Upsert(ctx, &m); err != nil {
+			m := i.AsModel(userID)
+			if err := uc.userLinkRepo.WithTx(tx.WriterDB().FullSaveAssociations()).Upsert(ctx, &m); err != nil {
 				return fmt.Errorf("failed to update user link: %w", err)
 			}
 		}

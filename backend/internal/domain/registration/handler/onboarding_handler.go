@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strconv"
 
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/registration/v1/registrationv1connect"
@@ -174,8 +173,6 @@ func (h *Onboarding) UpdateUserLinks(
 			QRCode:       obj,
 		})
 	}
-
-	fmt.Println("=================", links)
 
 	if len(errs) > 0 {
 		lang := contexts.MustLanguage(ctx)

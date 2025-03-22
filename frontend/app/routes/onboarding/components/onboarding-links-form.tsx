@@ -2,8 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { type HTMLAttributes, useCallback } from "react";
 import {
   type FieldArrayWithId,
-  useFieldArray,
   type UseFormSetValue,
+  useFieldArray,
 } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Dialog from "~/components/dialog";
