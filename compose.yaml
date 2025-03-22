@@ -161,6 +161,7 @@ services:
       DOMAINS: 'api.sampay.lvh.me -> http://api:8080, sampay.lvh.me -> http://web:5173'
       STAGE: local
       WEBSOCKET: true
+      CLIENT_MAX_BODY_SIZE: 10m
     volumes:
       - ./https-portal/ssl_certs:/var/lib/https-portal
     depends_on:
