@@ -97,6 +97,8 @@ locals {
 }
 
 resource "aws_route53_record" "records" {
+  allow_overwrite = true
+
   for_each = local.subdomains
 
   zone_id = data.aws_route53_zone.main.zone_id
@@ -104,10 +106,6 @@ resource "aws_route53_record" "records" {
   type    = "A"
   ttl     = var.route53_record_ttl
   records = [aws_eip.web_eip.public_ip]
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 ########################################################################################################################
