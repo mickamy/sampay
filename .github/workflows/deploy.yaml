@@ -95,8 +95,8 @@ jobs:
           export KVS_PASSWORD="${KVS_PASSWORD}"
       
           if [ "${ENV}" = "stg" ]; then
-          export BASIC_USER="${BASIC_USER}"
-          export BASIC_PASSWORD="${BASIC_PASSWORD}"
+            export BASIC_USER="${BASIC_USER}"
+            export BASIC_PASSWORD="${BASIC_PASSWORD}"
           fi
       
           ansible-playbook -i ./inventory/web.yaml playbook.yaml \
