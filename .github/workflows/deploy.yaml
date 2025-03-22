@@ -48,8 +48,6 @@ jobs:
             echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_ADMIN_PASSWORD_STG }}" >> $GITHUB_ENV
             echo "KVS_PASSWORD=${{ secrets.KVS_PASSWORD_STG }}" >> $GITHUB_ENV
             echo "EC2_SSH_KEY=${{ secrets.EC2_SSH_KEY_STG }}" >> $GITHUB_ENV
-            echo "BASIC_USER=${{ secrets.BASIC_USER }}" >> $GITHUB_ENV
-            echo "BASIC_PASSWORD=${{ secrets.BASIC_PASSWORD }}" >> $GITHUB_ENV
           fi
 
       - name: Configure AWS credentials
@@ -88,22 +86,22 @@ jobs:
       - name: Execute ansible playbook
         run: |
           cd ./provisioning
-
-          if [ "${{ env.ENV }}" = "stg" ]; then
-            export BASIC_USER="${{ env.BASIC_USER }}"
-            export BASIC_PASSWORD="${{ env.BASIC_PASSWORD }}"
+          
+          export ANSIBLE_SSH_KEY="${GITHUB_WORKSPACE}/key.pem"
+          export ANSIBLE_SSH_PORT="${{ env.SSH_PORT }}"
+          export AWS_REGION="${{ env.AWS_REGION }}"
+          export CERTBOT_EMAIL="${{ secrets.CERTBOT_EMAIL }}"
+          export POSTGRES_PASSWORD="${{ env.POSTGRES_PASSWORD }}"
+          export KVS_PASSWORD="${{ env.KVS_PASSWORD }}"
+          export ENV="${{ env.ENV }}"
+          
+          if [ "${ENV}" = "stg" ]; then
+            export BASIC_USER="${{ secrets.BASIC_USER }}"
+            export BASIC_PASSWORD="${{ secrets.BASIC_PASSWORD }}"
           fi
 
-          export ANSIBLE_SSH_KEY="${GITHUB_WORKSPACE}/key.pem"
-          export ANSIBLE_SSH_PORT=${{ env.SSH_PORT }}
-          export AWS_REGION=${{ env.AWS_REGION }}
-          export CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}
-          export POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }}
-          export KVS_PASSWORD=${{ env.KVS_PASSWORD }}
-
           ansible-playbook -i ./inventory/web.yaml playbook.yaml \
-            --vault-password-file ./secrets/ansible_vault_pass \
-            --limit "${{ env.ENV }}"
+            --vault-password-file ./secrets/ansible_vault_pass --limit "${ENV}"
 
       - name: Set up Go
         uses: actions/setup-go@v5
