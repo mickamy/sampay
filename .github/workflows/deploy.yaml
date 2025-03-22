@@ -1,9 +1,19 @@
 name: Deploy Application
+
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy target environment'
+        required: true
+        default: 'stg'
+        type: choice
+        options:
+          - stg
+          - prod
   push:
     branches:
-      - "**"
+      - "main"
 
 permissions:
   id-token: write
@@ -13,18 +23,38 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
     env:
       AWS_REGION: ap-northeast-1
-      DOMAIN: stg.sampay.link
+      ENV: ${{ github.event.inputs.environment || 'stg' }}
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set dynamic environment variables
+        id: set-env
+        run: |
+          if [ "${{ env.ENV }}" = "prod" ]; then
+            echo "DOMAIN=prod.sampay.link" >> $GITHUB_ENV
+            echo "SSH_PORT=${{ secrets.SSH_PORT_PROD }}" >> $GITHUB_ENV
+            echo "SECURITY_GROUP_ID=${{ secrets.SECURITY_GROUP_ID_PROD }}" >> $GITHUB_ENV
+            echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_ADMIN_PASSWORD_PROD }}" >> $GITHUB_ENV
+            echo "KVS_PASSWORD=${{ secrets.KVS_PASSWORD_PROD }}" >> $GITHUB_ENV
+            echo "EC2_SSH_KEY=${{ secrets.EC2_SSH_KEY_PROD }}" >> $GITHUB_ENV
+          else
+            echo "DOMAIN=stg.sampay.link" >> $GITHUB_ENV
+            echo "SSH_PORT=${{ secrets.SSH_PORT_STG }}" >> $GITHUB_ENV
+            echo "SECURITY_GROUP_ID=${{ secrets.SECURITY_GROUP_ID_STG }}" >> $GITHUB_ENV
+            echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_ADMIN_PASSWORD_STG }}" >> $GITHUB_ENV
+            echo "KVS_PASSWORD=${{ secrets.KVS_PASSWORD_STG }}" >> $GITHUB_ENV
+            echo "EC2_SSH_KEY=${{ secrets.EC2_SSH_KEY_STG }}" >> $GITHUB_ENV
+          fi
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::590183691452:role/GitHubActionsRole-590183691452
-          aws-region: ap-northeast-1
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Get Public IP
         id: ip
@@ -33,14 +63,14 @@ jobs:
       - name: Allow IP in Security Group
         run: |
           aws ec2 authorize-security-group-ingress \
-          --group-id ${{ secrets.SECURITY_GROUP_ID_STG }} \
+          --group-id ${{ env.SECURITY_GROUP_ID }} \
           --protocol tcp \
-          --port ${{ secrets.SSH_PORT_STG }} \
+          --port ${{ env.SSH_PORT }} \
           --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
       - name: Set up SSH
         run: |
-          echo "${{ secrets.EC2_SSH_KEY_STG }}" | base64 --decode > key.pem
+          echo "${{ env.EC2_SSH_KEY }}" | base64 --decode > key.pem
           chmod 600 key.pem
 
       - name: Set ansible vault password
@@ -53,16 +83,16 @@ jobs:
           cd ./provisioning
 
           export ANSIBLE_SSH_KEY="${GITHUB_WORKSPACE}/key.pem"
-          export ANSIBLE_SSH_PORT=${{ secrets.SSH_PORT_STG }}
+          export ANSIBLE_SSH_PORT=${{ env.SSH_PORT }}
           export AWS_REGION=${{ env.AWS_REGION }}
           export CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}
-          export POSTGRES_PASSWORD=${{ secrets.POSTGRES_ADMIN_PASSWORD_STG }}
-          export KVS_PASSWORD=${{ secrets.KVS_PASSWORD_STG }}
+          export POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }}
+          export KVS_PASSWORD=${{ env.KVS_PASSWORD }}
           export BASIC_USER=${{ secrets.BASIC_USER }}
           export BASIC_PASSWORD=${{ secrets.BASIC_PASSWORD }}
 
           ansible-playbook -i ./inventory/web.yaml playbook.yaml \
-          --vault-password-file ./secrets/ansible_vault_pass --limit stg \
+          --vault-password-file ./secrets/ansible_vault_pass --limit ${{ env.ENV }}
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -79,36 +109,36 @@ jobs:
 
       - name: Ensure app directory exists
         run: |
-          ssh -p ${{ secrets.SSH_PORT_STG }} -i key.pem ec2-user@${{ env.DOMAIN }} -o StrictHostKeyChecking=no '
+          ssh -p ${{ env.SSH_PORT }} -i key.pem ec2-user@${{ env.DOMAIN }} -o StrictHostKeyChecking=no '
             mkdir -p /home/ec2-user/sampay
           '
 
       - name: Copy binaries to EC2 (build & db)
         run: |
-          scp -r -i key.pem -P ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no \
+          scp -r -i key.pem -P ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no \
             ./backend/build ./backend/db ec2-user@${{ env.DOMAIN }}:/home/ec2-user/sampay/backend-${{ env.DIR_SUFFIX }}/
 
       - name: Deploy backend application
         run: |
           cat "${GITHUB_WORKSPACE}/backend/bin/deploy.sh" |
-          ssh -p ${{ secrets.SSH_PORT_STG }} -i key.pem ec2-user@${{ env.DOMAIN }} -o StrictHostKeyChecking=no '
+          ssh -p ${{ env.SSH_PORT }} -i key.pem ec2-user@${{ env.DOMAIN }} -o StrictHostKeyChecking=no '
             export DIR_SUFFIX="${{ env.DIR_SUFFIX }}";
-            export NGINX_CONF="/etc/nginx/conf.d/stg.sampay.link.conf";
+            export NGINX_CONF="/etc/nginx/conf.d/${{ env.DOMAIN }}.conf";
             export DOMAIN="${{ env.DOMAIN }}";
             bash -s
           '
 
       - name: Copy frontend files to EC2
         run: |
-          scp -C -r -i key.pem -P ${{ secrets.SSH_PORT_STG }} -o StrictHostKeyChecking=no \
+          scp -C -r -i key.pem -P ${{ env.SSH_PORT }} -o StrictHostKeyChecking=no \
             ./frontend ec2-user@${{ env.DOMAIN }}:/home/ec2-user/sampay/frontend-${{ env.DIR_SUFFIX }}
 
       - name: Deploy frontend application
         run: |
           cat "${GITHUB_WORKSPACE}/frontend/bin/deploy.sh" |
-          ssh -p ${{ secrets.SSH_PORT_STG }} -i key.pem ec2-user@${{ env.DOMAIN }} -o StrictHostKeyChecking=no '
+          ssh -p ${{ env.SSH_PORT }} -i key.pem ec2-user@${{ env.DOMAIN }} -o StrictHostKeyChecking=no '
             export DIR_SUFFIX="${{ env.DIR_SUFFIX }}";
-            export NGINX_CONF="/etc/nginx/conf.d/stg.sampay.link.conf";
+            export NGINX_CONF="/etc/nginx/conf.d/${{ env.DOMAIN }}.conf";
             export DOMAIN="${{ env.DOMAIN }}";
             bash -s
           '
@@ -117,7 +147,7 @@ jobs:
         if: ${{ always() }}
         run: |
           aws ec2 revoke-security-group-ingress \
-            --group-id ${{ secrets.SECURITY_GROUP_ID_STG }} \
+            --group-id ${{ env.SECURITY_GROUP_ID }} \
             --protocol tcp \
-            --port ${{ secrets.SSH_PORT_STG }} \
+            --port ${{ env.SSH_PORT }} \
             --cidr ${{ steps.ip.outputs.ipv4 }}/32
