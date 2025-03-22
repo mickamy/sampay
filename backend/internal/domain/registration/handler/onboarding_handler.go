@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 
 	"buf.build/gen/go/mickamy/sampay/connectrpc/go/registration/v1/registrationv1connect"
@@ -156,7 +157,7 @@ func (h *Onboarding) UpdateUserLinks(
 	req *connect.Request[registrationv1.UpdateUserLinksRequest],
 ) (*connect.Response[registrationv1.UpdateUserLinksResponse], error) {
 	var errs []userLinkS3ObjectError
-	links := make([]usecase.UserLink, len(req.Msg.Links))
+	links := make([]usecase.UserLink, 0, len(req.Msg.Links))
 	for i, link := range req.Msg.Links {
 		obj, err := commonRequest.NewS3Object(link.QrCode)
 		if err != nil {
@@ -174,6 +175,8 @@ func (h *Onboarding) UpdateUserLinks(
 		})
 	}
 
+	fmt.Println("=================", links)
+
 	if len(errs) > 0 {
 		lang := contexts.MustLanguage(ctx)
 		res := commonResponse.NewBadRequest(errors.New("invalid s3 object"))
@@ -189,13 +192,6 @@ func (h *Onboarding) UpdateUserLinks(
 	_, err := h.updateLinks.Do(ctx, usecase.UpdateUserLinksInput{
 		UserLinks: links,
 	})
-
-	if len(errs) > 0 {
-		lang := contexts.MustLanguage(ctx)
-		return nil, commonResponse.NewBadRequest(errors.New("invalid s3 object")).
-			WithFieldViolation("qr_code", i18n.MustLocalizeMessage(lang, i18n.Config{MessageID: i18n.CommonRequestErrorInvalid_s3_object})).
-			AsConnectError()
-	}
 
 	if err != nil {
 		lang := contexts.MustLanguage(ctx)

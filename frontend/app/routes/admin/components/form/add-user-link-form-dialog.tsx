@@ -1,11 +1,9 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import Dialog from "~/components/dialog";
+import UserLinkForm, { type userLinkSchema } from "~/components/user-link-form";
 import type { APIError } from "~/lib/api/response";
 import type { z } from "~/lib/form/zod";
-import UserLinkForm, {
-  type userLinkSchema,
-} from "~/routes/admin/components/form/user-link-form";
 
 export interface ActionData {
   postLinkSuccess?: boolean;

@@ -6,6 +6,7 @@ import {
   type LoaderFunction,
   redirect,
 } from "react-router";
+import type { userLinkSchema } from "~/components/user-link-form";
 import { userProfileSchema } from "~/components/user-profile-form";
 import { getClient } from "~/lib/api/client.server";
 import {
@@ -14,11 +15,13 @@ import {
 } from "~/lib/api/request.server";
 import { setAuthenticatedSession } from "~/lib/cookie/authenticated.server";
 import { destroyEmailVerificationSession } from "~/lib/cookie/email-verification.server";
+import type { z } from "~/lib/form/zod";
 import { convertTokensToSession } from "~/models/auth/session-model";
 import type { S3Object } from "~/models/common/s3-object-model";
 import { convertToUsageCategories } from "~/models/user/usage-category-model";
 import { convertToUser } from "~/models/user/user-model";
 import { onboardingAttributeSchema } from "~/routes/onboarding/components/onboarding-attribute-form";
+import { onboardingLinksSchema } from "~/routes/onboarding/components/onboarding-links-form";
 import { onboardingPasswordSchema } from "~/routes/onboarding/components/onboarding-password-form";
 import OnboardingScreen, {
   type ActionData,
@@ -48,12 +51,12 @@ export const loader: LoaderFunction = async ({ request }) => {
           }
           const url = new URL(request.url);
           const host = `${url.origin}`;
-          const link = `${host}/u/${user.slug}`;
+          const shareLink = `${host}/u/${user.slug}`;
           const data: LoaderData = {
             firstStep: step,
             categories,
             user: convertToUser(user),
-            link,
+            shareLink,
           };
           return Response.json(data);
         })
@@ -107,15 +110,14 @@ export const action: ActionFunction = async ({ request }) => {
       if (
         request.headers.get("content-type")?.startsWith("multipart/form-data")
       ) {
-        const formData: { [k: string]: FormDataEntryValue } =
-          Object.fromEntries(await request.formData());
-        switch (formData.intent) {
+        const formData = await request.formData();
+        switch (formData.get("intent")) {
           case "profile":
             return submitProfile({ request, formData });
           case "links":
             return submitLinks({ request, formData });
           default:
-            throw new Error(`unknown intent: ${formData.intent}`);
+            throw new Error(`unknown intent: ${formData.get("intent")}`);
         }
       }
       throw new Response(null, { status: 415 });
@@ -185,10 +187,12 @@ async function submitProfile({
   formData,
 }: {
   request: Request;
-  formData: { [k: string]: FormDataEntryValue };
+  formData: FormData;
 }): Promise<Response> {
   return withAuthentication({ request }, async ({ getClient }) => {
-    const { image, ...body } = userProfileSchema.parse(formData);
+    const { image, ...body } = userProfileSchema.parse(
+      Object.fromEntries(formData),
+    );
 
     let imageObj: S3Object | undefined;
     if (image) {
@@ -220,9 +224,41 @@ async function submitLinks({
   formData,
 }: {
   request: Request;
-  formData: { [k: string]: FormDataEntryValue };
+  formData: FormData;
 }): Promise<Response> {
-  throw new Error("not implemented");
+  return withAuthentication({ request }, async ({ getClient }) => {
+    const body = await parseOnboardingLinksFormData(formData);
+    await getClient(OnboardingService).updateUserLinks({
+      links: await Promise.all(
+        body.links.map(async (link) => {
+          let qrCode: S3Object | undefined;
+          if (link.qrCode) {
+            qrCode = await directUpload({
+              type: "qr_code",
+              file: link.qrCode,
+              getClient,
+            });
+          }
+          return {
+            id: link.id,
+            providerType: link.provider_type,
+            uri: link.uri,
+            name: link.name,
+            qrCode,
+          };
+        }),
+      ),
+    });
+    const data: ActionData = { nextStep: "share" };
+    return Response.json(data);
+  })
+    .then((res) => {
+      return res.map((error) => {
+        const data: ActionData = { error };
+        return Response.json(data);
+      });
+    })
+    .then((it) => it.value);
 }
 
 async function submitCompletion({
@@ -243,4 +279,39 @@ async function submitCompletion({
       });
     })
     .then((it) => it.value);
+}
+
+type UserLink = z.infer<typeof userLinkSchema>;
+type OnboardingLinksForm = z.infer<typeof onboardingLinksSchema>;
+
+export async function parseOnboardingLinksFormData(
+  formData: FormData,
+): Promise<OnboardingLinksForm> {
+  const linksMap: Record<number, Partial<UserLink>> = {};
+
+  for (const [key, value] of formData.entries()) {
+    const match = key.match(/^links\[(\d+)]\[(.+)]$/);
+    if (match) {
+      const index = Number(match[1]);
+      const field = match[2] as keyof UserLink;
+
+      if (!linksMap[index]) linksMap[index] = {};
+      linksMap[index][field] = value;
+    }
+  }
+
+  const intent = formData.get("intent");
+
+  const parsedInput: OnboardingLinksForm = {
+    intent: intent as "links",
+    links: Object.values(linksMap).map((link) => ({
+      ...link,
+      qrCode:
+        link.qrCode instanceof File && link.qrCode.name
+          ? link.qrCode
+          : undefined,
+    })) as UserLink[],
+  };
+
+  return onboardingLinksSchema.parse(parsedInput);
 }

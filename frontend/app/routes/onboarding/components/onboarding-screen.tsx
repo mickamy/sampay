@@ -27,7 +27,7 @@ export interface LoaderData {
   firstStep: OnboardingStep;
   categories?: UsageCategory[];
   user?: User;
-  link?: string;
+  shareLink?: string;
 }
 
 export interface ActionData {
@@ -36,7 +36,8 @@ export interface ActionData {
 }
 
 export default function OnboardingScreen() {
-  const { firstStep, categories, user, link } = useLoaderData<LoaderData>();
+  const { firstStep, categories, user, shareLink } =
+    useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
 
   const [step, setStep] = useState(firstStep);
@@ -118,12 +119,13 @@ export default function OnboardingScreen() {
       )}
       {step === "links" && (
         <OnboardingLinksForm
+          links={user?.links}
           onSubmitData={submitLinks}
           onBack={backToProfile}
         />
       )}
-      {step === "share" && link && (
-        <OnboardingShare url={link} onComplete={submitCompletion} />
+      {step === "share" && shareLink && (
+        <OnboardingShare url={shareLink} onComplete={submitCompletion} />
       )}
     </div>
   );

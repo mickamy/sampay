@@ -178,6 +178,7 @@ export default function UserLinkForm({
                 <Input
                   id="qrCode"
                   type="file"
+                  accept="image/*"
                   onChange={(e) => {
                     const files = (e.target as HTMLInputElement).files;
                     if (files && files.length > 0) {

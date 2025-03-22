@@ -2,8 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { type HTMLAttributes, useCallback } from "react";
 import {
   type FieldArrayWithId,
-  type UseFormSetValue,
   useFieldArray,
+  type UseFormSetValue,
 } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Dialog from "~/components/dialog";
@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Form } from "~/components/ui/form";
+import UserLinkForm, { userLinkSchema } from "~/components/user-link-form";
 import useDialog from "~/hooks/use-dialog";
 import type { APIError } from "~/lib/api/response";
 import { useFormWithAPIError } from "~/lib/form/react-hook-form";
@@ -29,22 +30,21 @@ import AddLinkButton from "~/routes/admin/components/add-link-button";
 import AddUserLinkFormDialog, {
   type ActionData as PostUserLinkActionData,
 } from "~/routes/admin/components/form/add-user-link-form-dialog";
-import UserLinkForm, {
-  userLinkSchema,
-} from "~/routes/admin/components/form/user-link-form";
 
 export const onboardingLinksSchema = z.object({
-  intent: z.literal("put_links"),
+  intent: z.literal("links"),
   links: z.array(userLinkSchema),
 });
 
 interface Props extends HTMLAttributes<HTMLFormElement> {
+  links?: UserLink[];
   onSubmitData: (data: z.infer<typeof onboardingLinksSchema>) => void;
   onBack: () => void;
   error?: APIError;
 }
 
 export default function OnboardingLinksForm({
+  links,
   onSubmitData,
   onBack,
   error,
@@ -54,7 +54,16 @@ export default function OnboardingLinksForm({
     props: {
       resolver: zodResolver(onboardingLinksSchema),
       defaultValues: {
-        intent: "put_links",
+        intent: "links",
+        links:
+          links?.map((link) => ({
+            intent: "put_link",
+            id: link.id,
+            provider_type: link.providerType,
+            uri: link.uri,
+            name: link.displayAttribute.name,
+            imagePreviewURL: link.qrCodeURL,
+          })) ?? [],
       },
     },
     error,
@@ -103,6 +112,7 @@ export default function OnboardingLinksForm({
           <div className="font-bold justify-self-center">送金リンクを設定</div>
           <div className="flex flex-col space-y-4 px-8 text-center text-sm text-muted-foreground">
             Kyash、 PayPay、楽天 Pay などの送金リンクを登録することで、
+            <br />
             お金の受け取りが簡単になります。
           </div>
           <AddLinkButton
