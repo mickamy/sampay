@@ -84,7 +84,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   return data;
 };
 
-export let handle = {
+export const handle = {
   i18n: "common",
 };
 
