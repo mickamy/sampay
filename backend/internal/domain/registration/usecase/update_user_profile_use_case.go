@@ -67,7 +67,7 @@ func (uc *updateUserProfile) Do(ctx context.Context, input UpdateUserProfileInpu
 		}
 		profile.SetImage(input.Image)
 
-		if err := uc.userProfileRepo.WithTx(tx.WriterDB()).Create(ctx, &profile); err != nil {
+		if err := uc.userProfileRepo.WithTx(tx.WriterDB()).Upsert(ctx, &profile); err != nil {
 			return fmt.Errorf("failed to persist user profile: %w", err)
 		}
 

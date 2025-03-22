@@ -70,6 +70,7 @@
     "sign_out": "ログアウト"
   },
   "form": {
+    "back": "戻る",
     "cancel": "キャンセル",
     "create": "作成",
     "change": "変更する",
@@ -89,7 +90,10 @@
     "submit": "送信",
     "update": "更新",
     "upload": "アップロード",
-    "uri": "リンク"
+    "uri": "リンク",
+    "invalid_file_type": "ファイル形式が無効です",
+    "invalid_slug": "英数字と . - _ のみ使用できます",
+    "too_large_file": "ファイルサイズが大きすぎます。{{size}} 以下のファイルを選択してください"
   },
   "lp": {
     "tagline": "Sampay\n個人間決済を\nひとつのリンクで",
@@ -135,7 +139,7 @@
     "user": {
       "slug": "Sampay URL",
       "profile": {
-        "name": "名前",
+        "name": "表示名",
         "bio": "自己紹介"
       },
       "usage_category": {

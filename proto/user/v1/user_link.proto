@@ -50,7 +50,6 @@ message UpdateUserLinkRequest {
   optional common.v1.S3Object qr_code = 5;
 }
 
-
 message UpdateUserLinkResponse {}
 
 message UpdateUserLinkQRCodeRequest {

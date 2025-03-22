@@ -5,16 +5,11 @@ import (
 	"fmt"
 
 	"mickamy.com/sampay/internal/cli/infra/storage/database"
-	commonModel "mickamy.com/sampay/internal/domain/common/model"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
 	"mickamy.com/sampay/internal/lib/contexts"
 )
 
 type CompleteOnboardingInput struct {
-	Name  string
-	Slug  string
-	Bio   *string
-	Image *commonModel.S3Object
 }
 
 type CompleteOnboardingOutput struct {

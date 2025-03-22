@@ -4,6 +4,7 @@ import Header from "~/components/header";
 import ShareButton from "~/components/share-button";
 import Spacer from "~/components/spacer";
 import UserLinkButtons from "~/components/user-link-buttons";
+import { userLinkSchema } from "~/components/user-link-form";
 import UserProfile from "~/components/user-profile";
 import { userProfileSchema } from "~/components/user-profile-form";
 import useDialog from "~/hooks/use-dialog";
@@ -17,7 +18,6 @@ import AddUserLinkFormDialog, {
 import EditUserLinkFormDialog, {
   type ActionData as PutUserLinkFormDialogActionData,
 } from "~/routes/admin/components/form/edit-user-link-form-dialog";
-import { userLinkSchema } from "~/routes/admin/components/form/user-link-form";
 import UserProfileFormDialog, {
   type ActionData as UserProfileFormDialogActionData,
 } from "~/routes/admin/components/form/user-profile-form-dialog";
@@ -100,7 +100,7 @@ export default function AdminScreen() {
           onClickEdit={openProfileFormDialog}
         />
         <Spacer size={6} />
-        <AddLinkButton onClick={openAddLinkFormDialog} />
+        <AddLinkButton openForm={openAddLinkFormDialog} />
         <Spacer size={6} />
         {user.links.length > 0 && (
           <>

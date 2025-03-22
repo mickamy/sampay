@@ -30,15 +30,15 @@ export const userProfileSchema = z.object({
   image: z
     .any()
     .refine((file) => isFileLike(file), {
-      params: { i18n: "choose_file" },
+      params: { i18n: "form.choose_file" },
     })
     .refine((file) => file?.type?.startsWith("image/"), {
-      params: { i18n: "invalid_file_type" },
+      params: { i18n: "form.invalid_file_type" },
     })
     .refine((file) => file?.size <= 5 * 1024 * 1024, {
       params: {
         i18n: {
-          key: "too_large_file",
+          key: "file.too_large_file",
           values: { size: "5MB" },
         },
       },
@@ -50,7 +50,7 @@ export const userProfileSchema = z.object({
     .min(1)
     .max(32)
     .refine((slug) => /^[a-zA-Z0-9._-]+$/.test(slug), {
-      params: { i18n: "invalid_slug" },
+      params: { i18n: "form.invalid_slug" },
     }),
   bio: z.string().optional(),
 });
@@ -58,12 +58,14 @@ export const userProfileSchema = z.object({
 interface Props extends HTMLAttributes<HTMLFormElement> {
   user?: User;
   onSubmitData: (data: z.infer<typeof userProfileSchema>) => void;
+  onBack?: () => void;
   error?: APIError;
 }
 
 export default function UserProfileForm({
   user,
   onSubmitData,
+  onBack,
   error,
   className,
   ...props
@@ -104,6 +106,7 @@ export default function UserProfileForm({
                     <Input
                       id="image"
                       type="file"
+                      accept="image/*"
                       onChange={(e) => {
                         const files = (e.target as HTMLInputElement).files;
                         if (files && files.length > 0) {
@@ -134,6 +137,7 @@ export default function UserProfileForm({
           control={form.control}
           name="name"
           label={t("model.user.profile.name")}
+          placeholder="山田 太朗"
         />
         <BaseFormField
           control={form.control}
@@ -147,7 +151,7 @@ export default function UserProfileForm({
                 <FormControl>
                   <div className="flex flex-row items-center space-x-2">
                     <Label htmlFor="slug">https://sampay.link/u/</Label>
-                    <Input type="text" {...field} />
+                    <Input type="text" placeholder="example" {...field} />
                   </div>
                 </FormControl>
                 <FormMessage className="min-h-4" />
@@ -160,11 +164,22 @@ export default function UserProfileForm({
           name="bio"
           label={t("model.user.profile.bio")}
           type="textarea"
+          placeholder="Sampay の開発をしている山田です。送金待ってます！"
           inputClassName="h-32"
         />
         <ErrorMessage message={form.formState.errors.root?.message} />
         <Spacer size={1} />
         <Button className="w-full">{t("form.submit")}</Button>
+        {onBack && (
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onBack}
+            className="w-full"
+          >
+            {t("form.back")}
+          </Button>
+        )}
       </form>
     </Form>
   );

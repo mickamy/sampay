@@ -19,11 +19,12 @@ var RepositorySet = wire.NewSet(
 
 type UseCases struct {
 	usecase.CreatePassword
-	usecase.UpdateUserProfile
 	usecase.CompleteOnboarding
 	usecase.GetOnboardingStep
 	usecase.ListUsageCategories
 	usecase.UpdateUserAttribute
+	usecase.UpdateUserLinks
+	usecase.UpdateUserProfile
 }
 
 //lint:ignore U1000 used by wire
@@ -33,6 +34,7 @@ var UseCaseSet = wire.NewSet(
 	usecase.NewGetOnboardingStep,
 	usecase.NewListUsageCategories,
 	usecase.NewUpdateUserAttribute,
+	usecase.NewUpdateUserLinks,
 	usecase.NewUpdateUserProfile,
 )
 

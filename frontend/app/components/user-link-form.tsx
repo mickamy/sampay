@@ -28,7 +28,7 @@ import {
   getUserLinkProviderTypeByURI,
 } from "~/models/user/user-link-provider-type-model";
 
-type mode = "post" | "put";
+type Mode = "post" | "put";
 
 export const userLinkSchema = z.object({
   intent: z.enum(["post_link", "put_link"]),
@@ -53,10 +53,11 @@ export const userLinkSchema = z.object({
   provider_type: z.enum(UserLinkProviderTypes as [string, ...string[]]),
   uri: z.string().url(),
   name: z.string().min(1).max(256),
+  imagePreviewURL: z.string().optional(),
 });
 
 interface Props extends HTMLAttributes<HTMLFormElement> {
-  mode: mode;
+  mode: Mode;
   link?: UserLink;
   onSubmitData: (data: z.infer<typeof userLinkSchema>) => void;
   onCancel?: () => void;
@@ -81,6 +82,7 @@ export default function UserLinkForm({
         provider_type: link?.providerType,
         uri: link?.uri,
         name: link?.displayAttribute.name,
+        imagePreviewURL: link?.qrCodeURL,
       },
     },
     error,
@@ -89,6 +91,11 @@ export default function UserLinkForm({
   const { imageURL, onImageChange: setPreviewImage } = useImagePreview(
     link?.qrCodeURL,
   );
+
+  const { setValue } = form;
+  useEffect(() => {
+    setValue("imagePreviewURL", imageURL);
+  }, [setValue, imageURL]);
 
   const onImageChange = useCallback(
     (file: File | null) => {
@@ -103,7 +110,7 @@ export default function UserLinkForm({
 
   const qrCode = form.watch("qrCode");
   const uri = form.watch("uri");
-  const { setValue, clearErrors, setError } = form;
+  const { clearErrors } = form;
   const { t } = useTranslation();
   useEffect(() => {
     let isCancelled = false;
@@ -163,7 +170,7 @@ export default function UserLinkForm({
                 </FormLabel>
                 <Label htmlFor="qrCode" className="flex justify-center">
                   <Avatar
-                    src={imageURL}
+                    src={form.watch("imagePreviewURL")}
                     className="rounded-none w-40 h-40"
                     imageClassName="rounded-none object-contain"
                   />
@@ -171,6 +178,7 @@ export default function UserLinkForm({
                 <Input
                   id="qrCode"
                   type="file"
+                  accept="image/*"
                   onChange={(e) => {
                     const files = (e.target as HTMLInputElement).files;
                     if (files && files.length > 0) {

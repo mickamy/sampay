@@ -40,6 +40,9 @@ type WriterTransactional interface {
 	// LockForUpdate is a method that locks the rows for update
 	LockForUpdate() WriterTransactional
 
+	// FullSaveAssociations is a method that returns a DB with FullSaveAssociations
+	FullSaveAssociations() WriterTransactional
+
 	// WriterDB is a method that returns a DB of Writer
 	WriterDB() *DB
 }
@@ -53,6 +56,10 @@ func (w Writer) WriterTransaction(ctx context.Context, f func(tx WriterTransacti
 func (w Writer) LockForUpdate() WriterTransactional {
 	withLock := w.Clauses(clause.Locking{Strength: "UPDATE"})
 	return &Writer{&DB{withLock}}
+}
+
+func (w Writer) FullSaveAssociations() WriterTransactional {
+	return &Writer{&DB{w.Session(&gorm.Session{FullSaveAssociations: true})}}
 }
 
 func (w Writer) WriterDB() *DB {
@@ -99,6 +106,10 @@ func (db ReadWriter) ReaderTransaction(ctx context.Context, f func(tx ReaderTran
 
 func (db ReadWriter) LockForUpdate() WriterTransactional {
 	return db.writer.LockForUpdate()
+}
+
+func (db ReadWriter) FullSaveAssociations() WriterTransactional {
+	return db.writer.FullSaveAssociations()
 }
 
 func (db ReadWriter) WriterDB() *DB {

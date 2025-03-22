@@ -23,22 +23,34 @@ export function useFormDataSubmit<T extends z.ZodTypeAny>(
   method: "post" | "put" | "patch" | "delete" = "post",
 ) {
   const submit = useSubmit();
+
   return useCallback(
-    (values: z.infer<typeof schema>) => {
+    (values: z.infer<T>) => {
       const formData = new FormData();
-      for (const [key, value] of Object.entries(values)) {
-        if (value instanceof File) {
-          formData.append(key, value);
-        } else if (value !== undefined) {
-          formData.append(key, String(value));
-        }
-      }
+      appendFormData(formData, values);
 
       submit(formData, {
         method,
         encType: "multipart/form-data",
-      }).then((res) => {});
+      });
     },
     [submit, method],
   );
+}
+
+function appendFormData(formData: FormData, data: unknown, parentKey = "") {
+  if (data instanceof File) {
+    formData.append(parentKey, data);
+  } else if (Array.isArray(data)) {
+    data.forEach((item, index) => {
+      appendFormData(formData, item, `${parentKey}[${index}]`);
+    });
+  } else if (data !== null && typeof data === "object") {
+    for (const [key, value] of Object.entries(data)) {
+      const formKey = parentKey ? `${parentKey}[${key}]` : key;
+      appendFormData(formData, value, formKey);
+    }
+  } else if (data !== undefined) {
+    formData.append(parentKey, String(data));
+  }
 }

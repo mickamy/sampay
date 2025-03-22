@@ -38,6 +38,19 @@ message UpdateUserProfileRequest {
 
 message UpdateUserProfileResponse {}
 
+message UpdateUserLinksRequest {
+  message Link {
+    optional string id = 1 [(buf.validate.field).string.len = 26];
+    string provider_type = 2 [(buf.validate.field).string.min_len = 1];
+    string uri = 3 [(buf.validate.field).string.uri = true];
+    string name = 4 [(buf.validate.field).string.max_len = 256];
+    optional common.v1.S3Object qr_code = 5;
+  }
+  repeated Link links = 1;
+}
+
+message UpdateUserLinksResponse {}
+
 message CompleteOnboardingRequest {}
 
 message CompleteOnboardingResponse {}
@@ -47,5 +60,6 @@ service OnboardingService {
   rpc CreatePassword(CreatePasswordRequest) returns (CreatePasswordResponse) {}
   rpc UpdateUserAttribute(UpdateUserAttributeRequest) returns (UpdateUserAttributeResponse) {}
   rpc UpdateUserProfile(UpdateUserProfileRequest) returns (UpdateUserProfileResponse) {}
+  rpc UpdateUserLinks(UpdateUserLinksRequest) returns (UpdateUserLinksResponse) {}
   rpc CompleteOnboarding(CompleteOnboardingRequest) returns (CompleteOnboardingResponse) {}
 }
