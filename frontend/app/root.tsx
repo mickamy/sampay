@@ -84,6 +84,10 @@ export const loader: LoaderFunction = async ({ request }) => {
   return data;
 };
 
+export let handle = {
+  i18n: "common",
+};
+
 export function Layout({ children }: { children: ReactNode }) {
   const data = useLoaderData<LoaderData | undefined>();
   const { i18n, ready } = useTranslation();
@@ -91,7 +95,7 @@ export function Layout({ children }: { children: ReactNode }) {
     if (i18n.language !== data?.locale) {
       i18n.changeLanguage(data?.locale);
     }
-  }, [data, i18n]);
+  }, [data?.locale, i18n]);
 
   if (!data?.basicAuthorized) {
     return null;
