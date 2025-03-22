@@ -35,7 +35,7 @@ jobs:
         id: set-env
         run: |
           if [ "${{ env.ENV }}" = "prod" ]; then
-            echo "DOMAIN=prod.sampay.link" >> $GITHUB_ENV
+            echo "DOMAIN=sampay.link" >> $GITHUB_ENV
             echo "SSH_PORT=${{ secrets.SSH_PORT_PROD }}" >> $GITHUB_ENV
             echo "SECURITY_GROUP_ID=${{ secrets.SECURITY_GROUP_ID_PROD }}" >> $GITHUB_ENV
             echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_ADMIN_PASSWORD_PROD }}" >> $GITHUB_ENV
@@ -72,6 +72,11 @@ jobs:
         run: |
           echo "${{ env.EC2_SSH_KEY }}" | base64 --decode > key.pem
           chmod 600 key.pem
+
+      - name: Add domain to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ env.SSH_PORT }} -H ${{ env.DOMAIN }} >> ~/.ssh/known_hosts
 
       - name: Set ansible vault password
         run: |
