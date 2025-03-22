@@ -3,8 +3,8 @@
   gather_facts: false
   become: true
   vars:
-    basic_user: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
-    basic_password: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
+    basic_user: "{{ lookup('env', 'BASIC_USER') }}"
+    basic_password: "{{ lookup('env', 'BASIC_PASSWORD') }}"
 
   tasks:
     - name: Create frontend systemd environment file

@@ -13,9 +13,6 @@ all:
       vars:
         env: staging
         domain_name: "stg.{{ base_domain_name }}"
-      hosts:
-        stg.sampay.link:
-          ansible_ssh_extra_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
     prod:
       vars:
         env: production
