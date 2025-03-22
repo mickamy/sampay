@@ -270,6 +270,7 @@ async function putLink({
       providerType: data.provider_type,
       uri: data.uri,
       name: data.name,
+      qrCode: imageObj,
     });
     const actionData: ActionData = {
       putLinkSuccess: true,
