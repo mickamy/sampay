@@ -86,18 +86,30 @@ jobs:
       - name: Execute ansible playbook
         run: |
           cd ./provisioning
-
+      
           export ANSIBLE_SSH_KEY="${GITHUB_WORKSPACE}/key.pem"
-          export ANSIBLE_SSH_PORT=${{ env.SSH_PORT }}
-          export AWS_REGION=${{ env.AWS_REGION }}
-          export CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}
-          export POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }}
-          export KVS_PASSWORD=${{ env.KVS_PASSWORD }}
-          export BASIC_USER=${{ secrets.BASIC_USER }}
-          export BASIC_PASSWORD=${{ secrets.BASIC_PASSWORD }}
-
+          export ANSIBLE_SSH_PORT="${SSH_PORT}"
+          export AWS_REGION="${AWS_REGION}"
+          export CERTBOT_EMAIL="${CERTBOT_EMAIL}"
+          export POSTGRES_PASSWORD="${POSTGRES_PASSWORD}"
+          export KVS_PASSWORD="${KVS_PASSWORD}"
+      
+          if [ "${ENV}" = "stg" ]; then
+          export BASIC_USER="${BASIC_USER}"
+          export BASIC_PASSWORD="${BASIC_PASSWORD}"
+          fi
+      
           ansible-playbook -i ./inventory/web.yaml playbook.yaml \
-          --vault-password-file ./secrets/ansible_vault_pass --limit ${{ env.ENV }}
+          --vault-password-file ./secrets/ansible_vault_pass --limit "${ENV}"
+        env:
+          SSH_PORT: ${{ env.SSH_PORT }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+          CERTBOT_EMAIL: ${{ secrets.CERTBOT_EMAIL }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          KVS_PASSWORD: ${{ env.KVS_PASSWORD }}
+          BASIC_USER: ${{ secrets.BASIC_USER }}
+          BASIC_PASSWORD: ${{ secrets.BASIC_PASSWORD }}
+          ENV: ${{ env.ENV }}
 
       - name: Set up Go
         uses: actions/setup-go@v5
