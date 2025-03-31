@@ -8,12 +8,12 @@ import (
 	"github.com/mickamy/go-sqs-worker/producer"
 
 	"mickamy.com/sampay/config"
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	messageModel "mickamy.com/sampay/internal/domain/message/model"
 	messageRepository "mickamy.com/sampay/internal/domain/message/repository"
 	notificationModel "mickamy.com/sampay/internal/domain/notification/model"
 	notificationRepository "mickamy.com/sampay/internal/domain/notification/repository"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
+	"mickamy.com/sampay/internal/infra/storage/database"
 	"mickamy.com/sampay/internal/job"
 	"mickamy.com/sampay/internal/lib/contexts"
 	"mickamy.com/sampay/internal/misc/i18n"

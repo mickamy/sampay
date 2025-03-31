@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	authRepository "mickamy.com/sampay/internal/domain/auth/repository"
+	"mickamy.com/sampay/internal/infra/storage/database"
 )
 
 var (

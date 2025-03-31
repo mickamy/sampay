@@ -8,10 +8,10 @@ import (
 	"gorm.io/gorm"
 
 	"mickamy.com/sampay/config"
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/domain/notification/fixture"
 	"mickamy.com/sampay/internal/domain/notification/model"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
+	"mickamy.com/sampay/internal/infra/storage/database"
 )
 
 func seedNotification(ctx context.Context, writer *database.Writer, env config.Env) error {

@@ -6,7 +6,6 @@ package di
 import (
 	"github.com/google/wire"
 
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/cli/infra/storage/kvs"
 	auth "mickamy.com/sampay/internal/domain/auth/di"
 	common "mickamy.com/sampay/internal/domain/common/di"
@@ -15,6 +14,7 @@ import (
 	oauth "mickamy.com/sampay/internal/domain/oauth/di"
 	registration "mickamy.com/sampay/internal/domain/registration/di"
 	user "mickamy.com/sampay/internal/domain/user/di"
+	"mickamy.com/sampay/internal/infra/storage/database"
 	"mickamy.com/sampay/internal/job"
 )
 

@@ -8,8 +8,8 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/domain/auth/model"
+	"mickamy.com/sampay/internal/infra/storage/database"
 )
 
 type AuthenticationKey struct {

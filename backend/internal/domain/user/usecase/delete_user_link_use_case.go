@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
+	"mickamy.com/sampay/internal/infra/storage/database"
 )
 
 type DeleteUserLinkInput struct {

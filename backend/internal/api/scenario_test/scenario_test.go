@@ -9,9 +9,9 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"mickamy.com/sampay/internal/api"
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/cli/infra/storage/kvs"
 	"mickamy.com/sampay/internal/di"
+	"mickamy.com/sampay/internal/infra/storage/database"
 	"mickamy.com/sampay/test/infra"
 )
 

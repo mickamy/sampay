@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/domain/common/model"
 	"mickamy.com/sampay/internal/domain/common/repository"
+	"mickamy.com/sampay/internal/infra/storage/database"
 )
 
 func TestS3Object_Upsert(t *testing.T) {
