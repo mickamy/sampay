@@ -14,7 +14,7 @@ import (
 	reflect "reflect"
 
 	gomock "go.uber.org/mock/gomock"
-	database "mickamy.com/sampay/internal/cli/infra/storage/database"
+	database "mickamy.com/sampay/internal/infra/storage/database"
 	model "mickamy.com/sampay/internal/domain/user/model"
 	repository "mickamy.com/sampay/internal/domain/user/repository"
 )

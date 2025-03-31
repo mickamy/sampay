@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	registrationModel "mickamy.com/sampay/internal/domain/registration/model"
 	registrationRepository "mickamy.com/sampay/internal/domain/registration/repository"
+	"mickamy.com/sampay/internal/infra/storage/database"
 )
 
 type ListUsageCategoriesInput struct {

@@ -7,13 +7,13 @@ import (
 	"path"
 
 	"mickamy.com/sampay/config"
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/di"
 	authFixture "mickamy.com/sampay/internal/domain/auth/fixture"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	commonModel "mickamy.com/sampay/internal/domain/common/model"
 	commonRepository "mickamy.com/sampay/internal/domain/common/repository"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
+	"mickamy.com/sampay/internal/infra/storage/database"
 	"mickamy.com/sampay/internal/lib/ptr"
 )
 

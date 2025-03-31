@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"mickamy.com/sampay/config"
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
+	"mickamy.com/sampay/internal/infra/storage/database"
 )
 
 func seedUserLinkProvider(ctx context.Context, writer *database.Writer, env config.Env) error {

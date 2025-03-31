@@ -9,11 +9,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	authFixture "mickamy.com/sampay/internal/domain/auth/fixture"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	"mickamy.com/sampay/internal/domain/auth/repository"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
+	"mickamy.com/sampay/internal/infra/storage/database"
 	"mickamy.com/sampay/internal/lib/slices"
 )
 

@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	authRepository "mickamy.com/sampay/internal/domain/auth/repository"
 	userModel "mickamy.com/sampay/internal/domain/user/model"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
+	"mickamy.com/sampay/internal/infra/storage/database"
 	"mickamy.com/sampay/internal/lib/jwt"
 )
 

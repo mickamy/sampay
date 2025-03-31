@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
+	"mickamy.com/sampay/internal/infra/storage/database"
 	"mickamy.com/sampay/internal/lib/contexts"
 )
 

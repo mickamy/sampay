@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	commonModel "mickamy.com/sampay/internal/domain/common/model"
 	commonRepository "mickamy.com/sampay/internal/domain/common/repository"
 	userRepository "mickamy.com/sampay/internal/domain/user/repository"
+	"mickamy.com/sampay/internal/infra/storage/database"
 )
 
 type UpdateUserLinkQRCodeInput struct {

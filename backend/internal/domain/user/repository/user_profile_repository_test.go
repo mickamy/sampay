@@ -8,11 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	commonFixture "mickamy.com/sampay/internal/domain/common/fixture"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/domain/user/model"
 	"mickamy.com/sampay/internal/domain/user/repository"
+	"mickamy.com/sampay/internal/infra/storage/database"
 	"mickamy.com/sampay/internal/lib/ptr"
 )
 

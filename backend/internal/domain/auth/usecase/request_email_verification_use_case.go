@@ -9,10 +9,10 @@ import (
 	"github.com/mickamy/go-sqs-worker/producer"
 
 	"mickamy.com/sampay/config"
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
 	authRepository "mickamy.com/sampay/internal/domain/auth/repository"
 	commonModel "mickamy.com/sampay/internal/domain/common/model"
+	"mickamy.com/sampay/internal/infra/storage/database"
 	"mickamy.com/sampay/internal/job"
 	"mickamy.com/sampay/internal/lib/contexts"
 	"mickamy.com/sampay/internal/misc/i18n"

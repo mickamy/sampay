@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"mickamy.com/sampay/config"
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	registrationModel "mickamy.com/sampay/internal/domain/registration/model"
 	registrationRepository "mickamy.com/sampay/internal/domain/registration/repository"
+	"mickamy.com/sampay/internal/infra/storage/database"
 )
 
 func seedUsageCategory(ctx context.Context, writer *database.Writer, env config.Env) error {

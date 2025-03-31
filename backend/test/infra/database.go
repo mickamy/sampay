@@ -22,7 +22,7 @@ import (
 
 	"mickamy.com/sampay/config"
 	"mickamy.com/sampay/internal/cli/db/seed"
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
+	"mickamy.com/sampay/internal/infra/storage/database"
 	"mickamy.com/sampay/internal/lib/logger"
 	"mickamy.com/sampay/internal/lib/slices"
 )

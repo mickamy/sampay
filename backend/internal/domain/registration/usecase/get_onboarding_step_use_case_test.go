@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/di"
 	authFixture "mickamy.com/sampay/internal/domain/auth/fixture"
 	authModel "mickamy.com/sampay/internal/domain/auth/model"
@@ -15,6 +14,7 @@ import (
 	"mickamy.com/sampay/internal/domain/registration/usecase"
 	userFixture "mickamy.com/sampay/internal/domain/user/fixture"
 	"mickamy.com/sampay/internal/domain/user/model"
+	"mickamy.com/sampay/internal/infra/storage/database"
 	"mickamy.com/sampay/internal/lib/contexts"
 )
 

@@ -4,8 +4,8 @@ import (
 	"github.com/google/wire"
 
 	"mickamy.com/sampay/config"
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
 	"mickamy.com/sampay/internal/cli/infra/storage/kvs"
+	"mickamy.com/sampay/internal/infra/storage/database"
 )
 
 type Infras struct {

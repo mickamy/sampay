@@ -5,7 +5,7 @@ import (
 	"sync"
 	"testing"
 
-	"mickamy.com/sampay/internal/cli/infra/storage/database"
+	"mickamy.com/sampay/internal/infra/storage/database"
 	"mickamy.com/sampay/test/infra"
 )
 
