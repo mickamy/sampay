@@ -57,7 +57,7 @@ func initActualDB(cfg config.DatabaseConfig) (DatabaseDSN, CleanupDB) {
 		for _, db := range []*orm.DB{writer, reader} {
 			err := db.Close()
 			if err != nil {
-				log.Fatalf("cloud not close DB connection: %s", err)
+				log.Fatalf("could not close DB connection: %s", err)
 			}
 		}
 	}
