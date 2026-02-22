@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file test/v1/test.proto.
  */
 export const file_test_v1_test: GenFile = /*@__PURE__*/
-  fileDesc("ChJ0ZXN0L3YxL3Rlc3QucHJvdG8SB3Rlc3QudjEiHgoLRWNob1JlcXVlc3QSDwoHbWVzc2FnZRgBIAEoCSIfCgxFY2hvUmVzcG9uc2USDwoHbWVzc2FnZRgBIAEoCSINCgtUZXN0UmVxdWVzdCIOCgxUZXN0UmVzcG9uc2UyQgoLRWNob1NlcnZpY2USMwoERWNobxIULnRlc3QudjEuRWNob1JlcXVlc3QaFS50ZXN0LnYxLkVjaG9SZXNwb25zZTJCCgtUZXN0U2VydmljZRIzCgRUZXN0EhQudGVzdC52MS5UZXN0UmVxdWVzdBoVLnRlc3QudjEuVGVzdFJlc3BvbnNlQoMBCgtjb20udGVzdC52MUIJVGVzdFByb3RvUAFaLGdpdGh1Yi5jb20vbWlja2FteS9zYW1wYXkvZ2VuL3Rlc3QvdjE7dGVzdHYxogIDVFhYqgIHVGVzdC5WMcoCB1Rlc3RcVjHiAhNUZXN0XFYxXEdQQk1ldGFkYXRh6gIIVGVzdDo6VjFiBnByb3RvMw");
+  fileDesc("ChJ0ZXN0L3YxL3Rlc3QucHJvdG8SB3Rlc3QudjEiHgoLRWNob1JlcXVlc3QSDwoHbWVzc2FnZRgBIAEoCSIfCgxFY2hvUmVzcG9uc2USDwoHbWVzc2FnZRgBIAEoCSINCgtUZXN0UmVxdWVzdCIOCgxUZXN0UmVzcG9uc2UiDgoMQ2hlY2tSZXF1ZXN0Ig8KDUNoZWNrUmVzcG9uc2UyQgoLRWNob1NlcnZpY2USMwoERWNobxIULnRlc3QudjEuRWNob1JlcXVlc3QaFS50ZXN0LnYxLkVjaG9SZXNwb25zZTJCCgtUZXN0U2VydmljZRIzCgRUZXN0EhQudGVzdC52MS5UZXN0UmVxdWVzdBoVLnRlc3QudjEuVGVzdFJlc3BvbnNlMkcKDUhlYWx0aFNlcnZpY2USNgoFQ2hlY2sSFS50ZXN0LnYxLkNoZWNrUmVxdWVzdBoWLnRlc3QudjEuQ2hlY2tSZXNwb25zZUKDAQoLY29tLnRlc3QudjFCCVRlc3RQcm90b1ABWixnaXRodWIuY29tL21pY2thbXkvc2FtcGF5L2dlbi90ZXN0L3YxO3Rlc3R2MaICA1RYWKoCB1Rlc3QuVjHKAgdUZXN0XFYx4gITVGVzdFxWMVxHUEJNZXRhZGF0YeoCCFRlc3Q6OlYxYgZwcm90bzM");
 
 /**
  * @generated from message test.v1.EchoRequest
@@ -73,6 +73,32 @@ export const TestResponseSchema: GenMessage<TestResponse> = /*@__PURE__*/
   messageDesc(file_test_v1_test, 3);
 
 /**
+ * @generated from message test.v1.CheckRequest
+ */
+export type CheckRequest = Message<"test.v1.CheckRequest"> & {
+};
+
+/**
+ * Describes the message test.v1.CheckRequest.
+ * Use `create(CheckRequestSchema)` to create a new message.
+ */
+export const CheckRequestSchema: GenMessage<CheckRequest> = /*@__PURE__*/
+  messageDesc(file_test_v1_test, 4);
+
+/**
+ * @generated from message test.v1.CheckResponse
+ */
+export type CheckResponse = Message<"test.v1.CheckResponse"> & {
+};
+
+/**
+ * Describes the message test.v1.CheckResponse.
+ * Use `create(CheckResponseSchema)` to create a new message.
+ */
+export const CheckResponseSchema: GenMessage<CheckResponse> = /*@__PURE__*/
+  messageDesc(file_test_v1_test, 5);
+
+/**
  * @generated from service test.v1.EchoService
  */
 export const EchoService: GenService<{
@@ -101,4 +127,19 @@ export const TestService: GenService<{
   },
 }> = /*@__PURE__*/
   serviceDesc(file_test_v1_test, 1);
+
+/**
+ * @generated from service test.v1.HealthService
+ */
+export const HealthService: GenService<{
+  /**
+   * @generated from rpc test.v1.HealthService.Check
+   */
+  check: {
+    methodKind: "unary";
+    input: typeof CheckRequestSchema;
+    output: typeof CheckResponseSchema;
+  },
+}> = /*@__PURE__*/
+  serviceDesc(file_test_v1_test, 2);
 
