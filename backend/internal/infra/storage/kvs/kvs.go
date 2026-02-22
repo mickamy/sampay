@@ -14,25 +14,19 @@ import (
 )
 
 var (
-	mu  sync.Mutex
-	kvs *KVS
+	kvsOnce    sync.Once
+	kvsInst    *KVS
+	kvsOpenErr error //nolint:errname // not a sentinel error; used for sync.Once result caching
 )
 
 func Open(cfg config.KVSConfig, opts ...Option) (*KVS, error) {
-	mu.Lock()
-	defer mu.Unlock()
-
-	if kvs != nil {
-		return kvs, nil
-	}
-
-	ins, err := New(cfg, opts...)
-	if err != nil {
-		return nil, fmt.Errorf("kvs: failed to open KVS: %w", err)
-	}
-
-	kvs = ins
-	return kvs, nil
+	kvsOnce.Do(func() {
+		kvsInst, kvsOpenErr = New(cfg, opts...)
+		if kvsOpenErr != nil {
+			kvsOpenErr = fmt.Errorf("kvs: failed to open KVS: %w", kvsOpenErr)
+		}
+	})
+	return kvsInst, kvsOpenErr
 }
 
 // KVS is a wrapper of valkey.Client
@@ -223,9 +217,6 @@ func Memoize[T Storable, U any](
 
 func (c *KVS) Set(ctx context.Context, key string, value string, exp time.Duration) error {
 	if err := c.client.Do(ctx, c.client.B().Set().Key(key).Value(value).Px(exp).Build()).Error(); err != nil {
-		if valkey.IsValkeyNil(err) {
-			return ErrKeyNotFound
-		}
 		return fmt.Errorf("failed to set key %s: %w", key, err)
 	}
 	return nil
@@ -233,9 +224,6 @@ func (c *KVS) Set(ctx context.Context, key string, value string, exp time.Durati
 
 func (c *KVS) Del(ctx context.Context, keys ...string) error {
 	if err := c.client.Do(ctx, c.client.B().Del().Key(keys...).Build()).Error(); err != nil {
-		if valkey.IsValkeyNil(err) {
-			return ErrKeyNotFound
-		}
 		return fmt.Errorf("failed to delete keys: %w", err)
 	}
 	return nil

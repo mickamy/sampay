@@ -28,5 +28,4 @@ service HealthService {
 
 message CheckRequest {}
 
-message CheckResponse {
-}
+message CheckResponse {}

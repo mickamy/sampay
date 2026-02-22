@@ -12,12 +12,14 @@ import (
 type Infra struct {
 	_        context.Context  `inject:"param"` //nolint:containedctx // required by injector
 	_        config.KVSConfig `inject:"provider:config.KVS"`
-	DB       *database.DB     `inject:"provider:di.ProvideDB"`
+	DB       *database.DB     `inject:"provider:di.ProvideDB"` // shares connection with WriterDB; do not close separately
 	WriterDB *database.Writer `inject:""`
 	ReaderDB *database.Reader `inject:""`
 	KVS      *kvs.KVS         `inject:"provider:di.ProvideKVS"`
 }
 
+// Close releases all infrastructure resources.
+// DB is not closed separately because it shares the underlying connection with WriterDB.
 func (i *Infra) Close() error {
 	i.KVS.Close()
 	if err := i.WriterDB.Close(); err != nil {

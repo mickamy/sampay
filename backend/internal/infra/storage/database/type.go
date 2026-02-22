@@ -63,6 +63,6 @@ type Reader struct {
 }
 
 type ReadWriter struct {
-	*Reader
-	*Writer
+	Reader *Reader
+	Writer *Writer
 }

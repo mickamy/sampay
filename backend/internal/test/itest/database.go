@@ -67,10 +67,11 @@ func OpenTXDB(t *testing.T, dsn string) *database.DB {
 	t.Helper()
 
 	baseDriver := stdlib.GetDefaultDriver()
-	sql.Register(t.Name(), baseDriver)
+	baseDriverName := t.Name() + "-" + uuid.NewString()
+	sql.Register(baseDriverName, baseDriver)
 
 	drvName := uuid.NewString()
-	txdb.Register(drvName, t.Name(), dsn)
+	txdb.Register(drvName, baseDriverName, dsn)
 
 	sqlDB, err := sql.Open(drvName, dsn)
 	if err != nil {

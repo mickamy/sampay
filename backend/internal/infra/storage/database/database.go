@@ -21,10 +21,12 @@ const (
 )
 
 var (
-	writerMu sync.Mutex
-	readerMu sync.Mutex
-	writerDB *DB
-	readerDB *DB
+	writerOnce    sync.Once
+	readerOnce    sync.Once
+	writerDB      *DB
+	readerDB      *DB
+	writerOpenErr error //nolint:errname // not a sentinel error; used for sync.Once result caching
+	readerOpenErr error //nolint:errname // not a sentinel error; used for sync.Once result caching
 )
 
 func Open(
@@ -35,44 +37,16 @@ func Open(
 ) (*DB, error) {
 	switch role {
 	case RoleWriter:
-		if writerDB != nil {
-			return writerDB, nil
-		}
-
-		writerMu.Lock()
-		defer writerMu.Unlock()
-
-		if writerDB != nil {
-			return writerDB, nil
-		}
-
-		instance, err := open(ctx, cfg, provider)
-		if err != nil {
-			return nil, err
-		}
-
-		writerDB = instance
-		return writerDB, nil
+		writerOnce.Do(func() {
+			writerDB, writerOpenErr = open(ctx, cfg, provider)
+		})
+		return writerDB, writerOpenErr
 
 	case RoleReader:
-		if readerDB != nil {
-			return readerDB, nil
-		}
-
-		readerMu.Lock()
-		defer readerMu.Unlock()
-
-		if readerDB != nil {
-			return readerDB, nil
-		}
-
-		instance, err := open(ctx, cfg, provider)
-		if err != nil {
-			return nil, err
-		}
-
-		readerDB = instance
-		return readerDB, nil
+		readerOnce.Do(func() {
+			readerDB, readerOpenErr = open(ctx, cfg, provider)
+		})
+		return readerDB, readerOpenErr
 	}
 
 	return nil, fmt.Errorf("unexpected connection type: %s", role)
