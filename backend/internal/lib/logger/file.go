@@ -26,8 +26,8 @@ func logFilePath(env config.Env) string {
 	case config.EnvDevelopment, config.EnvTest:
 		return path.Join(os.TempDir(), filename)
 	case config.EnvStaging, config.EnvProduction:
-		return path.Join("var", "log", "backend-template", filename)
+		return path.Join("var", "log", "sampay", filename)
 	default:
-		return path.Join("var", "log", "backend-template", filename)
+		return path.Join("var", "log", "sampay", filename)
 	}
 }
