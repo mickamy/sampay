@@ -26,16 +26,16 @@ func (s EscapableString) Escape() string {
 }
 
 type DatabaseConfig struct {
-	Host       string          `env:"DB_HOST" validate:"required"`
-	Port       int             `env:"DB_PORT" validate:"required"`
-	Writer     EscapableString `env:"DB_WRITER_USER" validate:"required"`
+	Host       string          `env:"DB_HOST"            validate:"required"`
+	Port       int             `env:"DB_PORT"            validate:"required"`
+	Writer     EscapableString `env:"DB_WRITER_USER"     validate:"required"`
 	WriterPass EscapableString `env:"DB_WRITER_PASSWORD" validate:"required"`
-	Reader     EscapableString `env:"DB_READER_USER" validate:"required"`
+	Reader     EscapableString `env:"DB_READER_USER"     validate:"required"`
 	ReaderPass EscapableString `env:"DB_READER_PASSWORD" validate:"required"`
-	Name       EscapableString `env:"DB_NAME" validate:"required"`
-	TimeZone   string          `env:"DB_TIMEZONE" validate:"required"`
-	AdminUser  EscapableString `env:"DB_ADMIN_USER" envDefault:"postgres" validate:"required"`
-	AdminPass  EscapableString `env:"DB_ADMIN_PASSWORD" validate:"required"`
+	Name       EscapableString `env:"DB_NAME"            validate:"required"`
+	TimeZone   string          `env:"DB_TIMEZONE"        validate:"required"`
+	AdminUser  EscapableString `env:"DB_ADMIN_USER"      envDefault:"postgres" validate:"required"`
+	AdminPass  EscapableString `env:"DB_ADMIN_PASSWORD"  validate:"required"`
 }
 
 func (c DatabaseConfig) ReaderURL() string {

@@ -25,7 +25,7 @@ func init() {
 	})
 }
 
-func Struct(ctx context.Context, s interface{}) ValidationErrorMessages {
+func Struct(ctx context.Context, s any) ValidationErrorMessages {
 	if err := validator.StructCtx(ctx, s); err != nil {
 		errs := lib.ValidationErrors{}
 		if errors.As(err, &errs) {

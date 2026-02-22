@@ -11,11 +11,11 @@ import (
 )
 
 type OAuthConfig struct {
-	GoogleClientID     string `env:"GOOGLE_CLIENT_ID" validate:"required"`
+	GoogleClientID     string `env:"GOOGLE_CLIENT_ID"     validate:"required"`
 	GoogleClientSecret string `env:"GOOGLE_CLIENT_SECRET" validate:"required"`
-	LINEChannelID      string `env:"LINE_CHANNEL_ID" validate:"required"`
-	LINEChannelSecret  string `env:"LINE_CHANNEL_SECRET" validate:"required"`
-	RedirectURL        string `env:"OAUTH_REDIRECT_URL" validate:"required"`
+	LINEChannelID      string `env:"LINE_CHANNEL_ID"      validate:"required"`
+	LINEChannelSecret  string `env:"LINE_CHANNEL_SECRET"  validate:"required"`
+	RedirectURL        string `env:"OAUTH_REDIRECT_URL"   validate:"required"`
 }
 
 var (

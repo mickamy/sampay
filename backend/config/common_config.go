@@ -68,8 +68,8 @@ const (
 )
 
 type CommonConfig struct {
-	Env        Env      `env:"ENV" validate:"required,oneof=development test staging production"`
-	LogLevel   LogLevel `env:"LOG_LEVEL"   envDefault:"debug" validate:"required,oneof=debug info warn error"`
+	Env        Env      `env:"ENV"         validate:"required,oneof=development test staging production"`
+	LogLevel   LogLevel `env:"LOG_LEVEL"   validate:"required,oneof=debug info warn error" envDefault:"debug"` //nolint:lll // tagalign pads for envDefault alignment
 	ModuleRoot string   `env:"MODULE_ROOT" validate:"required"`
 }
 
