@@ -84,7 +84,7 @@ jobs:
         run: ./localstack/init.sh
 
       - name: Test
-        run: make test
+        run: make -C ./backend test
 
   frontend:
     runs-on: ubuntu-latest
