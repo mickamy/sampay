@@ -11,6 +11,13 @@ import (
 )
 
 func main() {
+	if err := run(); err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
 	envs := os.Getenv("SEED_ENV")
 	if envs == "" {
 		envs = config.Common().Env.String()
@@ -25,15 +32,14 @@ func main() {
 	ctx := context.Background()
 	db, err := database.Open(ctx, cfg, config.Database().WriterProvider(), database.RoleWriter)
 	if err != nil {
-		fmt.Printf("failed to connect to database: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to connect to database: %w", err)
 	}
 	defer func() { _ = db.Close() }()
 
 	if err := seed.Do(ctx, &database.Writer{DB: db}, env); err != nil {
-		fmt.Printf("failed to seed data: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to seed data: %w", err)
 	}
 
 	fmt.Println("Done.")
+	return nil
 }

@@ -65,7 +65,7 @@ func forceDrop(ctx context.Context) error {
 	}
 	defer func() { _ = db.Close() }()
 
-	query := fmt.Sprintf("DROP DATABASE IF EXISTS %s WITH (FORCE)", cfg.Name.Escape())
+	query := fmt.Sprintf("DROP DATABASE IF EXISTS %s WITH (FORCE)", pq.QuoteIdentifier(string(cfg.Name)))
 	_, err = db.ExecContext(ctx, query)
 	if err != nil {
 		return fmt.Errorf("failed to drop database: %w", err)
