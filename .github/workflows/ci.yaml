@@ -75,6 +75,7 @@ jobs:
           fi
 
       - name: Inject .env
+        working-directory: ./backend
         run: envsubst < .env.sample > .env
 
       - name: Start LocalStack
