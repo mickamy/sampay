@@ -21,3 +21,11 @@ message TestResponse {}
 service TestService {
   rpc Test(TestRequest) returns (TestResponse);
 }
+
+service HealthService {
+  rpc Check(CheckRequest) returns (CheckResponse);
+}
+
+message CheckRequest {}
+
+message CheckResponse {}

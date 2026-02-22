@@ -36,6 +36,7 @@ ci: lint test ## Run linting and tests for CI pipelines
 generate: ## Run go generate for all packages
 	find . \( -name '*_gen.go' -o -name '*.gen.go' \) -delete
 	go generate ./...
+	go tool injector generate --must ./...
 
 help: ## Display a list of available Makefile targets with their descriptions
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \

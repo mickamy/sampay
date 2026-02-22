@@ -181,6 +181,78 @@ func (*TestResponse) Descriptor() ([]byte, []int) {
 	return file_test_v1_test_proto_rawDescGZIP(), []int{3}
 }
 
+type CheckRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CheckRequest) Reset() {
+	*x = CheckRequest{}
+	mi := &file_test_v1_test_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CheckRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CheckRequest) ProtoMessage() {}
+
+func (x *CheckRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_test_v1_test_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CheckRequest.ProtoReflect.Descriptor instead.
+func (*CheckRequest) Descriptor() ([]byte, []int) {
+	return file_test_v1_test_proto_rawDescGZIP(), []int{4}
+}
+
+type CheckResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CheckResponse) Reset() {
+	*x = CheckResponse{}
+	mi := &file_test_v1_test_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CheckResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CheckResponse) ProtoMessage() {}
+
+func (x *CheckResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_test_v1_test_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CheckResponse.ProtoReflect.Descriptor instead.
+func (*CheckResponse) Descriptor() ([]byte, []int) {
+	return file_test_v1_test_proto_rawDescGZIP(), []int{5}
+}
+
 var File_test_v1_test_proto protoreflect.FileDescriptor
 
 const file_test_v1_test_proto_rawDesc = "" +
@@ -191,11 +263,15 @@ const file_test_v1_test_proto_rawDesc = "" +
 	"\fEchoResponse\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\"\r\n" +
 	"\vTestRequest\"\x0e\n" +
-	"\fTestResponse2B\n" +
+	"\fTestResponse\"\x0e\n" +
+	"\fCheckRequest\"\x0f\n" +
+	"\rCheckResponse2B\n" +
 	"\vEchoService\x123\n" +
 	"\x04Echo\x12\x14.test.v1.EchoRequest\x1a\x15.test.v1.EchoResponse2B\n" +
 	"\vTestService\x123\n" +
-	"\x04Test\x12\x14.test.v1.TestRequest\x1a\x15.test.v1.TestResponseB\x83\x01\n" +
+	"\x04Test\x12\x14.test.v1.TestRequest\x1a\x15.test.v1.TestResponse2G\n" +
+	"\rHealthService\x126\n" +
+	"\x05Check\x12\x15.test.v1.CheckRequest\x1a\x16.test.v1.CheckResponseB\x83\x01\n" +
 	"\vcom.test.v1B\tTestProtoP\x01Z,github.com/mickamy/sampay/gen/test/v1;testv1\xa2\x02\x03TXX\xaa\x02\aTest.V1\xca\x02\aTest\\V1\xe2\x02\x13Test\\V1\\GPBMetadata\xea\x02\bTest::V1b\x06proto3"
 
 var (
@@ -210,20 +286,24 @@ func file_test_v1_test_proto_rawDescGZIP() []byte {
 	return file_test_v1_test_proto_rawDescData
 }
 
-var file_test_v1_test_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_test_v1_test_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_test_v1_test_proto_goTypes = []any{
-	(*EchoRequest)(nil),  // 0: test.v1.EchoRequest
-	(*EchoResponse)(nil), // 1: test.v1.EchoResponse
-	(*TestRequest)(nil),  // 2: test.v1.TestRequest
-	(*TestResponse)(nil), // 3: test.v1.TestResponse
+	(*EchoRequest)(nil),   // 0: test.v1.EchoRequest
+	(*EchoResponse)(nil),  // 1: test.v1.EchoResponse
+	(*TestRequest)(nil),   // 2: test.v1.TestRequest
+	(*TestResponse)(nil),  // 3: test.v1.TestResponse
+	(*CheckRequest)(nil),  // 4: test.v1.CheckRequest
+	(*CheckResponse)(nil), // 5: test.v1.CheckResponse
 }
 var file_test_v1_test_proto_depIdxs = []int32{
 	0, // 0: test.v1.EchoService.Echo:input_type -> test.v1.EchoRequest
 	2, // 1: test.v1.TestService.Test:input_type -> test.v1.TestRequest
-	1, // 2: test.v1.EchoService.Echo:output_type -> test.v1.EchoResponse
-	3, // 3: test.v1.TestService.Test:output_type -> test.v1.TestResponse
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	4, // 2: test.v1.HealthService.Check:input_type -> test.v1.CheckRequest
+	1, // 3: test.v1.EchoService.Echo:output_type -> test.v1.EchoResponse
+	3, // 4: test.v1.TestService.Test:output_type -> test.v1.TestResponse
+	5, // 5: test.v1.HealthService.Check:output_type -> test.v1.CheckResponse
+	3, // [3:6] is the sub-list for method output_type
+	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -240,9 +320,9 @@ func file_test_v1_test_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_test_v1_test_proto_rawDesc), len(file_test_v1_test_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
-			NumServices:   2,
+			NumServices:   3,
 		},
 		GoTypes:           file_test_v1_test_proto_goTypes,
 		DependencyIndexes: file_test_v1_test_proto_depIdxs,

@@ -2,12 +2,16 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/mickamy/sampay/internal/api"
+	"github.com/mickamy/sampay/internal/di"
 )
 
 func main() {
@@ -22,27 +26,34 @@ func run(ctx context.Context) error {
 	ctx, stop := signal.NotifyContext(ctx, syscall.SIGTERM, syscall.SIGINT)
 	defer stop()
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintln(w, "ok")
-	})
-
-	srv := &http.Server{
-		Addr:              ":8080",
-		Handler:           mux,
-		ReadHeaderTimeout: 10 * time.Second,
+	infra, err := di.NewInfra(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to initialize infrastructure: %w", err)
 	}
 
+	srv := api.NewServer(infra)
+	errCh := make(chan error, 1)
 	go func() {
-		<-ctx.Done()
-		//nolint:contextcheck // intentionally using background context for graceful shutdown
-		_ = srv.Shutdown(context.Background())
+		errCh <- srv.ListenAndServe()
 	}()
 
-	fmt.Println("listening on :8080")
-	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
-		return fmt.Errorf("listen: %w", err)
+	<-ctx.Done()
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	//nolint:contextcheck // parent ctx is already canceled
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		fmt.Fprintf(os.Stderr, "failed to shutdown gracefully: %s\n", err)
 	}
+
+	if err := <-errCh; err != nil && !errors.Is(err, http.ErrServerClosed) {
+		return fmt.Errorf("server error: %w", err)
+	}
+
+	if err := infra.Close(); err != nil {
+		return fmt.Errorf("failed to close infrastructure: %w", err)
+	}
+
 	return nil
 }
