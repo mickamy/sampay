@@ -75,7 +75,7 @@ jobs:
           fi
 
       - name: Inject .env
-        run: envsubst < .env.example > .env
+        run: envsubst < .env.sample > .env
 
       - name: Start LocalStack
         uses: LocalStack/setup-localstack@v0.2.5
