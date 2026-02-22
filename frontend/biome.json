@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/gen", "!**/build", "!public/**", "!**/*.ico"],
+    "includes": ["**", "!**/gen", "!**/build", "!public", "!**/*.ico"],
     "ignoreUnknown": false
   },
   "formatter": {
