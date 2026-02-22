@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package auth.v1;
+
+// SessionService handles session management.
+service SessionService {
+  // RefreshToken exchanges a refresh token for a new access token.
+  // Both tokens are read from / written to HttpOnly cookies.
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+
+  // Logout invalidates the current session.
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+}
+
+message RefreshTokenRequest {}
+
+message RefreshTokenResponse {}
+
+message LogoutRequest {}
+
+message LogoutResponse {}
