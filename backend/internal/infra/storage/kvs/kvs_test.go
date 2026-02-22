@@ -3,6 +3,7 @@ package kvs_test
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -56,13 +57,19 @@ type testData struct {
 type jsonMarshaler struct{}
 
 func (jsonMarshaler) Marshal(v testData) ([]byte, error) {
-	return json.Marshal(v)
+	b, err := json.Marshal(v)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal testData: %w", err)
+	}
+	return b, nil
 }
 
 func (jsonMarshaler) Unmarshal(b []byte) (testData, error) {
 	var v testData
-	err := json.Unmarshal(b, &v)
-	return v, err
+	if err := json.Unmarshal(b, &v); err != nil {
+		return v, fmt.Errorf("failed to unmarshal testData: %w", err)
+	}
+	return v, nil
 }
 
 func TestMemoize_CacheMiss(t *testing.T) {
@@ -121,7 +128,7 @@ func TestMemoize_ExecError(t *testing.T) {
 	}
 
 	_, err := kvs.Memoize(ctx, k, "memo3", time.Minute, exec, jsonMarshaler{})
-	assert.ErrorIs(t, err, execErr)
+	require.ErrorIs(t, err, execErr)
 
 	// verify value is not stored in Valkey
 	exists, err := k.Exists(ctx, "memo3")

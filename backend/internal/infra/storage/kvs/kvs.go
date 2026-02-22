@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"sync"
 	"time"
 
@@ -83,7 +84,7 @@ func storableString[S Storable](v S) string {
 	case []byte:
 		return string(val)
 	case int64:
-		return fmt.Sprintf("%d", val)
+		return strconv.FormatInt(val, 10)
 	case float64:
 		return fmt.Sprintf("%f", val)
 	case bool:
@@ -105,49 +106,72 @@ func Get[T Storable](ctx context.Context, kvs *KVS, key string) (T, error) {
 		if valkey.IsValkeyNil(err) {
 			return zero, ErrKeyNotFound
 		}
-		return zero, err
+		return zero, fmt.Errorf("failed to get key: %w", err)
 	}
 
 	switch any(zero).(type) {
 	case string:
 		s, err := res.ToString()
-		return any(s).(T), err
+		if err != nil {
+			return zero, fmt.Errorf("failed to convert to string: %w", err)
+		}
+		v, ok := any(s).(T)
+		if !ok {
+			return zero, fmt.Errorf("unexpected type assertion failure: string to %T", zero)
+		}
+		return v, nil
 
 	case []byte:
 		b, err := res.AsBytes()
 		if err != nil {
-			return zero, err
+			return zero, fmt.Errorf("failed to convert to bytes: %w", err)
 		}
-		return any(b).(T), err
+		v, ok := any(b).(T)
+		if !ok {
+			return zero, fmt.Errorf("unexpected type assertion failure: bytes to %T", zero)
+		}
+		return v, nil
 
 	case int64:
 		i, err := res.ToInt64()
 		if err != nil {
-			return zero, err
+			return zero, fmt.Errorf("failed to convert to int64: %w", err)
 		}
-		return any(i).(T), nil
+		v, ok := any(i).(T)
+		if !ok {
+			return zero, fmt.Errorf("unexpected type assertion failure: int64 to %T", zero)
+		}
+		return v, nil
 
 	case float64:
 		f, err := res.ToFloat64()
 		if err != nil {
-			return zero, err
+			return zero, fmt.Errorf("failed to convert to float64: %w", err)
 		}
-		return any(f).(T), nil
+		v, ok := any(f).(T)
+		if !ok {
+			return zero, fmt.Errorf("unexpected type assertion failure: float64 to %T", zero)
+		}
+		return v, nil
 
 	case bool:
-		v, err := res.ToBool()
+		b, err := res.ToBool()
 		if err != nil {
-			return zero, err
+			return zero, fmt.Errorf("failed to convert to bool: %w", err)
 		}
-		return any(v).(T), nil
+		v, ok := any(b).(T)
+		if !ok {
+			return zero, fmt.Errorf("unexpected type assertion failure: bool to %T", zero)
+		}
+		return v, nil
 	}
 
 	return zero, fmt.Errorf("unsupported type: %T", zero)
 }
 
 type Marshaler[T any, U Storable] interface {
-	Marshal(T) (U, error)
-	Unmarshal(U) (T, error)
+	Marshal(v T) (U, error)
+	Unmarshal(data U) (T, error)
 }
 
 func Memoize[T Storable, U any](
@@ -171,7 +195,8 @@ func Memoize[T Storable, U any](
 			return res, errors.Join(ErrFailedToMarshalOnMemoize, fmt.Errorf("failed to marshal %T: %w", res, err))
 		}
 
-		if err := kvs.client.Do(ctx, kvs.client.B().Set().Key(key).Value(storableString(storable)).Px(ttl).Build()).Error(); err != nil {
+		cmd := kvs.client.B().Set().Key(key).Value(storableString(storable)).Px(ttl).Build()
+		if err := kvs.client.Do(ctx, cmd).Error(); err != nil {
 			return res, errors.Join(ErrFailedToSetOnMemoize, fmt.Errorf("failed to set key %s: %w", key, err))
 		}
 
@@ -185,7 +210,10 @@ func Memoize[T Storable, U any](
 	if err == nil {
 		res, err := marshaler.Unmarshal(cached)
 		if err != nil {
-			return zero, errors.Join(ErrFailedToUnmarshalOnMemoize, fmt.Errorf("failed to unmarshal cached value for key %s: %w", key, err))
+			return zero, errors.Join(
+				ErrFailedToUnmarshalOnMemoize,
+				fmt.Errorf("failed to unmarshal cached value for key %s: %w", key, err),
+			)
 		}
 		return res, nil
 	}

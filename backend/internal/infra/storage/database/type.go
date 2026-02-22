@@ -39,7 +39,7 @@ func (db *DB) Transaction(ctx context.Context, fn func(tx *DB) error) error {
 	if err := db.conn.Transaction(ctx, func(tx *orm.Tx) error {
 		return fn(&DB{Querier: tx, conn: db.conn})
 	}); err != nil {
-		return err
+		return err //nolint:wrapcheck // trivial to wrap error here
 	}
 	return nil
 }
