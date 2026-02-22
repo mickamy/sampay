@@ -2,8 +2,10 @@ package interceptor
 
 import (
 	"connectrpc.com/connect"
+
+	"github.com/mickamy/sampay/internal/di"
 )
 
-func NewInterceptors() []connect.Interceptor {
+func NewInterceptors(infra *di.Infra) []connect.Interceptor {
 	return []connect.Interceptor{}
 }

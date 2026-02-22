@@ -12,16 +12,17 @@ import (
 	"github.com/mickamy/sampay/config"
 	"github.com/mickamy/sampay/internal/api/interceptor"
 	"github.com/mickamy/sampay/internal/api/router"
+	"github.com/mickamy/sampay/internal/di"
 	"github.com/mickamy/sampay/internal/domain/test"
 )
 
-func NewServer() http.Server {
-	interceptors := connect.WithInterceptors(interceptor.NewInterceptors()...)
+func NewServer(infra *di.Infra) http.Server {
+	interceptors := connect.WithInterceptors(interceptor.NewInterceptors(infra)...)
 
 	api := http.NewServeMux()
 
 	for _, route := range []router.Route{test.Route} {
-		route(api, interceptors)
+		route(api, infra, interceptors)
 	}
 
 	mux := http.NewServeMux()
