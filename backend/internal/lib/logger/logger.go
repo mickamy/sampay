@@ -53,7 +53,6 @@ func internalHandle(ctx context.Context, level slog.Level, msg string, args ...a
 	source := f + ":" + strconv.Itoa(l)
 
 	source = strings.TrimPrefix(source, config.Common().ModuleRoot+"/")
-	args = append(args, slog.String("source", source))
 
 	handle(ctx, level, msg, source, args...)
 }
