@@ -59,7 +59,7 @@ func ProvideReaderDB(
 	commonCfg config.CommonConfig,
 	databaseCfg config.DatabaseConfig,
 ) (*database.Reader, error) {
-	db, err := database.Open(ctx, commonCfg, databaseCfg.WriterProvider(), database.RoleReader)
+	db, err := database.Open(ctx, commonCfg, databaseCfg.ReaderProvider(), database.RoleReader)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open reader db: %w", err)
 	}
