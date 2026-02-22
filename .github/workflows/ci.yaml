@@ -78,7 +78,7 @@ jobs:
         run: envsubst < .env.example > .env
 
       - name: Start LocalStack
-        uses: LocalStack/setup-localstack@v0.2.3
+        uses: LocalStack/setup-localstack@v0.2.5
 
       - name: Execute localstack init script
         run: ./localstack/init.sh
