@@ -84,6 +84,8 @@ jobs:
 
       - name: Test
         run: make -C ./backend test
+        env:
+          MODULE_ROOT: ${{ github.workspace }}/backend
 
   frontend:
     runs-on: ubuntu-latest
