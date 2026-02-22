@@ -1,0 +1,10 @@
+event:
+  use_case:
+    error:
+      not_found: Event not found.
+      forbidden: You do not have permission to access this event.
+
+common:
+  response:
+    error:
+      internal: We are currently experiencing high traffic. Please try again later.

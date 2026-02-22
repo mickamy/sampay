@@ -1,0 +1,23 @@
+auth:
+  handler:
+    refresh_token:
+      token_not_set: リフレッシュトークンが設定されていません。
+    logout:
+      access_token_not_set: アクセストークンが設定されていません。
+      refresh_token_not_set: リフレッシュトークンが設定されていません。
+  mapper:
+    error:
+      unknown_oauth_provider: 不明な OAuth プロバイダーです。
+  use_case:
+    error:
+      session_not_set: セッションがセットされていません。
+      token_invalid: 無効なトークンです。
+      session_not_found: 無効なセッションです。
+      oauth_callback_failed: OAuthコールバックに失敗しました。
+      unsupported_oauth_provider: サポートされていない OAuth プロバイダーです。
+      logout_token_mismatch: ログアウトトークンが一致しません。
+
+common:
+  response:
+    error:
+      internal: ただいまアクセスが集中しております。しばらくしてから再度お試しください。
