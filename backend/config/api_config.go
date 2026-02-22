@@ -11,7 +11,7 @@ import (
 )
 
 type APIConfig struct {
-	Port int `env:"PORT" envDefault:"8080" validate:"required"`
+	Port int `env:"PORT" validate:"required" envDefault:"8080"`
 }
 
 var (

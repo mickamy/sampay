@@ -33,7 +33,7 @@ type DatabaseConfig struct {
 	Reader     EscapableString `env:"DB_READER_USER"     validate:"required"`
 	ReaderPass EscapableString `env:"DB_READER_PASSWORD" validate:"required"`
 	Name       EscapableString `env:"DB_NAME"            validate:"required"`
-	TimeZone   string          `env:"DB_TIMEZONE"        validate:"required"`
+	TimeZone   EscapableString `env:"DB_TIMEZONE"        validate:"required"`
 	AdminUser  EscapableString `env:"DB_ADMIN_USER"      envDefault:"postgres" validate:"required"`
 	AdminPass  EscapableString `env:"DB_ADMIN_PASSWORD"  validate:"required"`
 }
@@ -42,7 +42,7 @@ func (c DatabaseConfig) ReaderURL() string {
 	hostPort := net.JoinHostPort(c.Host, strconv.Itoa(c.Port))
 	return fmt.Sprintf(
 		"postgres://%s:%s@%s/%s?TimeZone=%s&sslmode=disable",
-		c.Reader.Escape(), c.ReaderPass.Escape(), hostPort, c.Name.Escape(), c.TimeZone,
+		c.Reader.Escape(), c.ReaderPass.Escape(), hostPort, c.Name.Escape(), c.TimeZone.Escape(),
 	)
 }
 
@@ -50,7 +50,7 @@ func (c DatabaseConfig) WriterURL() string {
 	hostPort := net.JoinHostPort(c.Host, strconv.Itoa(c.Port))
 	return fmt.Sprintf(
 		"postgres://%s:%s@%s/%s?TimeZone=%s&sslmode=disable",
-		c.Writer.Escape(), c.WriterPass.Escape(), hostPort, c.Name.Escape(), c.TimeZone,
+		c.Writer.Escape(), c.WriterPass.Escape(), hostPort, c.Name.Escape(), c.TimeZone.Escape(),
 	)
 }
 
@@ -58,7 +58,7 @@ func (c DatabaseConfig) AdminURL() string {
 	hostPort := net.JoinHostPort(c.Host, strconv.Itoa(c.Port))
 	return fmt.Sprintf(
 		"postgres://%s:%s@%s/%s?TimeZone=%s&sslmode=disable",
-		c.AdminUser.Escape(), c.AdminPass.Escape(), hostPort, c.Name.Escape(), c.TimeZone,
+		c.AdminUser.Escape(), c.AdminPass.Escape(), hostPort, c.Name.Escape(), c.TimeZone.Escape(),
 	)
 }
 
@@ -78,7 +78,7 @@ func (c DatabaseConfig) WriterDSN() string {
 			{"user", string(c.Writer)},
 			{"password", string(c.WriterPass)},
 			{"dbname", string(c.Name)},
-			{"TimeZone", c.TimeZone},
+			{"TimeZone", string(c.TimeZone)},
 			{"sslmode", "disable"},
 		},
 	)
@@ -92,7 +92,7 @@ func (c DatabaseConfig) ReaderDSN() string {
 			{"user", string(c.Reader)},
 			{"password", string(c.ReaderPass)},
 			{"dbname", string(c.Name)},
-			{"TimeZone", c.TimeZone},
+			{"TimeZone", string(c.TimeZone)},
 			{"sslmode", "disable"},
 		},
 	)
@@ -106,7 +106,7 @@ func (c DatabaseConfig) AdminDSN() string {
 			{"user", string(c.AdminUser)},
 			{"password", string(c.AdminPass)},
 			{"dbname", "postgres"},
-			{"TimeZone", c.TimeZone},
+			{"TimeZone", string(c.TimeZone)},
 			{"sslmode", "disable"},
 		},
 	)
