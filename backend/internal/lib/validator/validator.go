@@ -4,12 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"reflect"
 	"strings"
 
 	lib "github.com/go-playground/validator/v10"
-
-	"github.com/mickamy/sampay/internal/lib/logger"
 )
 
 var validator = lib.New()
@@ -53,7 +52,7 @@ func mapValidationErrors(ctx context.Context, errs lib.ValidationErrors) Validat
 		case "url":
 			message = "is not a valid URL."
 		default:
-			logger.Warn(ctx, "failing back to default error message", "ActualTag", err.ActualTag(), "Tag", err.Tag(), "Param", err.Param())
+			slog.WarnContext(ctx, "unknown validation tag", "tag", err.ActualTag())
 			message = "is invalid."
 		}
 
