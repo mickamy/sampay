@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package user.v1;
+
+// User represents an authenticated user.
+message User {
+  string id = 1;
+  string slug = 2;
+}

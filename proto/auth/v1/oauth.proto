@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package auth.v1;
+
+import "user/v1/user.proto";
+
+// OAuthService handles OAuth authentication flow.
+service OAuthService {
+  // GetOAuthURL returns the OAuth authorization URL.
+  rpc GetOAuthURL(GetOAuthURLRequest) returns (GetOAuthURLResponse);
+
+  // OAuthCallback exchanges an OAuth authorization code for tokens.
+  // Tokens are set as HttpOnly cookies (not in the response body).
+  rpc OAuthCallback(OAuthCallbackRequest) returns (OAuthCallbackResponse);
+}
+
+enum OAuthProvider {
+  O_AUTH_PROVIDER_UNSPECIFIED = 0;
+  O_AUTH_PROVIDER_GOOGLE = 1;
+  O_AUTH_PROVIDER_LINE = 2;
+}
+
+message GetOAuthURLRequest {
+  OAuthProvider provider = 1;
+}
+
+message GetOAuthURLResponse {
+  // The OAuth authorization URL (includes server-generated state).
+  string url = 1;
+}
+
+message OAuthCallbackRequest {
+  OAuthProvider provider = 1;
+  string code = 2;
+  string state = 3;
+}
+
+// Tokens are set via Set-Cookie header, not in the response body.
+message OAuthCallbackResponse {
+  user.v1.User user = 1;
+}

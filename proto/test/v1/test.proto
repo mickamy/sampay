@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package test.v1;
+
+message EchoRequest {
+  string message = 1;
+}
+
+message EchoResponse {
+  string message = 1;
+}
+
+service EchoService {
+  rpc Echo(EchoRequest) returns (EchoResponse);
+}
+
+message TestRequest {}
+
+message TestResponse {}
+
+service TestService {
+  rpc Test(TestRequest) returns (TestResponse);
+}

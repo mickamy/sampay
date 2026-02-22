@@ -31,8 +31,6 @@ jobs:
           --health-retries 5
 
     runs-on: ubuntu-latest
-    env:
-      TZ: Asia/Tokyo
     timeout-minutes: 10
 
     steps:
@@ -48,6 +46,10 @@ jobs:
 
       - name: Install dependencies
         run: cd backend && go mod download
+
+      - name: Inject .env
+        working-directory: ./backend
+        run: envsubst < .env.sample > .env
 
       - name: Verify all files are up to date
         run: |
@@ -73,10 +75,6 @@ jobs:
             git diff
             exit 1
           fi
-
-      - name: Inject .env
-        working-directory: ./backend
-        run: envsubst < .env.sample > .env
 
       - name: Start LocalStack
         uses: LocalStack/setup-localstack@v0.2.5
