@@ -19,14 +19,14 @@ test: ## Run all tests with race detector enabled
 
 lint: ## Run golangci-lint without fixing issues
 	@command -v golangci-lint >/dev/null 2>&1 || { \
-		@echo "golangci-lint is not installed"; \
+		echo "golangci-lint is not installed"; \
 		exit 1; \
 	}
 	golangci-lint run
 
 lint-fix: ## Run golangci-lint with auto-fix enabled
 	@command -v golangci-lint >/dev/null 2>&1 || { \
-		@echo "golangci-lint is not installed"; \
+		echo "golangci-lint is not installed"; \
 		exit 1; \
 	}
 	golangci-lint run --fix
