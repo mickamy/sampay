@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func main() {
@@ -28,18 +29,20 @@ func run(ctx context.Context) error {
 	})
 
 	srv := &http.Server{
-		Addr:    ":8080",
-		Handler: mux,
+		Addr:              ":8080",
+		Handler:           mux,
+		ReadHeaderTimeout: 10 * time.Second,
 	}
 
 	go func() {
 		<-ctx.Done()
-		srv.Shutdown(context.Background())
+		//nolint:contextcheck // intentionally using background context for graceful shutdown
+		_ = srv.Shutdown(context.Background())
 	}()
 
 	fmt.Println("listening on :8080")
 	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
-		return err
+		return fmt.Errorf("listen: %w", err)
 	}
 	return nil
 }
