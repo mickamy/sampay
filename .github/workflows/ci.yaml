@@ -33,6 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TZ: Asia/Tokyo
+      MODULE_ROOT: ${{ github.workspace }}/backend
     timeout-minutes: 10
 
     steps:

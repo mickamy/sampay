@@ -32,7 +32,7 @@ func Struct(ctx context.Context, s interface{}) ValidationErrorMessages {
 		if errors.As(err, &errs) {
 			return mapValidationErrors(ctx, errs)
 		}
-		panic(fmt.Errorf("unknown validation error %w", err))
+		panic(fmt.Errorf("unknown validation error: %w", err))
 	}
 	return nil
 }
