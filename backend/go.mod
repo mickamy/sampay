@@ -1,8 +1,11 @@
 module github.com/mickamy/sampay
 
-go 1.25.0
+go 1.25.5
 
-tool github.com/air-verse/air
+tool (
+	github.com/air-verse/air
+	github.com/mickamy/injector
+)
 
 require (
 	connectrpc.com/connect v1.19.1
@@ -10,6 +13,7 @@ require (
 	github.com/go-playground/validator/v10 v10.30.1
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
+	golang.org/x/net v0.48.0
 	golang.org/x/text v0.32.0
 	google.golang.org/protobuf v1.36.9
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
@@ -31,11 +35,15 @@ require (
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/mickamy/injector v0.1.18 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/spf13/afero v1.14.0 // indirect
 	github.com/spf13/cast v1.9.2 // indirect
 	github.com/tdewolff/parse/v2 v2.8.3 // indirect
 	golang.org/x/crypto v0.46.0 // indirect
+	golang.org/x/mod v0.31.0 // indirect
+	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/sys v0.39.0 // indirect
+	golang.org/x/tools v0.40.0 // indirect
 )
