@@ -1,0 +1,233 @@
+package kvs
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"sync"
+	"time"
+
+	"github.com/valkey-io/valkey-go"
+
+	"github.com/mickamy/sampay/config"
+)
+
+var (
+	mu  sync.Mutex
+	kvs *KVS
+)
+
+func Open(cfg config.KVSConfig, opts ...Option) (*KVS, error) {
+	mu.Lock()
+	defer mu.Unlock()
+
+	if kvs != nil {
+		return kvs, nil
+	}
+
+	ins, err := New(cfg, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("kvs: failed to open KVS: %w", err)
+	}
+
+	kvs = ins
+	return kvs, nil
+}
+
+// KVS is a wrapper of valkey.Client
+type KVS struct {
+	client valkey.Client
+}
+
+type options struct {
+	disableCache bool
+}
+
+type Option func(*options)
+
+func WithDisableCache() Option {
+	return func(o *options) {
+		o.disableCache = true
+	}
+}
+
+func New(cfg config.KVSConfig, opts ...Option) (*KVS, error) {
+	var o options
+	for _, opt := range opts {
+		opt(&o)
+	}
+
+	client, err := valkey.NewClient(valkey.ClientOption{
+		InitAddress:  []string{cfg.Address()},
+		Username:     cfg.Username,
+		Password:     cfg.Password,
+		DisableCache: o.disableCache,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create valkey client: %w", err)
+	}
+
+	return &KVS{
+		client: client,
+	}, nil
+}
+
+type Storable interface {
+	~string | ~[]byte | ~int64 | ~float64 | ~bool
+}
+
+func storableString[S Storable](v S) string {
+	switch val := any(v).(type) {
+	case string:
+		return val
+	case []byte:
+		return string(val)
+	case int64:
+		return fmt.Sprintf("%d", val)
+	case float64:
+		return fmt.Sprintf("%f", val)
+	case bool:
+		if val {
+			return "1"
+		}
+		return "0"
+	default:
+		panic(fmt.Sprintf("unsupported type: %T", v))
+	}
+}
+
+func Get[T Storable](ctx context.Context, kvs *KVS, key string) (T, error) {
+	res := kvs.client.Do(ctx, kvs.client.B().Get().Key(key).Build())
+
+	var zero T
+
+	if err := res.Error(); err != nil {
+		if valkey.IsValkeyNil(err) {
+			return zero, ErrKeyNotFound
+		}
+		return zero, err
+	}
+
+	switch any(zero).(type) {
+	case string:
+		s, err := res.ToString()
+		return any(s).(T), err
+
+	case []byte:
+		b, err := res.AsBytes()
+		if err != nil {
+			return zero, err
+		}
+		return any(b).(T), err
+
+	case int64:
+		i, err := res.ToInt64()
+		if err != nil {
+			return zero, err
+		}
+		return any(i).(T), nil
+
+	case float64:
+		f, err := res.ToFloat64()
+		if err != nil {
+			return zero, err
+		}
+		return any(f).(T), nil
+
+	case bool:
+		v, err := res.ToBool()
+		if err != nil {
+			return zero, err
+		}
+		return any(v).(T), nil
+	}
+
+	return zero, fmt.Errorf("unsupported type: %T", zero)
+}
+
+type Marshaler[T any, U Storable] interface {
+	Marshal(T) (U, error)
+	Unmarshal(U) (T, error)
+}
+
+func Memoize[T Storable, U any](
+	ctx context.Context,
+	kvs *KVS,
+	key string,
+	ttl time.Duration,
+	exec func() (U, error),
+	marshaler Marshaler[U, T],
+) (U, error) {
+	var zero U
+
+	execAndStore := func() (U, error) {
+		res, err := exec()
+		if err != nil {
+			return zero, err
+		}
+
+		storable, err := marshaler.Marshal(res)
+		if err != nil {
+			return res, errors.Join(ErrFailedToMarshalOnMemoize, fmt.Errorf("failed to marshal %T: %w", res, err))
+		}
+
+		if err := kvs.client.Do(ctx, kvs.client.B().Set().Key(key).Value(storableString(storable)).Px(ttl).Build()).Error(); err != nil {
+			return res, errors.Join(ErrFailedToSetOnMemoize, fmt.Errorf("failed to set key %s: %w", key, err))
+		}
+
+		return res, nil
+	}
+
+	cached, err := Get[T](ctx, kvs, key)
+	if err != nil && !errors.Is(err, ErrKeyNotFound) {
+		return zero, err
+	}
+	if err == nil {
+		res, err := marshaler.Unmarshal(cached)
+		if err != nil {
+			return zero, errors.Join(ErrFailedToUnmarshalOnMemoize, fmt.Errorf("failed to unmarshal cached value for key %s: %w", key, err))
+		}
+		return res, nil
+	}
+
+	return execAndStore()
+}
+
+func (c *KVS) Set(ctx context.Context, key string, value string, exp time.Duration) error {
+	if err := c.client.Do(ctx, c.client.B().Set().Key(key).Value(value).Px(exp).Build()).Error(); err != nil {
+		if valkey.IsValkeyNil(err) {
+			return ErrKeyNotFound
+		}
+		return fmt.Errorf("failed to set key %s: %w", key, err)
+	}
+	return nil
+}
+
+func (c *KVS) Del(ctx context.Context, keys ...string) error {
+	if err := c.client.Do(ctx, c.client.B().Del().Key(keys...).Build()).Error(); err != nil {
+		if valkey.IsValkeyNil(err) {
+			return ErrKeyNotFound
+		}
+		return fmt.Errorf("failed to delete keys: %w", err)
+	}
+	return nil
+}
+
+func (c *KVS) Exists(ctx context.Context, keys ...string) (bool, error) {
+	n, err := c.client.Do(ctx, c.client.B().Exists().Key(keys...).Build()).AsInt64()
+	if err != nil {
+		return false, fmt.Errorf("failed to check existence: %w", err)
+	}
+	return n > 0, nil
+}
+
+func (c *KVS) Ping(ctx context.Context) error {
+	if err := c.client.Do(ctx, c.client.B().Ping().Build()).Error(); err != nil {
+		return fmt.Errorf("failed to ping: %w", err)
+	}
+	return nil
+}
+
+func (c *KVS) Close() {
+	c.client.Close()
+}

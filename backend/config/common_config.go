@@ -67,6 +67,10 @@ const (
 	LogLevelError LogLevel = "error"
 )
 
+func (l LogLevel) ShouldLogORM() bool {
+	return l == LogLevelDebug
+}
+
 type CommonConfig struct {
 	Env        Env      `env:"ENV"         validate:"required,oneof=development test staging production"`
 	LogLevel   LogLevel `env:"LOG_LEVEL"   envDefault:"debug"                                            validate:"required,oneof=debug info warn error"` //nolint:lll // tagalign pads for envDefault alignment
