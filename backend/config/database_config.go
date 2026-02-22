@@ -34,7 +34,7 @@ type DatabaseConfig struct {
 	ReaderPass EscapableString `env:"DB_READER_PASSWORD" validate:"required"`
 	Name       EscapableString `env:"DB_NAME"            validate:"required"`
 	TimeZone   EscapableString `env:"DB_TIMEZONE"        validate:"required"`
-	AdminUser  EscapableString `env:"DB_ADMIN_USER"      validate:"required" envDefault:"postgres"`
+	AdminUser  EscapableString `env:"DB_ADMIN_USER"      envDefault:"postgres" validate:"required"`
 	AdminPass  EscapableString `env:"DB_ADMIN_PASSWORD"  validate:"required"`
 }
 
