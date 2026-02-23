@@ -5,12 +5,13 @@ services:
       dockerfile: Dockerfile.dev
       args:
         BIN_NAME: api
-        GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:?GOOGLE_CLIENT_ID is required}
-        GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:?GOOGLE_CLIENT_SECRET is required}
-        LINE_CHANNEL_ID: ${LINE_CHANNEL_ID:?LINE_CHANNEL_ID is required}
-        LINE_CHANNEL_SECRET: ${LINE_CHANNEL_SECRET:?LINE_CHANNEL_SECRET is required}
     env_file:
       - ./backend/.env.docker
+    environment:
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:?GOOGLE_CLIENT_ID is required}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:?GOOGLE_CLIENT_SECRET is required}
+      LINE_CHANNEL_ID: ${LINE_CHANNEL_ID:?LINE_CHANNEL_ID is required}
+      LINE_CHANNEL_SECRET: ${LINE_CHANNEL_SECRET:?LINE_CHANNEL_SECRET is required}
     volumes:
       - ./backend:/src
       - ./log:/var/log
