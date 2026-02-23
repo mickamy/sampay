@@ -2,10 +2,24 @@ import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import pino, { type Level } from "pino";
 
+const validLevels: Level[] = [
+  "fatal",
+  "error",
+  "warn",
+  "info",
+  "debug",
+  "trace",
+];
+
+function isPinoLevel(value: string): value is Level {
+  return validLevels.includes(value as Level);
+}
+
 async function init() {
   let level: Level = process.env.NODE_ENV === "development" ? "debug" : "info";
-  if (import.meta.env.VITE_LOG_LEVEL) {
-    level = import.meta.env.VITE_LOG_LEVEL;
+  const envLevel = import.meta.env.VITE_LOG_LEVEL;
+  if (envLevel && isPinoLevel(envLevel)) {
+    level = envLevel;
   }
 
   if (process.env.NODE_ENV === "development") {

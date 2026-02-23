@@ -8,8 +8,14 @@ export function parseSetCookie(cookies: string[], name: string): Token | null {
   const parts = cookie.split(";").map((p) => p.trim());
   const value = parts[0].substring(`${name}=`.length);
   const expiresPart = parts.find((p) => p.toLowerCase().startsWith("expires="));
-  const expiresAt = expiresPart
-    ? new Date(expiresPart.substring("expires=".length)).toISOString()
-    : new Date().toISOString();
+  let expiresAt: string;
+  if (expiresPart) {
+    const parsed = new Date(expiresPart.substring("expires=".length));
+    expiresAt = Number.isNaN(parsed.getTime())
+      ? new Date().toISOString()
+      : parsed.toISOString();
+  } else {
+    expiresAt = new Date().toISOString();
+  }
   return { value, expiresAt };
 }

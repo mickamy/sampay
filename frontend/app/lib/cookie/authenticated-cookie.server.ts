@@ -45,11 +45,7 @@ export async function setAuthenticatedSession(
 export async function destroyAuthenticatedSession(
   request: Request,
 ): Promise<string> {
-  const session = await getAuthenticatedSession(request);
-  if (session == null) {
-    throw new Error("session not found");
-  }
-  const cookieSession = await getSession();
+  const cookieSession = await getSession(request.headers.get("cookie"));
   return destroySession(cookieSession);
 }
 
