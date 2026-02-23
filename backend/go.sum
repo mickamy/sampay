@@ -177,10 +177,10 @@ github.com/mickamy/automapper v0.0.10 h1:0/NQFhPeTrAxqlZWEp+pBUCPPTcGWGKl/+i3YSx
 github.com/mickamy/automapper v0.0.10/go.mod h1:S/sszQhV0Fhx5IF0xC29D2UiJHA05Ab9/niy3eFSwWQ=
 github.com/mickamy/contest v0.0.3 h1:14NhLVf+TC51Q9wE8YYJbVpXr46yUd0S6MmHNq3Kt1E=
 github.com/mickamy/contest v0.0.3/go.mod h1:gfMzcaD6ru0P8E9jq9dUoj24i2r/SnS+lJ/SPCCchzg=
-github.com/mickamy/errx v0.0.3 h1:4cK3bnaYnQt/5prb5kYxnc5uyVrjiOu8Nq/wGvIU3gE=
-github.com/mickamy/errx v0.0.3/go.mod h1:74tLUf/ldRG+mSWC1pJSPvUObnP9kHJfSEf7Z+3PXT0=
-github.com/mickamy/errx/cerr v0.0.3 h1:Y3LQjRG70HFE4PTwt8S1EpZCzni9ugow/tfdNl+4g5I=
-github.com/mickamy/errx/cerr v0.0.3/go.mod h1:7oNDW45KDm9onO2xiI60t0eG5+PAquljic97KCG5L5k=
+github.com/mickamy/errx v0.0.4 h1:Dq1Ddlb53qfFuNWv1upC2ssVkFinyUi3HJdzG+YGSYs=
+github.com/mickamy/errx v0.0.4/go.mod h1:74tLUf/ldRG+mSWC1pJSPvUObnP9kHJfSEf7Z+3PXT0=
+github.com/mickamy/errx/cerr v0.0.4 h1:H5ntRrHZmfL0OUlOgFk7qAGl/MTGhdWu//eH01pMjcM=
+github.com/mickamy/errx/cerr v0.0.4/go.mod h1:I+JuOq6mJ8DHd7pZ0tZCKKJqhPBZVkDZc/AZ0mb1waQ=
 github.com/mickamy/go-typesafe-i18n v0.0.2 h1:mjG31AGi/lyl8v+matIHIPoEPhNkL5wmh7Va3krZRGw=
 github.com/mickamy/go-typesafe-i18n v0.0.2/go.mod h1:RrR+EqQVdt1NCC212ERae5Zv5a2VZi5WjTEv2ZA6eLw=
 github.com/mickamy/gopanix v0.1.6 h1:MCWrfRP3C1grUrj0ztvBDehv1kUJO+1CpOxeaK2ZptM=

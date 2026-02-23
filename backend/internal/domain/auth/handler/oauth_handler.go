@@ -35,10 +35,10 @@ func (h *OAuth) GetOAuthURL(
 		var localizable *cmodel.LocalizableError
 		if errors.As(err, &localizable) {
 			return nil, errx.Wrap(err).
-				WithDetails(errx.FieldViolation("provider", localizable.LocalizeContext(ctx)))
+				WithFieldViolation("provider", localizable.LocalizeContext(ctx))
 		}
 		return nil, errx.Wrap(err).
-			WithDetails(errx.FieldViolation("provider", err.Error()))
+			WithFieldViolation("provider", err.Error())
 	}
 
 	out, err := h.getOAuthURL.Do(ctx, usecase.GetOAuthURLInput{Provider: provider})
@@ -46,7 +46,7 @@ func (h *OAuth) GetOAuthURL(
 		var localizable *cmodel.LocalizableError
 		if errors.As(err, &localizable) {
 			return nil, errx.Wrap(err).
-				WithDetails(errx.FieldViolation("provider", localizable.LocalizeContext(ctx)))
+				WithFieldViolation("provider", localizable.LocalizeContext(ctx))
 		}
 
 		logger.Error(ctx, "failed to execute use-case", "err", err)
@@ -64,10 +64,10 @@ func (h *OAuth) OAuthCallback(
 		var localizable *cmodel.LocalizableError
 		if errors.As(err, &localizable) {
 			return nil, errx.Wrap(err).
-				WithDetails(errx.FieldViolation("provider", localizable.LocalizeContext(ctx)))
+				WithFieldViolation("provider", localizable.LocalizeContext(ctx))
 		}
 		return nil, errx.Wrap(err).
-			WithDetails(errx.FieldViolation("provider", err.Error()))
+			WithFieldViolation("provider", err.Error())
 	}
 
 	out, err := h.oauthCallback.Do(ctx, usecase.OAuthCallbackInput{
@@ -79,10 +79,10 @@ func (h *OAuth) OAuthCallback(
 		if errors.As(err, &localizable) {
 			if errors.Is(localizable, usecase.ErrOAuthCallbackUnsupportedProvider) {
 				return nil, errx.Wrap(err).
-					WithDetails(errx.FieldViolation("provider", localizable.LocalizeContext(ctx)))
+					WithFieldViolation("provider", localizable.LocalizeContext(ctx))
 			}
 			return nil, errx.Wrap(err).
-				WithDetails(errx.FieldViolation("code", localizable.LocalizeContext(ctx)))
+				WithFieldViolation("code", localizable.LocalizeContext(ctx))
 		}
 
 		logger.Error(ctx, "failed to execute use-case", "err", err)

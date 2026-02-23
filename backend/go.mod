@@ -24,8 +24,8 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.11.2
 	github.com/mickamy/contest v0.0.3
-	github.com/mickamy/errx v0.0.3
-	github.com/mickamy/errx/cerr v0.0.3
+	github.com/mickamy/errx v0.0.4
+	github.com/mickamy/errx/cerr v0.0.4
 	github.com/mickamy/go-typesafe-i18n v0.0.2
 	github.com/mickamy/gopanix v0.1.6
 	github.com/mickamy/ormgen v0.0.21

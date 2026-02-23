@@ -36,10 +36,10 @@ func (h *Session) RefreshToken(
 	if err != nil {
 		return nil, errx.Wrap(err).
 			WithCode(errx.InvalidArgument).
-			WithDetails(errx.FieldViolation(
+			WithFieldViolation(
 				"refresh_token",
 				i18n.LocalizeContext(ctx, messages.AuthHandlerRefreshTokenTokenNotSet()),
-			))
+			)
 	}
 
 	out, err := h.refreshToken.Do(ctx, usecase.RefreshTokenInput{
@@ -50,7 +50,7 @@ func (h *Session) RefreshToken(
 		if errors.As(err, &localizable) {
 			return nil, errx.Wrap(err).
 				WithCode(errx.InvalidArgument).
-				WithDetails(errx.FieldViolation("refresh_token", localizable.LocalizeContext(ctx)))
+				WithFieldViolation("refresh_token", localizable.LocalizeContext(ctx))
 		}
 
 		logger.Error(ctx, "failed to execute use-case", "err", err)
@@ -81,11 +81,9 @@ func (h *Session) Logout(
 		logger.Warn(ctx, "failed to parse access token", "err", err, "cookie", c)
 		return nil, errx.Wrap(err).
 			WithCode(errx.InvalidArgument).
-			WithDetails(
-				errx.FieldViolation(
-					"access_token",
-					i18n.LocalizeContext(ctx, messages.AuthHandlerLogoutAccessTokenNotSet()),
-				),
+			WithFieldViolation(
+				"access_token",
+				i18n.LocalizeContext(ctx, messages.AuthHandlerLogoutAccessTokenNotSet()),
 			)
 	}
 	rt, err := cookie.ParseRefreshToken(c)
@@ -93,11 +91,9 @@ func (h *Session) Logout(
 		logger.Warn(ctx, "failed to parse refresh token", "err", err, "cookie", c)
 		return nil, errx.Wrap(err).
 			WithCode(errx.InvalidArgument).
-			WithDetails(
-				errx.FieldViolation(
-					"refresh_token",
-					i18n.LocalizeContext(ctx, messages.AuthHandlerLogoutRefreshTokenNotSet()),
-				),
+			WithFieldViolation(
+				"refresh_token",
+				i18n.LocalizeContext(ctx, messages.AuthHandlerLogoutRefreshTokenNotSet()),
 			)
 	}
 
@@ -121,7 +117,7 @@ func (h *Session) Logout(
 				logger.Error(ctx, "unexpected localizable error", "err", err)
 			}
 			return nil, errx.Wrap(err).WithCode(errx.InvalidArgument).
-				WithDetails(errx.FieldViolation(field, localizable.LocalizeContext(ctx)))
+				WithFieldViolation(field, localizable.LocalizeContext(ctx))
 		}
 
 		logger.Error(ctx, "failed to execute use-case", "err", err)
