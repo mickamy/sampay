@@ -47,7 +47,10 @@ func ResolveLanguage(tags []language.Tag) language.Tag {
 	if len(tags) == 0 {
 		return DefaultLanguage
 	}
-	matched, _, _ := matcher.Match(tags...)
+	matched, _, confidence := matcher.Match(tags...)
+	if confidence < language.High {
+		return DefaultLanguage
+	}
 	return matched
 }
 

@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/text/language"
 
@@ -15,6 +16,7 @@ import (
 	"github.com/mickamy/sampay/internal/api/interceptor"
 	"github.com/mickamy/sampay/internal/domain/test/handler"
 	"github.com/mickamy/sampay/internal/misc/contexts"
+	"github.com/mickamy/sampay/internal/misc/i18n"
 )
 
 func TestI18N(t *testing.T) {
@@ -26,9 +28,9 @@ func TestI18N(t *testing.T) {
 		expectedLang language.Tag
 	}{
 		{name: "success", acceptLang: "ja", expectedLang: language.Japanese},
-		{name: "success (not supported language)", acceptLang: "fr", expectedLang: language.Japanese}, // french
-		{name: "success (empty header)", acceptLang: "", expectedLang: language.Japanese},
-		{name: "success (invalid language format)", acceptLang: "test", expectedLang: language.Japanese},
+		{name: "success (not supported language)", acceptLang: "fr", expectedLang: i18n.DefaultLanguage}, // french
+		{name: "success (empty header)", acceptLang: "", expectedLang: i18n.DefaultLanguage},
+		{name: "success (invalid language format)", acceptLang: "test", expectedLang: i18n.DefaultLanguage},
 	}
 
 	for _, tc := range tsc {
@@ -38,7 +40,7 @@ func TestI18N(t *testing.T) {
 			// arrange
 			test := func(ctx context.Context, req *connect.Request[testv1.TestRequest]) {
 				lang := contexts.MustLanguage(ctx)
-				require.Equal(t, tc.expectedLang, lang)
+				assert.Equal(t, tc.expectedLang, lang)
 			}
 			mux := http.NewServeMux()
 			sut := interceptor.I18N()

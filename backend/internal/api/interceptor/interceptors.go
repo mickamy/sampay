@@ -5,9 +5,9 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/mickamy/errx/cerr"
-	"golang.org/x/text/language"
 
 	ausecase "github.com/mickamy/sampay/internal/domain/auth/usecase"
+	"github.com/mickamy/sampay/internal/misc/i18n"
 
 	"github.com/mickamy/sampay/internal/di"
 )
@@ -17,7 +17,7 @@ func NewInterceptors(infra *di.Infra) []connect.Interceptor {
 		Recovery(),
 		cerr.NewInterceptor(
 			cerr.WithLocaleFunc(func(header http.Header) string { return header.Get("Accept-Language") }),
-			cerr.WithDefaultLocale(language.Japanese),
+			cerr.WithDefaultLocale(i18n.DefaultLanguage),
 		),
 		Logging(),
 		I18N(),
