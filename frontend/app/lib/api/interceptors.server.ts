@@ -1,11 +1,7 @@
 import type { Interceptor } from "@connectrpc/connect";
 import logger from "~/lib/logger";
 
-const SENSITIVE_HEADERS = new Set([
-  "authorization",
-  "cookie",
-  "set-cookie",
-]);
+const SENSITIVE_HEADERS = new Set(["authorization", "cookie", "set-cookie"]);
 
 function redactHeaders(headers: Headers): Record<string, string> {
   const redacted: Record<string, string> = {};
