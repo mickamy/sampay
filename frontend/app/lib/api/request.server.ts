@@ -23,20 +23,26 @@ import type { Session } from "~/model/session-model";
 export async function authenticate(request: Request): Promise<Session> {
   const session = await getAuthenticatedSession(request);
   if (session == null) {
-    throw redirect("/");
+    throw await redirectWithSessionDestroyed(request);
   }
   if (!needsRefresh(session)) {
     return session;
   }
   if (!canRefresh(session)) {
-    throw redirect("/");
+    throw await redirectWithSessionDestroyed(request);
   }
   try {
     return await refreshSession({ request });
   } catch (error) {
     logger.error({ error }, "authenticate: failed to refresh session");
-    throw redirect("/");
+    throw await redirectWithSessionDestroyed(request);
   }
+}
+
+async function redirectWithSessionDestroyed(request: Request) {
+  const headers = new Headers();
+  headers.append("set-cookie", await destroyAuthenticatedSession(request));
+  return redirect("/", { headers });
 }
 
 export type getClientType = <T extends DescService>(service: T) => Client<T>;
