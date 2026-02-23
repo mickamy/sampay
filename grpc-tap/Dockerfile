@@ -6,8 +6,7 @@ ARG TARGETARCH
 ADD https://github.com/mickamy/grpc-tap/releases/download/v${GRPC_TAP_VERSION}/grpc-tap_${GRPC_TAP_VERSION}_linux_${TARGETARCH}.tar.gz /tmp/grpc-tap.tar.gz
 RUN tar -xzf /tmp/grpc-tap.tar.gz -C /usr/local/bin && rm /tmp/grpc-tap.tar.gz
 
-FROM alpine
-
-RUN apk add --no-cache curl
+FROM gcr.io/distroless/static-debian12
 
 COPY --from=build /usr/local/bin/grpc-tapd /usr/local/bin/grpc-tapd
+COPY --from=busybox:stable-musl /bin/wget /usr/bin/wget
