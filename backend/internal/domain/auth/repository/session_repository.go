@@ -7,7 +7,6 @@ import (
 
 	"github.com/mickamy/sampay/internal/domain/auth/model"
 	"github.com/mickamy/sampay/internal/infra/storage/kvs"
-	"github.com/mickamy/sampay/internal/lib/logger"
 )
 
 type Session interface {
@@ -45,8 +44,6 @@ func (repo *session) Create(ctx context.Context, session model.Session) error {
 	); err != nil {
 		return fmt.Errorf("repository: failed to set refresh token: %w", err)
 	}
-
-	logger.Info(ctx, "session created", "user", session.UserID, "session", session)
 
 	return nil
 }
