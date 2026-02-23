@@ -47,7 +47,7 @@ func (h *Session) RefreshToken(
 		if errors.As(err, &localizable) {
 			return nil, errx.Wrap(err).
 				WithCode(errx.InvalidArgument).
-				WithDetails("refresh_token", localizable.LocalizeContext(ctx))
+				WithDetails(errx.FieldViolation("refresh_token", localizable.LocalizeContext(ctx)))
 		}
 
 		logger.Error(ctx, "failed to execute use-case", "err", err)
