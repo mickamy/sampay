@@ -1,3 +1,5 @@
+import { m } from "~/paraglide/messages";
+
 export function meta() {
   return [
     { title: "New React Router App" },
@@ -6,5 +8,5 @@ export function meta() {
 }
 
 export default function Home() {
-  return <div>Hello, welcome to your new React Router app!</div>;
+  return <div>{m.example_message({ username: "mickamy" })}</div>;
 }
