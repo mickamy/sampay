@@ -3,9 +3,9 @@ package response
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"connectrpc.com/connect"
+	"github.com/mickamy/errx"
 	"golang.org/x/text/language"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 
@@ -39,7 +39,7 @@ func (e *InternalError) AsConnectError() *connect.Error {
 	proto := e.asProto()
 	detail, err := connect.NewErrorDetail(proto)
 	if err != nil {
-		return connect.NewError(connect.CodeInternal, fmt.Errorf("failed to create error detail: %w", err))
+		return connect.NewError(connect.CodeInternal, errx.Wrap(err, "could not create new error detail"))
 	}
 
 	connErr.AddDetail(detail)
