@@ -23,7 +23,7 @@ export const loggingInterceptor: Interceptor = (next) => async (req) => {
     logger.debug(
       {
         message: res.message,
-        responseHeaders: redactHeaders(res.header),
+        headers: redactHeaders(res.header),
       },
       "API response",
     );
