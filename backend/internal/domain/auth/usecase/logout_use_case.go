@@ -23,8 +23,8 @@ var (
 )
 
 type LogoutInput struct {
-	AccessToken  string
-	RefreshToken string
+	AccessToken  string //nolint:gosec // internal use only, not serialized to JSON
+	RefreshToken string //nolint:gosec // internal use only, not serialized to JSON
 }
 
 type LogoutOutput struct{}

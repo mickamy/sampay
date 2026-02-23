@@ -39,7 +39,10 @@ func (repo *endUser) Get(ctx context.Context, id string, scopes ...scope.Scope) 
 	if errors.Is(err, orm.ErrNotFound) {
 		return model.EndUser{}, database.ErrNotFound
 	}
-	return m, err
+	if err != nil {
+		return m, fmt.Errorf("repository: %w", err)
+	}
+	return m, nil
 }
 
 func (repo *endUser) WithTx(tx *database.DB) EndUser {

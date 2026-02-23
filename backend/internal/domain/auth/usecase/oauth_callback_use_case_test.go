@@ -31,10 +31,10 @@ func (c *fakeOAuthClient) Callback(_ context.Context, _ string) (oauth.Payload, 
 	return c.payload, c.err
 }
 
-func newFakeResolver(provider oauth.Provider, client oauth.Client) *oauth.Resolver {
+func newFakeResolver(client oauth.Client) *oauth.Resolver {
 	return &oauth.Resolver{
 		Clients: map[oauth.Provider]oauth.Client{
-			provider: client,
+			oauth.ProviderGoogle: client,
 		},
 	}
 }
@@ -59,7 +59,7 @@ func TestOAuthCallback_Do(t *testing.T) {
 		{
 			name: "success (new user)",
 			arrange: func(t *testing.T, infra *di.Infra) *oauth.Resolver {
-				return newFakeResolver(oauth.ProviderGoogle, &fakeOAuthClient{payload: fakePayload})
+				return newFakeResolver(&fakeOAuthClient{payload: fakePayload})
 			},
 			input: usecase.OAuthCallbackInput{
 				Provider: model.OAuthProviderGoogle,
@@ -98,7 +98,7 @@ func TestOAuthCallback_Do(t *testing.T) {
 				}
 				require.NoError(t, query.OAuthAccounts(infra.DB).Create(t.Context(), &existingAccount))
 
-				return newFakeResolver(oauth.ProviderGoogle, &fakeOAuthClient{payload: fakePayload})
+				return newFakeResolver(&fakeOAuthClient{payload: fakePayload})
 			},
 			input: usecase.OAuthCallbackInput{
 				Provider: model.OAuthProviderGoogle,
@@ -113,7 +113,7 @@ func TestOAuthCallback_Do(t *testing.T) {
 		{
 			name: "unsupported provider",
 			arrange: func(t *testing.T, infra *di.Infra) *oauth.Resolver {
-				return newFakeResolver(oauth.ProviderGoogle, &fakeOAuthClient{payload: fakePayload})
+				return newFakeResolver(&fakeOAuthClient{payload: fakePayload})
 			},
 			input: usecase.OAuthCallbackInput{
 				Provider: model.OAuthProvider("unknown"),
@@ -126,7 +126,7 @@ func TestOAuthCallback_Do(t *testing.T) {
 		{
 			name: "callback failed",
 			arrange: func(t *testing.T, infra *di.Infra) *oauth.Resolver {
-				return newFakeResolver(oauth.ProviderGoogle, &fakeOAuthClient{
+				return newFakeResolver(&fakeOAuthClient{
 					err: assert.AnError,
 				})
 			},

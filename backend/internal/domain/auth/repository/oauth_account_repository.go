@@ -15,7 +15,9 @@ import (
 
 type OAuthAccount interface {
 	Create(ctx context.Context, m *model.OAuthAccount) error
-	GetByProviderAndUID(ctx context.Context, provider model.OAuthProvider, uid string, scopes ...scope.Scope) (model.OAuthAccount, error)
+	GetByProviderAndUID(
+		ctx context.Context, provider model.OAuthProvider, uid string, scopes ...scope.Scope,
+	) (model.OAuthAccount, error)
 	WithTx(tx *database.DB) OAuthAccount
 }
 

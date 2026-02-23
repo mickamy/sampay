@@ -36,7 +36,10 @@ func (h *Session) RefreshToken(
 	if err != nil {
 		return nil, errx.Wrap(err).
 			WithCode(errx.InvalidArgument).
-			WithDetails(errx.FieldViolation("refresh_token", i18n.LocalizeContext(ctx, messages.AuthHandlerRefreshTokenTokenNotSet())))
+			WithDetails(errx.FieldViolation(
+				"refresh_token",
+				i18n.LocalizeContext(ctx, messages.AuthHandlerRefreshTokenTokenNotSet()),
+			))
 	}
 
 	out, err := h.refreshToken.Do(ctx, usecase.RefreshTokenInput{
@@ -106,13 +109,14 @@ func (h *Session) Logout(
 		var localizable *cmodel.LocalizableError
 		if errors.As(err, &localizable) {
 			var field string
-			if errors.Is(localizable, usecase.ErrLogoutInvalidAccessToken) {
+			switch {
+			case errors.Is(localizable, usecase.ErrLogoutInvalidAccessToken):
 				field = "access_token"
-			} else if errors.Is(localizable, usecase.ErrLogoutInvalidRefreshToken) {
+			case errors.Is(localizable, usecase.ErrLogoutInvalidRefreshToken):
 				field = "refresh_token"
-			} else if errors.Is(localizable, usecase.ErrLogoutTokenMismatch) {
+			case errors.Is(localizable, usecase.ErrLogoutTokenMismatch):
 				field = "access_token"
-			} else {
+			default:
 				field = "unknown"
 				logger.Error(ctx, "unexpected localizable error", "err", err)
 			}

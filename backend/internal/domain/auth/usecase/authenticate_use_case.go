@@ -17,8 +17,9 @@ var (
 					WithMessages(messages.AuthUseCaseErrorSessionNotSet())
 	ErrAuthenticateTokenInvalid = cmodel.NewLocalizableError(errx.NewSentinel("token invalid", errx.Unauthenticated)).
 					WithMessages(messages.AuthUseCaseErrorTokenInvalid())
-	ErrAuthenticateSessionNotFound = cmodel.NewLocalizableError(errx.NewSentinel("session not found", errx.Unauthenticated)).
-					WithMessages(messages.AuthUseCaseErrorSessionNotFound())
+	ErrAuthenticateSessionNotFound = cmodel.NewLocalizableError(
+		errx.NewSentinel("session not found", errx.Unauthenticated)).
+		WithMessages(messages.AuthUseCaseErrorSessionNotFound())
 )
 
 type AuthenticateInput struct {

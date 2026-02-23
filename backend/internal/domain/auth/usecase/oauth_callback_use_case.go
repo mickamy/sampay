@@ -20,7 +20,8 @@ import (
 )
 
 var (
-	ErrOAuthCallbackUnsupportedProvider = cmodel.NewLocalizableError(errx.NewSentinel("unsupported provider", errx.InvalidArgument)).
+	ErrOAuthCallbackUnsupportedProvider = cmodel.NewLocalizableError(
+		errx.NewSentinel("unsupported provider", errx.InvalidArgument)).
 		WithMessages(messages.AuthUseCaseErrorUnsupportedOauthProvider())
 	ErrOAuthCallbackFailed = cmodel.NewLocalizableError(errx.NewSentinel("oauth callback failed", errx.InvalidArgument)).
 		WithMessages(messages.AuthUseCaseErrorOauthCallbackFailed())
@@ -112,7 +113,7 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 
 		return nil
 	}); err != nil {
-		return OAuthCallbackOutput{}, err
+		return OAuthCallbackOutput{}, err //nolint:wrapcheck // errors from transaction callback are already wrapped inside
 	}
 
 	return OAuthCallbackOutput{Session: session, EndUser: endUser}, nil
