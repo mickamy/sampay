@@ -1,7 +1,7 @@
 import { CalendarDays, LogOut, Menu, Settings, Wallet2 } from "lucide-react";
 import type { HTMLAttributes } from "react";
 import { Link } from "react-router";
-import LoginDialog from "~/components/login-dialog";
+import { LoginDialog } from "~/components/login-dialog";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
