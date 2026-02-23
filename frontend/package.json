@@ -11,7 +11,8 @@
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "lint": "biome check",
-    "lint:fix": "biome check --fix"
+    "lint:fix": "biome check --fix",
+    "compile-i18n": "npx @inlang/paraglide-js compile --project ./project.inlang --outdir ./app/paraglide"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.11.0",
@@ -33,6 +34,7 @@
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "@inlang/paraglide-js": "^2.12.0"
   }
 }
