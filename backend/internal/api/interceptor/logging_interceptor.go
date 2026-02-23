@@ -12,6 +12,12 @@ import (
 	"github.com/mickamy/sampay/internal/misc/contexts"
 )
 
+var sensitiveHeaders = map[string]bool{
+	"Authorization": true,
+	"Cookie":        true,
+	"Set-Cookie":    true,
+}
+
 // shouldLogRequest determines whether to log request payloads based on the environment.
 // In production, we typically avoid logging request payloads for security and performance reasons.
 // In non-production environments, we log them for debugging purposes.
@@ -32,7 +38,11 @@ func Logging() connect.UnaryInterceptorFunc {
 			reqFields := []any{slog.String("procedure", req.Spec().Procedure)}
 			reqHeader := req.Header()
 			for k, val := range reqHeader {
-				reqFields = append(reqFields, slog.Any("header."+k, val))
+				if sensitiveHeaders[k] {
+					reqFields = append(reqFields, slog.String("header."+k, "[REDACTED]"))
+				} else {
+					reqFields = append(reqFields, slog.Any("header."+k, val))
+				}
 			}
 			if shouldLogPayload {
 				reqFields = append(reqFields, slog.Any("payload", req.Any()))
@@ -50,7 +60,11 @@ func Logging() connect.UnaryInterceptorFunc {
 			} else {
 				resHeader := res.Header()
 				for k, val := range resHeader {
-					resFields = append(resFields, slog.Any("header."+k, val))
+					if sensitiveHeaders[k] {
+						resFields = append(resFields, slog.String("header."+k, "[REDACTED]"))
+					} else {
+						resFields = append(resFields, slog.Any("header."+k, val))
+					}
 				}
 				if shouldLogPayload {
 					resFields = append(resFields, slog.Any("payload", res.Any()))

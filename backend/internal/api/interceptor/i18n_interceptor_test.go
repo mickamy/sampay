@@ -49,7 +49,11 @@ func TestI18N(t *testing.T) {
 
 			// act
 			client := testv1connect.NewTestServiceClient(http.DefaultClient, server.URL)
-			_, err := client.Test(t.Context(), connect.NewRequest(&testv1.TestRequest{}))
+			req := connect.NewRequest(&testv1.TestRequest{})
+			if tc.acceptLang != "" {
+				req.Header().Set("Accept-Language", tc.acceptLang)
+			}
+			_, err := client.Test(t.Context(), req)
 
 			// assert
 			require.NoError(t, err)

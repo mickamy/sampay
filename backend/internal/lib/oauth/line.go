@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 
 	"golang.org/x/oauth2"
 
 	"github.com/mickamy/sampay/config"
 )
 
-var lineEndpoint = oauth2.Endpoint{
+var lineEndpoint = oauth2.Endpoint{ //nolint:gosec // not credentials, just API endpoint URLs
 	AuthURL:  "https://access.line.me/oauth2/v2.1/authorize",
 	TokenURL: "https://api.line.me/oauth2/v2.1/token",
 }
@@ -55,10 +56,14 @@ func (c *lineClient) Callback(ctx context.Context, code string) (Payload, error)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
+	if resp.StatusCode != http.StatusOK {
+		return Payload{}, fmt.Errorf("oauth: line profile returned status %d", resp.StatusCode)
+	}
+
 	var u struct {
-		UserID      string `json:"userId"`
-		DisplayName string `json:"displayName"`
-		PictureURL  string `json:"pictureUrl"`
+		UserID      string `json:"userId"`      //nolint:tagliatelle // LINE API response format
+		DisplayName string `json:"displayName"` //nolint:tagliatelle // LINE API response format
+		PictureURL  string `json:"pictureUrl"`  //nolint:tagliatelle // LINE API response format
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&u); err != nil {
 		return Payload{}, fmt.Errorf("oauth: failed to decode profile: %w", err)

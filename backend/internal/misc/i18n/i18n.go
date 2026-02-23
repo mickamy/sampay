@@ -2,8 +2,7 @@ package i18n
 
 import (
 	"context"
-	"path"
-	"slices"
+	"path/filepath"
 
 	i18n "github.com/mickamy/go-typesafe-i18n"
 	"golang.org/x/text/language"
@@ -19,9 +18,9 @@ var DefaultLanguage = language.Japanese
 
 func init() {
 	bundle = i18n.NewBundle(DefaultLanguage)
-	locales := path.Join(config.Common().ModuleRoot, "internal", "misc", "i18n", "locales")
-	bundle.MustLoadFile(path.Join(locales, "ja.yaml"))
-	bundle.MustLoadFile(path.Join(locales, "en.yaml"))
+	locales := filepath.Join(config.Common().ModuleRoot, "internal", "misc", "i18n", "locales")
+	bundle.MustLoadFile(filepath.Join(locales, "ja.yaml"))
+	bundle.MustLoadFile(filepath.Join(locales, "en.yaml"))
 }
 
 func Localize(tag language.Tag, msg i18n.Message) string {
@@ -42,14 +41,14 @@ var supportedLanguages = []language.Tag{
 	language.English,
 }
 
-func ResolveLanguage(tags []language.Tag) language.Tag {
-	for _, tag := range tags {
-		if slices.Contains(supportedLanguages, tag) {
-			return tag
-		}
-	}
+var matcher = language.NewMatcher(supportedLanguages)
 
-	return DefaultLanguage
+func ResolveLanguage(tags []language.Tag) language.Tag {
+	if len(tags) == 0 {
+		return DefaultLanguage
+	}
+	matched, _, _ := matcher.Match(tags...)
+	return matched
 }
 
 type Message = i18n.Message

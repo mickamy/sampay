@@ -2,6 +2,7 @@ package response
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"connectrpc.com/connect"
@@ -33,7 +34,7 @@ func NewInternalErrorContext(ctx context.Context, underlying error) *InternalErr
 func (e *InternalError) Error() string { return e.underlying.Error() }
 
 func (e *InternalError) AsConnectError() *connect.Error {
-	connErr := connect.NewError(connect.CodeInternal, e.underlying)
+	connErr := connect.NewError(connect.CodeInternal, errors.New(e.message))
 
 	proto := e.asProto()
 	detail, err := connect.NewErrorDetail(proto)

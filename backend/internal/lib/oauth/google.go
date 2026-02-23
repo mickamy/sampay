@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -50,6 +51,10 @@ func (c *googleClient) Callback(ctx context.Context, code string) (Payload, erro
 		return Payload{}, fmt.Errorf("oauth: failed to get user info: %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		return Payload{}, fmt.Errorf("oauth: google userinfo returned status %d", resp.StatusCode)
+	}
 
 	var u struct {
 		ID      string `json:"id"`

@@ -8,13 +8,13 @@ import (
 )
 
 func Build(name, value string, expires time.Time) *http.Cookie {
-	maxAge := -1
-	if expires.IsZero() {
-		maxAge = -1
-	} else {
+	var maxAge int // 0 = session cookie (no Max-Age attribute)
+	if !expires.IsZero() {
 		remaining := time.Until(expires)
 		if remaining > 0 {
 			maxAge = int(remaining.Seconds())
+		} else {
+			maxAge = -1 // expired: delete cookie immediately
 		}
 	}
 	var secure bool

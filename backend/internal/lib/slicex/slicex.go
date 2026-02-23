@@ -15,9 +15,11 @@ func MapToValue[T any](ts []*T) []T {
 }
 
 func MapToPointer[T any](ts []T) []*T {
-	return Map(ts, func(t T) *T {
-		return &t
-	})
+	ps := make([]*T, len(ts))
+	for i := range ts {
+		ps[i] = &ts[i]
+	}
+	return ps
 }
 
 func FlatMap[T, U any](ts []T, f func(T) []U) []U {

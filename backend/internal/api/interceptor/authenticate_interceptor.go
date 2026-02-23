@@ -63,12 +63,15 @@ func authSkippingPaths(req connect.AnyRequest) bool {
 
 func extractBearerToken(req connect.AnyRequest) string {
 	// check for Authorization header first
-	authHeader := req.Header().Get("Authorization")
+	authHeader := strings.TrimSpace(req.Header().Get("Authorization"))
 	if authHeader != "" {
-		return strings.TrimPrefix(authHeader, "Bearer ")
+		parts := strings.Fields(authHeader)
+		if len(parts) == 2 && strings.EqualFold(parts[0], "Bearer") && parts[1] != "" {
+			return parts[1]
+		}
 	}
 
-	// if Authorization header is not present, check for access token in Cookie
+	// if Authorization header is not present or not a valid Bearer token, check for access token in Cookie
 	token, err := cookie.ParseAccessToken(req.Header().Get("Cookie"))
 	if err != nil {
 		return ""
