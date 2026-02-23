@@ -21,9 +21,9 @@ import (
 
 var (
 	ErrOAuthCallbackUnsupportedProvider = cmodel.NewLocalizableError(errx.NewSentinel("unsupported provider", errx.InvalidArgument)).
-						WithMessages(messages.AuthUseCaseErrorUnsupportedOauthProvider())
+		WithMessages(messages.AuthUseCaseErrorUnsupportedOauthProvider())
 	ErrOAuthCallbackFailed = cmodel.NewLocalizableError(errx.NewSentinel("oauth callback failed", errx.InvalidArgument)).
-				WithMessages(messages.AuthUseCaseErrorOauthCallbackFailed())
+		WithMessages(messages.AuthUseCaseErrorOauthCallbackFailed())
 )
 
 type OAuthCallbackInput struct {
@@ -121,7 +121,7 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 func (uc *oauthCallback) resolveClient(provider model.OAuthProvider) (oauth.Client, error) {
 	client, err := uc.resolver.Resolve(oauth.Provider(provider))
 	if err != nil {
-		return nil, errx.Wrap(ErrOAuthCallbackUnsupportedProvider, "provider", provider)
+		return nil, errx.Wrap(ErrOAuthCallbackUnsupportedProvider, "provider", provider, "err", err)
 	}
 	return client, nil
 }
