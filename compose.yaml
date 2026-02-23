@@ -50,7 +50,8 @@ services:
       default:
 
   postgres:
-    image: postgres:18-alpine
+    build:
+      context: ./postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
@@ -59,16 +60,19 @@ services:
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
       TZ: Asia/Tokyo
       DB_NAME: sampay
+      DATABASE_URL: postgres://postgres:password@postgres:5432/postgres?sslmode=disable
     volumes:
       - postgres:/var/lib/postgresql
       - ./backend/db:/docker-entrypoint-initdb.d
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -h localhost" ]
+      test: [ "CMD-SHELL", "pg_isready -h 127.0.0.1" ]
       interval: 3s
       retries: 5
       start_period: 30s
     ports:
-      - "5432:5432"
+      - "5433:5433"
+      - "9091:9091"
+      - "8081:8081"
 
   valkey:
     image: valkey/valkey:8-alpine
