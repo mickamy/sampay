@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import Image from "~/components/image";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -8,7 +9,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import Image from "~/components/image";
 import { m } from "~/paraglide/messages";
 
 export default function LoginDialog() {

@@ -1,6 +1,7 @@
 import { CalendarDays, LogOut, Menu, Settings, Wallet2 } from "lucide-react";
 import type { HTMLAttributes } from "react";
 import { Link } from "react-router";
+import LoginDialog from "~/components/login-dialog";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
@@ -18,7 +19,6 @@ import {
 } from "~/components/ui/navigation-menu";
 import { cn } from "~/lib/utils";
 import { m } from "~/paraglide/messages";
-import LoginDialog from "~/components/login-dialog";
 
 interface Props extends HTMLAttributes<HTMLElement> {
   isLoggedIn: boolean;
@@ -99,16 +99,16 @@ function DesktopNavigation({
             </>
           )}
           <NavigationMenuItem>
-            <NavigationMenuLink
-              asChild
-              className={navigationMenuTriggerStyle()}
-            >
-              {isLoggedIn ? (
+            {isLoggedIn ? (
+              <NavigationMenuLink
+                asChild
+                className={navigationMenuTriggerStyle()}
+              >
                 <Link to="/auth/logout">{m.header_logout()}</Link>
-              ) : (
-                <LoginDialog />
-              )}
-            </NavigationMenuLink>
+              </NavigationMenuLink>
+            ) : (
+              <LoginDialog />
+            )}
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>

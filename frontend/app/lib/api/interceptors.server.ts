@@ -1,11 +1,25 @@
 import type { Interceptor } from "@connectrpc/connect";
-import { setAuthenticatedSession } from "~/lib/cookie/authenticated-cookie.server";
-import { parseSetCookie } from "~/lib/cookie/parser";
 import logger from "~/lib/logger";
+
+const SENSITIVE_HEADERS = new Set([
+  "authorization",
+  "cookie",
+  "set-cookie",
+]);
+
+function redactHeaders(headers: Headers): Record<string, string> {
+  const redacted: Record<string, string> = {};
+  for (const [key, value] of headers.entries()) {
+    redacted[key] = SENSITIVE_HEADERS.has(key.toLowerCase())
+      ? "[REDACTED]"
+      : value;
+  }
+  return redacted;
+}
 
 export const loggingInterceptor: Interceptor = (next) => async (req) => {
   logger.debug(
-    { message: req.message, header: req.header },
+    { message: req.message, header: redactHeaders(req.header) },
     `API request ${req.url}`,
   );
   const res = await next(req);
@@ -13,8 +27,7 @@ export const loggingInterceptor: Interceptor = (next) => async (req) => {
     logger.debug(
       {
         message: res.message,
-        responseHeaders: Object.fromEntries(res.header.entries()),
-        setCookie: res.header.getSetCookie(),
+        responseHeaders: redactHeaders(res.header),
       },
       "API response",
     );

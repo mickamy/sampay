@@ -48,7 +48,7 @@ export async function withAuthentication(
     request: Request;
   },
   execute: ({ getClient }: { getClient: getClientType }) => Promise<Response>,
-): Promise<Either<Response, APIError>> {
+): Promise<Either<APIError, Response>> {
   try {
     const session = await authenticate(request);
     const transport = createConnectTransport({
@@ -63,7 +63,7 @@ export async function withAuthentication(
       getClient: (service) => createClient(service, transport),
     });
     res.headers.append("set-cookie", await setAuthenticatedSession(session));
-    return new Left(res);
+    return new Right(res);
   } catch (e) {
     if (e instanceof ConnectError) {
       const apiErr = convertToAPIError(e);
@@ -80,7 +80,7 @@ export async function withAuthentication(
           throw new Response(null, { status: 404 });
         default:
           logger.error({ error: e }, "API error occurred");
-          return new Right(apiErr);
+          return new Left(apiErr);
       }
     }
     if (e instanceof Response) {
