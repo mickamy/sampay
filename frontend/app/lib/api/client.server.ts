@@ -28,8 +28,8 @@ export function getClient<T extends DescService>({
   const transport = createConnectTransport({
     baseUrl: API_BASE_URL,
     interceptors: [
-      loggingInterceptor,
       createI18NInterceptor(request),
+      loggingInterceptor,
       ...interceptors,
     ],
   });

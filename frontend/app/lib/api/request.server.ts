@@ -115,6 +115,13 @@ async function refreshSession({
   if (!access || !refresh) {
     throw new Error("refreshSession: could not refresh session");
   }
+  const now = Date.now();
+  if (
+    new Date(access.expiresAt).getTime() <= now ||
+    new Date(refresh.expiresAt).getTime() <= now
+  ) {
+    throw new Error("refreshSession: received expired tokens");
+  }
   return { tokens: { access, refresh } };
 }
 
