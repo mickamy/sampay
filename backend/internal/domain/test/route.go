@@ -10,6 +10,6 @@ import (
 	"github.com/mickamy/sampay/internal/domain/test/handler"
 )
 
-func Route(mux *http.ServeMux, _ *di.Infra, options ...connect.HandlerOption) {
-	mux.Handle(testv1connect.NewHealthServiceHandler(&handler.HealthHandler{}, options...))
+func Route(mux *http.ServeMux, infra *di.Infra, options ...connect.HandlerOption) {
+	mux.Handle(testv1connect.NewHealthServiceHandler(handler.NewHealthHandler(infra), options...))
 }
