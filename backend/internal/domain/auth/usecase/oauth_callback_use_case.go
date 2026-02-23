@@ -24,7 +24,7 @@ var (
 		errx.NewSentinel("unsupported provider", errx.InvalidArgument)).
 		WithMessages(messages.AuthUseCaseErrorUnsupportedOauthProvider())
 	ErrOAuthCallbackFailed = cmodel.NewLocalizableError(errx.NewSentinel("oauth callback failed", errx.InvalidArgument)).
-		WithMessages(messages.AuthUseCaseErrorOauthCallbackFailed())
+				WithMessages(messages.AuthUseCaseErrorOauthCallbackFailed())
 )
 
 type OAuthCallbackInput struct {

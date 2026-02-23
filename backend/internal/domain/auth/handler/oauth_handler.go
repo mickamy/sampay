@@ -32,6 +32,11 @@ func (h *OAuth) GetOAuthURL(
 ) (*connect.Response[v1.GetOAuthURLResponse], error) {
 	provider, err := mapper.ToOAuthProvider(r.Msg.GetProvider())
 	if err != nil {
+		var localizable *cmodel.LocalizableError
+		if errors.As(err, &localizable) {
+			return nil, errx.Wrap(err).
+				WithDetails(errx.FieldViolation("provider", localizable.LocalizeContext(ctx)))
+		}
 		return nil, errx.Wrap(err).
 			WithDetails(errx.FieldViolation("provider", err.Error()))
 	}
@@ -56,6 +61,11 @@ func (h *OAuth) OAuthCallback(
 ) (*connect.Response[v1.OAuthCallbackResponse], error) {
 	provider, err := mapper.ToOAuthProvider(r.Msg.GetProvider())
 	if err != nil {
+		var localizable *cmodel.LocalizableError
+		if errors.As(err, &localizable) {
+			return nil, errx.Wrap(err).
+				WithDetails(errx.FieldViolation("provider", localizable.LocalizeContext(ctx)))
+		}
 		return nil, errx.Wrap(err).
 			WithDetails(errx.FieldViolation("provider", err.Error()))
 	}
