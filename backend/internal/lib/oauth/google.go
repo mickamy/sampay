@@ -46,7 +46,11 @@ func (c *googleClient) Callback(ctx context.Context, code string) (Payload, erro
 	}
 
 	httpClient := c.cfg.Client(ctx, token)
-	resp, err := httpClient.Get("https://www.googleapis.com/oauth2/v2/userinfo")
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://www.googleapis.com/oauth2/v2/userinfo", nil)
+	if err != nil {
+		return Payload{}, fmt.Errorf("oauth: failed to create request: %w", err)
+	}
+	resp, err := httpClient.Do(req) //nolint:gosec // URL is a constant, not user input
 	if err != nil {
 		return Payload{}, fmt.Errorf("oauth: failed to get user info: %w", err)
 	}

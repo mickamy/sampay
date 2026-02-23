@@ -50,7 +50,11 @@ func (c *lineClient) Callback(ctx context.Context, code string) (Payload, error)
 	}
 
 	httpClient := c.cfg.Client(ctx, token)
-	resp, err := httpClient.Get("https://api.line.me/v2/profile")
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://api.line.me/v2/profile", nil)
+	if err != nil {
+		return Payload{}, fmt.Errorf("oauth: failed to create request: %w", err)
+	}
+	resp, err := httpClient.Do(req) //nolint:gosec // URL is a constant, not user input
 	if err != nil {
 		return Payload{}, fmt.Errorf("oauth: failed to get profile: %w", err)
 	}

@@ -13,6 +13,7 @@ import (
 	"github.com/mickamy/sampay/internal/api/interceptor"
 	"github.com/mickamy/sampay/internal/api/router"
 	"github.com/mickamy/sampay/internal/di"
+	"github.com/mickamy/sampay/internal/domain/auth"
 	"github.com/mickamy/sampay/internal/domain/test"
 )
 
@@ -21,7 +22,7 @@ func NewServer(infra *di.Infra) http.Server {
 
 	api := http.NewServeMux()
 
-	for _, route := range []router.Route{test.Route} {
+	for _, route := range []router.Route{auth.Route, test.Route} {
 		route(api, infra, interceptors)
 	}
 

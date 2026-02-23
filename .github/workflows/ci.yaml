@@ -82,6 +82,14 @@ jobs:
       - name: Execute localstack init script
         run: ./localstack/init.sh
 
+      - name: Run postgres init script
+        run: |
+          PGPASSWORD=password psql -h localhost -p 5432 -U postgres -d postgres -f ./backend/db/01_create_database.sql
+          PGPASSWORD=password psql -h localhost -p 5432 -U postgres -d postgres -f ./backend/db/02_create_user.sql
+
+      - name: Prepare Database
+        run: make -C ./backend db-migrate db-seed
+
       - name: Test
         run: make -C ./backend test
         env:

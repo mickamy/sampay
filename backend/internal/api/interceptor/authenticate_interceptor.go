@@ -43,7 +43,7 @@ func Authenticate(uc ausecase.Authenticate) connect.UnaryInterceptorFunc {
 				var localizable *cmodel.LocalizableError
 				if errors.As(err, &localizable) {
 					return nil, errx.Wrap(localizable).
-						WithDetails(errx.FieldViolation("access_token", localizable.LocalizeContext(ctx)))
+						WithFieldViolation("access_token", localizable.LocalizeContext(ctx))
 				}
 
 				logger.Error(ctx, "failed to execute use-case", "err", err)
