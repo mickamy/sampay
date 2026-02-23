@@ -20,7 +20,7 @@ services:
     ports:
       - "8080:8080"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/healthz || exit 1"]
+      test: ["CMD-SHELL", "curl -sf -X POST -H 'Content-Type: application/json' -d '{}' http://localhost:8080/api/test.v1.HealthService/Check"]
       interval: 3s
       retries: 5
       start_period: 30s
