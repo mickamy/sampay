@@ -15,10 +15,10 @@ import (
 //go:generate go tool go-typesafe-i18n generate -base=ja -out=./messages/messages_gen.go ./locales
 
 var bundle *i18n.Bundle
-var defaultLanguage = language.Japanese
+var DefaultLanguage = language.Japanese
 
 func init() {
-	bundle = i18n.NewBundle(defaultLanguage)
+	bundle = i18n.NewBundle(DefaultLanguage)
 	locales := path.Join(config.Common().ModuleRoot, "internal", "misc", "i18n", "locales")
 	bundle.MustLoadFile(path.Join(locales, "ja.yaml"))
 	bundle.MustLoadFile(path.Join(locales, "en.yaml"))
@@ -49,7 +49,7 @@ func ResolveLanguage(tags []language.Tag) language.Tag {
 		}
 	}
 
-	return defaultLanguage
+	return DefaultLanguage
 }
 
 type Message = i18n.Message
