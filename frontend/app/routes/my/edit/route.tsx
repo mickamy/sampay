@@ -121,10 +121,11 @@ export async function action({ request }: Route.ActionArgs) {
             await storageClient.getUploadURL({
               path: `qr/${key}_${Date.now()}.${ext}`,
             });
+          const contentType = qrFile.type || `image/${ext}`;
           const uploadResponse = await fetch(uploadUrl, {
             method: "PUT",
             body: qrFile,
-            headers: { "Content-Type": qrFile.type },
+            headers: { "Content-Type": contentType },
           });
           if (!uploadResponse.ok) {
             throw new Error("failed to upload QR code image");

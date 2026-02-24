@@ -40,7 +40,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       qrCodeUrl: string;
     }[]
   )
-    .filter((pm) => pm.url.trim() !== "")
+    .filter((pm) => pm.url.trim() !== "" && paymentMethodTypeToKey(pm.type) !== "")
     .map((pm) => ({
       type: paymentMethodTypeToKey(pm.type),
       url: pm.url,
