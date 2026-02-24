@@ -16,10 +16,12 @@ export function buildMeta({
   title,
   description,
   image,
+  url,
 }: {
   title: string;
   description: string;
   image?: string;
+  url?: string;
 }): MetaEntry[] {
   const meta: MetaEntry[] = [
     { title },
@@ -28,6 +30,9 @@ export function buildMeta({
     { property: "og:description", content: description },
     ...COMMON_META,
   ];
+  if (url) {
+    meta.push({ property: "og:url", content: url });
+  }
   if (image) {
     meta.push(
       { property: "og:image", content: image },
