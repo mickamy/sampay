@@ -18,6 +18,17 @@ func NewPaymentMethod(infra *di.Infra) *PaymentMethod {
 	}
 }
 
+// MustNewPaymentMethod initializes dependencies and constructs PaymentMethod or panics on failure.
+func MustNewPaymentMethod(infra *di.Infra) *PaymentMethod {
+	listPaymentMethods := usecase.NewListPaymentMethods(infra)
+	savePaymentMethods := usecase.NewSavePaymentMethods(infra)
+
+	return &PaymentMethod{
+		listPaymentMethods: listPaymentMethods,
+		savePaymentMethods: savePaymentMethods,
+	}
+}
+
 // NewUserProfile initializes dependencies and constructs UserProfile.
 func NewUserProfile(infra *di.Infra) *UserProfile {
 	getUserProfile := usecase.NewGetUserProfile(infra)
@@ -27,13 +38,11 @@ func NewUserProfile(infra *di.Infra) *UserProfile {
 	}
 }
 
-// MustNewPaymentMethod initializes dependencies and constructs PaymentMethod or panics on failure.
-func MustNewPaymentMethod(infra *di.Infra) *PaymentMethod {
-	listPaymentMethods := usecase.NewListPaymentMethods(infra)
-	savePaymentMethods := usecase.NewSavePaymentMethods(infra)
+// MustNewUserProfile initializes dependencies and constructs UserProfile or panics on failure.
+func MustNewUserProfile(infra *di.Infra) *UserProfile {
+	getUserProfile := usecase.NewGetUserProfile(infra)
 
-	return &PaymentMethod{
-		listPaymentMethods: listPaymentMethods,
-		savePaymentMethods: savePaymentMethods,
+	return &UserProfile{
+		getUserProfile: getUserProfile,
 	}
 }

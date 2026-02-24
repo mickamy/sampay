@@ -4,8 +4,33 @@ package usecase
 
 import (
 	di "github.com/mickamy/sampay/internal/di"
+	repository2 "github.com/mickamy/sampay/internal/domain/storage/repository"
 	repository "github.com/mickamy/sampay/internal/domain/user/repository"
 )
+
+// NewGetUserProfile initializes dependencies and constructs getUserProfile.
+func NewGetUserProfile(infra *di.Infra) GetUserProfile {
+	endUser := repository.NewEndUser(infra.DB)
+	userPaymentMethod := repository.NewUserPaymentMethod(infra.DB)
+
+	return &getUserProfile{
+		reader:            infra.ReaderDB,
+		endUserRepo:       endUser,
+		paymentMethodRepo: userPaymentMethod,
+	}
+}
+
+// MustNewGetUserProfile initializes dependencies and constructs getUserProfile or panics on failure.
+func MustNewGetUserProfile(infra *di.Infra) GetUserProfile {
+	endUser := repository.NewEndUser(infra.DB)
+	userPaymentMethod := repository.NewUserPaymentMethod(infra.DB)
+
+	return &getUserProfile{
+		reader:            infra.ReaderDB,
+		endUserRepo:       endUser,
+		paymentMethodRepo: userPaymentMethod,
+	}
+}
 
 // NewListPaymentMethods initializes dependencies and constructs listPaymentMethods.
 func NewListPaymentMethods(infra *di.Infra) ListPaymentMethods {
@@ -27,34 +52,26 @@ func MustNewListPaymentMethods(infra *di.Infra) ListPaymentMethods {
 	}
 }
 
-// NewGetUserProfile initializes dependencies and constructs getUserProfile.
-func NewGetUserProfile(infra *di.Infra) GetUserProfile {
-	endUser := repository.NewEndUser(infra.DB)
-	userPaymentMethod := repository.NewUserPaymentMethod(infra.DB)
-
-	return &getUserProfile{
-		reader:            infra.ReaderDB,
-		endUserRepo:       endUser,
-		paymentMethodRepo: userPaymentMethod,
-	}
-}
-
 // NewSavePaymentMethods initializes dependencies and constructs savePaymentMethods.
 func NewSavePaymentMethods(infra *di.Infra) SavePaymentMethods {
 	userPaymentMethod := repository.NewUserPaymentMethod(infra.DB)
+	s3Object := repository2.NewS3Object(infra.DB)
 
 	return &savePaymentMethods{
 		writer:            infra.WriterDB,
 		paymentMethodRepo: userPaymentMethod,
+		s3ObjRepo:         s3Object,
 	}
 }
 
 // MustNewSavePaymentMethods initializes dependencies and constructs savePaymentMethods or panics on failure.
 func MustNewSavePaymentMethods(infra *di.Infra) SavePaymentMethods {
 	userPaymentMethod := repository.NewUserPaymentMethod(infra.DB)
+	s3Object := repository2.NewS3Object(infra.DB)
 
 	return &savePaymentMethods{
 		writer:            infra.WriterDB,
 		paymentMethodRepo: userPaymentMethod,
+		s3ObjRepo:         s3Object,
 	}
 }
