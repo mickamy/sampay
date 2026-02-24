@@ -14,7 +14,6 @@ services:
       LINE_CHANNEL_SECRET: ${LINE_CHANNEL_SECRET:?LINE_CHANNEL_SECRET is required}
     volumes:
       - ./backend:/src
-      - ./log:/var/log
       - go:/go
       - /tmp:/tmp
     healthcheck:
