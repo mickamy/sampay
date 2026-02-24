@@ -5,7 +5,7 @@ CREATE TABLE user_payment_methods
     user_id             CHAR(26)    NOT NULL REFERENCES end_users (user_id),
     type                TEXT        NOT NULL,
     url                 TEXT        NOT NULL,
-    qr_code_s3_object_id CHAR(26)  REFERENCES s3_objects (id),
+    qr_code_s3_object_id CHAR(26)  REFERENCES s3_objects (id) ON DELETE SET NULL,
     display_order       INT         NOT NULL DEFAULT 0,
     created_at          TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,

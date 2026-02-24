@@ -28,16 +28,15 @@ func TestStorage_GetUploadURL(t *testing.T) {
 		t.Parallel()
 
 		// arrange
+		infra := newInfra(t)
+		userID, authHeader := ctest.UserSession(t, infra)
 		mock := enufstub.Of[s3.Client]().With("PresignPutObject",
 			func(_ context.Context, bucket, key string) (string, error) {
 				assert.Equal(t, "sampay-public", bucket)
-				assert.Equal(t, "qr/user1/paypay.png", key)
+				assert.Equal(t, userID+"/qr/paypay.png", key)
 				return "https://s3.example.com/presigned", nil
 			}).DefaultPanic().Build()
-		infra := newInfra(t, func(i *di.Infra) {
-			i.S3 = mock.Impl()
-		})
-		_, authHeader := ctest.UserSession(t, infra)
+		infra.S3 = mock.Impl()
 
 		// act
 		var out v1.GetUploadURLResponse
@@ -48,7 +47,7 @@ func TestStorage_GetUploadURL(t *testing.T) {
 			Procedure(storagev1connect.StorageServiceGetUploadURLProcedure).
 			Header("Authorization", authHeader).
 			In(&v1.GetUploadURLRequest{
-				Path: "qr/user1/paypay.png",
+				Path: "qr/paypay.png",
 			}).
 			Do()
 
@@ -60,7 +59,7 @@ func TestStorage_GetUploadURL(t *testing.T) {
 		// verify DB record
 		obj, err := query.S3Objects(infra.ReaderDB).Where("id = ?", out.GetS3ObjectId()).First(t.Context())
 		require.NoError(t, err)
-		assert.Equal(t, "qr/user1/paypay.png", obj.Key)
+		assert.Equal(t, userID+"/qr/paypay.png", obj.Key)
 	})
 
 	t.Run("returns error when S3 presign fails", func(t *testing.T) {
@@ -83,7 +82,7 @@ func TestStorage_GetUploadURL(t *testing.T) {
 			Procedure(storagev1connect.StorageServiceGetUploadURLProcedure).
 			Header("Authorization", authHeader).
 			In(&v1.GetUploadURLRequest{
-				Path: "qr/user1/paypay.png",
+				Path: "qr/paypay.png",
 			}).
 			Do()
 

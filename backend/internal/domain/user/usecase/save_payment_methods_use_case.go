@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"net/url"
 
 	"github.com/mickamy/errx"
 
@@ -70,7 +71,7 @@ func (uc *savePaymentMethods) Do(ctx context.Context, input SavePaymentMethodsIn
 			}
 		}
 		var err error
-		saved, err = repo.ListByUserID(ctx, userID)
+		saved, err = repo.ListByUserID(ctx, userID, repository.UserPaymentMethodPreloadQRCodeS3Object())
 		if err != nil {
 			return errx.Wrap(err, "failed to list saved payment methods")
 		}
@@ -93,6 +94,10 @@ func (i savePaymentMethodInputs) validate() error {
 		}
 		if item.URL == "" {
 			return errx.New("payment method URL is required").WithCode(errx.InvalidArgument)
+		}
+		u, err := url.ParseRequestURI(item.URL)
+		if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
+			return errx.New("payment method URL must be a valid HTTP or HTTPS URL").WithCode(errx.InvalidArgument)
 		}
 		if seen[item.Type] {
 			return errx.New("duplicate payment method type", "type", item.Type).WithCode(errx.InvalidArgument)

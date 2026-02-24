@@ -57,3 +57,7 @@ func (repo *userPaymentMethod) DeleteByUserID(ctx context.Context, userID string
 func (repo *userPaymentMethod) WithTx(tx *database.DB) UserPaymentMethod {
 	return &userPaymentMethod{db: tx}
 }
+
+func UserPaymentMethodPreloadQRCodeS3Object() scope.Scope {
+	return scope.Preload("QRCodeS3Object")
+}
