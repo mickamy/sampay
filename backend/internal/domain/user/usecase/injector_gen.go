@@ -8,6 +8,26 @@ import (
 	repository "github.com/mickamy/sampay/internal/domain/user/repository"
 )
 
+// NewCheckSlugAvailability initializes dependencies and constructs checkSlugAvailability.
+func NewCheckSlugAvailability(infra *di.Infra) CheckSlugAvailability {
+	endUser := repository.NewEndUser(infra.DB)
+
+	return &checkSlugAvailability{
+		reader:      infra.ReaderDB,
+		endUserRepo: endUser,
+	}
+}
+
+// MustNewCheckSlugAvailability initializes dependencies and constructs checkSlugAvailability or panics on failure.
+func MustNewCheckSlugAvailability(infra *di.Infra) CheckSlugAvailability {
+	endUser := repository.NewEndUser(infra.DB)
+
+	return &checkSlugAvailability{
+		reader:      infra.ReaderDB,
+		endUserRepo: endUser,
+	}
+}
+
 // NewGetUserProfile initializes dependencies and constructs getUserProfile.
 func NewGetUserProfile(infra *di.Infra) GetUserProfile {
 	endUser := repository.NewEndUser(infra.DB)
@@ -73,5 +93,25 @@ func MustNewSavePaymentMethods(infra *di.Infra) SavePaymentMethods {
 		writer:            infra.WriterDB,
 		paymentMethodRepo: userPaymentMethod,
 		s3ObjRepo:         s3Object,
+	}
+}
+
+// NewUpdateSlug initializes dependencies and constructs updateSlug.
+func NewUpdateSlug(infra *di.Infra) UpdateSlug {
+	endUser := repository.NewEndUser(infra.DB)
+
+	return &updateSlug{
+		writer:      infra.WriterDB,
+		endUserRepo: endUser,
+	}
+}
+
+// MustNewUpdateSlug initializes dependencies and constructs updateSlug or panics on failure.
+func MustNewUpdateSlug(infra *di.Infra) UpdateSlug {
+	endUser := repository.NewEndUser(infra.DB)
+
+	return &updateSlug{
+		writer:      infra.WriterDB,
+		endUserRepo: endUser,
 	}
 }

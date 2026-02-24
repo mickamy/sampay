@@ -64,4 +64,7 @@ func ValidateSlug(slug string) *cmodel.LocalizableError {
 	return cmodel.NewLocalizableError(errSlugValidation).WithMessages(msgs...)
 }
 
+var ErrSlugAlreadyTaken = cmodel.NewLocalizableError(errSlugAlreadyTaken).
+	WithMessages(messages.UserModelSlugErrorAlreadyTaken())
 var errSlugValidation = cmodel.NewLocalizableError(errx.NewSentinel("slug validation failed", errx.InvalidArgument))
+var errSlugAlreadyTaken = cmodel.NewLocalizableError(errx.NewSentinel("slug already taken", errx.AlreadyExists))
