@@ -17,6 +17,7 @@ import (
 	"github.com/mickamy/sampay/internal/misc/contexts"
 )
 
+//nolint:maintidx // table-driven test with many cases
 func TestSavePaymentMethods_Do(t *testing.T) {
 	t.Parallel()
 

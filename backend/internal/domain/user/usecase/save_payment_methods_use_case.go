@@ -91,7 +91,9 @@ func (uc *savePaymentMethods) Do(ctx context.Context, input SavePaymentMethodsIn
 	return SavePaymentMethodsOutput{PaymentMethods: saved}, nil
 }
 
-func (uc *savePaymentMethods) validateS3ObjectOwnership(ctx context.Context, userID string, inputs []SavePaymentMethodInput) error {
+func (uc *savePaymentMethods) validateS3ObjectOwnership(
+	ctx context.Context, userID string, inputs []SavePaymentMethodInput,
+) error {
 	for _, item := range inputs {
 		if item.QRCodeS3ObjectID == nil || *item.QRCodeS3ObjectID == "" {
 			continue
