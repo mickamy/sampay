@@ -146,7 +146,7 @@ services:
       - api
       - web
     environment:
-      DOMAINS: 'api.sampay.lvh.me -> http://grpc-tap:8080, sampay.lvh.me -> http://web:5173'
+      DOMAINS: 'api.sampay.lvh.me -> http://grpc-tap:8080, sampay.lvh.me -> http://web:5173, cdn.sampay.lvh.me -> http://cloudfront:8000'
       STAGE: local
       WEBSOCKET: true
       CLIENT_MAX_BODY_SIZE: 10m
