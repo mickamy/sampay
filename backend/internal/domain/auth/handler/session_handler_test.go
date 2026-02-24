@@ -77,7 +77,7 @@ func TestSession_RefreshToken(t *testing.T) {
 
 			// act
 			ct := contest.NewWith(t,
-				contest.Bind(authv1connect.NewSessionServiceHandler)(handler.MustNewSession(infra)),
+				contest.Bind(authv1connect.NewSessionServiceHandler)(handler.NewSession(infra)),
 				connect.WithInterceptors(interceptor.NewInterceptors(infra)...),
 			).
 				Procedure(authv1connect.SessionServiceRefreshTokenProcedure).
@@ -145,7 +145,7 @@ func TestSession_Logout(t *testing.T) {
 
 			// act
 			ct := contest.NewWith(t,
-				contest.Bind(authv1connect.NewSessionServiceHandler)(handler.MustNewSession(infra)),
+				contest.Bind(authv1connect.NewSessionServiceHandler)(handler.NewSession(infra)),
 				connect.WithInterceptors(interceptor.NewInterceptors(infra)...),
 			).
 				Procedure(authv1connect.SessionServiceLogoutProcedure).

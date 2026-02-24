@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/mickamy/sampay/config"
+	"github.com/mickamy/sampay/internal/infra/aws/s3"
 	"github.com/mickamy/sampay/internal/infra/storage/database"
 	"github.com/mickamy/sampay/internal/infra/storage/kvs"
 )
@@ -16,6 +17,7 @@ type Infra struct {
 	WriterDB *database.Writer `inject:""`
 	ReaderDB *database.Reader `inject:""`
 	KVS      *kvs.KVS         `inject:"provider:di.ProvideKVS"`
+	S3       s3.Client        `inject:"provider:di.ProvideS3"`
 }
 
 // Close releases all infrastructure resources.
@@ -66,6 +68,15 @@ func ProvideReaderDB(
 		return nil, fmt.Errorf("failed to open reader db: %w", err)
 	}
 	return &database.Reader{DB: db}, nil
+}
+
+func ProvideS3(ctx context.Context) (s3.Client, error) {
+	awsCfg := config.AWS()
+	client, err := s3.New(ctx, awsCfg)
+	if err != nil {
+		return nil, fmt.Errorf("di: failed to initialize S3 client: %w", err)
+	}
+	return client, nil
 }
 
 func ProvideKVS(cfg config.KVSConfig) (*kvs.KVS, error) {

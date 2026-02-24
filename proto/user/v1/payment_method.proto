@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package user.v1;
+
+enum PaymentMethodType {
+  PAYMENT_METHOD_TYPE_UNSPECIFIED = 0;
+  PAYMENT_METHOD_TYPE_PAYPAY = 1;
+  PAYMENT_METHOD_TYPE_KYASH = 2;
+  PAYMENT_METHOD_TYPE_RAKUTEN_PAY = 3;
+  PAYMENT_METHOD_TYPE_MERPAY = 4;
+}
+
+message PaymentMethod {
+  string id = 1;
+  PaymentMethodType type = 2;
+  string url = 3;
+  string qr_code_url = 4;
+  int32 display_order = 5;
+}
+
+message PaymentMethodInput {
+  PaymentMethodType type = 1;
+  string url = 2;
+  string qr_code_s3_object_id = 3;
+  int32 display_order = 4;
+}
+
+message ListPaymentMethodsRequest {}
+message ListPaymentMethodsResponse {
+  repeated PaymentMethod payment_methods = 1;
+}
+
+message SavePaymentMethodsRequest {
+  repeated PaymentMethodInput payment_methods = 1;
+}
+message SavePaymentMethodsResponse {
+  repeated PaymentMethod payment_methods = 1;
+}
+
+service PaymentMethodService {
+  rpc ListPaymentMethods(ListPaymentMethodsRequest) returns (ListPaymentMethodsResponse);
+  rpc SavePaymentMethods(SavePaymentMethodsRequest) returns (SavePaymentMethodsResponse);
+}

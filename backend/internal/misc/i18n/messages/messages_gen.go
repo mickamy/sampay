@@ -68,3 +68,9 @@ func AuthUseCaseErrorUnsupportedOauthProvider() i18n.Message {
 func CommonResponseErrorInternal() i18n.Message {
 	return i18n.Message{ID: "common.response.error.internal"}
 }
+
+// UserMapperErrorUnknownPaymentMethodType returns a Message for "user.mapper.error.unknown_payment_method_type".
+// Template: 不明な決済手段です。
+func UserMapperErrorUnknownPaymentMethodType() i18n.Message {
+	return i18n.Message{ID: "user.mapper.error.unknown_payment_method_type"}
+}

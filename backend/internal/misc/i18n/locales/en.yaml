@@ -4,6 +4,11 @@ event:
       not_found: Event not found.
       forbidden: You do not have permission to access this event.
 
+user:
+  mapper:
+    error:
+      unknown_payment_method_type: Unknown payment method type.
+
 common:
   response:
     error:

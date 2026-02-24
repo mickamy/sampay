@@ -17,6 +17,11 @@ auth:
       unsupported_oauth_provider: サポートされていない OAuth プロバイダーです。
       logout_token_mismatch: ログアウトトークンが一致しません。
 
+user:
+  mapper:
+    error:
+      unknown_payment_method_type: 不明な決済手段です。
+
 common:
   response:
     error:

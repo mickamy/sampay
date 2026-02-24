@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package storage.v1;
+
+message GetUploadURLRequest {
+  string path = 1;
+}
+
+message GetUploadURLResponse {
+  string upload_url = 1;
+  string s3_object_id = 2;
+}
+
+service StorageService {
+  rpc GetUploadURL(GetUploadURLRequest) returns (GetUploadURLResponse);
+}

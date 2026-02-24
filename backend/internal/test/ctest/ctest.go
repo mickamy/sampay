@@ -71,7 +71,7 @@ func FieldViolations(t *testing.T, connErr *connect.Error) []*errdetails.BadRequ
 	return violations
 }
 
-func AuthorizationHeader(t *testing.T, infra *di.Infra) (string, string) {
+func UserSession(t *testing.T, infra *di.Infra) (string, string) {
 	t.Helper()
 
 	endUser := tseed.EndUser(t, infra.WriterDB)

@@ -1,0 +1,52 @@
+package mapper_test
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	userv1 "github.com/mickamy/sampay/gen/user/v1"
+	smodel "github.com/mickamy/sampay/internal/domain/storage/model"
+	"github.com/mickamy/sampay/internal/domain/user/mapper"
+	"github.com/mickamy/sampay/internal/domain/user/model"
+)
+
+func TestToV1PaymentMethod(t *testing.T) {
+	t.Parallel()
+
+	t.Run("with QR code", func(t *testing.T) {
+		t.Parallel()
+
+		src := model.UserPaymentMethod{
+			ID:           "id-1",
+			Type:         "paypay",
+			URL:          "https://example.com/pay",
+			DisplayOrder: 1,
+			QRCodeS3Object: &smodel.S3Object{
+				Key: "qr/user1/paypay.png",
+			},
+		}
+
+		got := mapper.ToV1PaymentMethod(src, "https://cdn.example.com")
+
+		assert.Equal(t, "id-1", got.GetId())
+		assert.Equal(t, userv1.PaymentMethodType_PAYMENT_METHOD_TYPE_PAYPAY, got.GetType())
+		assert.Equal(t, "https://example.com/pay", got.GetUrl())
+		assert.Equal(t, int32(1), got.GetDisplayOrder())
+		assert.Equal(t, "https://cdn.example.com/qr/user1/paypay.png", got.GetQrCodeUrl())
+	})
+
+	t.Run("without QR code", func(t *testing.T) {
+		t.Parallel()
+
+		src := model.UserPaymentMethod{
+			ID:   "id-2",
+			Type: "kyash",
+			URL:  "https://example.com/kyash",
+		}
+
+		got := mapper.ToV1PaymentMethod(src, "https://cdn.example.com")
+
+		assert.Empty(t, got.GetQrCodeUrl())
+	})
+}
