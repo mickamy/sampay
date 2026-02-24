@@ -10,17 +10,17 @@ import { paymentMethodTypeToKey } from "~/model/payment-method-model";
 import { m } from "~/paraglide/messages";
 import type { Route } from "./+types/route";
 
-export function meta({ data }: Route.MetaArgs) {
-  if (!data) {
+export function meta({ loaderData }: Route.MetaArgs) {
+  if (!loaderData) {
     return buildMeta({
       title: m.profile_not_found_title(),
       description: "",
     });
   }
   return buildMeta({
-    title: m.profile_title({ name: data.slug }),
-    description: m.profile_description({ name: data.slug }),
-    url: data.profileUrl,
+    title: m.profile_title({ name: loaderData.slug }),
+    description: m.profile_description({ name: loaderData.slug }),
+    url: loaderData.profileUrl,
   });
 }
 
