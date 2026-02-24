@@ -28,6 +28,26 @@ func MustNewCheckSlugAvailability(infra *di.Infra) CheckSlugAvailability {
 	}
 }
 
+// NewGetMe initializes dependencies and constructs getMe.
+func NewGetMe(infra *di.Infra) GetMe {
+	endUser := repository.NewEndUser(infra.DB)
+
+	return &getMe{
+		reader:      infra.ReaderDB,
+		endUserRepo: endUser,
+	}
+}
+
+// MustNewGetMe initializes dependencies and constructs getMe or panics on failure.
+func MustNewGetMe(infra *di.Infra) GetMe {
+	endUser := repository.NewEndUser(infra.DB)
+
+	return &getMe{
+		reader:      infra.ReaderDB,
+		endUserRepo: endUser,
+	}
+}
+
 // NewGetUserProfile initializes dependencies and constructs getUserProfile.
 func NewGetUserProfile(infra *di.Infra) GetUserProfile {
 	endUser := repository.NewEndUser(infra.DB)
