@@ -24,11 +24,11 @@ export function PaymentMethodList({ paymentMethods }: Props) {
   return (
     <div className="space-y-4">
       {paymentMethods.map((pm) => (
-        <Card key={pm.type}>
-          <CardHeader>
+        <Card key={pm.type} className="gap-2 py-4">
+          <CardHeader className="px-4">
             <CardTitle>{paymentMethodLabel(pm.type)}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="flex flex-col items-center space-y-3 px-4">
             {pm.qrCodeUrl && (
               <Image
                 src={pm.qrCodeUrl}

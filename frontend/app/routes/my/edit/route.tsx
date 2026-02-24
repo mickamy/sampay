@@ -163,7 +163,7 @@ export default function MyEditPage({ loaderData, actionData }: Route.ComponentPr
       <h1 className="text-2xl font-bold">{m.my_title()}</h1>
       <p className="mt-2 text-muted-foreground">{m.my_description()}</p>
 
-      <Form method="post" encType="multipart/form-data" className="mt-6 space-y-4">
+      <Form method="post" action="/my/edit" encType="multipart/form-data" className="mt-6 space-y-4">
         {paymentMethods.map((pm) => (
           <PaymentMethodCard key={pm.type} entry={pm} />
         ))}
