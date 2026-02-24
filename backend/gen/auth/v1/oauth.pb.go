@@ -222,8 +222,10 @@ func (x *OAuthCallbackRequest) GetState() string {
 
 // Tokens are set via Set-Cookie header, not in the response body.
 type OAuthCallbackResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	User          *v1.User               `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	User  *v1.User               `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	// True when the user was created during this callback (first login).
+	IsNewUser     bool `protobuf:"varint,2,opt,name=is_new_user,json=isNewUser,proto3" json:"is_new_user,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -265,6 +267,13 @@ func (x *OAuthCallbackResponse) GetUser() *v1.User {
 	return nil
 }
 
+func (x *OAuthCallbackResponse) GetIsNewUser() bool {
+	if x != nil {
+		return x.IsNewUser
+	}
+	return false
+}
+
 var File_auth_v1_oauth_proto protoreflect.FileDescriptor
 
 const file_auth_v1_oauth_proto_rawDesc = "" +
@@ -277,9 +286,10 @@ const file_auth_v1_oauth_proto_rawDesc = "" +
 	"\x14OAuthCallbackRequest\x122\n" +
 	"\bprovider\x18\x01 \x01(\x0e2\x16.auth.v1.OAuthProviderR\bprovider\x12\x12\n" +
 	"\x04code\x18\x02 \x01(\tR\x04code\x12\x14\n" +
-	"\x05state\x18\x03 \x01(\tR\x05state\":\n" +
+	"\x05state\x18\x03 \x01(\tR\x05state\"Z\n" +
 	"\x15OAuthCallbackResponse\x12!\n" +
-	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user*f\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\x12\x1e\n" +
+	"\vis_new_user\x18\x02 \x01(\bR\tisNewUser*f\n" +
 	"\rOAuthProvider\x12\x1f\n" +
 	"\x1bO_AUTH_PROVIDER_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16O_AUTH_PROVIDER_GOOGLE\x10\x01\x12\x18\n" +

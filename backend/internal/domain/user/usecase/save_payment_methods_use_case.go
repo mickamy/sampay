@@ -100,7 +100,8 @@ func (uc *savePaymentMethods) validateS3ObjectOwnership(
 		}
 		obj, err := uc.s3ObjRepo.Get(ctx, *item.QRCodeS3ObjectID)
 		if err != nil {
-			return errx.Wrap(err, "message", "failed to get S3 object", "id", *item.QRCodeS3ObjectID).WithCode(errx.InvalidArgument)
+			return errx.Wrap(err, "message", "failed to get S3 object", "id", *item.QRCodeS3ObjectID).
+				WithCode(errx.InvalidArgument)
 		}
 		if !strings.HasPrefix(obj.Key, userID+"/") {
 			return errx.New("S3 object does not belong to the authenticated user").WithCode(errx.InvalidArgument)

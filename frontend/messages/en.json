@@ -41,5 +41,15 @@
   "payment_method_send": "Send money",
   "profile_title": "{name}'s Payment Methods",
   "profile_description": "Send money to {name} using one of the payment services below",
-  "profile_not_found_title": "User not found"
+  "profile_not_found_title": "User not found",
+  "enter_title": "Set your username",
+  "enter_description": "Choose a username for your profile URL",
+  "enter_slug_label": "Username",
+  "enter_slug_placeholder": "my-name",
+  "enter_slug_available": "Available",
+  "enter_slug_unavailable": "Already taken",
+  "enter_slug_checking": "Checking...",
+  "enter_slug_preview": "Your URL: {url}",
+  "enter_submit": "Save",
+  "enter_skip": "Set up later"
 }

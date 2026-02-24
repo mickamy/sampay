@@ -13,4 +13,5 @@ import (
 func Route(mux *http.ServeMux, infra *di.Infra, options ...connect.HandlerOption) {
 	mux.Handle(userv1connect.NewPaymentMethodServiceHandler(handler.NewPaymentMethod(infra), options...))
 	mux.Handle(userv1connect.NewUserProfileServiceHandler(handler.NewUserProfile(infra), options...))
+	mux.Handle(userv1connect.NewUserServiceHandler(handler.NewUserService(infra), options...))
 }

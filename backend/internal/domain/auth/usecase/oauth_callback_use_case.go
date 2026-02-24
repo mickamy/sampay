@@ -33,8 +33,9 @@ type OAuthCallbackInput struct {
 }
 
 type OAuthCallbackOutput struct {
-	Session model.Session
-	EndUser umodel.EndUser
+	Session   model.Session
+	EndUser   umodel.EndUser
+	IsNewUser bool
 }
 
 type OAuthCallback interface {
@@ -65,6 +66,7 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 
 	var session model.Session
 	var endUser umodel.EndUser
+	var isNewUser bool
 	if err := uc.writer.Transaction(ctx, func(tx *database.DB) error {
 		existingAccount, err := uc.oauthAccountRepo.WithTx(tx).GetByProviderAndUID(ctx, input.Provider, payload.UID)
 		if err != nil && !errors.Is(err, database.ErrNotFound) {
@@ -99,6 +101,8 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 				return errx.Wrap(err, "message", "failed to create oauth account").
 					WithCode(errx.Internal)
 			}
+
+			isNewUser = true
 		} else {
 			endUser, err = uc.endUserRepo.WithTx(tx).Get(ctx, existingAccount.EndUserID)
 			if err != nil {
@@ -123,7 +127,7 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 		return OAuthCallbackOutput{}, err //nolint:wrapcheck // errors from transaction callback are already wrapped inside
 	}
 
-	return OAuthCallbackOutput{Session: session, EndUser: endUser}, nil
+	return OAuthCallbackOutput{Session: session, EndUser: endUser, IsNewUser: isNewUser}, nil
 }
 
 func (uc *oauthCallback) resolveClient(provider model.OAuthProvider) (oauth.Client, error) {

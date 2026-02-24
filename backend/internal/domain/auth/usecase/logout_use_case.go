@@ -15,11 +15,11 @@ import (
 
 var (
 	ErrLogoutInvalidAccessToken = cmodel.NewLocalizableError(errx.NewSentinel("token invalid", errx.InvalidArgument)).
-		WithMessages(messages.AuthUseCaseErrorTokenInvalid())
+					WithMessages(messages.AuthUseCaseErrorTokenInvalid())
 	ErrLogoutInvalidRefreshToken = cmodel.NewLocalizableError(errx.NewSentinel("token invalid", errx.InvalidArgument)).
-		WithMessages(messages.AuthUseCaseErrorTokenInvalid())
+					WithMessages(messages.AuthUseCaseErrorTokenInvalid())
 	ErrLogoutTokenMismatch = cmodel.NewLocalizableError(errx.NewSentinel("token mismatch", errx.InvalidArgument)).
-		WithMessages(messages.AuthUseCaseErrorLogoutTokenMismatch())
+				WithMessages(messages.AuthUseCaseErrorLogoutTokenMismatch())
 )
 
 type LogoutInput struct {

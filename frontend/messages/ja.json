@@ -41,5 +41,15 @@
   "payment_method_send": "送金する",
   "profile_title": "{name} さんの送金先",
   "profile_description": "{name} さんへ送金するには、以下の決済サービスをご利用ください",
-  "profile_not_found_title": "ユーザーが見つかりません"
+  "profile_not_found_title": "ユーザーが見つかりません",
+  "enter_title": "ユーザー名を設定",
+  "enter_description": "プロフィール URL に使われるユーザー名を設定してください",
+  "enter_slug_label": "ユーザー名",
+  "enter_slug_placeholder": "my-name",
+  "enter_slug_available": "利用できます",
+  "enter_slug_unavailable": "既に使われています",
+  "enter_slug_checking": "確認中...",
+  "enter_slug_preview": "あなたの URL: {url}",
+  "enter_submit": "設定する",
+  "enter_skip": "あとで設定する"
 }

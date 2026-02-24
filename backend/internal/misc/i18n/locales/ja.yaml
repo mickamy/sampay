@@ -21,6 +21,15 @@ user:
   mapper:
     error:
       unknown_payment_method_type: 不明な決済手段です。
+  model:
+    slug:
+      error:
+        too_short: スラッグは3文字以上で入力してください。
+        too_long: スラッグは30文字以内で入力してください。
+        invalid_chars: スラッグには英小文字・数字・ハイフンのみ使用できます。
+        is_uuid: UUID 形式のスラッグは使用できません。
+        reserved: このスラッグは予約されています。
+        already_taken: このスラッグは既に使用されています。
 
 common:
   response:

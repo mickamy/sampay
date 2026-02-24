@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package user.v1;
+
+import "user/v1/user.proto";
+
+service UserService {
+  // UpdateSlug sets the authenticated user's slug.
+  rpc UpdateSlug(UpdateSlugRequest) returns (UpdateSlugResponse);
+
+  // CheckSlugAvailability checks whether a slug is available.
+  rpc CheckSlugAvailability(CheckSlugAvailabilityRequest) returns (CheckSlugAvailabilityResponse);
+}
+
+message UpdateSlugRequest {
+  string slug = 1;
+}
+
+message UpdateSlugResponse {
+  User user = 1;
+}
+
+message CheckSlugAvailabilityRequest {
+  string slug = 1;
+}
+
+message CheckSlugAvailabilityResponse {
+  bool available = 1;
+}
