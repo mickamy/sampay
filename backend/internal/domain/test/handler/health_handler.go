@@ -25,11 +25,6 @@ func (h *HealthHandler) Check(
 	ctx context.Context,
 	r *connect.Request[testv1.CheckRequest],
 ) (*connect.Response[testv1.CheckResponse], error) {
-	if _, err := h.infra.DB.ExecContext(ctx, "SELECT 1"); err != nil {
-		logger.Error(ctx, "failed to ping database", "err", err)
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-
 	if _, err := h.infra.WriterDB.ExecContext(ctx, "SELECT 1"); err != nil {
 		logger.Error(ctx, "failed to ping writer database", "err", err)
 		return nil, connect.NewError(connect.CodeInternal, err)
