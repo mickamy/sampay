@@ -90,6 +90,30 @@ func TestEndUser_Get(t *testing.T) {
 	}
 }
 
+func TestEndUser_Update(t *testing.T) {
+	t.Parallel()
+
+	// arrange
+	db := newReadWriter(t)
+	user := fixture.User(nil)
+	require.NoError(t, query.Users(db.Writer.DB).Create(t.Context(), &user))
+	m := fixture.EndUser(func(m *model.EndUser) {
+		m.UserID = user.ID
+	})
+	require.NoError(t, query.EndUsers(db.Writer.DB).Create(t.Context(), &m))
+
+	// act
+	m.Slug = "updated-slug"
+	sut := repository.NewEndUser(db.Writer.DB)
+	err := sut.Update(t.Context(), &m)
+
+	// assert
+	require.NoError(t, err)
+	got, err := query.EndUsers(db.Reader.DB).Where("user_id = ?", m.UserID).First(t.Context())
+	require.NoError(t, err)
+	assert.Equal(t, "updated-slug", got.Slug)
+}
+
 func TestEndUser_GetBySlug(t *testing.T) {
 	t.Parallel()
 
