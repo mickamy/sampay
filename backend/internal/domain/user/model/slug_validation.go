@@ -30,6 +30,7 @@ var reservedSlugs = map[string]struct{}{
 	"logout":   {},
 	"my":       {},
 	"oauth":    {},
+	"enter":    {},
 	"setup":    {},
 	"settings": {},
 	"support":  {},
