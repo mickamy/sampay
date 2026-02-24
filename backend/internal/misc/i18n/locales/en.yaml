@@ -8,6 +8,15 @@ user:
   mapper:
     error:
       unknown_payment_method_type: Unknown payment method type.
+  model:
+    slug:
+      error:
+        too_short: Slug must be at least 3 characters.
+        too_long: Slug must be at most 30 characters.
+        invalid_chars: Slug may only contain lowercase letters, digits, and hyphens.
+        is_uuid: UUID-style slugs are not allowed.
+        reserved: This slug is reserved.
+        already_taken: This slug is already taken.
 
 common:
   response:

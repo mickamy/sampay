@@ -74,3 +74,39 @@ func CommonResponseErrorInternal() i18n.Message {
 func UserMapperErrorUnknownPaymentMethodType() i18n.Message {
 	return i18n.Message{ID: "user.mapper.error.unknown_payment_method_type"}
 }
+
+// UserModelSlugErrorAlreadyTaken returns a Message for "user.model.slug.error.already_taken".
+// Template: このスラッグは既に使用されています。
+func UserModelSlugErrorAlreadyTaken() i18n.Message {
+	return i18n.Message{ID: "user.model.slug.error.already_taken"}
+}
+
+// UserModelSlugErrorInvalidChars returns a Message for "user.model.slug.error.invalid_chars".
+// Template: スラッグには英小文字・数字・ハイフンのみ使用できます。
+func UserModelSlugErrorInvalidChars() i18n.Message {
+	return i18n.Message{ID: "user.model.slug.error.invalid_chars"}
+}
+
+// UserModelSlugErrorIsUuid returns a Message for "user.model.slug.error.is_uuid".
+// Template: UUID 形式のスラッグは使用できません。
+func UserModelSlugErrorIsUuid() i18n.Message {
+	return i18n.Message{ID: "user.model.slug.error.is_uuid"}
+}
+
+// UserModelSlugErrorReserved returns a Message for "user.model.slug.error.reserved".
+// Template: このスラッグは予約されています。
+func UserModelSlugErrorReserved() i18n.Message {
+	return i18n.Message{ID: "user.model.slug.error.reserved"}
+}
+
+// UserModelSlugErrorTooLong returns a Message for "user.model.slug.error.too_long".
+// Template: スラッグは30文字以内で入力してください。
+func UserModelSlugErrorTooLong() i18n.Message {
+	return i18n.Message{ID: "user.model.slug.error.too_long"}
+}
+
+// UserModelSlugErrorTooShort returns a Message for "user.model.slug.error.too_short".
+// Template: スラッグは3文字以上で入力してください。
+func UserModelSlugErrorTooShort() i18n.Message {
+	return i18n.Message{ID: "user.model.slug.error.too_short"}
+}
