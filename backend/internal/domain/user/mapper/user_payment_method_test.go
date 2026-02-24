@@ -29,11 +29,11 @@ func TestToV1PaymentMethod(t *testing.T) {
 
 		got := mapper.ToV1PaymentMethod(src, "https://cdn.example.com")
 
-		assert.Equal(t, "id-1", got.Id)
-		assert.Equal(t, userv1.PaymentMethodType_PAYMENT_METHOD_TYPE_PAYPAY, got.Type)
-		assert.Equal(t, "https://example.com/pay", got.Url)
-		assert.Equal(t, int32(1), got.DisplayOrder)
-		assert.Equal(t, "https://cdn.example.com/qr/user1/paypay.png", got.QrCodeUrl)
+		assert.Equal(t, "id-1", got.GetId())
+		assert.Equal(t, userv1.PaymentMethodType_PAYMENT_METHOD_TYPE_PAYPAY, got.GetType())
+		assert.Equal(t, "https://example.com/pay", got.GetUrl())
+		assert.Equal(t, int32(1), got.GetDisplayOrder())
+		assert.Equal(t, "https://cdn.example.com/qr/user1/paypay.png", got.GetQrCodeUrl())
 	})
 
 	t.Run("without QR code", func(t *testing.T) {
@@ -47,6 +47,6 @@ func TestToV1PaymentMethod(t *testing.T) {
 
 		got := mapper.ToV1PaymentMethod(src, "https://cdn.example.com")
 
-		assert.Empty(t, got.QrCodeUrl)
+		assert.Empty(t, got.GetQrCodeUrl())
 	})
 }

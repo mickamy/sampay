@@ -51,7 +51,7 @@ func (uc *getUploadURL) Do(ctx context.Context, input GetUploadURLInput) (GetUpl
 		}
 		return nil
 	}); err != nil {
-		return GetUploadURLOutput{}, err
+		return GetUploadURLOutput{}, err //nolint:wrapcheck // errors from transaction callback are already wrapped inside
 	}
 
 	uploadURL, err := uc.s3.PresignPutObject(ctx, bucket, key)

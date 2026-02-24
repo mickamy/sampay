@@ -69,6 +69,7 @@ func (uc *savePaymentMethods) Do(ctx context.Context, input SavePaymentMethodsIn
 		}
 		return nil
 	}); err != nil {
+		//nolint:wrapcheck // errors from transaction callback are already wrapped inside
 		return SavePaymentMethodsOutput{}, err
 	}
 

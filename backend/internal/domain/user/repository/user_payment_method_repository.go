@@ -27,10 +27,15 @@ func NewUserPaymentMethod(db *database.DB) UserPaymentMethod {
 }
 
 func (repo *userPaymentMethod) CreateAll(ctx context.Context, methods []*model.UserPaymentMethod) error {
-	return query.UserPaymentMethods(repo.db).CreateAll(ctx, methods)
+	if err := query.UserPaymentMethods(repo.db).CreateAll(ctx, methods); err != nil {
+		return fmt.Errorf("repository: %w", err)
+	}
+	return nil
 }
 
-func (repo *userPaymentMethod) ListByUserID(ctx context.Context, userID string, scopes ...scope.Scope) ([]model.UserPaymentMethod, error) {
+func (repo *userPaymentMethod) ListByUserID(
+	ctx context.Context, userID string, scopes ...scope.Scope,
+) ([]model.UserPaymentMethod, error) {
 	methods, err := query.UserPaymentMethods(repo.db).
 		Scopes(scopes...).
 		Where("user_id = ?", userID).

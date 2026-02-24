@@ -41,6 +41,7 @@ func (uc *listPaymentMethods) Do(ctx context.Context, _ ListPaymentMethodsInput)
 		}
 		return nil
 	}); err != nil {
+		//nolint:wrapcheck // errors from transaction callback are already wrapped inside
 		return ListPaymentMethodsOutput{}, err
 	}
 
