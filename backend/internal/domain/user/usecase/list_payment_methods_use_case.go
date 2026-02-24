@@ -37,7 +37,9 @@ func (uc *listPaymentMethods) Do(ctx context.Context, _ ListPaymentMethodsInput)
 		var err error
 		methods, err = uc.paymentMethodRepo.ListByUserID(ctx, userID)
 		if err != nil {
-			return errx.Wrap(err, "failed to list payment methods", "user_id", userID)
+			return errx.
+				Wrap(err, "failed to list payment methods", "user_id", userID).
+				WithCode(errx.Internal)
 		}
 		return nil
 	}); err != nil {
