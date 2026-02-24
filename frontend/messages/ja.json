@@ -33,5 +33,10 @@
   "my_qr_change": "画像を変更",
   "my_save": "保存",
   "my_save_success": "保存しました",
-  "my_save_error": "保存に失敗しました"
+  "my_save_error": "保存に失敗しました",
+  "my_preview_title": "プレビュー",
+  "my_preview_description": "相手にはこのように表示されます",
+  "my_preview_empty": "送金リンクを登録すると、ここにプレビューが表示されます",
+  "my_edit": "編集",
+  "payment_method_send": "送金する"
 }
