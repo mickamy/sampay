@@ -70,6 +70,7 @@ func TestOAuthCallback_Do(t *testing.T) {
 				assert.NotEmpty(t, got.Session.Tokens.Access.Value)
 				assert.NotEmpty(t, got.Session.Tokens.Refresh.Value)
 				assert.NotEmpty(t, got.EndUser)
+				assert.True(t, got.IsNewUser)
 
 				// verify oauth account was created
 				account, err := query.OAuthAccounts(infra.DB).
@@ -108,6 +109,7 @@ func TestOAuthCallback_Do(t *testing.T) {
 				require.NoError(t, err)
 				assert.NotEmpty(t, got.Session.Tokens.Access.Value)
 				assert.NotEmpty(t, got.EndUser)
+				assert.False(t, got.IsNewUser)
 			},
 		},
 		{

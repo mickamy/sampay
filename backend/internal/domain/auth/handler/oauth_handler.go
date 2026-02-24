@@ -90,7 +90,8 @@ func (h *OAuth) OAuthCallback(
 	}
 
 	res := connect.NewResponse(&v1.OAuthCallbackResponse{
-		User: umapper.ToV1UserPtr(&out.EndUser),
+		User:      umapper.ToV1UserPtr(&out.EndUser),
+		IsNewUser: out.IsNewUser,
 	})
 	atCookie := cookie.Build(
 		"access_token", out.Session.Tokens.Access.Value,
