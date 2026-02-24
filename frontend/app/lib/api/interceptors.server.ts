@@ -49,7 +49,9 @@ export const sessionExchangeInterceptor: Interceptor =
     const access = parseSetCookie(cookies, "access_token");
     const refresh = parseSetCookie(cookies, "refresh_token");
     if (!access || !refresh) {
-      throw new Error("missing tokens in set-cookie headers");
+      throw new Error(
+        "OAuth session exchange failed: missing tokens in set-cookie headers",
+      );
     }
     const setCookie = await setAuthenticatedSession({
       tokens: { access, refresh },

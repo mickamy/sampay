@@ -1,13 +1,9 @@
 import { type LoaderFunction, redirect } from "react-router";
-import { OAuthProvider, OAuthService } from "~/gen/auth/v1/oauth_pb";
+import { OAuthService } from "~/gen/auth/v1/oauth_pb";
 import { getClient } from "~/lib/api/client.server";
 import { sessionExchangeInterceptor } from "~/lib/api/interceptors.server";
 import logger from "~/lib/logger";
-
-const providerMap: Record<string, OAuthProvider> = {
-  google: OAuthProvider.GOOGLE,
-  line: OAuthProvider.LINE,
-};
+import { resolveProvider } from "~/lib/oauth/provider";
 
 function parseProviderFromState(state: string): string | null {
   const idx = state.indexOf(":");
@@ -31,7 +27,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect("/");
   }
 
-  const provider = providerMap[providerParam];
+  const provider = resolveProvider(providerParam);
   if (provider == null) {
     logger.error({ provider: providerParam }, "unknown provider");
     return redirect("/");

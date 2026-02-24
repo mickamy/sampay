@@ -1,14 +1,10 @@
 import { type LoaderFunction, redirect, replace } from "react-router";
-import { OAuthProvider, OAuthService } from "~/gen/auth/v1/oauth_pb";
+import { OAuthService } from "~/gen/auth/v1/oauth_pb";
 import { getClient } from "~/lib/api/client.server";
-
-const providerMap: Record<string, OAuthProvider> = {
-  google: OAuthProvider.GOOGLE,
-  line: OAuthProvider.LINE,
-};
+import { resolveProvider } from "~/lib/oauth/provider";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const provider = providerMap[params.provider ?? ""];
+  const provider = resolveProvider(params.provider);
   if (provider == null) {
     return redirect("/");
   }
