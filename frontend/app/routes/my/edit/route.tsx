@@ -1,5 +1,5 @@
 import jsQR from "jsqr";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Form, redirect, useNavigation } from "react-router";
 import { Image } from "~/components/image";
 import { Button } from "~/components/ui/button";
@@ -190,21 +190,29 @@ export default function MyEditPage({
   );
 }
 
+const QR_MAX_DIMENSION = 1024;
+
 async function decodeQR(file: File): Promise<string | null> {
+  let bitmap: ImageBitmap | null = null;
   try {
-    const bitmap = await createImageBitmap(file);
+    bitmap = await createImageBitmap(file);
+    const maxDim = Math.max(bitmap.width, bitmap.height);
+    const scale = maxDim > QR_MAX_DIMENSION ? QR_MAX_DIMENSION / maxDim : 1;
+    const w = Math.max(1, Math.round(bitmap.width * scale));
+    const h = Math.max(1, Math.round(bitmap.height * scale));
     const canvas = document.createElement("canvas");
-    canvas.width = bitmap.width;
-    canvas.height = bitmap.height;
+    canvas.width = w;
+    canvas.height = h;
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
-    ctx.drawImage(bitmap, 0, 0);
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const code = jsQR(imageData.data, canvas.width, canvas.height);
-    bitmap.close();
+    ctx.drawImage(bitmap, 0, 0, w, h);
+    const imageData = ctx.getImageData(0, 0, w, h);
+    const code = jsQR(imageData.data, w, h);
     return code?.data ?? null;
   } catch {
     return null;
+  } finally {
+    bitmap?.close();
   }
 }
 
@@ -222,27 +230,56 @@ function PaymentMethodCard({ entry }: { entry: PaymentMethodEntry }) {
   const label = paymentMethodLabel(key);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const urlInputRef = useRef<HTMLInputElement>(null);
+  const previewUrlRef = useRef<string | null>(null);
+  const decodeIdRef = useRef(0);
   const [preview, setPreview] = useState<string | null>(null);
   const [qrFeedback, setQrFeedback] = useState<
-    "autofilled" | "not-url" | "decode-failed" | null
+    "autofilled" | "not-url" | "decode-failed" | "too-large" | null
   >(null);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+      }
+    };
+  }, []);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setPreview(URL.createObjectURL(file));
+    const currentId = ++decodeIdRef.current;
+
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
+    }
     setQrFeedback(null);
 
+    if (file.size > MAX_QR_FILE_SIZE) {
+      e.target.value = "";
+      setPreview(null);
+      setQrFeedback("too-large");
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    previewUrlRef.current = objectUrl;
+    setPreview(objectUrl);
+
     const decoded = await decodeQR(file);
+    if (decodeIdRef.current !== currentId) return;
+
     if (!decoded) {
       setQrFeedback("decode-failed");
       return;
     }
 
-    if (isUrl(decoded)) {
+    const trimmed = decoded.trim();
+    if (isUrl(trimmed)) {
       if (urlInputRef.current) {
-        urlInputRef.current.value = decoded;
+        urlInputRef.current.value = trimmed;
       }
       setQrFeedback("autofilled");
     } else {
@@ -314,6 +351,9 @@ function PaymentMethodCard({ entry }: { entry: PaymentMethodEntry }) {
             <p className="text-sm text-destructive">
               {m.my_qr_decode_failed()}
             </p>
+          )}
+          {qrFeedback === "too-large" && (
+            <p className="text-sm text-destructive">{m.my_qr_too_large()}</p>
           )}
         </div>
       </CardContent>
