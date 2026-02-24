@@ -19,10 +19,10 @@ type SavePaymentMethodsInput struct {
 }
 
 type SavePaymentMethodInput struct {
-	Type             string
-	URL              string
-	QRCodeS3ObjectID *string
-	DisplayOrder     int
+	Type             string  `map:"Type"`
+	URL              string  `map:"Url"`
+	QRCodeS3ObjectID *string `map:"QrCodeS3ObjectId"`
+	DisplayOrder     int     `map:"DisplayOrder"`
 }
 
 type SavePaymentMethodsOutput struct {

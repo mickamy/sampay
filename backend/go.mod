@@ -26,6 +26,7 @@ require (
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.11.2
+	github.com/mickamy/automapper v0.0.11
 	github.com/mickamy/contest v0.0.3
 	github.com/mickamy/enufstub v0.0.1
 	github.com/mickamy/errx v0.0.4
@@ -82,7 +83,6 @@ require (
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/mickamy/automapper v0.0.10 // indirect
 	github.com/mickamy/injector v0.1.18 // indirect
 	github.com/ovechkin-dm/go-dyno v0.5.3 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect

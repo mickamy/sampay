@@ -211,8 +211,8 @@ github.com/mattn/go-runewidth v0.0.16 h1:E5ScNMtiwvlvB5paMFdw9p4kSQzbXFikJ5SQO6T
 github.com/mattn/go-runewidth v0.0.16/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh153qUoGf23w=
 github.com/mattn/go-sqlite3 v1.14.33 h1:A5blZ5ulQo2AtayQ9/limgHEkFreKj1Dv226a1K73s0=
 github.com/mattn/go-sqlite3 v1.14.33/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxUwlHK0RXw+Y=
-github.com/mickamy/automapper v0.0.10 h1:0/NQFhPeTrAxqlZWEp+pBUCPPTcGWGKl/+i3YSxwTdY=
-github.com/mickamy/automapper v0.0.10/go.mod h1:S/sszQhV0Fhx5IF0xC29D2UiJHA05Ab9/niy3eFSwWQ=
+github.com/mickamy/automapper v0.0.11 h1:LQlRxni0QNir0cjfUCP7TJkn27Ef8i3OtEyjdpUkWfY=
+github.com/mickamy/automapper v0.0.11/go.mod h1:S/sszQhV0Fhx5IF0xC29D2UiJHA05Ab9/niy3eFSwWQ=
 github.com/mickamy/contest v0.0.3 h1:14NhLVf+TC51Q9wE8YYJbVpXr46yUd0S6MmHNq3Kt1E=
 github.com/mickamy/contest v0.0.3/go.mod h1:gfMzcaD6ru0P8E9jq9dUoj24i2r/SnS+lJ/SPCCchzg=
 github.com/mickamy/enufstub v0.0.1 h1:wrN0LsfU4n7HSa8DVL6inQ00lXVBL72G+YeEM0o37G4=

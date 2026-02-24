@@ -1,4 +1,4 @@
-package mapper_test
+package converter_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	userv1 "github.com/mickamy/sampay/gen/user/v1"
-	"github.com/mickamy/sampay/internal/domain/user/mapper"
+	"github.com/mickamy/sampay/internal/lib/converter"
 )
 
 func TestToPaymentMethodType(t *testing.T) {
@@ -30,7 +30,7 @@ func TestToPaymentMethodType(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := mapper.ToPaymentMethodType(tt.src)
+			got, err := converter.ToPaymentMethodType(tt.src)
 			if tt.wantErr {
 				require.Error(t, err)
 				return
@@ -60,7 +60,7 @@ func TestToV1PaymentMethodType(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := mapper.ToV1PaymentMethodType(tt.src)
+			got := converter.ToV1PaymentMethodType(tt.src)
 			assert.Equal(t, tt.want, got)
 		})
 	}
