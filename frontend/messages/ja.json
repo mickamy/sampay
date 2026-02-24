@@ -51,5 +51,12 @@
   "enter_slug_checking": "確認中...",
   "enter_slug_preview": "あなたの URL: {url}",
   "enter_submit": "設定する",
-  "enter_skip": "あとで設定する"
+  "enter_skip": "あとで設定する",
+  "share_copy_link": "リンクをコピー",
+  "share_copied": "コピーしました！",
+  "share_share": "共有する",
+  "share_title": "{name} さんの送金先 - Sampay",
+  "share_text": "{name} さんへの送金はこちらから",
+  "profile_cta_title": "自分の Sampay を作る →",
+  "profile_cta_description": "送金リンクを無料で作成して、かんたんに共有しよう"
 }

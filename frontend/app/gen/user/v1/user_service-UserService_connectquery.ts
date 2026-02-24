@@ -5,6 +5,13 @@
 import { UserService } from "./user_service_pb";
 
 /**
+ * GetMe returns the authenticated user's info.
+ *
+ * @generated from rpc user.v1.UserService.GetMe
+ */
+export const getMe = UserService.method.getMe;
+
+/**
  * UpdateSlug sets the authenticated user's slug.
  *
  * @generated from rpc user.v1.UserService.UpdateSlug

@@ -5,11 +5,20 @@ package user.v1;
 import "user/v1/user.proto";
 
 service UserService {
+  // GetMe returns the authenticated user's info.
+  rpc GetMe(GetMeRequest) returns (GetMeResponse);
+
   // UpdateSlug sets the authenticated user's slug.
   rpc UpdateSlug(UpdateSlugRequest) returns (UpdateSlugResponse);
 
   // CheckSlugAvailability checks whether a slug is available.
   rpc CheckSlugAvailability(CheckSlugAvailabilityRequest) returns (CheckSlugAvailabilityResponse);
+}
+
+message GetMeRequest {}
+
+message GetMeResponse {
+  User user = 1;
 }
 
 message UpdateSlugRequest {

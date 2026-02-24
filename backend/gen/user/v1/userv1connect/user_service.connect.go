@@ -33,6 +33,8 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
+	// UserServiceGetMeProcedure is the fully-qualified name of the UserService's GetMe RPC.
+	UserServiceGetMeProcedure = "/user.v1.UserService/GetMe"
 	// UserServiceUpdateSlugProcedure is the fully-qualified name of the UserService's UpdateSlug RPC.
 	UserServiceUpdateSlugProcedure = "/user.v1.UserService/UpdateSlug"
 	// UserServiceCheckSlugAvailabilityProcedure is the fully-qualified name of the UserService's
@@ -42,6 +44,8 @@ const (
 
 // UserServiceClient is a client for the user.v1.UserService service.
 type UserServiceClient interface {
+	// GetMe returns the authenticated user's info.
+	GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error)
 	// UpdateSlug sets the authenticated user's slug.
 	UpdateSlug(context.Context, *connect.Request[v1.UpdateSlugRequest]) (*connect.Response[v1.UpdateSlugResponse], error)
 	// CheckSlugAvailability checks whether a slug is available.
@@ -59,6 +63,12 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 	baseURL = strings.TrimRight(baseURL, "/")
 	userServiceMethods := v1.File_user_v1_user_service_proto.Services().ByName("UserService").Methods()
 	return &userServiceClient{
+		getMe: connect.NewClient[v1.GetMeRequest, v1.GetMeResponse](
+			httpClient,
+			baseURL+UserServiceGetMeProcedure,
+			connect.WithSchema(userServiceMethods.ByName("GetMe")),
+			connect.WithClientOptions(opts...),
+		),
 		updateSlug: connect.NewClient[v1.UpdateSlugRequest, v1.UpdateSlugResponse](
 			httpClient,
 			baseURL+UserServiceUpdateSlugProcedure,
@@ -76,8 +86,14 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 
 // userServiceClient implements UserServiceClient.
 type userServiceClient struct {
+	getMe                 *connect.Client[v1.GetMeRequest, v1.GetMeResponse]
 	updateSlug            *connect.Client[v1.UpdateSlugRequest, v1.UpdateSlugResponse]
 	checkSlugAvailability *connect.Client[v1.CheckSlugAvailabilityRequest, v1.CheckSlugAvailabilityResponse]
+}
+
+// GetMe calls user.v1.UserService.GetMe.
+func (c *userServiceClient) GetMe(ctx context.Context, req *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error) {
+	return c.getMe.CallUnary(ctx, req)
 }
 
 // UpdateSlug calls user.v1.UserService.UpdateSlug.
@@ -92,6 +108,8 @@ func (c *userServiceClient) CheckSlugAvailability(ctx context.Context, req *conn
 
 // UserServiceHandler is an implementation of the user.v1.UserService service.
 type UserServiceHandler interface {
+	// GetMe returns the authenticated user's info.
+	GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error)
 	// UpdateSlug sets the authenticated user's slug.
 	UpdateSlug(context.Context, *connect.Request[v1.UpdateSlugRequest]) (*connect.Response[v1.UpdateSlugResponse], error)
 	// CheckSlugAvailability checks whether a slug is available.
@@ -105,6 +123,12 @@ type UserServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
 	userServiceMethods := v1.File_user_v1_user_service_proto.Services().ByName("UserService").Methods()
+	userServiceGetMeHandler := connect.NewUnaryHandler(
+		UserServiceGetMeProcedure,
+		svc.GetMe,
+		connect.WithSchema(userServiceMethods.ByName("GetMe")),
+		connect.WithHandlerOptions(opts...),
+	)
 	userServiceUpdateSlugHandler := connect.NewUnaryHandler(
 		UserServiceUpdateSlugProcedure,
 		svc.UpdateSlug,
@@ -119,6 +143,8 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 	)
 	return "/user.v1.UserService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
+		case UserServiceGetMeProcedure:
+			userServiceGetMeHandler.ServeHTTP(w, r)
 		case UserServiceUpdateSlugProcedure:
 			userServiceUpdateSlugHandler.ServeHTTP(w, r)
 		case UserServiceCheckSlugAvailabilityProcedure:
@@ -131,6 +157,10 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 
 // UnimplementedUserServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedUserServiceHandler struct{}
+
+func (UnimplementedUserServiceHandler) GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("user.v1.UserService.GetMe is not implemented"))
+}
 
 func (UnimplementedUserServiceHandler) UpdateSlug(context.Context, *connect.Request[v1.UpdateSlugRequest]) (*connect.Response[v1.UpdateSlugResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("user.v1.UserService.UpdateSlug is not implemented"))

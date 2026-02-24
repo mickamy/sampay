@@ -12,7 +12,37 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file user/v1/user_service.proto.
  */
 export const file_user_v1_user_service: GenFile = /*@__PURE__*/
-  fileDesc("Chp1c2VyL3YxL3VzZXJfc2VydmljZS5wcm90bxIHdXNlci52MSIhChFVcGRhdGVTbHVnUmVxdWVzdBIMCgRzbHVnGAEgASgJIjEKElVwZGF0ZVNsdWdSZXNwb25zZRIbCgR1c2VyGAEgASgLMg0udXNlci52MS5Vc2VyIiwKHENoZWNrU2x1Z0F2YWlsYWJpbGl0eVJlcXVlc3QSDAoEc2x1ZxgBIAEoCSIyCh1DaGVja1NsdWdBdmFpbGFiaWxpdHlSZXNwb25zZRIRCglhdmFpbGFibGUYASABKAgyvAEKC1VzZXJTZXJ2aWNlEkUKClVwZGF0ZVNsdWcSGi51c2VyLnYxLlVwZGF0ZVNsdWdSZXF1ZXN0GhsudXNlci52MS5VcGRhdGVTbHVnUmVzcG9uc2USZgoVQ2hlY2tTbHVnQXZhaWxhYmlsaXR5EiUudXNlci52MS5DaGVja1NsdWdBdmFpbGFiaWxpdHlSZXF1ZXN0GiYudXNlci52MS5DaGVja1NsdWdBdmFpbGFiaWxpdHlSZXNwb25zZUKKAQoLY29tLnVzZXIudjFCEFVzZXJTZXJ2aWNlUHJvdG9QAVosZ2l0aHViLmNvbS9taWNrYW15L3NhbXBheS9nZW4vdXNlci92MTt1c2VydjGiAgNVWFiqAgdVc2VyLlYxygIHVXNlclxWMeICE1VzZXJcVjFcR1BCTWV0YWRhdGHqAghVc2VyOjpWMWIGcHJvdG8z", [file_user_v1_user]);
+  fileDesc("Chp1c2VyL3YxL3VzZXJfc2VydmljZS5wcm90bxIHdXNlci52MSIOCgxHZXRNZVJlcXVlc3QiLAoNR2V0TWVSZXNwb25zZRIbCgR1c2VyGAEgASgLMg0udXNlci52MS5Vc2VyIiEKEVVwZGF0ZVNsdWdSZXF1ZXN0EgwKBHNsdWcYASABKAkiMQoSVXBkYXRlU2x1Z1Jlc3BvbnNlEhsKBHVzZXIYASABKAsyDS51c2VyLnYxLlVzZXIiLAocQ2hlY2tTbHVnQXZhaWxhYmlsaXR5UmVxdWVzdBIMCgRzbHVnGAEgASgJIjIKHUNoZWNrU2x1Z0F2YWlsYWJpbGl0eVJlc3BvbnNlEhEKCWF2YWlsYWJsZRgBIAEoCDL0AQoLVXNlclNlcnZpY2USNgoFR2V0TWUSFS51c2VyLnYxLkdldE1lUmVxdWVzdBoWLnVzZXIudjEuR2V0TWVSZXNwb25zZRJFCgpVcGRhdGVTbHVnEhoudXNlci52MS5VcGRhdGVTbHVnUmVxdWVzdBobLnVzZXIudjEuVXBkYXRlU2x1Z1Jlc3BvbnNlEmYKFUNoZWNrU2x1Z0F2YWlsYWJpbGl0eRIlLnVzZXIudjEuQ2hlY2tTbHVnQXZhaWxhYmlsaXR5UmVxdWVzdBomLnVzZXIudjEuQ2hlY2tTbHVnQXZhaWxhYmlsaXR5UmVzcG9uc2VCigEKC2NvbS51c2VyLnYxQhBVc2VyU2VydmljZVByb3RvUAFaLGdpdGh1Yi5jb20vbWlja2FteS9zYW1wYXkvZ2VuL3VzZXIvdjE7dXNlcnYxogIDVVhYqgIHVXNlci5WMcoCB1VzZXJcVjHiAhNVc2VyXFYxXEdQQk1ldGFkYXRh6gIIVXNlcjo6VjFiBnByb3RvMw", [file_user_v1_user]);
+
+/**
+ * @generated from message user.v1.GetMeRequest
+ */
+export type GetMeRequest = Message<"user.v1.GetMeRequest"> & {
+};
+
+/**
+ * Describes the message user.v1.GetMeRequest.
+ * Use `create(GetMeRequestSchema)` to create a new message.
+ */
+export const GetMeRequestSchema: GenMessage<GetMeRequest> = /*@__PURE__*/
+  messageDesc(file_user_v1_user_service, 0);
+
+/**
+ * @generated from message user.v1.GetMeResponse
+ */
+export type GetMeResponse = Message<"user.v1.GetMeResponse"> & {
+  /**
+   * @generated from field: user.v1.User user = 1;
+   */
+  user?: User;
+};
+
+/**
+ * Describes the message user.v1.GetMeResponse.
+ * Use `create(GetMeResponseSchema)` to create a new message.
+ */
+export const GetMeResponseSchema: GenMessage<GetMeResponse> = /*@__PURE__*/
+  messageDesc(file_user_v1_user_service, 1);
 
 /**
  * @generated from message user.v1.UpdateSlugRequest
@@ -29,7 +59,7 @@ export type UpdateSlugRequest = Message<"user.v1.UpdateSlugRequest"> & {
  * Use `create(UpdateSlugRequestSchema)` to create a new message.
  */
 export const UpdateSlugRequestSchema: GenMessage<UpdateSlugRequest> = /*@__PURE__*/
-  messageDesc(file_user_v1_user_service, 0);
+  messageDesc(file_user_v1_user_service, 2);
 
 /**
  * @generated from message user.v1.UpdateSlugResponse
@@ -46,7 +76,7 @@ export type UpdateSlugResponse = Message<"user.v1.UpdateSlugResponse"> & {
  * Use `create(UpdateSlugResponseSchema)` to create a new message.
  */
 export const UpdateSlugResponseSchema: GenMessage<UpdateSlugResponse> = /*@__PURE__*/
-  messageDesc(file_user_v1_user_service, 1);
+  messageDesc(file_user_v1_user_service, 3);
 
 /**
  * @generated from message user.v1.CheckSlugAvailabilityRequest
@@ -63,7 +93,7 @@ export type CheckSlugAvailabilityRequest = Message<"user.v1.CheckSlugAvailabilit
  * Use `create(CheckSlugAvailabilityRequestSchema)` to create a new message.
  */
 export const CheckSlugAvailabilityRequestSchema: GenMessage<CheckSlugAvailabilityRequest> = /*@__PURE__*/
-  messageDesc(file_user_v1_user_service, 2);
+  messageDesc(file_user_v1_user_service, 4);
 
 /**
  * @generated from message user.v1.CheckSlugAvailabilityResponse
@@ -80,12 +110,22 @@ export type CheckSlugAvailabilityResponse = Message<"user.v1.CheckSlugAvailabili
  * Use `create(CheckSlugAvailabilityResponseSchema)` to create a new message.
  */
 export const CheckSlugAvailabilityResponseSchema: GenMessage<CheckSlugAvailabilityResponse> = /*@__PURE__*/
-  messageDesc(file_user_v1_user_service, 3);
+  messageDesc(file_user_v1_user_service, 5);
 
 /**
  * @generated from service user.v1.UserService
  */
 export const UserService: GenService<{
+  /**
+   * GetMe returns the authenticated user's info.
+   *
+   * @generated from rpc user.v1.UserService.GetMe
+   */
+  getMe: {
+    methodKind: "unary";
+    input: typeof GetMeRequestSchema;
+    output: typeof GetMeResponseSchema;
+  },
   /**
    * UpdateSlug sets the authenticated user's slug.
    *

@@ -19,6 +19,53 @@ import (
 	"github.com/mickamy/sampay/internal/test/ctest"
 )
 
+func TestUserService_GetMe(t *testing.T) {
+	t.Parallel()
+
+	t.Run("returns current user", func(t *testing.T) {
+		t.Parallel()
+
+		// arrange
+		infra := newInfra(t)
+		_, authHeader := ctest.UserSession(t, infra)
+
+		// act
+		var out userv1.GetMeResponse
+		ct := contest.NewWith(t,
+			contest.Bind(userv1connect.NewUserServiceHandler)(handler.NewUserService(infra)),
+			connect.WithInterceptors(interceptor.NewInterceptors(infra)...),
+		).
+			Procedure(userv1connect.UserServiceGetMeProcedure).
+			Header("Authorization", authHeader).
+			In(&userv1.GetMeRequest{}).
+			Do()
+
+		// assert
+		ct.ExpectStatus(http.StatusOK).Out(&out)
+		assert.NotEmpty(t, out.GetUser().GetId())
+		assert.NotEmpty(t, out.GetUser().GetSlug())
+	})
+
+	t.Run("returns unauthorized without auth header", func(t *testing.T) {
+		t.Parallel()
+
+		// arrange
+		infra := newInfra(t)
+
+		// act
+		ct := contest.NewWith(t,
+			contest.Bind(userv1connect.NewUserServiceHandler)(handler.NewUserService(infra)),
+			connect.WithInterceptors(interceptor.NewInterceptors(infra)...),
+		).
+			Procedure(userv1connect.UserServiceGetMeProcedure).
+			In(&userv1.GetMeRequest{}).
+			Do()
+
+		// assert
+		ct.ExpectStatus(http.StatusUnauthorized)
+	})
+}
+
 func TestUserService_UpdateSlug(t *testing.T) {
 	t.Parallel()
 

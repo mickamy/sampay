@@ -51,5 +51,12 @@
   "enter_slug_checking": "Checking...",
   "enter_slug_preview": "Your URL: {url}",
   "enter_submit": "Save",
-  "enter_skip": "Set up later"
+  "enter_skip": "Set up later",
+  "share_copy_link": "Copy link",
+  "share_copied": "Copied!",
+  "share_share": "Share",
+  "share_title": "{name}'s Payment Methods - Sampay",
+  "share_text": "Send money to {name} here",
+  "profile_cta_title": "Create your own Sampay →",
+  "profile_cta_description": "Create a free payment link and share it easily"
 }
