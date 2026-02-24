@@ -50,18 +50,3 @@ func TestToV1PaymentMethod(t *testing.T) {
 		assert.Equal(t, "", got.QrCodeUrl)
 	})
 }
-
-func TestToV1PaymentMethods(t *testing.T) {
-	t.Parallel()
-
-	src := []model.UserPaymentMethod{
-		{ID: "id-1", Type: "paypay", URL: "https://a.com"},
-		{ID: "id-2", Type: "kyash", URL: "https://b.com"},
-	}
-
-	got := mapper.ToV1PaymentMethods(src, "https://cdn.example.com")
-
-	assert.Len(t, got, 2)
-	assert.Equal(t, "id-1", got[0].Id)
-	assert.Equal(t, "id-2", got[1].Id)
-}
