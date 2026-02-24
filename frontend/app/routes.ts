@@ -8,6 +8,8 @@ export default [
     route("edit", "routes/my/edit/route.tsx"),
   ]),
 
+  route("u/:slug", "routes/u/slug/route.tsx"),
+
   route("oauth/:provider", "routes/oauth/provider/route.tsx"),
   route("oauth/callback", "routes/oauth/callback/route.tsx"),
   route("auth/logout", "routes/auth/logout/route.tsx"),

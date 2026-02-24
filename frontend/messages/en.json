@@ -38,5 +38,8 @@
   "my_preview_description": "This is how others will see your page",
   "my_preview_empty": "Register a payment link to see a preview here",
   "my_edit": "Edit",
-  "payment_method_send": "Send money"
+  "payment_method_send": "Send money",
+  "profile_title": "{name}'s Payment Methods",
+  "profile_description": "Send money to {name} using one of the payment services below",
+  "profile_not_found_title": "User not found"
 }

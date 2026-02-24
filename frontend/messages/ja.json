@@ -38,5 +38,8 @@
   "my_preview_description": "相手にはこのように表示されます",
   "my_preview_empty": "送金リンクを登録すると、ここにプレビューが表示されます",
   "my_edit": "編集",
-  "payment_method_send": "送金する"
+  "payment_method_send": "送金する",
+  "profile_title": "{name} さんの送金先",
+  "profile_description": "{name} さんへ送金するには、以下の決済サービスをご利用ください",
+  "profile_not_found_title": "ユーザーが見つかりません"
 }
