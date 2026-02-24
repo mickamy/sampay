@@ -42,7 +42,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     interceptors: [sessionExchangeInterceptor],
   });
   let setCookies: string[] = [];
-  const { user } = await client.oAuthCallback(
+  const { user, isNewUser } = await client.oAuthCallback(
     { provider, code, state: state ?? "" },
     {
       onHeader(headers) {
@@ -59,5 +59,5 @@ export const loader: LoaderFunction = async ({ request }) => {
   for (const cookie of setCookies) {
     headers.append("set-cookie", cookie);
   }
-  return redirect("/", { headers });
+  return redirect(isNewUser ? "/enter" : "/", { headers });
 };
