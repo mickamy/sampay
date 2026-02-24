@@ -68,14 +68,16 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 	if err := uc.writer.Transaction(ctx, func(tx *database.DB) error {
 		existingAccount, err := uc.oauthAccountRepo.WithTx(tx).GetByProviderAndUID(ctx, input.Provider, payload.UID)
 		if err != nil && !errors.Is(err, database.ErrNotFound) {
-			return errx.Wrap(err, "failed to get existing account")
+			return errx.Wrap(err, "message", "failed to get existing account").
+				WithCode(errx.Internal)
 		}
 
 		if errors.Is(err, database.ErrNotFound) {
 			userID := ulid.New()
 			baseUser := umodel.User{ID: userID}
 			if err := uc.userRepo.WithTx(tx).Create(ctx, &baseUser); err != nil {
-				return errx.Wrap(err, "failed to create user")
+				return errx.Wrap(err, "message", "failed to create user").
+					WithCode(errx.Internal)
 			}
 
 			endUser = umodel.EndUser{
@@ -83,7 +85,8 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 				Slug:   uuid.NewString(),
 			}
 			if err := uc.endUserRepo.WithTx(tx).Create(ctx, &endUser); err != nil {
-				return errx.Wrap(err, "failed to create end user")
+				return errx.Wrap(err, "message", "failed to create end user").
+					WithCode(errx.Internal)
 			}
 
 			oauthAccount := model.OAuthAccount{
@@ -93,22 +96,26 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 				UID:       payload.UID,
 			}
 			if err := uc.oauthAccountRepo.WithTx(tx).Create(ctx, &oauthAccount); err != nil {
-				return errx.Wrap(err, "failed to create oauth account")
+				return errx.Wrap(err, "message", "failed to create oauth account").
+					WithCode(errx.Internal)
 			}
 		} else {
 			endUser, err = uc.endUserRepo.WithTx(tx).Get(ctx, existingAccount.EndUserID)
 			if err != nil {
-				return errx.Wrap(err, "failed to get end user")
+				return errx.Wrap(err, "message", "failed to get end user").
+					WithCode(errx.Internal)
 			}
 		}
 
 		session, err = model.NewSession(endUser.UserID)
 		if err != nil {
-			return errx.Wrap(err, "failed to initialize session")
+			return errx.Wrap(err, "message", "failed to initialize session").
+				WithCode(errx.Internal)
 		}
 
 		if err := uc.sessionRepo.Create(ctx, session); err != nil {
-			return errx.Wrap(err, "failed to create session")
+			return errx.Wrap(err, "message", "failed to create session").
+				WithCode(errx.Internal)
 		}
 
 		return nil

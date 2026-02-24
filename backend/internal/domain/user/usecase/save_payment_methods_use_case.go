@@ -3,10 +3,12 @@ package usecase
 import (
 	"context"
 	"net/url"
+	"strings"
 
 	"github.com/mickamy/errx"
 
 	"github.com/mickamy/sampay/internal/di"
+	srepository "github.com/mickamy/sampay/internal/domain/storage/repository"
 	"github.com/mickamy/sampay/internal/domain/user/model"
 	"github.com/mickamy/sampay/internal/domain/user/repository"
 	"github.com/mickamy/sampay/internal/infra/storage/database"
@@ -39,12 +41,17 @@ type savePaymentMethods struct {
 	_                 *di.Infra                    `inject:"param"`
 	writer            *database.Writer             `inject:""`
 	paymentMethodRepo repository.UserPaymentMethod `inject:""`
+	s3ObjRepo         srepository.S3Object         `inject:""`
 }
 
 func (uc *savePaymentMethods) Do(ctx context.Context, input SavePaymentMethodsInput) (SavePaymentMethodsOutput, error) {
 	userID := contexts.MustAuthenticatedUserID(ctx)
 
 	if err := savePaymentMethodInputs(input.PaymentMethods).validate(); err != nil {
+		return SavePaymentMethodsOutput{}, err
+	}
+
+	if err := uc.validateS3ObjectOwnership(ctx, userID, input.PaymentMethods); err != nil {
 		return SavePaymentMethodsOutput{}, err
 	}
 
@@ -63,17 +70,17 @@ func (uc *savePaymentMethods) Do(ctx context.Context, input SavePaymentMethodsIn
 	if err := uc.writer.Transaction(ctx, func(tx *database.DB) error {
 		repo := uc.paymentMethodRepo.WithTx(tx)
 		if err := repo.DeleteByUserID(ctx, userID); err != nil {
-			return errx.Wrap(err, "failed to delete existing payment methods")
+			return errx.Wrap(err, "message", "failed to delete existing payment methods")
 		}
 		if len(methods) > 0 {
 			if err := repo.CreateAll(ctx, methods); err != nil {
-				return errx.Wrap(err, "failed to create payment methods")
+				return errx.Wrap(err, "message", "failed to create payment methods")
 			}
 		}
 		var err error
 		saved, err = repo.ListByUserID(ctx, userID, repository.UserPaymentMethodPreloadQRCodeS3Object())
 		if err != nil {
-			return errx.Wrap(err, "failed to list saved payment methods")
+			return errx.Wrap(err, "message", "failed to list saved payment methods")
 		}
 		return nil
 	}); err != nil {
@@ -82,6 +89,24 @@ func (uc *savePaymentMethods) Do(ctx context.Context, input SavePaymentMethodsIn
 	}
 
 	return SavePaymentMethodsOutput{PaymentMethods: saved}, nil
+}
+
+func (uc *savePaymentMethods) validateS3ObjectOwnership(
+	ctx context.Context, userID string, inputs []SavePaymentMethodInput,
+) error {
+	for _, item := range inputs {
+		if item.QRCodeS3ObjectID == nil || *item.QRCodeS3ObjectID == "" {
+			continue
+		}
+		obj, err := uc.s3ObjRepo.Get(ctx, *item.QRCodeS3ObjectID)
+		if err != nil {
+			return errx.Wrap(err, "message", "failed to get S3 object", "id", *item.QRCodeS3ObjectID).WithCode(errx.InvalidArgument)
+		}
+		if !strings.HasPrefix(obj.Key, userID+"/") {
+			return errx.New("S3 object does not belong to the authenticated user").WithCode(errx.InvalidArgument)
+		}
+	}
+	return nil
 }
 
 type savePaymentMethodInputs []SavePaymentMethodInput

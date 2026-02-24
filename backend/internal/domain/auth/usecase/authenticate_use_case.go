@@ -52,7 +52,10 @@ func (uc *authenticate) Do(ctx context.Context, input AuthenticateInput) (Authen
 
 	exists, err := uc.sessionRepo.AccessTokenExists(ctx, userID, input.Token)
 	if err != nil {
-		return AuthenticateOutput{}, errx.Wrap(err, "failed to check access token existence")
+		return AuthenticateOutput{}, errx.
+			Wrap(err).
+			With("message", "failed to check access token existence", "user_id", userID).
+			WithCode(errx.Internal)
 	}
 	if !exists {
 		return AuthenticateOutput{}, ErrAuthenticateSessionNotFound

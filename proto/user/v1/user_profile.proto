@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package user.v1;
+
+import "user/v1/user.proto";
+import "user/v1/payment_method.proto";
+
+message GetUserProfileRequest {
+  string slug = 1;
+}
+
+message GetUserProfileResponse {
+  User user = 1;
+  repeated PaymentMethod payment_methods = 2;
+}
+
+service UserProfileService {
+  rpc GetUserProfile(GetUserProfileRequest) returns (GetUserProfileResponse);
+}

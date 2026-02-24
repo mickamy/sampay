@@ -39,7 +39,7 @@ func (uc *listPaymentMethods) Do(ctx context.Context, _ ListPaymentMethodsInput)
 			ListByUserID(ctx, userID, repository.UserPaymentMethodPreloadQRCodeS3Object())
 		if err != nil {
 			return errx.
-				Wrap(err, "failed to list payment methods", "user_id", userID).
+				Wrap(err, "message", "failed to list payment methods", "user_id", userID).
 				WithCode(errx.Internal)
 		}
 		return nil

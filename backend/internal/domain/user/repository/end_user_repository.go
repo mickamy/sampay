@@ -16,6 +16,7 @@ import (
 type EndUser interface {
 	Create(ctx context.Context, m *model.EndUser) error
 	Get(ctx context.Context, id string, scopes ...scope.Scope) (model.EndUser, error)
+	GetBySlug(ctx context.Context, slug string, scopes ...scope.Scope) (model.EndUser, error)
 	WithTx(tx *database.DB) EndUser
 }
 
@@ -36,6 +37,17 @@ func (repo *endUser) Create(ctx context.Context, m *model.EndUser) error {
 
 func (repo *endUser) Get(ctx context.Context, id string, scopes ...scope.Scope) (model.EndUser, error) {
 	m, err := query.EndUsers(repo.db).Scopes(scopes...).Where("user_id = ?", id).First(ctx)
+	if errors.Is(err, orm.ErrNotFound) {
+		return model.EndUser{}, database.ErrNotFound
+	}
+	if err != nil {
+		return m, fmt.Errorf("repository: %w", err)
+	}
+	return m, nil
+}
+
+func (repo *endUser) GetBySlug(ctx context.Context, slug string, scopes ...scope.Scope) (model.EndUser, error) {
+	m, err := query.EndUsers(repo.db).Scopes(scopes...).Where("slug = ?", slug).First(ctx)
 	if errors.Is(err, orm.ErrNotFound) {
 		return model.EndUser{}, database.ErrNotFound
 	}

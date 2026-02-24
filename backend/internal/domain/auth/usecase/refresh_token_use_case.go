@@ -52,7 +52,8 @@ func (uc *refreshToken) Do(ctx context.Context, input RefreshTokenInput) (Refres
 
 	exists, err := uc.sessionRepo.RefreshTokenExists(ctx, userID, input.Token)
 	if err != nil {
-		return RefreshTokenOutput{}, errx.Wrap(err, "failed to check session existence")
+		return RefreshTokenOutput{}, errx.Wrap(err, "message", "failed to check session existence").
+			WithCode(errx.Internal)
 	}
 	if !exists {
 		return RefreshTokenOutput{}, ErrRefreshTokenNotFound
@@ -60,11 +61,13 @@ func (uc *refreshToken) Do(ctx context.Context, input RefreshTokenInput) (Refres
 
 	session, err := model.NewSession(userID)
 	if err != nil {
-		return RefreshTokenOutput{}, errx.Wrap(err, "failed to initialize session")
+		return RefreshTokenOutput{}, errx.Wrap(err, "message", "failed to initialize session").
+			WithCode(errx.Internal)
 	}
 
 	if err := uc.sessionRepo.Create(ctx, session); err != nil {
-		return RefreshTokenOutput{}, errx.Wrap(err, "failed to create session")
+		return RefreshTokenOutput{}, errx.Wrap(err, "message", "failed to create session").
+			WithCode(errx.Internal)
 	}
 
 	return RefreshTokenOutput{Tokens: session.Tokens}, nil

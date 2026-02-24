@@ -28,3 +28,21 @@ func MustNewPaymentMethod(infra *di.Infra) *PaymentMethod {
 		savePaymentMethods: savePaymentMethods,
 	}
 }
+
+// NewUserProfile initializes dependencies and constructs UserProfile.
+func NewUserProfile(infra *di.Infra) *UserProfile {
+	getUserProfile := usecase.NewGetUserProfile(infra)
+
+	return &UserProfile{
+		getUserProfile: getUserProfile,
+	}
+}
+
+// MustNewUserProfile initializes dependencies and constructs UserProfile or panics on failure.
+func MustNewUserProfile(infra *di.Infra) *UserProfile {
+	getUserProfile := usecase.NewGetUserProfile(infra)
+
+	return &UserProfile{
+		getUserProfile: getUserProfile,
+	}
+}
