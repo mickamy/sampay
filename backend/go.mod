@@ -27,6 +27,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.11.2
 	github.com/mickamy/contest v0.0.3
+	github.com/mickamy/enufstub v0.0.1
 	github.com/mickamy/errx v0.0.4
 	github.com/mickamy/errx/cerr v0.0.4
 	github.com/mickamy/go-typesafe-i18n v0.0.2
@@ -83,6 +84,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mickamy/automapper v0.0.10 // indirect
 	github.com/mickamy/injector v0.1.18 // indirect
+	github.com/ovechkin-dm/go-dyno v0.5.3 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect

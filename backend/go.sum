@@ -215,6 +215,8 @@ github.com/mickamy/automapper v0.0.10 h1:0/NQFhPeTrAxqlZWEp+pBUCPPTcGWGKl/+i3YSx
 github.com/mickamy/automapper v0.0.10/go.mod h1:S/sszQhV0Fhx5IF0xC29D2UiJHA05Ab9/niy3eFSwWQ=
 github.com/mickamy/contest v0.0.3 h1:14NhLVf+TC51Q9wE8YYJbVpXr46yUd0S6MmHNq3Kt1E=
 github.com/mickamy/contest v0.0.3/go.mod h1:gfMzcaD6ru0P8E9jq9dUoj24i2r/SnS+lJ/SPCCchzg=
+github.com/mickamy/enufstub v0.0.1 h1:wrN0LsfU4n7HSa8DVL6inQ00lXVBL72G+YeEM0o37G4=
+github.com/mickamy/enufstub v0.0.1/go.mod h1:txSWmK9TlGGVP2P7BU+a7kS8PB96WSAbGjhSM+eW4To=
 github.com/mickamy/errx v0.0.4 h1:Dq1Ddlb53qfFuNWv1upC2ssVkFinyUi3HJdzG+YGSYs=
 github.com/mickamy/errx v0.0.4/go.mod h1:74tLUf/ldRG+mSWC1pJSPvUObnP9kHJfSEf7Z+3PXT0=
 github.com/mickamy/errx/cerr v0.0.4 h1:H5ntRrHZmfL0OUlOgFk7qAGl/MTGhdWu//eH01pMjcM=
@@ -251,6 +253,8 @@ github.com/olekukonko/tablewriter v1.0.9 h1:XGwRsYLC2bY7bNd93Dk51bcPZksWZmLYuaTH
 github.com/olekukonko/tablewriter v1.0.9/go.mod h1:5c+EBPeSqvXnLLgkm9isDdzR3wjfBkHR9Nhfp3NWrzo=
 github.com/onsi/gomega v1.38.3 h1:eTX+W6dobAYfFeGC2PV6RwXRu/MyT+cQguijutvkpSM=
 github.com/onsi/gomega v1.38.3/go.mod h1:ZCU1pkQcXDO5Sl9/VVEGlDyp+zm0m1cmeG5TOzLgdh4=
+github.com/ovechkin-dm/go-dyno v0.5.3 h1:/MrL26kFTxbLj/qPbEtR4piVeFYUqjSamAgWpuzeD/k=
+github.com/ovechkin-dm/go-dyno v0.5.3/go.mod h1:CcJNuo7AbePMoRNpM3i1jC1Rp9kHEMyWozNdWzR+0ys=
 github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 h1:onHthvaw9LFnH4t2DcNVpwGmV9E1BkGknEliJkfwQj0=
 github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58/go.mod h1:DXv8WO4yhMYhSNPKjeNKa5WY9YCIEBRbNzFFPJbWO6Y=
 github.com/pborman/getopt v0.0.0-20170112200414-7148bc3a4c30/go.mod h1:85jBQOZwpVEaDAr341tbn15RS4fCAsIst0qp7i8ex1o=
