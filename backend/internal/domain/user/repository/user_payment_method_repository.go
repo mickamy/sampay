@@ -12,9 +12,9 @@ import (
 )
 
 type UserPaymentMethod interface {
+	CreateAll(ctx context.Context, methods []*model.UserPaymentMethod) error
 	ListByUserID(ctx context.Context, userID string, scopes ...scope.Scope) ([]model.UserPaymentMethod, error)
 	DeleteByUserID(ctx context.Context, userID string) error
-	CreateAll(ctx context.Context, methods []model.UserPaymentMethod) error
 	WithTx(tx *database.DB) UserPaymentMethod
 }
 
@@ -24,6 +24,10 @@ type userPaymentMethod struct {
 
 func NewUserPaymentMethod(db *database.DB) UserPaymentMethod {
 	return &userPaymentMethod{db: db}
+}
+
+func (repo *userPaymentMethod) CreateAll(ctx context.Context, methods []*model.UserPaymentMethod) error {
+	return query.UserPaymentMethods(repo.db).CreateAll(ctx, methods)
 }
 
 func (repo *userPaymentMethod) ListByUserID(ctx context.Context, userID string, scopes ...scope.Scope) ([]model.UserPaymentMethod, error) {
@@ -41,15 +45,6 @@ func (repo *userPaymentMethod) ListByUserID(ctx context.Context, userID string, 
 func (repo *userPaymentMethod) DeleteByUserID(ctx context.Context, userID string) error {
 	if err := query.UserPaymentMethods(repo.db).Where("user_id = ?", userID).Delete(ctx); err != nil {
 		return fmt.Errorf("repository: %w", err)
-	}
-	return nil
-}
-
-func (repo *userPaymentMethod) CreateAll(ctx context.Context, methods []model.UserPaymentMethod) error {
-	for i := range methods {
-		if err := query.UserPaymentMethods(repo.db).Create(ctx, &methods[i]); err != nil {
-			return fmt.Errorf("repository: %w", err)
-		}
 	}
 	return nil
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/mickamy/sampay/internal/domain/user/model"
 	"github.com/mickamy/sampay/internal/domain/user/query"
 	"github.com/mickamy/sampay/internal/domain/user/repository"
+	"github.com/mickamy/sampay/internal/lib/ptr"
 )
 
 func TestUserPaymentMethod_CreateAll(t *testing.T) {
@@ -22,17 +23,17 @@ func TestUserPaymentMethod_CreateAll(t *testing.T) {
 	endUser := fixture.EndUser(func(m *model.EndUser) { m.UserID = user.ID })
 	require.NoError(t, query.EndUsers(db.Writer.DB).Create(t.Context(), &endUser))
 
-	methods := []model.UserPaymentMethod{
-		fixture.UserPaymentMethod(func(m *model.UserPaymentMethod) {
+	methods := []*model.UserPaymentMethod{
+		ptr.Of(fixture.UserPaymentMethod(func(m *model.UserPaymentMethod) {
 			m.UserID = user.ID
 			m.Type = "paypay"
 			m.DisplayOrder = 0
-		}),
-		fixture.UserPaymentMethod(func(m *model.UserPaymentMethod) {
+		})),
+		ptr.Of(fixture.UserPaymentMethod(func(m *model.UserPaymentMethod) {
 			m.UserID = user.ID
 			m.Type = "kyash"
 			m.DisplayOrder = 1
-		}),
+		})),
 	}
 
 	// act
