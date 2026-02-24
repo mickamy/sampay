@@ -1,3 +1,4 @@
+import jsQR from "jsqr";
 import { useRef, useState } from "react";
 import { Form, redirect, useNavigation } from "react-router";
 import { Image } from "~/components/image";
@@ -189,16 +190,63 @@ export default function MyEditPage({
   );
 }
 
+async function decodeQR(file: File): Promise<string | null> {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const canvas = document.createElement("canvas");
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+    ctx.drawImage(bitmap, 0, 0);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, canvas.width, canvas.height);
+    bitmap.close();
+    return code?.data ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function isUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 function PaymentMethodCard({ entry }: { entry: PaymentMethodEntry }) {
   const key = paymentMethodTypeToKey(entry.type);
   const label = paymentMethodLabel(key);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const urlInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [qrFeedback, setQrFeedback] = useState<
+    "autofilled" | "not-url" | "decode-failed" | null
+  >(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
+    if (!file) return;
+
+    setPreview(URL.createObjectURL(file));
+    setQrFeedback(null);
+
+    const decoded = await decodeQR(file);
+    if (!decoded) {
+      setQrFeedback("decode-failed");
+      return;
+    }
+
+    if (isUrl(decoded)) {
+      if (urlInputRef.current) {
+        urlInputRef.current.value = decoded;
+      }
+      setQrFeedback("autofilled");
+    } else {
+      setQrFeedback("not-url");
     }
   };
 
@@ -218,6 +266,7 @@ function PaymentMethodCard({ entry }: { entry: PaymentMethodEntry }) {
         <div className="space-y-2">
           <Label htmlFor={`url_${key}`}>{m.my_url_label()}</Label>
           <Input
+            ref={urlInputRef}
             id={`url_${key}`}
             name={`url_${key}`}
             type="url"
@@ -253,6 +302,21 @@ function PaymentMethodCard({ entry }: { entry: PaymentMethodEntry }) {
           >
             {displayImage ? m.my_qr_change() : m.my_qr_label()}
           </Button>
+          {qrFeedback === "autofilled" && (
+            <p className="text-sm text-green-600">
+              {m.my_qr_url_autofilled()}
+            </p>
+          )}
+          {qrFeedback === "not-url" && (
+            <p className="text-sm text-destructive">
+              {m.my_qr_not_url_warning()}
+            </p>
+          )}
+          {qrFeedback === "decode-failed" && (
+            <p className="text-sm text-destructive">
+              {m.my_qr_decode_failed()}
+            </p>
+          )}
         </div>
       </CardContent>
     </Card>
