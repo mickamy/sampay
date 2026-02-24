@@ -1,4 +1,4 @@
-import { CalendarDays, LogOut, Menu, Settings, Wallet2 } from "lucide-react";
+import { CalendarDays, LogOut, Menu, User, Wallet2 } from "lucide-react";
 import type { HTMLAttributes } from "react";
 import { Link } from "react-router";
 import { LoginDialog } from "~/components/login-dialog";
@@ -89,10 +89,10 @@ function DesktopNavigation({
                   className={navigationMenuTriggerStyle()}
                 >
                   <Link
-                    to="/settings/payment-methods"
+                    to="/my"
                     className="flex items-center gap-1"
                   >
-                    {m.header_settings()}
+                    {m.header_my_page()}
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
@@ -145,9 +145,9 @@ function MobileNavigation({
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/settings/payment-methods" className="gap-2">
-              <Settings size={16} />
-              {m.header_settings()}
+            <Link to="/my" className="gap-2">
+              <User size={16} />
+              {m.header_my_page()}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
