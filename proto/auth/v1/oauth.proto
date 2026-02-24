@@ -38,4 +38,6 @@ message OAuthCallbackRequest {
 // Tokens are set via Set-Cookie header, not in the response body.
 message OAuthCallbackResponse {
   user.v1.User user = 1;
+  // True when the user was created during this callback (first login).
+  bool is_new_user = 2;
 }
