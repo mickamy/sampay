@@ -5,10 +5,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { UserService } from "~/gen/user/v1/user_service_pb";
-import {
-  authenticate,
-  withAuthentication,
-} from "~/lib/api/request.server";
+import { authenticate, withAuthentication } from "~/lib/api/request.server";
 import type { APIError } from "~/lib/api/response";
 import { buildMeta } from "~/lib/meta";
 import { m } from "~/paraglide/messages";
@@ -30,11 +27,14 @@ export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const slug = (formData.get("slug") as string | null)?.trim() ?? "";
 
-  const result = await withAuthentication({ request }, async ({ getClient }) => {
-    const client = getClient(UserService);
-    await client.updateSlug({ slug });
-    return redirect("/my/edit");
-  });
+  const result = await withAuthentication(
+    { request },
+    async ({ getClient }) => {
+      const client = getClient(UserService);
+      await client.updateSlug({ slug });
+      return redirect("/my/edit");
+    },
+  );
 
   if (result.isLeft()) {
     return { error: result.value };

@@ -6,11 +6,14 @@ export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
   const slug = url.searchParams.get("slug") ?? "";
 
-  const result = await withAuthentication({ request }, async ({ getClient }) => {
-    const client = getClient(UserService);
-    const { available } = await client.checkSlugAvailability({ slug });
-    return Response.json({ available });
-  });
+  const result = await withAuthentication(
+    { request },
+    async ({ getClient }) => {
+      const client = getClient(UserService);
+      const { available } = await client.checkSlugAvailability({ slug });
+      return Response.json({ available });
+    },
+  );
 
   if (result.isLeft()) {
     return Response.json({ available: false });

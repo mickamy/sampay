@@ -27,8 +27,9 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
   const client = getClient({ service: UserProfileService, request });
   try {
-    const { user, paymentMethods: rawMethods } =
-      await client.getUserProfile({ slug });
+    const { user, paymentMethods: rawMethods } = await client.getUserProfile({
+      slug,
+    });
 
     const paymentMethods = (rawMethods ?? [])
       .filter(
