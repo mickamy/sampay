@@ -4,22 +4,15 @@ import (
 	"context"
 	"testing"
 
+	"github.com/mickamy/enufstub"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/mickamy/sampay/internal/di"
 	"github.com/mickamy/sampay/internal/domain/storage/query"
 	"github.com/mickamy/sampay/internal/domain/storage/usecase"
+	"github.com/mickamy/sampay/internal/infra/aws/s3"
 )
-
-type mockS3Client struct {
-	url string
-	err error
-}
-
-func (m *mockS3Client) PresignPutObject(_ context.Context, _, _ string) (string, error) {
-	return m.url, m.err
-}
 
 func TestGetUploadURL_Do(t *testing.T) {
 	t.Parallel()
@@ -28,9 +21,13 @@ func TestGetUploadURL_Do(t *testing.T) {
 		t.Parallel()
 
 		// arrange
-		mock := &mockS3Client{url: "https://s3.example.com/presigned"}
+		mock := enufstub.Of[s3.Client]().With("PresignPutObject", func(ctx context.Context, bucket, key string) (string, error) {
+			assert.Equal(t, "s3-public-bucket", bucket)
+			assert.Equal(t, "qr/user1/paypay.png", key)
+			return "https://s3.example.com/presigned", nil
+		}).DefaultPanic().Build()
 		infra := newInfra(t, func(i *di.Infra) {
-			i.S3 = mock
+			i.S3 = mock.Impl()
 		})
 
 		// act
@@ -54,9 +51,11 @@ func TestGetUploadURL_Do(t *testing.T) {
 		t.Parallel()
 
 		// arrange
-		mock := &mockS3Client{err: assert.AnError}
+		mock := enufstub.Of[s3.Client]().With("PresignPutObject", func(ctx context.Context, bucket, key string) (string, error) {
+			return "", assert.AnError
+		}).DefaultPanic().Build()
 		infra := newInfra(t, func(i *di.Infra) {
-			i.S3 = mock
+			i.S3 = mock.Impl()
 		})
 
 		// act

@@ -47,7 +47,9 @@ func (uc *getUploadURL) Do(ctx context.Context, input GetUploadURLInput) (GetUpl
 
 	if err := uc.writer.Transaction(ctx, func(tx *database.DB) error {
 		if err := uc.s3ObjRepo.WithTx(tx).Create(ctx, &obj); err != nil {
-			return errx.Wrap(err, "failed to create s3 object record")
+			return errx.
+				Wrap(err, "failed to create s3 object record").
+				WithCode(errx.Internal)
 		}
 		return nil
 	}); err != nil {
@@ -56,7 +58,9 @@ func (uc *getUploadURL) Do(ctx context.Context, input GetUploadURLInput) (GetUpl
 
 	uploadURL, err := uc.s3.PresignPutObject(ctx, bucket, key)
 	if err != nil {
-		return GetUploadURLOutput{}, errx.Wrap(err, "failed to generate presigned URL", "bucket", bucket, "key", key)
+		return GetUploadURLOutput{}, errx.
+			Wrap(err, "failed to generate presigned URL", "bucket", bucket, "key", key).
+			WithCode(errx.Internal)
 	}
 
 	return GetUploadURLOutput{
