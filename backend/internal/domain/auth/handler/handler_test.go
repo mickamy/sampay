@@ -2,7 +2,6 @@ package handler_test
 
 import (
 	"os"
-	"sync"
 	"testing"
 
 	"github.com/mickamy/sampay/internal/di"
@@ -10,31 +9,14 @@ import (
 	"github.com/mickamy/sampay/internal/test/itest"
 )
 
-var (
-	databaseDSN itest.DatabaseDSN
-)
+var databaseDSN itest.DatabaseDSN
 
 func TestMain(m *testing.M) {
-	var wg sync.WaitGroup
-	wg.Add(1)
-
-	databaseDSNCh := make(chan itest.DatabaseDSN)
-	cleanUpDBCh := make(chan func())
-
-	go func() {
-		defer wg.Done()
-		dsn, c := itest.NewDB()
-		databaseDSNCh <- dsn
-		cleanUpDBCh <- c
-	}()
-
-	databaseDSN = <-databaseDSNCh
-	cleanUpDatabase := <-cleanUpDBCh
-
-	wg.Wait()
+	dsn, cleanup := itest.NewDB()
+	databaseDSN = dsn
 
 	code := m.Run()
-	cleanUpDatabase()
+	cleanup()
 	os.Exit(code)
 }
 
