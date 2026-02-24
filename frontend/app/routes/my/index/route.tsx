@@ -7,6 +7,7 @@ import {
 } from "~/gen/user/v1/payment_method_pb";
 import { withAuthentication } from "~/lib/api/request.server";
 import { buildMeta } from "~/lib/meta";
+import { paymentMethodTypeToKey } from "~/model/payment-method-model";
 import { m } from "~/paraglide/messages";
 import type { Route } from "./+types/route";
 
@@ -17,21 +18,6 @@ export function meta() {
   });
 }
 
-function typeToKey(type: PaymentMethodType): string {
-  switch (type) {
-    case PaymentMethodType.PAYPAY:
-      return "paypay";
-    case PaymentMethodType.KYASH:
-      return "kyash";
-    case PaymentMethodType.RAKUTEN_PAY:
-      return "rakuten_pay";
-    case PaymentMethodType.MERPAY:
-      return "merpay";
-    default:
-      return "";
-  }
-}
-
 export async function loader({ request }: Route.LoaderArgs) {
   const result = await withAuthentication({ request }, async ({ getClient }) => {
     const client = getClient(PaymentMethodService);
@@ -40,14 +26,14 @@ export async function loader({ request }: Route.LoaderArgs) {
   });
 
   if (result.isLeft()) {
-    return { paymentMethods: [] };
+    throw new Response("Failed to load payment methods", { status: 500 });
   }
 
   const data = await result.value.json();
   const methods = (data.paymentMethods as { type: PaymentMethodType; url: string; qrCodeUrl: string }[])
     .filter((pm) => pm.url.trim() !== "")
     .map((pm) => ({
-      type: typeToKey(pm.type),
+      type: paymentMethodTypeToKey(pm.type),
       url: pm.url,
       qrCodeUrl: pm.qrCodeUrl,
     }));

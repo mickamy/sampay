@@ -13,7 +13,10 @@ import { StorageService } from "~/gen/storage/v1/storage_pb";
 import { withAuthentication } from "~/lib/api/request.server";
 import type { APIError } from "~/lib/api/response";
 import { buildMeta } from "~/lib/meta";
-import { paymentMethodLabel } from "~/model/payment-method-model";
+import {
+  paymentMethodLabel,
+  paymentMethodTypeToKey,
+} from "~/model/payment-method-model";
 import { m } from "~/paraglide/messages";
 import type { Route } from "./+types/route";
 
@@ -31,20 +34,7 @@ const PAYMENT_TYPES = [
   PaymentMethodType.MERPAY,
 ] as const;
 
-function typeToKey(type: PaymentMethodType): string {
-  switch (type) {
-    case PaymentMethodType.PAYPAY:
-      return "paypay";
-    case PaymentMethodType.KYASH:
-      return "kyash";
-    case PaymentMethodType.RAKUTEN_PAY:
-      return "rakuten_pay";
-    case PaymentMethodType.MERPAY:
-      return "merpay";
-    default:
-      return "";
-  }
-}
+const MAX_QR_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 interface PaymentMethodEntry {
   type: PaymentMethodType;
@@ -106,7 +96,7 @@ export async function action({ request }: Route.ActionArgs) {
 
     for (let i = 0; i < PAYMENT_TYPES.length; i++) {
       const type = PAYMENT_TYPES[i];
-      const key = typeToKey(type);
+      const key = paymentMethodTypeToKey(type);
       const url = formData.get(`url_${key}`) as string | null;
 
       if (!url?.trim()) continue;
@@ -116,6 +106,9 @@ export async function action({ request }: Route.ActionArgs) {
 
       const qrFile = formData.get(`qr_${key}`) as File | null;
       if (qrFile && qrFile.size > 0) {
+        if (qrFile.size > MAX_QR_FILE_SIZE) {
+          throw new Error("QR code image must be smaller than 5MB");
+        }
         const ext = qrFile.type.startsWith("image/")
           ? qrFile.type.split("/")[1].replace("jpeg", "jpg")
           : "png";
@@ -181,7 +174,7 @@ export default function MyEditPage({ loaderData, actionData }: Route.ComponentPr
 }
 
 function PaymentMethodCard({ entry }: { entry: PaymentMethodEntry }) {
-  const key = typeToKey(entry.type);
+  const key = paymentMethodTypeToKey(entry.type);
   const label = paymentMethodLabel(key);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -233,6 +226,7 @@ function PaymentMethodCard({ entry }: { entry: PaymentMethodEntry }) {
             name={`qr_${key}`}
             accept="image/*"
             className="hidden"
+            aria-label={m.my_qr_label()}
             onChange={handleFileChange}
           />
           <Button
