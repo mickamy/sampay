@@ -28,11 +28,12 @@ func TestStorage_GetUploadURL(t *testing.T) {
 		t.Parallel()
 
 		// arrange
-		mock := enufstub.Of[s3.Client]().With("PresignPutObject", func(_ context.Context, bucket, key string) (string, error) {
-			assert.Equal(t, "sampay-public", bucket)
-			assert.Equal(t, "qr/user1/paypay.png", key)
-			return "https://s3.example.com/presigned", nil
-		}).DefaultPanic().Build()
+		mock := enufstub.Of[s3.Client]().With("PresignPutObject",
+			func(_ context.Context, bucket, key string) (string, error) {
+				assert.Equal(t, "sampay-public", bucket)
+				assert.Equal(t, "qr/user1/paypay.png", key)
+				return "https://s3.example.com/presigned", nil
+			}).DefaultPanic().Build()
 		infra := newInfra(t, func(i *di.Infra) {
 			i.S3 = mock.Impl()
 		})

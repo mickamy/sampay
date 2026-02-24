@@ -26,6 +26,7 @@ func newReadWriter(t *testing.T) *database.ReadWriter {
 	return &database.ReadWriter{Reader: &database.Reader{DB: txdb}, Writer: &database.Writer{DB: txdb}}
 }
 
+//nolint:unparam // keep consistent signature for future use
 func newInfra(t *testing.T, opts ...func(*di.Infra)) *di.Infra {
 	t.Helper()
 	readWriter := newReadWriter(t)

@@ -21,11 +21,12 @@ func TestGetUploadURL_Do(t *testing.T) {
 		t.Parallel()
 
 		// arrange
-		mock := enufstub.Of[s3.Client]().With("PresignPutObject", func(ctx context.Context, bucket, key string) (string, error) {
-			assert.Equal(t, "s3-public-bucket", bucket)
-			assert.Equal(t, "qr/user1/paypay.png", key)
-			return "https://s3.example.com/presigned", nil
-		}).DefaultPanic().Build()
+		mock := enufstub.Of[s3.Client]().With("PresignPutObject",
+			func(_ context.Context, bucket, key string) (string, error) {
+				assert.Equal(t, "s3-public-bucket", bucket)
+				assert.Equal(t, "qr/user1/paypay.png", key)
+				return "https://s3.example.com/presigned", nil
+			}).DefaultPanic().Build()
 		infra := newInfra(t, func(i *di.Infra) {
 			i.S3 = mock.Impl()
 		})
@@ -51,9 +52,10 @@ func TestGetUploadURL_Do(t *testing.T) {
 		t.Parallel()
 
 		// arrange
-		mock := enufstub.Of[s3.Client]().With("PresignPutObject", func(ctx context.Context, bucket, key string) (string, error) {
-			return "", assert.AnError
-		}).DefaultPanic().Build()
+		mock := enufstub.Of[s3.Client]().With("PresignPutObject",
+			func(_ context.Context, _, _ string) (string, error) {
+				return "", assert.AnError
+			}).DefaultPanic().Build()
 		infra := newInfra(t, func(i *di.Infra) {
 			i.S3 = mock.Impl()
 		})
