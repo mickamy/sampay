@@ -21,6 +21,86 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type GetMeRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMeRequest) Reset() {
+	*x = GetMeRequest{}
+	mi := &file_user_v1_user_service_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMeRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMeRequest) ProtoMessage() {}
+
+func (x *GetMeRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_user_v1_user_service_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMeRequest.ProtoReflect.Descriptor instead.
+func (*GetMeRequest) Descriptor() ([]byte, []int) {
+	return file_user_v1_user_service_proto_rawDescGZIP(), []int{0}
+}
+
+type GetMeResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMeResponse) Reset() {
+	*x = GetMeResponse{}
+	mi := &file_user_v1_user_service_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMeResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMeResponse) ProtoMessage() {}
+
+func (x *GetMeResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_user_v1_user_service_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMeResponse.ProtoReflect.Descriptor instead.
+func (*GetMeResponse) Descriptor() ([]byte, []int) {
+	return file_user_v1_user_service_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *GetMeResponse) GetUser() *User {
+	if x != nil {
+		return x.User
+	}
+	return nil
+}
+
 type UpdateSlugRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Slug          string                 `protobuf:"bytes,1,opt,name=slug,proto3" json:"slug,omitempty"`
@@ -30,7 +110,7 @@ type UpdateSlugRequest struct {
 
 func (x *UpdateSlugRequest) Reset() {
 	*x = UpdateSlugRequest{}
-	mi := &file_user_v1_user_service_proto_msgTypes[0]
+	mi := &file_user_v1_user_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -42,7 +122,7 @@ func (x *UpdateSlugRequest) String() string {
 func (*UpdateSlugRequest) ProtoMessage() {}
 
 func (x *UpdateSlugRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_user_v1_user_service_proto_msgTypes[0]
+	mi := &file_user_v1_user_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55,7 +135,7 @@ func (x *UpdateSlugRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateSlugRequest.ProtoReflect.Descriptor instead.
 func (*UpdateSlugRequest) Descriptor() ([]byte, []int) {
-	return file_user_v1_user_service_proto_rawDescGZIP(), []int{0}
+	return file_user_v1_user_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *UpdateSlugRequest) GetSlug() string {
@@ -74,7 +154,7 @@ type UpdateSlugResponse struct {
 
 func (x *UpdateSlugResponse) Reset() {
 	*x = UpdateSlugResponse{}
-	mi := &file_user_v1_user_service_proto_msgTypes[1]
+	mi := &file_user_v1_user_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -86,7 +166,7 @@ func (x *UpdateSlugResponse) String() string {
 func (*UpdateSlugResponse) ProtoMessage() {}
 
 func (x *UpdateSlugResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_user_v1_user_service_proto_msgTypes[1]
+	mi := &file_user_v1_user_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -99,7 +179,7 @@ func (x *UpdateSlugResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateSlugResponse.ProtoReflect.Descriptor instead.
 func (*UpdateSlugResponse) Descriptor() ([]byte, []int) {
-	return file_user_v1_user_service_proto_rawDescGZIP(), []int{1}
+	return file_user_v1_user_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *UpdateSlugResponse) GetUser() *User {
@@ -118,7 +198,7 @@ type CheckSlugAvailabilityRequest struct {
 
 func (x *CheckSlugAvailabilityRequest) Reset() {
 	*x = CheckSlugAvailabilityRequest{}
-	mi := &file_user_v1_user_service_proto_msgTypes[2]
+	mi := &file_user_v1_user_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -130,7 +210,7 @@ func (x *CheckSlugAvailabilityRequest) String() string {
 func (*CheckSlugAvailabilityRequest) ProtoMessage() {}
 
 func (x *CheckSlugAvailabilityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_user_v1_user_service_proto_msgTypes[2]
+	mi := &file_user_v1_user_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -143,7 +223,7 @@ func (x *CheckSlugAvailabilityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckSlugAvailabilityRequest.ProtoReflect.Descriptor instead.
 func (*CheckSlugAvailabilityRequest) Descriptor() ([]byte, []int) {
-	return file_user_v1_user_service_proto_rawDescGZIP(), []int{2}
+	return file_user_v1_user_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CheckSlugAvailabilityRequest) GetSlug() string {
@@ -162,7 +242,7 @@ type CheckSlugAvailabilityResponse struct {
 
 func (x *CheckSlugAvailabilityResponse) Reset() {
 	*x = CheckSlugAvailabilityResponse{}
-	mi := &file_user_v1_user_service_proto_msgTypes[3]
+	mi := &file_user_v1_user_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -174,7 +254,7 @@ func (x *CheckSlugAvailabilityResponse) String() string {
 func (*CheckSlugAvailabilityResponse) ProtoMessage() {}
 
 func (x *CheckSlugAvailabilityResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_user_v1_user_service_proto_msgTypes[3]
+	mi := &file_user_v1_user_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -187,7 +267,7 @@ func (x *CheckSlugAvailabilityResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckSlugAvailabilityResponse.ProtoReflect.Descriptor instead.
 func (*CheckSlugAvailabilityResponse) Descriptor() ([]byte, []int) {
-	return file_user_v1_user_service_proto_rawDescGZIP(), []int{3}
+	return file_user_v1_user_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CheckSlugAvailabilityResponse) GetAvailable() bool {
@@ -201,7 +281,10 @@ var File_user_v1_user_service_proto protoreflect.FileDescriptor
 
 const file_user_v1_user_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1auser/v1/user_service.proto\x12\auser.v1\x1a\x12user/v1/user.proto\"'\n" +
+	"\x1auser/v1/user_service.proto\x12\auser.v1\x1a\x12user/v1/user.proto\"\x0e\n" +
+	"\fGetMeRequest\"2\n" +
+	"\rGetMeResponse\x12!\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\"'\n" +
 	"\x11UpdateSlugRequest\x12\x12\n" +
 	"\x04slug\x18\x01 \x01(\tR\x04slug\"7\n" +
 	"\x12UpdateSlugResponse\x12!\n" +
@@ -209,8 +292,9 @@ const file_user_v1_user_service_proto_rawDesc = "" +
 	"\x1cCheckSlugAvailabilityRequest\x12\x12\n" +
 	"\x04slug\x18\x01 \x01(\tR\x04slug\"=\n" +
 	"\x1dCheckSlugAvailabilityResponse\x12\x1c\n" +
-	"\tavailable\x18\x01 \x01(\bR\tavailable2\xbc\x01\n" +
-	"\vUserService\x12E\n" +
+	"\tavailable\x18\x01 \x01(\bR\tavailable2\xf4\x01\n" +
+	"\vUserService\x126\n" +
+	"\x05GetMe\x12\x15.user.v1.GetMeRequest\x1a\x16.user.v1.GetMeResponse\x12E\n" +
 	"\n" +
 	"UpdateSlug\x12\x1a.user.v1.UpdateSlugRequest\x1a\x1b.user.v1.UpdateSlugResponse\x12f\n" +
 	"\x15CheckSlugAvailability\x12%.user.v1.CheckSlugAvailabilityRequest\x1a&.user.v1.CheckSlugAvailabilityResponseB\x8a\x01\n" +
@@ -228,25 +312,30 @@ func file_user_v1_user_service_proto_rawDescGZIP() []byte {
 	return file_user_v1_user_service_proto_rawDescData
 }
 
-var file_user_v1_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_user_v1_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_user_v1_user_service_proto_goTypes = []any{
-	(*UpdateSlugRequest)(nil),             // 0: user.v1.UpdateSlugRequest
-	(*UpdateSlugResponse)(nil),            // 1: user.v1.UpdateSlugResponse
-	(*CheckSlugAvailabilityRequest)(nil),  // 2: user.v1.CheckSlugAvailabilityRequest
-	(*CheckSlugAvailabilityResponse)(nil), // 3: user.v1.CheckSlugAvailabilityResponse
-	(*User)(nil),                          // 4: user.v1.User
+	(*GetMeRequest)(nil),                  // 0: user.v1.GetMeRequest
+	(*GetMeResponse)(nil),                 // 1: user.v1.GetMeResponse
+	(*UpdateSlugRequest)(nil),             // 2: user.v1.UpdateSlugRequest
+	(*UpdateSlugResponse)(nil),            // 3: user.v1.UpdateSlugResponse
+	(*CheckSlugAvailabilityRequest)(nil),  // 4: user.v1.CheckSlugAvailabilityRequest
+	(*CheckSlugAvailabilityResponse)(nil), // 5: user.v1.CheckSlugAvailabilityResponse
+	(*User)(nil),                          // 6: user.v1.User
 }
 var file_user_v1_user_service_proto_depIdxs = []int32{
-	4, // 0: user.v1.UpdateSlugResponse.user:type_name -> user.v1.User
-	0, // 1: user.v1.UserService.UpdateSlug:input_type -> user.v1.UpdateSlugRequest
-	2, // 2: user.v1.UserService.CheckSlugAvailability:input_type -> user.v1.CheckSlugAvailabilityRequest
-	1, // 3: user.v1.UserService.UpdateSlug:output_type -> user.v1.UpdateSlugResponse
-	3, // 4: user.v1.UserService.CheckSlugAvailability:output_type -> user.v1.CheckSlugAvailabilityResponse
-	3, // [3:5] is the sub-list for method output_type
-	1, // [1:3] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	6, // 0: user.v1.GetMeResponse.user:type_name -> user.v1.User
+	6, // 1: user.v1.UpdateSlugResponse.user:type_name -> user.v1.User
+	0, // 2: user.v1.UserService.GetMe:input_type -> user.v1.GetMeRequest
+	2, // 3: user.v1.UserService.UpdateSlug:input_type -> user.v1.UpdateSlugRequest
+	4, // 4: user.v1.UserService.CheckSlugAvailability:input_type -> user.v1.CheckSlugAvailabilityRequest
+	1, // 5: user.v1.UserService.GetMe:output_type -> user.v1.GetMeResponse
+	3, // 6: user.v1.UserService.UpdateSlug:output_type -> user.v1.UpdateSlugResponse
+	5, // 7: user.v1.UserService.CheckSlugAvailability:output_type -> user.v1.CheckSlugAvailabilityResponse
+	5, // [5:8] is the sub-list for method output_type
+	2, // [2:5] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_user_v1_user_service_proto_init() }
@@ -261,7 +350,7 @@ func file_user_v1_user_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_v1_user_service_proto_rawDesc), len(file_user_v1_user_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
