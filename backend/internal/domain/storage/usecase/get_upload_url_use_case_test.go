@@ -23,7 +23,7 @@ func TestGetUploadURL_Do(t *testing.T) {
 		// arrange
 		mock := enufstub.Of[s3.Client]().With("PresignPutObject",
 			func(_ context.Context, bucket, key string) (string, error) {
-				assert.Equal(t, "s3-public-bucket", bucket)
+				assert.Equal(t, "sampay-public", bucket)
 				assert.Equal(t, "qr/user1/paypay.png", key)
 				return "https://s3.example.com/presigned", nil
 			}).DefaultPanic().Build()
