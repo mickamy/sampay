@@ -16,6 +16,7 @@ message PaymentMethod {
   string url = 3;
   string qr_code_url = 4;
   int32 display_order = 5;
+  string qr_code_s3_object_id = 6;
 }
 
 message PaymentMethodInput {

@@ -13,6 +13,7 @@ import (
 	s3client "github.com/mickamy/sampay/internal/infra/aws/s3"
 	"github.com/mickamy/sampay/internal/infra/storage/database"
 	"github.com/mickamy/sampay/internal/lib/ulid"
+	"github.com/mickamy/sampay/internal/misc/contexts"
 )
 
 type GetUploadURLInput struct {
@@ -41,8 +42,10 @@ func (uc *getUploadURL) Do(ctx context.Context, input GetUploadURLInput) (GetUpl
 		return GetUploadURLOutput{}, err
 	}
 
+	userID := contexts.MustAuthenticatedUserID(ctx)
+
 	bucket := config.AWS().S3PublicBucket
-	key := input.Path
+	key := userID + "/" + input.Path
 
 	uploadURL, err := uc.s3.PresignPutObject(ctx, bucket, key)
 	if err != nil {

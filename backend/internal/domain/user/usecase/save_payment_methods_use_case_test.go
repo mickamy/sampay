@@ -147,4 +147,57 @@ func TestSavePaymentMethods_Do(t *testing.T) {
 		assert.True(t, errx.IsCode(err, errx.InvalidArgument))
 		assert.Contains(t, err.Error(), "payment method type is required")
 	})
+
+	t.Run("empty array deletes all existing methods", func(t *testing.T) {
+		t.Parallel()
+
+		// arrange
+		infra := newInfra(t)
+		user := fixture.User(nil)
+		require.NoError(t, query.Users(infra.WriterDB).Create(t.Context(), &user))
+		endUser := fixture.EndUser(func(m *model.EndUser) { m.UserID = user.ID })
+		require.NoError(t, query.EndUsers(infra.WriterDB).Create(t.Context(), &endUser))
+
+		existing := fixture.UserPaymentMethod(func(m *model.UserPaymentMethod) {
+			m.UserID = user.ID
+			m.Type = "paypay"
+		})
+		require.NoError(t, query.UserPaymentMethods(infra.WriterDB).Create(t.Context(), &existing))
+
+		ctx := contexts.SetAuthenticatedUserID(t.Context(), user.ID)
+
+		// act
+		sut := usecase.NewSavePaymentMethods(infra)
+		out, err := sut.Do(ctx, usecase.SavePaymentMethodsInput{
+			PaymentMethods: []usecase.SavePaymentMethodInput{},
+		})
+
+		// assert
+		require.NoError(t, err)
+		assert.Empty(t, out.PaymentMethods)
+	})
+
+	t.Run("rejects javascript URL scheme", func(t *testing.T) {
+		t.Parallel()
+
+		// arrange
+		infra := newInfra(t)
+		user := fixture.User(nil)
+		require.NoError(t, query.Users(infra.WriterDB).Create(t.Context(), &user))
+
+		ctx := contexts.SetAuthenticatedUserID(t.Context(), user.ID)
+
+		// act
+		sut := usecase.NewSavePaymentMethods(infra)
+		_, err := sut.Do(ctx, usecase.SavePaymentMethodsInput{
+			PaymentMethods: []usecase.SavePaymentMethodInput{
+				{Type: "paypay", URL: "javascript:alert(1)", DisplayOrder: 0},
+			},
+		})
+
+		// assert
+		require.Error(t, err)
+		assert.True(t, errx.IsCode(err, errx.InvalidArgument))
+		assert.Contains(t, err.Error(), "valid HTTP or HTTPS URL")
+	})
 }

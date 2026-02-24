@@ -13,6 +13,9 @@ func ToV1PaymentMethod(src model.UserPaymentMethod, cloudfrontBaseURL string) *u
 		Url:          src.URL,
 		DisplayOrder: int32(src.DisplayOrder), //nolint:gosec // DisplayOrder is a small non-negative integer
 	}
+	if src.QRCodeS3ObjectID != nil {
+		pm.QrCodeS3ObjectId = *src.QRCodeS3ObjectID
+	}
 	if src.QRCodeS3Object != nil {
 		pm.QrCodeUrl = cloudfrontBaseURL + "/" + src.QRCodeS3Object.Key
 	}

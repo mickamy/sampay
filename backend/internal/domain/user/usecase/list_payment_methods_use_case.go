@@ -35,7 +35,7 @@ func (uc *listPaymentMethods) Do(ctx context.Context, _ ListPaymentMethodsInput)
 	var methods []model.UserPaymentMethod
 	if err := uc.reader.Transaction(ctx, func(tx *database.DB) error {
 		var err error
-		methods, err = uc.paymentMethodRepo.WithTx(tx).ListByUserID(ctx, userID)
+		methods, err = uc.paymentMethodRepo.WithTx(tx).ListByUserID(ctx, userID, repository.UserPaymentMethodPreloadQRCodeS3Object())
 		if err != nil {
 			return errx.
 				Wrap(err, "failed to list payment methods", "user_id", userID).

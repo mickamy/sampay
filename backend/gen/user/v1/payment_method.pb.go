@@ -77,14 +77,15 @@ func (PaymentMethodType) EnumDescriptor() ([]byte, []int) {
 }
 
 type PaymentMethod struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Type          PaymentMethodType      `protobuf:"varint,2,opt,name=type,proto3,enum=user.v1.PaymentMethodType" json:"type,omitempty"`
-	Url           string                 `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
-	QrCodeUrl     string                 `protobuf:"bytes,4,opt,name=qr_code_url,json=qrCodeUrl,proto3" json:"qr_code_url,omitempty"`
-	DisplayOrder  int32                  `protobuf:"varint,5,opt,name=display_order,json=displayOrder,proto3" json:"display_order,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Id               string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Type             PaymentMethodType      `protobuf:"varint,2,opt,name=type,proto3,enum=user.v1.PaymentMethodType" json:"type,omitempty"`
+	Url              string                 `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
+	QrCodeUrl        string                 `protobuf:"bytes,4,opt,name=qr_code_url,json=qrCodeUrl,proto3" json:"qr_code_url,omitempty"`
+	DisplayOrder     int32                  `protobuf:"varint,5,opt,name=display_order,json=displayOrder,proto3" json:"display_order,omitempty"`
+	QrCodeS3ObjectId string                 `protobuf:"bytes,6,opt,name=qr_code_s3_object_id,json=qrCodeS3ObjectId,proto3" json:"qr_code_s3_object_id,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *PaymentMethod) Reset() {
@@ -150,6 +151,13 @@ func (x *PaymentMethod) GetDisplayOrder() int32 {
 		return x.DisplayOrder
 	}
 	return 0
+}
+
+func (x *PaymentMethod) GetQrCodeS3ObjectId() string {
+	if x != nil {
+		return x.QrCodeS3ObjectId
+	}
+	return ""
 }
 
 type PaymentMethodInput struct {
@@ -392,13 +400,14 @@ var File_user_v1_payment_method_proto protoreflect.FileDescriptor
 
 const file_user_v1_payment_method_proto_rawDesc = "" +
 	"\n" +
-	"\x1cuser/v1/payment_method.proto\x12\auser.v1\"\xa6\x01\n" +
+	"\x1cuser/v1/payment_method.proto\x12\auser.v1\"\xd6\x01\n" +
 	"\rPaymentMethod\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12.\n" +
 	"\x04type\x18\x02 \x01(\x0e2\x1a.user.v1.PaymentMethodTypeR\x04type\x12\x10\n" +
 	"\x03url\x18\x03 \x01(\tR\x03url\x12\x1e\n" +
 	"\vqr_code_url\x18\x04 \x01(\tR\tqrCodeUrl\x12#\n" +
-	"\rdisplay_order\x18\x05 \x01(\x05R\fdisplayOrder\"\xab\x01\n" +
+	"\rdisplay_order\x18\x05 \x01(\x05R\fdisplayOrder\x12.\n" +
+	"\x14qr_code_s3_object_id\x18\x06 \x01(\tR\x10qrCodeS3ObjectId\"\xab\x01\n" +
 	"\x12PaymentMethodInput\x12.\n" +
 	"\x04type\x18\x01 \x01(\x0e2\x1a.user.v1.PaymentMethodTypeR\x04type\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12.\n" +
