@@ -11,10 +11,10 @@ import (
 )
 
 type AWSConfig struct {
-	S3PublicBucket     string `env:"S3_PUBLIC_BUCKET_NAME" validate:"required"`
+	S3PublicBucket     string `env:"S3_PUBLIC_BUCKET_NAME"  validate:"required"`
 	S3PrivateBucket    string `env:"S3_PRIVATE_BUCKET_NAME" validate:"required"`
 	LocalStackEndpoint string `env:"LOCALSTACK_ENDPOINT"`
-	CloudfrontDomain   string `env:"CLOUDFRONT_DOMAIN" validate:"required"`
+	CloudfrontDomain   string `env:"CLOUDFRONT_DOMAIN"      validate:"required"`
 }
 
 func (c AWSConfig) CloudfrontURL() string {

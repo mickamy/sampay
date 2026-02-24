@@ -47,6 +47,6 @@ func TestToV1PaymentMethod(t *testing.T) {
 
 		got := mapper.ToV1PaymentMethod(src, "https://cdn.example.com")
 
-		assert.Equal(t, "", got.QrCodeUrl)
+		assert.Empty(t, got.QrCodeUrl)
 	})
 }

@@ -11,7 +11,7 @@ import (
 func TestMap(t *testing.T) {
 	t.Parallel()
 
-	tcs := []struct {
+	tests := []struct {
 		name   string
 		val    *int
 		mapper func(*int) string
@@ -35,14 +35,13 @@ func TestMap(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tcs {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := ptr.Map(tc.val, tc.mapper)
+			got := ptr.Map(tt.val, tt.mapper)
 
-			assert.Equal(t, tc.want, got)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -50,7 +49,7 @@ func TestMap(t *testing.T) {
 func TestNullIfZero(t *testing.T) {
 	t.Parallel()
 
-	tcs := []struct {
+	tests := []struct {
 		name string
 		val  int
 		want *int
@@ -67,14 +66,13 @@ func TestNullIfZero(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tcs {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := ptr.NullIfZero(tc.val)
+			got := ptr.NullIfZero(tt.val)
 
-			assert.Equal(t, tc.want, got)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
