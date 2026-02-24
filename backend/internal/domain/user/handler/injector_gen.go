@@ -49,10 +49,12 @@ func MustNewUserProfile(infra *di.Infra) *UserProfile {
 
 // NewUserService initializes dependencies and constructs UserService.
 func NewUserService(infra *di.Infra) *UserService {
+	getMe := usecase.NewGetMe(infra)
 	updateSlug := usecase.NewUpdateSlug(infra)
 	checkSlugAvailability := usecase.NewCheckSlugAvailability(infra)
 
 	return &UserService{
+		getMe:                 getMe,
 		updateSlug:            updateSlug,
 		checkSlugAvailability: checkSlugAvailability,
 	}
@@ -60,10 +62,12 @@ func NewUserService(infra *di.Infra) *UserService {
 
 // MustNewUserService initializes dependencies and constructs UserService or panics on failure.
 func MustNewUserService(infra *di.Infra) *UserService {
+	getMe := usecase.NewGetMe(infra)
 	updateSlug := usecase.NewUpdateSlug(infra)
 	checkSlugAvailability := usecase.NewCheckSlugAvailability(infra)
 
 	return &UserService{
+		getMe:                 getMe,
 		updateSlug:            updateSlug,
 		checkSlugAvailability: checkSlugAvailability,
 	}

@@ -21,8 +21,24 @@ var _ userv1connect.UserServiceHandler = (*UserService)(nil)
 
 type UserService struct {
 	_                     *di.Infra                     `inject:"param"`
+	getMe                 usecase.GetMe                 `inject:""`
 	updateSlug            usecase.UpdateSlug            `inject:""`
 	checkSlugAvailability usecase.CheckSlugAvailability `inject:""`
+}
+
+func (h *UserService) GetMe(
+	ctx context.Context, _ *connect.Request[v1.GetMeRequest],
+) (*connect.Response[v1.GetMeResponse], error) {
+	out, err := h.getMe.Do(ctx, usecase.GetMeInput{})
+	if err != nil {
+		logger.Error(ctx, "failed to execute use-case", "err", err)
+		return nil, err //nolint:wrapcheck // use-case errors are already wrapped with errx
+	}
+
+	user := mapper.ToV1User(out.User)
+	return connect.NewResponse(&v1.GetMeResponse{
+		User: &user,
+	}), nil
 }
 
 func (h *UserService) UpdateSlug(
