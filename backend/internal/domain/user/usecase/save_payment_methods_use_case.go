@@ -70,17 +70,17 @@ func (uc *savePaymentMethods) Do(ctx context.Context, input SavePaymentMethodsIn
 	if err := uc.writer.Transaction(ctx, func(tx *database.DB) error {
 		repo := uc.paymentMethodRepo.WithTx(tx)
 		if err := repo.DeleteByUserID(ctx, userID); err != nil {
-			return errx.Wrap(err, "failed to delete existing payment methods")
+			return errx.Wrap(err, "message", "failed to delete existing payment methods")
 		}
 		if len(methods) > 0 {
 			if err := repo.CreateAll(ctx, methods); err != nil {
-				return errx.Wrap(err, "failed to create payment methods")
+				return errx.Wrap(err, "message", "failed to create payment methods")
 			}
 		}
 		var err error
 		saved, err = repo.ListByUserID(ctx, userID, repository.UserPaymentMethodPreloadQRCodeS3Object())
 		if err != nil {
-			return errx.Wrap(err, "failed to list saved payment methods")
+			return errx.Wrap(err, "message", "failed to list saved payment methods")
 		}
 		return nil
 	}); err != nil {
@@ -100,7 +100,7 @@ func (uc *savePaymentMethods) validateS3ObjectOwnership(
 		}
 		obj, err := uc.s3ObjRepo.Get(ctx, *item.QRCodeS3ObjectID)
 		if err != nil {
-			return errx.Wrap(err, "failed to get S3 object", "id", *item.QRCodeS3ObjectID).WithCode(errx.InvalidArgument)
+			return errx.Wrap(err, "message", "failed to get S3 object", "id", *item.QRCodeS3ObjectID).WithCode(errx.InvalidArgument)
 		}
 		if !strings.HasPrefix(obj.Key, userID+"/") {
 			return errx.New("S3 object does not belong to the authenticated user").WithCode(errx.InvalidArgument)

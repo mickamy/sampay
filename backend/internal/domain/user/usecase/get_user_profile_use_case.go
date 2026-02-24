@@ -44,17 +44,17 @@ func (uc *getUserProfile) Do(ctx context.Context, input GetUserProfileInput) (Ge
 		endUser, err = uc.endUserRepo.WithTx(tx).GetBySlug(ctx, input.Slug)
 		if err != nil {
 			if errors.Is(err, database.ErrNotFound) {
-				return errx.Wrap(err, "user not found", "slug", input.Slug).
+				return errx.Wrap(err, "message", "user not found", "slug", input.Slug).
 					WithCode(errx.NotFound)
 			}
-			return errx.Wrap(err, "failed to get user by slug", "slug", input.Slug).
+			return errx.Wrap(err, "message", "failed to get user by slug", "slug", input.Slug).
 				WithCode(errx.Internal)
 		}
 
 		methods, err = uc.paymentMethodRepo.WithTx(tx).
 			ListByUserID(ctx, endUser.UserID, repository.UserPaymentMethodPreloadQRCodeS3Object())
 		if err != nil {
-			return errx.Wrap(err, "failed to list payment methods", "user_id", endUser.UserID).
+			return errx.Wrap(err, "message", "failed to list payment methods", "user_id", endUser.UserID).
 				WithCode(errx.Internal)
 		}
 		return nil

@@ -29,12 +29,18 @@ type getOAuthURL struct {
 func (uc *getOAuthURL) Do(ctx context.Context, input GetOAuthURLInput) (GetOAuthURLOutput, error) {
 	client, err := uc.resolver.Resolve(oauth.Provider(input.Provider))
 	if err != nil {
-		return GetOAuthURLOutput{}, errx.Wrap(err, "failed to resolve oauth client")
+		return GetOAuthURLOutput{}, errx.
+			Wrap(err, "failed to resolve oauth client").
+			With("provider", input.Provider).
+			WithCode(errx.Internal)
 	}
 
 	url, err := client.AuthenticationURL()
 	if err != nil {
-		return GetOAuthURLOutput{}, errx.Wrap(err, "failed to get authentication url")
+		return GetOAuthURLOutput{}, errx.
+			Wrap(err, "failed to get authentication url").
+			With("provider", input.Provider).
+			WithCode(errx.Internal)
 	}
 
 	return GetOAuthURLOutput{AuthenticationURL: url}, nil

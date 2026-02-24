@@ -15,11 +15,11 @@ import (
 
 var (
 	ErrLogoutInvalidAccessToken = cmodel.NewLocalizableError(errx.NewSentinel("token invalid", errx.InvalidArgument)).
-					WithMessages(messages.AuthUseCaseErrorTokenInvalid())
+		WithMessages(messages.AuthUseCaseErrorTokenInvalid())
 	ErrLogoutInvalidRefreshToken = cmodel.NewLocalizableError(errx.NewSentinel("token invalid", errx.InvalidArgument)).
-					WithMessages(messages.AuthUseCaseErrorTokenInvalid())
+		WithMessages(messages.AuthUseCaseErrorTokenInvalid())
 	ErrLogoutTokenMismatch = cmodel.NewLocalizableError(errx.NewSentinel("token mismatch", errx.InvalidArgument)).
-				WithMessages(messages.AuthUseCaseErrorLogoutTokenMismatch())
+		WithMessages(messages.AuthUseCaseErrorLogoutTokenMismatch())
 )
 
 type LogoutInput struct {
@@ -52,17 +52,16 @@ func (uc *logout) Do(ctx context.Context, input LogoutInput) (LogoutOutput, erro
 
 	userIDFromRefresh, err := jwt.ExtractID(input.RefreshToken)
 	if err != nil {
-		return LogoutOutput{}, errx.Wrap(
-			ErrLogoutInvalidRefreshToken,
-			"failed to extract user id from refresh token",
-			"err",
-			err,
+		return LogoutOutput{}, errx.Wrap(ErrLogoutInvalidRefreshToken,
+			"message", "failed to extract user id from refresh token",
+			"err", err,
 		)
 	}
 
 	if userID != userIDFromRefresh {
 		return LogoutOutput{}, errx.Wrap(
 			ErrLogoutTokenMismatch,
+			"err", err,
 			"access", userID,
 			"refresh", userIDFromRefresh,
 		)
@@ -75,7 +74,7 @@ func (uc *logout) Do(ctx context.Context, input LogoutInput) (LogoutOutput, erro
 			Refresh: jwt.Token{Value: input.RefreshToken},
 		},
 	}); err != nil {
-		return LogoutOutput{}, errx.Wrap(err, "failed to delete session", "user_id", userID)
+		return LogoutOutput{}, errx.Wrap(err, "message", "failed to delete session", "user_id", userID)
 	}
 
 	return LogoutOutput{}, nil
