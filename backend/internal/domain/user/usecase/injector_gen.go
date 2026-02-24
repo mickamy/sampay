@@ -27,6 +27,18 @@ func MustNewListPaymentMethods(infra *di.Infra) ListPaymentMethods {
 	}
 }
 
+// NewGetUserProfile initializes dependencies and constructs getUserProfile.
+func NewGetUserProfile(infra *di.Infra) GetUserProfile {
+	endUser := repository.NewEndUser(infra.DB)
+	userPaymentMethod := repository.NewUserPaymentMethod(infra.DB)
+
+	return &getUserProfile{
+		reader:            infra.ReaderDB,
+		endUserRepo:       endUser,
+		paymentMethodRepo: userPaymentMethod,
+	}
+}
+
 // NewSavePaymentMethods initializes dependencies and constructs savePaymentMethods.
 func NewSavePaymentMethods(infra *di.Infra) SavePaymentMethods {
 	userPaymentMethod := repository.NewUserPaymentMethod(infra.DB)
