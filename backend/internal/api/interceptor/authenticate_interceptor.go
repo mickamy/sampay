@@ -11,6 +11,7 @@ import (
 
 	"github.com/mickamy/sampay/gen/auth/v1/authv1connect"
 	"github.com/mickamy/sampay/gen/test/v1/testv1connect"
+	"github.com/mickamy/sampay/gen/user/v1/userv1connect"
 	ausecase "github.com/mickamy/sampay/internal/domain/auth/usecase"
 
 	cmodel "github.com/mickamy/sampay/internal/domain/common/model"
@@ -24,6 +25,7 @@ var authSkippingProcedures = []string{
 	authv1connect.OAuthServiceOAuthCallbackProcedure,
 	authv1connect.SessionServiceRefreshTokenProcedure,
 	testv1connect.HealthServiceCheckProcedure,
+	userv1connect.UserProfileServiceGetUserProfileProcedure,
 }
 
 func Authenticate(uc ausecase.Authenticate) connect.UnaryInterceptorFunc {
