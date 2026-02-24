@@ -35,6 +35,7 @@ var reservedSlugs = map[string]struct{}{
 	"settings": {},
 	"support":  {},
 	"help":     {},
+	"u":        {},
 }
 
 // ValidateSlug validates the given slug and returns localised error messages.

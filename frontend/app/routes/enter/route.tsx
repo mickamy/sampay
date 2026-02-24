@@ -25,7 +25,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
-  const slug = (formData.get("slug") as string | null)?.trim() ?? "";
+  const slug =
+    (formData.get("slug") as string | null)?.trim().replace(/^-+|-+$/g, "") ??
+    "";
 
   const result = await withAuthentication(
     { request },
@@ -85,7 +87,8 @@ export default function EnterPage({ actionData }: Route.ComponentProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "");
     setSlug(value);
-    checkAvailability(value);
+    const trimmed = value.replace(/^-+|-+$/g, "");
+    checkAvailability(trimmed);
   };
 
   const baseUrl =
@@ -113,6 +116,7 @@ export default function EnterPage({ actionData }: Route.ComponentProps) {
                 placeholder={m.enter_slug_placeholder()}
                 value={slug}
                 onChange={handleChange}
+                maxLength={30}
                 autoComplete="off"
               />
               {availability === "checking" && (
@@ -134,7 +138,9 @@ export default function EnterPage({ actionData }: Route.ComponentProps) {
 
             {slug.length >= 3 && (
               <p className="text-sm text-muted-foreground">
-                {m.enter_slug_preview({ url: `${baseUrl}${slug}` })}
+                {m.enter_slug_preview({
+                  url: `${baseUrl}${slug.replace(/^-+|-+$/g, "")}`,
+                })}
               </p>
             )}
 

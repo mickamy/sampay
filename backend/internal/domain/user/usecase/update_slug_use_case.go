@@ -45,13 +45,13 @@ func (uc *updateSlug) Do(
 
 	var endUser model.EndUser
 	if err := uc.writer.Transaction(ctx, func(tx *database.DB) error {
-		// Check uniqueness.
-		_, err := uc.endUserRepo.WithTx(tx).GetBySlug(ctx, input.Slug)
-		if err == nil {
+		// Check uniqueness (allow if the slug already belongs to this user).
+		found, err := uc.endUserRepo.WithTx(tx).GetBySlug(ctx, input.Slug)
+		if err == nil && found.UserID != userID {
 			return errx.Wrap(model.ErrSlugAlreadyTaken, "message", "slug already taken", "slug", input.Slug).
 				WithCode(errx.AlreadyExists)
 		}
-		if !errors.Is(err, database.ErrNotFound) {
+		if err != nil && !errors.Is(err, database.ErrNotFound) {
 			return errx.Wrap(err, "message", "failed to check slug uniqueness", "slug", input.Slug).
 				WithCode(errx.Internal)
 		}
