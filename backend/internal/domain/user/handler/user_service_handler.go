@@ -20,9 +20,9 @@ import (
 var _ userv1connect.UserServiceHandler = (*UserService)(nil)
 
 type UserService struct {
-	_                      *di.Infra                      `inject:"param"`
-	updateSlug             usecase.UpdateSlug             `inject:""`
-	checkSlugAvailability  usecase.CheckSlugAvailability  `inject:""`
+	_                     *di.Infra                     `inject:"param"`
+	updateSlug            usecase.UpdateSlug            `inject:""`
+	checkSlugAvailability usecase.CheckSlugAvailability `inject:""`
 }
 
 func (h *UserService) UpdateSlug(

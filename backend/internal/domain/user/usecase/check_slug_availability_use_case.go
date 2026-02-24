@@ -36,6 +36,7 @@ func (uc *checkSlugAvailability) Do(
 	input CheckSlugAvailabilityInput,
 ) (CheckSlugAvailabilityOutput, error) {
 	if err := model.ValidateSlug(input.Slug); err != nil {
+		//nolint:nilerr // invalid slug means unavailable, not an error
 		return CheckSlugAvailabilityOutput{Available: false}, nil
 	}
 
