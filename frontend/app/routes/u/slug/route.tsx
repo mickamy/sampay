@@ -79,9 +79,7 @@ export default function UserProfilePage({ loaderData }: Route.ComponentProps) {
           </div>
           <div className="mt-12 rounded-lg border bg-muted/50 p-6 text-center">
             <Link to="/" className="block">
-              <p className="text-base font-semibold">
-                {m.profile_cta_title()}
-              </p>
+              <p className="text-base font-semibold">{m.profile_cta_title()}</p>
               <p className="mt-1 text-sm text-muted-foreground">
                 {m.profile_cta_description()}
               </p>
