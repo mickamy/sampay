@@ -26,3 +26,23 @@ func MustNewListPaymentMethods(infra *di.Infra) ListPaymentMethods {
 		paymentMethodRepo: userPaymentMethod,
 	}
 }
+
+// NewSavePaymentMethods initializes dependencies and constructs savePaymentMethods.
+func NewSavePaymentMethods(infra *di.Infra) SavePaymentMethods {
+	userPaymentMethod := repository.NewUserPaymentMethod(infra.DB)
+
+	return &savePaymentMethods{
+		writer:            infra.WriterDB,
+		paymentMethodRepo: userPaymentMethod,
+	}
+}
+
+// MustNewSavePaymentMethods initializes dependencies and constructs savePaymentMethods or panics on failure.
+func MustNewSavePaymentMethods(infra *di.Infra) SavePaymentMethods {
+	userPaymentMethod := repository.NewUserPaymentMethod(infra.DB)
+
+	return &savePaymentMethods{
+		writer:            infra.WriterDB,
+		paymentMethodRepo: userPaymentMethod,
+	}
+}
