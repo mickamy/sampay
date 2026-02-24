@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"strings"
 
 	"github.com/mickamy/errx"
 
@@ -36,8 +37,19 @@ type getUploadURL struct {
 }
 
 func (uc *getUploadURL) Do(ctx context.Context, input GetUploadURLInput) (GetUploadURLOutput, error) {
+	if err := validatePath(input.Path); err != nil {
+		return GetUploadURLOutput{}, err
+	}
+
 	bucket := config.AWS().S3PublicBucket
 	key := input.Path
+
+	uploadURL, err := uc.s3.PresignPutObject(ctx, bucket, key)
+	if err != nil {
+		return GetUploadURLOutput{}, errx.
+			Wrap(err, "failed to generate presigned URL", "bucket", bucket, "key", key).
+			WithCode(errx.Internal)
+	}
 
 	obj := model.S3Object{
 		ID:     ulid.New(),
@@ -53,18 +65,25 @@ func (uc *getUploadURL) Do(ctx context.Context, input GetUploadURLInput) (GetUpl
 		}
 		return nil
 	}); err != nil {
-		return GetUploadURLOutput{}, err //nolint:wrapcheck // errors from transaction callback are already wrapped inside
-	}
-
-	uploadURL, err := uc.s3.PresignPutObject(ctx, bucket, key)
-	if err != nil {
-		return GetUploadURLOutput{}, errx.
-			Wrap(err, "failed to generate presigned URL", "bucket", bucket, "key", key).
-			WithCode(errx.Internal)
+		//nolint:wrapcheck // errors from transaction callback are already wrapped inside
+		return GetUploadURLOutput{}, err
 	}
 
 	return GetUploadURLOutput{
 		UploadURL:  uploadURL,
 		S3ObjectID: obj.ID,
 	}, nil
+}
+
+func validatePath(path string) error {
+	if path == "" {
+		return errx.New("path is required").WithCode(errx.InvalidArgument)
+	}
+	if strings.Contains(path, "..") {
+		return errx.New("path must not contain '..'").WithCode(errx.InvalidArgument)
+	}
+	if strings.HasPrefix(path, "/") {
+		return errx.New("path must not start with '/'").WithCode(errx.InvalidArgument)
+	}
+	return nil
 }

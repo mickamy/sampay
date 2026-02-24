@@ -58,24 +58,26 @@ func (uc *savePaymentMethods) Do(ctx context.Context, input SavePaymentMethodsIn
 		}
 	})
 
+	var saved []model.UserPaymentMethod
 	if err := uc.writer.Transaction(ctx, func(tx *database.DB) error {
-		if err := uc.paymentMethodRepo.WithTx(tx).DeleteByUserID(ctx, userID); err != nil {
+		repo := uc.paymentMethodRepo.WithTx(tx)
+		if err := repo.DeleteByUserID(ctx, userID); err != nil {
 			return errx.Wrap(err, "failed to delete existing payment methods")
 		}
 		if len(methods) > 0 {
-			if err := uc.paymentMethodRepo.WithTx(tx).CreateAll(ctx, methods); err != nil {
+			if err := repo.CreateAll(ctx, methods); err != nil {
 				return errx.Wrap(err, "failed to create payment methods")
 			}
+		}
+		var err error
+		saved, err = repo.ListByUserID(ctx, userID)
+		if err != nil {
+			return errx.Wrap(err, "failed to list saved payment methods")
 		}
 		return nil
 	}); err != nil {
 		//nolint:wrapcheck // errors from transaction callback are already wrapped inside
 		return SavePaymentMethodsOutput{}, err
-	}
-
-	saved, err := uc.paymentMethodRepo.ListByUserID(ctx, userID)
-	if err != nil {
-		return SavePaymentMethodsOutput{}, errx.Wrap(err, "failed to list saved payment methods")
 	}
 
 	return SavePaymentMethodsOutput{PaymentMethods: saved}, nil

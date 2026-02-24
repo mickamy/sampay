@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/mickamy/enufstub"
+	"github.com/mickamy/errx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -68,6 +69,6 @@ func TestGetUploadURL_Do(t *testing.T) {
 
 		// assert
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "failed to generate presigned URL")
+		assert.True(t, errx.IsCode(err, errx.Internal))
 	})
 }
