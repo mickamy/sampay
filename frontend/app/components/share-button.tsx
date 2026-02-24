@@ -17,9 +17,13 @@ export function ShareButton({ url, name }: ShareButtonProps) {
   }, []);
 
   const handleCopy = useCallback(async () => {
-    await navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard API may fail due to permissions or browser restrictions
+    }
   }, [url]);
 
   const handleShare = useCallback(async () => {

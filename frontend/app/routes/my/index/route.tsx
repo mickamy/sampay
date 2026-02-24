@@ -55,16 +55,18 @@ export async function loader({ request }: Route.LoaderArgs) {
       qrCodeUrl: pm.qrCodeUrl,
     }));
 
-  return { slug: data.slug as string, paymentMethods: methods };
+  const slug = (data.slug as string) || "";
+  const origin = new URL(request.url).origin;
+
+  return {
+    slug,
+    profileUrl: slug ? `${origin}/u/${slug}` : "",
+    paymentMethods: methods,
+  };
 }
 
 export default function MyIndexPage({ loaderData }: Route.ComponentProps) {
-  const { slug, paymentMethods } = loaderData;
-
-  const profileUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/u/${slug}`
-      : `https://sampay.link/u/${slug}`;
+  const { slug, profileUrl, paymentMethods } = loaderData;
 
   return (
     <>
@@ -79,9 +81,11 @@ export default function MyIndexPage({ loaderData }: Route.ComponentProps) {
           <Link to="/my/edit">{m.my_edit()}</Link>
         </Button>
       </div>
-      <div className="mt-4">
-        <ShareButton url={profileUrl} name={slug} />
-      </div>
+      {slug && profileUrl && (
+        <div className="mt-4">
+          <ShareButton url={profileUrl} name={slug} />
+        </div>
+      )}
       <div className="mt-6">
         <PaymentMethodList paymentMethods={paymentMethods} />
       </div>
