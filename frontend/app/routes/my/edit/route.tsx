@@ -303,9 +303,7 @@ function PaymentMethodCard({ entry }: { entry: PaymentMethodEntry }) {
             {displayImage ? m.my_qr_change() : m.my_qr_label()}
           </Button>
           {qrFeedback === "autofilled" && (
-            <p className="text-sm text-green-600">
-              {m.my_qr_url_autofilled()}
-            </p>
+            <p className="text-sm text-green-600">{m.my_qr_url_autofilled()}</p>
           )}
           {qrFeedback === "not-url" && (
             <p className="text-sm text-destructive">
