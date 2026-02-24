@@ -163,16 +163,15 @@ export default function MyEditPage({ loaderData, actionData }: Route.ComponentPr
       <h1 className="text-2xl font-bold">{m.my_title()}</h1>
       <p className="mt-2 text-muted-foreground">{m.my_description()}</p>
 
-      {error && (
-        <div className="mt-4 rounded-md border border-destructive bg-destructive/10 p-3 text-sm text-destructive">
-          {error.message || m.my_save_error()}
-        </div>
-      )}
-
       <Form method="post" encType="multipart/form-data" className="mt-6 space-y-4">
         {paymentMethods.map((pm) => (
           <PaymentMethodCard key={pm.type} entry={pm} />
         ))}
+        {error && (
+          <div className="rounded-md border border-destructive bg-destructive/10 p-3 text-sm text-destructive">
+            {error.message || m.my_save_error()}
+          </div>
+        )}
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? "..." : m.my_save()}
         </Button>
