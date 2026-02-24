@@ -1,10 +1,12 @@
 import { Link } from "react-router";
 import { PaymentMethodList } from "~/components/payment-method-list";
+import { ShareButton } from "~/components/share-button";
 import { Button } from "~/components/ui/button";
 import {
   PaymentMethodService,
   type PaymentMethodType,
 } from "~/gen/user/v1/payment_method_pb";
+import { UserService } from "~/gen/user/v1/user_service_pb";
 import { withAuthentication } from "~/lib/api/request.server";
 import { buildMeta } from "~/lib/meta";
 import { paymentMethodTypeToKey } from "~/model/payment-method-model";
@@ -22,14 +24,18 @@ export async function loader({ request }: Route.LoaderArgs) {
   const result = await withAuthentication(
     { request },
     async ({ getClient }) => {
-      const client = getClient(PaymentMethodService);
-      const { paymentMethods } = await client.listPaymentMethods({});
-      return Response.json({ paymentMethods });
+      const userClient = getClient(UserService);
+      const paymentClient = getClient(PaymentMethodService);
+      const [{ user }, { paymentMethods }] = await Promise.all([
+        userClient.getMe({}),
+        paymentClient.listPaymentMethods({}),
+      ]);
+      return Response.json({ slug: user?.slug, paymentMethods });
     },
   );
 
   if (result.isLeft()) {
-    throw new Response("Failed to load payment methods", { status: 500 });
+    throw new Response("Failed to load data", { status: 500 });
   }
 
   const data = await result.value.json();
@@ -49,11 +55,16 @@ export async function loader({ request }: Route.LoaderArgs) {
       qrCodeUrl: pm.qrCodeUrl,
     }));
 
-  return { paymentMethods: methods };
+  return { slug: data.slug as string, paymentMethods: methods };
 }
 
 export default function MyIndexPage({ loaderData }: Route.ComponentProps) {
-  const { paymentMethods } = loaderData;
+  const { slug, paymentMethods } = loaderData;
+
+  const profileUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/u/${slug}`
+      : `https://sampay.link/u/${slug}`;
 
   return (
     <>
@@ -67,6 +78,9 @@ export default function MyIndexPage({ loaderData }: Route.ComponentProps) {
         <Button asChild variant="outline">
           <Link to="/my/edit">{m.my_edit()}</Link>
         </Button>
+      </div>
+      <div className="mt-4">
+        <ShareButton url={profileUrl} name={slug} />
       </div>
       <div className="mt-6">
         <PaymentMethodList paymentMethods={paymentMethods} />
