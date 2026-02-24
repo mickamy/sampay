@@ -95,8 +95,8 @@ func (i savePaymentMethodInputs) validate() error {
 		if item.URL == "" {
 			return errx.New("payment method URL is required").WithCode(errx.InvalidArgument)
 		}
-		u, err := url.Parse(item.URL)
-		if err != nil || (u.Scheme != "http" && u.Scheme != "https") {
+		u, err := url.ParseRequestURI(item.URL)
+		if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
 			return errx.New("payment method URL must be a valid HTTP or HTTPS URL").WithCode(errx.InvalidArgument)
 		}
 		if seen[item.Type] {

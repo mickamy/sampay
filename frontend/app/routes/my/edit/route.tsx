@@ -83,7 +83,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   });
 
   if (result.isLeft()) {
-    return { paymentMethods: buildEntries([]) };
+    throw new Response("failed to load payment methods", { status: 500 });
   }
 
   const data = await result.value.json();
@@ -116,15 +116,21 @@ export async function action({ request }: Route.ActionArgs) {
 
       const qrFile = formData.get(`qr_${key}`) as File | null;
       if (qrFile && qrFile.size > 0) {
+        const ext = qrFile.type.startsWith("image/")
+          ? qrFile.type.split("/")[1].replace("jpeg", "jpg")
+          : "png";
         const { uploadUrl, s3ObjectId: newId } =
           await storageClient.getUploadURL({
-            path: `qr/${key}_${Date.now()}.png`,
+            path: `qr/${key}_${Date.now()}.${ext}`,
           });
-        await fetch(uploadUrl, {
+        const uploadResponse = await fetch(uploadUrl, {
           method: "PUT",
           body: qrFile,
           headers: { "Content-Type": qrFile.type },
         });
+        if (!uploadResponse.ok) {
+          throw new Error("failed to upload QR code image");
+        }
         s3ObjectId = newId;
       }
 
