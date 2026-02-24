@@ -26,13 +26,17 @@ func newReadWriter(t *testing.T) *database.ReadWriter {
 	return &database.ReadWriter{Reader: &database.Reader{DB: txdb}, Writer: &database.Writer{DB: txdb}}
 }
 
-func newInfra(t *testing.T) *di.Infra {
+func newInfra(t *testing.T, opts ...func(*di.Infra)) *di.Infra {
 	t.Helper()
 	readWriter := newReadWriter(t)
-	return &di.Infra{
+	infra := &di.Infra{
 		DB:       readWriter.Writer.DB,
 		WriterDB: readWriter.Writer,
 		ReaderDB: readWriter.Reader,
 		KVS:      itest.NewKVS(t),
 	}
+	for _, opt := range opts {
+		opt(infra)
+	}
+	return infra
 }
