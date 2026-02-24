@@ -3,7 +3,7 @@ import { PaymentMethodList } from "~/components/payment-method-list";
 import { Button } from "~/components/ui/button";
 import {
   PaymentMethodService,
-  PaymentMethodType,
+  type PaymentMethodType,
 } from "~/gen/user/v1/payment_method_pb";
 import { withAuthentication } from "~/lib/api/request.server";
 import { buildMeta } from "~/lib/meta";
@@ -19,18 +19,27 @@ export function meta() {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const result = await withAuthentication({ request }, async ({ getClient }) => {
-    const client = getClient(PaymentMethodService);
-    const { paymentMethods } = await client.listPaymentMethods({});
-    return Response.json({ paymentMethods });
-  });
+  const result = await withAuthentication(
+    { request },
+    async ({ getClient }) => {
+      const client = getClient(PaymentMethodService);
+      const { paymentMethods } = await client.listPaymentMethods({});
+      return Response.json({ paymentMethods });
+    },
+  );
 
   if (result.isLeft()) {
     throw new Response("Failed to load payment methods", { status: 500 });
   }
 
   const data = await result.value.json();
-  const methods = (data.paymentMethods as { type: PaymentMethodType; url: string; qrCodeUrl: string }[])
+  const methods = (
+    data.paymentMethods as {
+      type: PaymentMethodType;
+      url: string;
+      qrCodeUrl: string;
+    }[]
+  )
     .filter((pm) => pm.url.trim() !== "")
     .map((pm) => ({
       type: paymentMethodTypeToKey(pm.type),

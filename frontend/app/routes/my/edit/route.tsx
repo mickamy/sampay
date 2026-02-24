@@ -5,11 +5,11 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { StorageService } from "~/gen/storage/v1/storage_pb";
 import {
   PaymentMethodService,
   PaymentMethodType,
 } from "~/gen/user/v1/payment_method_pb";
-import { StorageService } from "~/gen/storage/v1/storage_pb";
 import { withAuthentication } from "~/lib/api/request.server";
 import type { APIError } from "~/lib/api/response";
 import { buildMeta } from "~/lib/meta";
@@ -66,11 +66,14 @@ function buildEntries(
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const result = await withAuthentication({ request }, async ({ getClient }) => {
-    const client = getClient(PaymentMethodService);
-    const { paymentMethods } = await client.listPaymentMethods({});
-    return Response.json({ paymentMethods });
-  });
+  const result = await withAuthentication(
+    { request },
+    async ({ getClient }) => {
+      const client = getClient(PaymentMethodService);
+      const { paymentMethods } = await client.listPaymentMethods({});
+      return Response.json({ paymentMethods });
+    },
+  );
 
   if (result.isLeft()) {
     throw new Response("failed to load payment methods", { status: 500 });
@@ -83,61 +86,64 @@ export async function loader({ request }: Route.LoaderArgs) {
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
 
-  const result = await withAuthentication({ request }, async ({ getClient }) => {
-    const storageClient = getClient(StorageService);
-    const paymentClient = getClient(PaymentMethodService);
+  const result = await withAuthentication(
+    { request },
+    async ({ getClient }) => {
+      const storageClient = getClient(StorageService);
+      const paymentClient = getClient(PaymentMethodService);
 
-    const paymentMethods: {
-      type: PaymentMethodType;
-      url: string;
-      qrCodeS3ObjectId: string;
-      displayOrder: number;
-    }[] = [];
+      const paymentMethods: {
+        type: PaymentMethodType;
+        url: string;
+        qrCodeS3ObjectId: string;
+        displayOrder: number;
+      }[] = [];
 
-    for (let i = 0; i < PAYMENT_TYPES.length; i++) {
-      const type = PAYMENT_TYPES[i];
-      const key = paymentMethodTypeToKey(type);
-      const url = formData.get(`url_${key}`) as string | null;
+      for (let i = 0; i < PAYMENT_TYPES.length; i++) {
+        const type = PAYMENT_TYPES[i];
+        const key = paymentMethodTypeToKey(type);
+        const url = formData.get(`url_${key}`) as string | null;
 
-      if (!url?.trim()) continue;
+        if (!url?.trim()) continue;
 
-      let s3ObjectId =
-        (formData.get(`existing_s3_object_id_${key}`) as string) || "";
+        let s3ObjectId =
+          (formData.get(`existing_s3_object_id_${key}`) as string) || "";
 
-      const qrFile = formData.get(`qr_${key}`) as File | null;
-      if (qrFile && qrFile.size > 0) {
-        if (qrFile.size > MAX_QR_FILE_SIZE) {
-          throw new Error("QR code image must be smaller than 5MB");
-        }
-        const ext = qrFile.type.startsWith("image/")
-          ? qrFile.type.split("/")[1].replace("jpeg", "jpg")
-          : "png";
-        const { uploadUrl, s3ObjectId: newId } =
-          await storageClient.getUploadURL({
-            path: `qr/${key}_${Date.now()}.${ext}`,
+        const qrFile = formData.get(`qr_${key}`) as File | null;
+        if (qrFile && qrFile.size > 0) {
+          if (qrFile.size > MAX_QR_FILE_SIZE) {
+            throw new Error("QR code image must be smaller than 5MB");
+          }
+          const ext = qrFile.type.startsWith("image/")
+            ? qrFile.type.split("/")[1].replace("jpeg", "jpg")
+            : "png";
+          const { uploadUrl, s3ObjectId: newId } =
+            await storageClient.getUploadURL({
+              path: `qr/${key}_${Date.now()}.${ext}`,
+            });
+          const uploadResponse = await fetch(uploadUrl, {
+            method: "PUT",
+            body: qrFile,
+            headers: { "Content-Type": qrFile.type },
           });
-        const uploadResponse = await fetch(uploadUrl, {
-          method: "PUT",
-          body: qrFile,
-          headers: { "Content-Type": qrFile.type },
-        });
-        if (!uploadResponse.ok) {
-          throw new Error("failed to upload QR code image");
+          if (!uploadResponse.ok) {
+            throw new Error("failed to upload QR code image");
+          }
+          s3ObjectId = newId;
         }
-        s3ObjectId = newId;
+
+        paymentMethods.push({
+          type,
+          url: url.trim(),
+          qrCodeS3ObjectId: s3ObjectId,
+          displayOrder: i,
+        });
       }
 
-      paymentMethods.push({
-        type,
-        url: url.trim(),
-        qrCodeS3ObjectId: s3ObjectId,
-        displayOrder: i,
-      });
-    }
-
-    await paymentClient.savePaymentMethods({ paymentMethods });
-    return redirect("/my");
-  });
+      await paymentClient.savePaymentMethods({ paymentMethods });
+      return redirect("/my");
+    },
+  );
 
   if (result.isLeft()) {
     return { error: result.value };
@@ -145,18 +151,27 @@ export async function action({ request }: Route.ActionArgs) {
   return result.value;
 }
 
-export default function MyEditPage({ loaderData, actionData }: Route.ComponentProps) {
+export default function MyEditPage({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
   const { paymentMethods } = loaderData;
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
-  const error = actionData && "error" in actionData ? (actionData.error as APIError) : null;
+  const error =
+    actionData && "error" in actionData ? (actionData.error as APIError) : null;
 
   return (
     <>
       <h1 className="text-2xl font-bold">{m.my_title()}</h1>
       <p className="mt-2 text-muted-foreground">{m.my_description()}</p>
 
-      <Form method="post" action="/my/edit" encType="multipart/form-data" className="mt-6 space-y-4">
+      <Form
+        method="post"
+        action="/my/edit"
+        encType="multipart/form-data"
+        className="mt-6 space-y-4"
+      >
         {paymentMethods.map((pm) => (
           <PaymentMethodCard key={pm.type} entry={pm} />
         ))}

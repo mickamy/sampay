@@ -88,10 +88,7 @@ function DesktopNavigation({
                   asChild
                   className={navigationMenuTriggerStyle()}
                 >
-                  <Link
-                    to="/my"
-                    className="flex items-center gap-1"
-                  >
+                  <Link to="/my" className="flex items-center gap-1">
                     {m.header_my_page()}
                   </Link>
                 </NavigationMenuLink>
