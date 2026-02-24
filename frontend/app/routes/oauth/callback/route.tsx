@@ -23,7 +23,10 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const providerParam = parseProviderFromState(state);
   if (!providerParam) {
-    logger.error({ state }, "failed to parse provider from state");
+    logger.error(
+      { statePrefix: state.slice(0, 8), stateLength: state.length },
+      "failed to parse provider from state",
+    );
     return redirect("/");
   }
 
