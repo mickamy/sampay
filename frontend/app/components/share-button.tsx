@@ -1,5 +1,5 @@
 import { Check, Copy, Share2 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { m } from "~/paraglide/messages";
 
@@ -10,6 +10,11 @@ interface ShareButtonProps {
 
 export function ShareButton({ url, name }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
+  const [canShare, setCanShare] = useState(false);
+
+  useEffect(() => {
+    setCanShare(!!navigator.share);
+  }, []);
 
   const handleCopy = useCallback(async () => {
     await navigator.clipboard.writeText(url);
@@ -34,8 +39,6 @@ export function ShareButton({ url, name }: ShareButtonProps) {
       await handleCopy();
     }
   }, [url, name, handleCopy]);
-
-  const canShare = typeof navigator !== "undefined" && !!navigator.share;
 
   return (
     <div className="flex gap-2">
