@@ -1,4 +1,5 @@
 import { Code, ConnectError } from "@connectrpc/connect";
+import { Link } from "react-router";
 import { Header } from "~/components/header";
 import { PaymentMethodList } from "~/components/payment-method-list";
 import { UserProfileService } from "~/gen/user/v1/user_profile_pb";
@@ -19,6 +20,7 @@ export function meta({ data }: Route.MetaArgs) {
   return buildMeta({
     title: m.profile_title({ name: data.slug }),
     description: m.profile_description({ name: data.slug }),
+    url: data.profileUrl,
   });
 }
 
@@ -42,9 +44,11 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       }));
 
     const loggedIn = await isLoggedIn(request);
+    const origin = new URL(request.url).origin;
 
     return {
       slug: user?.slug ?? slug,
+      profileUrl: `${origin}/u/${user?.slug ?? slug}`,
       paymentMethods,
       isLoggedIn: loggedIn,
     };
@@ -72,6 +76,16 @@ export default function UserProfilePage({ loaderData }: Route.ComponentProps) {
           </p>
           <div className="mt-6">
             <PaymentMethodList paymentMethods={paymentMethods} />
+          </div>
+          <div className="mt-12 rounded-lg border bg-muted/50 p-6 text-center">
+            <Link to="/" className="block">
+              <p className="text-base font-semibold">
+                {m.profile_cta_title()}
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {m.profile_cta_description()}
+              </p>
+            </Link>
           </div>
         </div>
       </main>
