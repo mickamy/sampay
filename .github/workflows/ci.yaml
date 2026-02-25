@@ -49,7 +49,7 @@ jobs:
 
       - name: Inject .env
         working-directory: ./backend
-        run: envsubst < .env.sample > .env
+        run: envsubst < .env.example > .env
 
       - name: Verify all files are up to date
         run: |
