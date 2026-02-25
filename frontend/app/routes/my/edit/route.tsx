@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import jsQR from "jsqr";
+import { useEffect, useRef, useState } from "react";
 import { Form, redirect, useNavigation } from "react-router";
 import { Image } from "~/components/image";
 import { Button } from "~/components/ui/button";
@@ -189,16 +190,100 @@ export default function MyEditPage({
   );
 }
 
+const QR_MAX_DIMENSION = 1024;
+
+async function decodeQR(file: File): Promise<string | null> {
+  let bitmap: ImageBitmap | null = null;
+  try {
+    bitmap = await createImageBitmap(file);
+    const maxDim = Math.max(bitmap.width, bitmap.height);
+    const scale = maxDim > QR_MAX_DIMENSION ? QR_MAX_DIMENSION / maxDim : 1;
+    const w = Math.max(1, Math.round(bitmap.width * scale));
+    const h = Math.max(1, Math.round(bitmap.height * scale));
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+    ctx.drawImage(bitmap, 0, 0, w, h);
+    const imageData = ctx.getImageData(0, 0, w, h);
+    const code = jsQR(imageData.data, w, h);
+    return code?.data ?? null;
+  } catch {
+    return null;
+  } finally {
+    bitmap?.close();
+  }
+}
+
+function isUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 function PaymentMethodCard({ entry }: { entry: PaymentMethodEntry }) {
   const key = paymentMethodTypeToKey(entry.type);
   const label = paymentMethodLabel(key);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const urlInputRef = useRef<HTMLInputElement>(null);
+  const previewUrlRef = useRef<string | null>(null);
+  const decodeIdRef = useRef(0);
   const [preview, setPreview] = useState<string | null>(null);
+  const [qrFeedback, setQrFeedback] = useState<
+    "autofilled" | "not-url" | "decode-failed" | "too-large" | null
+  >(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    return () => {
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+      }
+    };
+  }, []);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
+    if (!file) return;
+
+    const currentId = ++decodeIdRef.current;
+
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
+    }
+    setQrFeedback(null);
+
+    if (file.size > MAX_QR_FILE_SIZE) {
+      e.target.value = "";
+      setPreview(null);
+      setQrFeedback("too-large");
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    previewUrlRef.current = objectUrl;
+    setPreview(objectUrl);
+
+    const decoded = await decodeQR(file);
+    if (decodeIdRef.current !== currentId) return;
+
+    if (!decoded) {
+      setQrFeedback("decode-failed");
+      return;
+    }
+
+    const trimmed = decoded.trim();
+    if (isUrl(trimmed)) {
+      if (urlInputRef.current) {
+        urlInputRef.current.value = trimmed;
+      }
+      setQrFeedback("autofilled");
+    } else {
+      setQrFeedback("not-url");
     }
   };
 
@@ -218,6 +303,7 @@ function PaymentMethodCard({ entry }: { entry: PaymentMethodEntry }) {
         <div className="space-y-2">
           <Label htmlFor={`url_${key}`}>{m.my_url_label()}</Label>
           <Input
+            ref={urlInputRef}
             id={`url_${key}`}
             name={`url_${key}`}
             type="url"
@@ -253,6 +339,22 @@ function PaymentMethodCard({ entry }: { entry: PaymentMethodEntry }) {
           >
             {displayImage ? m.my_qr_change() : m.my_qr_label()}
           </Button>
+          {qrFeedback === "autofilled" && (
+            <p className="text-sm text-green-600">{m.my_qr_url_autofilled()}</p>
+          )}
+          {qrFeedback === "not-url" && (
+            <p className="text-sm text-destructive">
+              {m.my_qr_not_url_warning()}
+            </p>
+          )}
+          {qrFeedback === "decode-failed" && (
+            <p className="text-sm text-destructive">
+              {m.my_qr_decode_failed()}
+            </p>
+          )}
+          {qrFeedback === "too-large" && (
+            <p className="text-sm text-destructive">{m.my_qr_too_large()}</p>
+          )}
         </div>
       </CardContent>
     </Card>
