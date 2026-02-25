@@ -1,0 +1,92 @@
+x-logging-options: &logging-options
+  awslogs-region: ${AWS_REGION:-ap-northeast-1}
+  awslogs-group: ${LOG_GROUP:-/sampay/prod}
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy:/data
+    depends_on:
+      - api
+      - web
+    restart: unless-stopped
+    logging:
+      driver: awslogs
+      options:
+        <<: *logging-options
+        awslogs-stream-prefix: caddy
+
+  api:
+    image: ${ECR_BACKEND_URL}:${IMAGE_TAG}
+    expose:
+      - "8080"
+    env_file: .env.prod
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    restart: unless-stopped
+    logging:
+      driver: awslogs
+      options:
+        <<: *logging-options
+        awslogs-stream-prefix: api
+
+  web:
+    image: ${ECR_FRONTEND_URL}:${IMAGE_TAG}
+    expose:
+      - "3000"
+    env_file: .env.frontend
+    depends_on:
+      - api
+    restart: unless-stopped
+    logging:
+      driver: awslogs
+      options:
+        <<: *logging-options
+        awslogs-stream-prefix: web
+
+  postgres:
+    image: postgres:18-alpine
+    volumes:
+      - postgres:/var/lib/postgresql
+    env_file: .env.postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    logging:
+      driver: awslogs
+      options:
+        <<: *logging-options
+        awslogs-stream-prefix: postgres
+
+  valkey:
+    image: valkey/valkey:8-alpine
+    command: valkey-server --requirepass ${KVS_PASSWORD}
+    volumes:
+      - valkey:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "-a", "${KVS_PASSWORD}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    logging:
+      driver: awslogs
+      options:
+        <<: *logging-options
+        awslogs-stream-prefix: valkey
+
+volumes:
+  caddy:
+  postgres:
+  valkey:
