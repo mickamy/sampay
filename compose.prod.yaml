@@ -25,12 +25,22 @@ services:
     image: ${ECR_BACKEND_URL}:${IMAGE_TAG}
     expose:
       - "8080"
-    env_file: .env.prod
+    environment:
+      AWS_REGION: ${AWS_REGION:-ap-northeast-1}
+      SM_APP_SECRET: ${SM_APP_SECRET}
+      SM_DB_SECRET: ${SM_DB_SECRET}
+      SM_KVS_SECRET: ${SM_KVS_SECRET}
     depends_on:
       postgres:
         condition: service_healthy
       valkey:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
     restart: unless-stopped
     logging:
       driver: awslogs
@@ -42,9 +52,20 @@ services:
     image: ${ECR_FRONTEND_URL}:${IMAGE_TAG}
     expose:
       - "3000"
-    env_file: .env.frontend
+    environment:
+      AWS_REGION: ${AWS_REGION:-ap-northeast-1}
+      SM_APP_SECRET: ${SM_APP_SECRET}
+      SESSION_SECRET: ${SESSION_SECRET}
+      API_BASE_URL: http://api:8080
     depends_on:
-      - api
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
     restart: unless-stopped
     logging:
       driver: awslogs
@@ -57,6 +78,9 @@ services:
     volumes:
       - postgres:/var/lib/postgresql
     env_file: .env.postgres
+    environment:
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
+      TZ: Asia/Tokyo
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -72,10 +96,12 @@ services:
   valkey:
     image: valkey/valkey:8-alpine
     command: valkey-server --requirepass ${KVS_PASSWORD}
+    environment:
+      REDISCLI_AUTH: ${KVS_PASSWORD}
     volumes:
       - valkey:/data
     healthcheck:
-      test: ["CMD", "valkey-cli", "-a", "${KVS_PASSWORD}", "ping"]
+      test: ["CMD", "valkey-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 5
