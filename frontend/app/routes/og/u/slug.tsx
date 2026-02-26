@@ -1,6 +1,6 @@
-import satori from "satori";
-import { Resvg } from "@resvg/resvg-js";
 import { Code, ConnectError } from "@connectrpc/connect";
+import { Resvg } from "@resvg/resvg-js";
+import satori from "satori";
 import { UserProfileService } from "~/gen/user/v1/user_profile_pb";
 import { getClient } from "~/lib/api/client.server";
 import type { Route } from "./+types/slug";
@@ -48,6 +48,7 @@ function WalletIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
+      <title>Wallet</title>
       <path d="M17 14h.01" />
       <path d="M7 7h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14" />
     </svg>
@@ -122,9 +123,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
           <WalletIcon />
           <span style={{ fontSize: 24, fontWeight: 700 }}>Sampay</span>
         </div>
-        <span
-          style={{ fontSize: 18, fontWeight: 400, color: "#737373" }}
-        >
+        <span style={{ fontSize: 18, fontWeight: 400, color: "#737373" }}>
           sampay.link
         </span>
       </div>
