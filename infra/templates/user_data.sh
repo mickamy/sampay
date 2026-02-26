@@ -4,16 +4,19 @@ set -euo pipefail
 # Update system
 dnf update -y
 
-# Install Docker from Amazon extras
+# Install Docker
 dnf install -y docker
 systemctl enable docker
 systemctl start docker
 
-# Add Docker CE repo for Compose plugin
-dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+# Install Docker Compose plugin (not available in AL2023 repos)
+COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -o '"tag_name": "v[^"]*' | cut -d'"' -f4)
+mkdir -p /usr/libexec/docker/cli-plugins
+curl -SL "https://github.com/docker/compose/releases/download/$${COMPOSE_VERSION}/docker-compose-linux-aarch64" -o /usr/libexec/docker/cli-plugins/docker-compose
+chmod +x /usr/libexec/docker/cli-plugins/docker-compose
 
-# Install Docker Compose plugin, EC2 Instance Connect (for emergency access), and jq
-dnf install -y docker-compose-plugin ec2-instance-connect jq
+# Install EC2 Instance Connect (for emergency access) and jq
+dnf install -y ec2-instance-connect jq
 
 # Enable swap (2 GB)
 dd if=/dev/zero of=/swapfile bs=1M count=2048
