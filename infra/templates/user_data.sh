@@ -36,7 +36,8 @@ useradd -m -s /bin/bash deploy
 usermod -aG docker deploy
 mkdir -p /home/deploy/.ssh
 chmod 700 /home/deploy/.ssh
-cp /home/ec2-user/.ssh/authorized_keys /home/deploy/.ssh/authorized_keys 2>/dev/null || true
+echo '${ssh_public_key}' > /home/deploy/.ssh/authorized_keys
+chmod 600 /home/deploy/.ssh/authorized_keys
 chown -R deploy:deploy /home/deploy/.ssh
 
 # Create app directory

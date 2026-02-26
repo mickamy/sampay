@@ -41,6 +41,7 @@ resource "aws_instance" "main" {
   user_data = templatefile("${path.module}/templates/user_data.sh", {
     app_domain      = local.app_domain
     api_domain      = local.api_domain
+    ssh_public_key  = var.ssh_public_key
     pull_secrets_sh   = file("${path.module}/templates/pull-secrets.sh")
     db_init_sh       = file("${path.module}/templates/db-init.sh")
     run_migration_sh = file("${path.module}/templates/run-migration.sh")
