@@ -119,6 +119,8 @@ jobs:
     environment: ${{ needs.resolve-env.outputs.environment }}
 
     steps:
+      - uses: actions/checkout@v6
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
@@ -135,6 +137,15 @@ jobs:
             --protocol tcp \
             --port 22 \
             --cidr "${RUNNER_IP}/32"
+
+      - name: Copy compose file to EC2
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: deploy
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "compose.prod.yaml"
+          target: "/app/"
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
