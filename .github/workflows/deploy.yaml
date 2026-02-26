@@ -183,28 +183,23 @@ jobs:
             docker pull ${{ needs.build-and-push.outputs.ecr_backend_url }}:migration-${{ needs.build-and-push.outputs.image_tag }}
 
             # Restart services (pull-secrets.sh runs via ExecStartPre)
-            sudo systemctl restart sampay
+            sudo systemctl restart sampay || true
 
-            # Wait for health checks
+            # Poll for all containers to be healthy (up to 90s)
             echo "Waiting for services to be healthy..."
-            sleep 10
+            for i in $(seq 1 18); do
+              UNHEALTHY=$(docker compose --env-file .env.compose -f compose.prod.yaml ps --format json | jq -r 'select(.State != "running" or (.Health != null and .Health != "healthy")) | .Name' 2>/dev/null)
+              if [ -z "$UNHEALTHY" ]; then
+                echo "All containers are healthy"
+                docker compose --env-file .env.compose -f compose.prod.yaml ps
+                exit 0
+              fi
+              echo "Waiting... ($i/18) unhealthy: $UNHEALTHY"
+              sleep 5
+            done
+            echo "ERROR: Containers not healthy after 90s"
             docker compose --env-file .env.compose -f compose.prod.yaml ps
-
-      - name: Verify deployment
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: deploy
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            # Check all containers are running and healthy
-            UNHEALTHY=$(docker compose --env-file /app/.env.compose -f /app/compose.prod.yaml ps --format json | jq -r 'select(.State != "running" or (.Health != null and .Health != "healthy")) | .Name' 2>/dev/null)
-            if [ -n "$UNHEALTHY" ]; then
-              echo "ERROR: Unhealthy or not running containers detected: $UNHEALTHY"
-              docker compose --env-file /app/.env.compose -f /app/compose.prod.yaml logs --tail=50
-              exit 1
-            fi
-            echo "All containers are running and healthy"
+            exit 1
 
       - name: Revoke SSH access from Security Group
         if: always()

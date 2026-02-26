@@ -41,8 +41,8 @@ services:
       test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/healthz || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 3
-      start_period: 15s
+      retries: 5
+      start_period: 30s
     restart: unless-stopped
     logging:
       driver: awslogs
@@ -68,8 +68,8 @@ services:
       test: ["CMD-SHELL", "wget -q --spider http://localhost:3000 || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 3
-      start_period: 15s
+      retries: 5
+      start_period: 30s
     restart: unless-stopped
     logging:
       driver: awslogs
