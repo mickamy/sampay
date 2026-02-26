@@ -46,6 +46,10 @@ echo '${ssh_public_key}' > /home/deploy/.ssh/authorized_keys
 chmod 600 /home/deploy/.ssh/authorized_keys
 chown -R deploy:deploy /home/deploy/.ssh
 
+# Allow deploy user to manage sampay service without password
+echo 'deploy ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart sampay, /usr/bin/systemctl stop sampay, /usr/bin/systemctl start sampay, /usr/bin/systemctl enable sampay' > /etc/sudoers.d/deploy
+chmod 440 /etc/sudoers.d/deploy
+
 # Create app directory
 mkdir -p /app
 chown deploy:deploy /app
