@@ -154,16 +154,26 @@ jobs:
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            ENV=${{ needs.resolve-env.outputs.environment }}
+
+            # Write .env.compose with orchestration vars
+            cat > /app/.env.compose << EOF
+            ECR_BACKEND_URL=${{ needs.build-and-push.outputs.ecr_backend_url }}
+            ECR_FRONTEND_URL=${{ needs.build-and-push.outputs.ecr_frontend_url }}
+            IMAGE_TAG=${{ needs.build-and-push.outputs.image_tag }}
+            SM_PREFIX=sampay-${ENV}
+            SM_APP_SECRET=sampay-${ENV}/app
+            SM_DB_SECRET=sampay-${ENV}/db
+            SM_KVS_SECRET=sampay-${ENV}/kvs
+            EOF
+
             # Login to ECR
             aws ecr get-login-password --region ${{ env.AWS_REGION }} | \
               docker login --username AWS --password-stdin ${{ needs.build-and-push.outputs.ecr_backend_url }}
 
-            # Update .env.compose with new image tag
-            cd /app
-            sed -i 's/^IMAGE_TAG=.*/IMAGE_TAG=${{ needs.build-and-push.outputs.image_tag }}/' .env.compose
-
             # Pull new images (app + migration)
-            docker compose -f compose.prod.yaml pull api web
+            cd /app
+            docker compose --env-file .env.compose -f compose.prod.yaml pull api web
             docker pull ${{ needs.build-and-push.outputs.ecr_backend_url }}:migration-${{ needs.build-and-push.outputs.image_tag }}
 
             # Restart services (pull-secrets.sh runs via ExecStartPre)
@@ -172,7 +182,7 @@ jobs:
             # Wait for health checks
             echo "Waiting for services to be healthy..."
             sleep 10
-            docker compose -f compose.prod.yaml ps
+            docker compose --env-file .env.compose -f compose.prod.yaml ps
 
       - name: Verify deployment
         uses: appleboy/ssh-action@v1
@@ -182,10 +192,10 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             # Check all containers are running and healthy
-            UNHEALTHY=$(docker compose -f /app/compose.prod.yaml ps --format json | jq -r 'select(.State != "running" or (.Health != null and .Health != "healthy")) | .Name' 2>/dev/null)
+            UNHEALTHY=$(docker compose --env-file /app/.env.compose -f /app/compose.prod.yaml ps --format json | jq -r 'select(.State != "running" or (.Health != null and .Health != "healthy")) | .Name' 2>/dev/null)
             if [ -n "$UNHEALTHY" ]; then
               echo "ERROR: Unhealthy or not running containers detected: $UNHEALTHY"
-              docker compose -f /app/compose.prod.yaml logs --tail=50
+              docker compose --env-file /app/.env.compose -f /app/compose.prod.yaml logs --tail=50
               exit 1
             fi
             echo "All containers are running and healthy"
