@@ -19,7 +19,7 @@ services:
       driver: awslogs
       options:
         <<: *logging-options
-        awslogs-stream-prefix: caddy
+        awslogs-stream: caddy
 
   api:
     image: ${ECR_BACKEND_URL}:${IMAGE_TAG}
@@ -46,7 +46,7 @@ services:
       driver: awslogs
       options:
         <<: *logging-options
-        awslogs-stream-prefix: api
+        awslogs-stream: api
 
   web:
     image: ${ECR_FRONTEND_URL}:${IMAGE_TAG}
@@ -71,7 +71,7 @@ services:
       driver: awslogs
       options:
         <<: *logging-options
-        awslogs-stream-prefix: web
+        awslogs-stream: web
 
   postgres:
     image: postgres:18-alpine
@@ -91,7 +91,7 @@ services:
       driver: awslogs
       options:
         <<: *logging-options
-        awslogs-stream-prefix: postgres
+        awslogs-stream: postgres
 
   valkey:
     image: valkey/valkey:8-alpine
@@ -110,7 +110,7 @@ services:
       driver: awslogs
       options:
         <<: *logging-options
-        awslogs-stream-prefix: valkey
+        awslogs-stream: valkey
 
 volumes:
   caddy:
