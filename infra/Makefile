@@ -5,7 +5,7 @@ TF = AWS_PROFILE=$(PROFILE) tofu
 .PHONY: init plan apply destroy fmt validate workspace
 
 init: ## Initialize the Terraform working directory
-	$(TF) init
+	$(TF) init -backend-config="profile=$(PROFILE)"
 
 workspace: ## Ensure the correct Terraform workspace is selected or created
 	$(TF) workspace select $(ENV) || $(TF) workspace new $(ENV)
