@@ -1,11 +1,12 @@
 package config
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
 	"path"
-	"strings"
+	"slices"
 
 	"github.com/joho/godotenv"
 )
@@ -30,8 +31,7 @@ func init() {
 	if docker, ok := os.LookupEnv("DOCKER"); ok {
 		onDocker = docker == "1"
 	}
-	if onDocker {
-		loadSecrets()
+	if onDocker && slices.Contains([]Env{EnvDevelopment, EnvTest}, env) {
 		return
 	}
 
@@ -42,7 +42,9 @@ func init() {
 			panic("AWS_REGION environment variable is not set")
 		}
 
-		panic(fmt.Sprintf("TODO: fetch environment values from SecretsManager or SSM: region=[%s]", region))
+		if err := initBySecretsManager(context.Background(), region, env.SecretID()); err != nil {
+			panic(fmt.Errorf("failed to init secrets manager: %w", err))
+		}
 	case EnvDevelopment, EnvTest:
 		moduleRoot, ok := os.LookupEnv("MODULE_ROOT")
 		if !ok {
@@ -61,25 +63,4 @@ func isTest() bool {
 	return flag.Lookup("test.v") != nil ||
 		flag.Lookup("test.run") != nil ||
 		flag.Lookup("test.count") != nil
-}
-
-var secrets = []string{
-	"google_client_id",
-	"google_client_secret",
-	"line_channel_id",
-	"line_channel_secret",
-}
-
-func loadSecrets() {
-	for _, name := range secrets {
-		p := path.Join("/run/secrets", name)
-		b, err := os.ReadFile(p) //nolint:gosec // path is constructed from hardcoded base path and secret names
-		if err != nil {
-			continue
-		}
-		envKey := strings.ToUpper(name)
-		if err := os.Setenv(envKey, strings.TrimSpace(string(b))); err != nil {
-			panic(fmt.Errorf("failed to set env var %s: %w", envKey, err))
-		}
-	}
 }

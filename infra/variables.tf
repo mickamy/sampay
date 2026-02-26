@@ -1,3 +1,9 @@
+variable "aws_profile" {
+  type        = string
+  description = "AWS CLI profile name (null for CI/CD)"
+  default     = null
+}
+
 variable "environment" {
   type        = string
   description = "Environment name (stg or prod)"

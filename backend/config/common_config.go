@@ -31,6 +31,10 @@ func (e Env) ShortName() string {
 	panic(fmt.Sprintf("unknown environment: %s", e))
 }
 
+func (e Env) SecretID() string {
+	return "sampay-" + e.ShortName() + "/" + "app"
+}
+
 func (e Env) IsDevelopment() bool {
 	return e == EnvDevelopment
 }

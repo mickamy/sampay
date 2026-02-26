@@ -30,6 +30,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "public" {
   rule {
     id     = "expire-noncurrent-versions"
     status = "Enabled"
+    filter {}
 
     noncurrent_version_expiration {
       noncurrent_days = 30
@@ -105,6 +106,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "logs" {
   rule {
     id     = "expire-old-logs"
     status = "Enabled"
+    filter {}
 
     expiration {
       days = 90
@@ -158,6 +160,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "private" {
   rule {
     id     = "expire-noncurrent-versions"
     status = "Enabled"
+    filter {}
 
     noncurrent_version_expiration {
       noncurrent_days = 30
