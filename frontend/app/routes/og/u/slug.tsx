@@ -3,6 +3,7 @@ import { Resvg } from "@resvg/resvg-js";
 import satori from "satori";
 import { UserProfileService } from "~/gen/user/v1/user_profile_pb";
 import { getClient } from "~/lib/api/client.server";
+import logger from "~/lib/logger";
 import type { Route } from "./+types/slug";
 
 const WIDTH = 1200;
@@ -17,6 +18,13 @@ let fontCache: FontEntry[] | null = null;
 
 const FONT_TIMEOUT_MS = 5000;
 
+class FetchTimeoutError extends Error {
+  constructor(url: string, timeoutMs: number) {
+    super(`Fetch timed out after ${timeoutMs}ms: ${url}`);
+    this.name = "FetchTimeoutError";
+  }
+}
+
 async function fetchWithTimeout(
   url: string,
   timeoutMs: number,
@@ -24,7 +32,16 @@ async function fetchWithTimeout(
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    return await fetch(url, { signal: controller.signal });
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status} ${res.statusText}: ${url}`);
+    }
+    return res;
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "AbortError") {
+      throw new FetchTimeoutError(url, timeoutMs);
+    }
+    throw e;
   } finally {
     clearTimeout(id);
   }
@@ -107,7 +124,13 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     throw e;
   }
 
-  const fonts = await loadFonts();
+  let fonts: FontEntry[];
+  try {
+    fonts = await loadFonts();
+  } catch (e) {
+    logger.error({ err: e }, "Failed to load fonts for OG image");
+    throw e;
+  }
 
   const svg = await satori(
     <div
@@ -187,7 +210,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   return new Response(new Uint8Array(png), {
     headers: {
       "Content-Type": "image/png",
-      "Cache-Control": "public, max-age=86400",
+      "Cache-Control": "public, max-age=3600",
     },
   });
 }
