@@ -100,6 +100,17 @@ jobs:
           cache-from: type=gha,scope=frontend
           cache-to: type=gha,mode=max,scope=frontend
 
+      - name: Build and push migration
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile.migration
+          push: true
+          tags: ${{ steps.meta.outputs.ecr_backend_url }}:migration-${{ steps.meta.outputs.image_tag }}
+          platforms: linux/arm64
+          cache-from: type=gha,scope=migration
+          cache-to: type=gha,mode=max,scope=migration
+
   migrate:
     needs: [resolve-env, build-and-push]
     runs-on: ubuntu-latest
@@ -114,11 +125,13 @@ jobs:
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # DB init (reads credentials from Secrets Manager on EC2)
+            # Create DB and users (reads credentials from SM on EC2)
             /app/scripts/db-init.sh
 
-            # TODO: run dbmate migrations here
-            echo "DB initialization complete"
+            # Pull migration image and run create → migrate → seed
+            /app/scripts/ecr-login.sh
+            docker pull ${{ needs.build-and-push.outputs.ecr_backend_url }}:migration-${{ needs.build-and-push.outputs.image_tag }}
+            /app/scripts/run-migration.sh ${{ needs.build-and-push.outputs.ecr_backend_url }}:migration-${{ needs.build-and-push.outputs.image_tag }}
 
   deploy:
     needs: [resolve-env, build-and-push, migrate]
