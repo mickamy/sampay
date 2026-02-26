@@ -111,43 +111,13 @@ jobs:
           cache-from: type=gha,scope=migration
           cache-to: type=gha,mode=max,scope=migration
 
-  migrate:
+  deploy:
     needs: [resolve-env, build-and-push]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: ${{ needs.resolve-env.outputs.environment }}
 
     steps:
-      - name: Init DB and run migrations via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: deploy
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            # Create DB and users (reads credentials from SM on EC2)
-            /app/scripts/db-init.sh
-
-            # Pull migration image and run create → migrate → seed
-            /app/scripts/ecr-login.sh
-            docker pull ${{ needs.build-and-push.outputs.ecr_backend_url }}:migration-${{ needs.build-and-push.outputs.image_tag }}
-            /app/scripts/run-migration.sh ${{ needs.build-and-push.outputs.ecr_backend_url }}:migration-${{ needs.build-and-push.outputs.image_tag }}
-
-  deploy:
-    needs: [resolve-env, build-and-push, migrate]
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    environment: ${{ needs.resolve-env.outputs.environment }}
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
-
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
         with:
@@ -163,8 +133,9 @@ jobs:
             cd /app
             sed -i 's/^IMAGE_TAG=.*/IMAGE_TAG=${{ needs.build-and-push.outputs.image_tag }}/' .env.compose
 
-            # Pull new images
+            # Pull new images (app + migration)
             docker compose -f compose.prod.yaml pull api web
+            docker pull ${{ needs.build-and-push.outputs.ecr_backend_url }}:migration-${{ needs.build-and-push.outputs.image_tag }}
 
             # Restart services (pull-secrets.sh runs via ExecStartPre)
             sudo systemctl restart sampay

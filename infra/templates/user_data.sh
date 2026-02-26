@@ -73,6 +73,7 @@ ExecStartPre=/app/scripts/pull-secrets.sh
 EnvironmentFile=/app/.env.compose
 ExecStart=/usr/bin/docker compose -f compose.prod.yaml up -d --remove-orphans
 ExecStartPost=/app/scripts/db-init.sh
+ExecStartPost=/app/scripts/run-migration.sh
 ExecStop=/usr/bin/docker compose -f compose.prod.yaml down
 TimeoutStartSec=120
 

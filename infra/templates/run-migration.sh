@@ -1,12 +1,22 @@
 #!/bin/bash
 set -euo pipefail
 
-IMAGE="$1"
+ENV_COMPOSE="/app/.env.compose"
+NETWORK="app_default"
+
+# Resolve migration image: argument or derive from .env.compose
+if [ -n "${1:-}" ]; then
+  IMAGE="$1"
+else
+  ECR_BACKEND_URL=$(grep '^ECR_BACKEND_URL=' "$ENV_COMPOSE" | cut -d= -f2-)
+  IMAGE_TAG=$(grep '^IMAGE_TAG=' "$ENV_COMPOSE" | cut -d= -f2-)
+  IMAGE="${ECR_BACKEND_URL}:migration-${IMAGE_TAG}"
+fi
+
+docker pull "$IMAGE"
 
 IMDS_TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 60")
 REGION=$(curl -s -H "X-aws-ec2-metadata-token: $IMDS_TOKEN" http://169.254.169.254/latest/meta-data/placement/region)
-ENV_COMPOSE="/app/.env.compose"
-NETWORK="app_default"
 
 get_secret() {
   aws secretsmanager get-secret-value \
