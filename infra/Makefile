@@ -1,6 +1,7 @@
 PROFILE ?= default
 ENV ?= prod
 TF = AWS_PROFILE=$(PROFILE) tofu
+TF_VARS = -var-file=$(ENV).tfvars -var-file=.secret.$(ENV).tfvars -var="aws_profile=$(PROFILE)"
 
 .PHONY: init plan apply destroy fmt validate workspace
 
@@ -11,13 +12,13 @@ workspace: ## Ensure the correct Terraform workspace is selected or created
 	$(TF) workspace select $(ENV) || $(TF) workspace new $(ENV)
 
 plan: workspace ## Generate and show an execution plan for the Terraform configuration
-	$(TF) plan -var-file=$(ENV).tfvars -var-file=.secret.$(ENV).tfvars
+	$(TF) plan $(TF_VARS)
 
 apply: workspace ## Apply the Terraform configuration to create or update infrastructure
-	$(TF) apply -var-file=$(ENV).tfvars -var-file=.secret.$(ENV).tfvars
+	$(TF) apply $(TF_VARS)
 
 destroy: workspace ## Destroy the Terraform-managed infrastructure
-	$(TF) destroy -var-file=$(ENV).tfvars -var-file=.secret.$(ENV).tfvars
+	$(TF) destroy $(TF_VARS)
 
 fmt: ## Format the Terraform configuration files
 	$(TF) fmt -recursive
