@@ -4,10 +4,13 @@ set -euo pipefail
 # Update system
 dnf update -y
 
-# Install Docker
+# Install Docker from Amazon extras
 dnf install -y docker
 systemctl enable docker
 systemctl start docker
+
+# Add Docker CE repo for Compose plugin
+dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 
 # Install Docker Compose plugin, EC2 Instance Connect (for emergency access), and jq
 dnf install -y docker-compose-plugin ec2-instance-connect jq
