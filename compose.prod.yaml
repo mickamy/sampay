@@ -60,7 +60,7 @@ services:
       AWS_REGION: ${AWS_REGION:-ap-northeast-1}
       SM_APP_SECRET: ${SM_APP_SECRET}
       SESSION_SECRET: ${SESSION_SECRET}
-      API_BASE_URL: http://api:8080
+      API_BASE_URL: http://api:8080/api
     depends_on:
       api:
         condition: service_healthy
