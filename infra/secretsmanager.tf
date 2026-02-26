@@ -70,7 +70,7 @@ resource "aws_secretsmanager_secret_version" "app" {
     SQS_WORKER_DLQ_URL     = aws_sqs_queue.worker_dlq.url
 
     # OAuth
-    OAUTH_REDIRECT_URL   = "https://${local.api_domain}/auth/callback"
+    OAUTH_REDIRECT_URL   = "https://${local.app_domain}/oauth/callback"
     GOOGLE_CLIENT_ID     = var.google_client_id
     GOOGLE_CLIENT_SECRET = var.google_client_secret
     LINE_CHANNEL_ID      = var.line_channel_id
