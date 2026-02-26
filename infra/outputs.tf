@@ -73,6 +73,11 @@ output "sm_kvs_secret_arn" {
   description = "Secrets Manager KVS secret ARN"
 }
 
+output "ec2_security_group_id" {
+  value       = aws_security_group.ec2.id
+  description = "EC2 security group ID (set as EC2_SG_ID in GitHub environment secrets)"
+}
+
 output "github_actions_role_arn" {
   value       = aws_iam_role.github_actions.arn
   description = "IAM role ARN for GitHub Actions (set as AWS_ROLE_ARN in GitHub environment secrets)"

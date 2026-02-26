@@ -119,6 +119,23 @@ jobs:
     environment: ${{ needs.resolve-env.outputs.environment }}
 
     steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Open SSH access in Security Group
+        id: sg
+        run: |
+          RUNNER_IP=$(curl -s https://checkip.amazonaws.com)
+          echo "runner_ip=${RUNNER_IP}" >> "$GITHUB_OUTPUT"
+          aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.EC2_SG_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr "${RUNNER_IP}/32"
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
         with:
@@ -161,3 +178,12 @@ jobs:
               exit 1
             fi
             echo "All containers are running and healthy"
+
+      - name: Revoke SSH access from Security Group
+        if: always()
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id ${{ secrets.EC2_SG_ID }} \
+            --protocol tcp \
+            --port 22 \
+            --cidr "${{ steps.sg.outputs.runner_ip }}/32" 2>/dev/null || true

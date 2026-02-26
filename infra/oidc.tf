@@ -1,3 +1,6 @@
+data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
+
 # OIDC provider (one per AWS account, create only in prod workspace to avoid duplication)
 resource "aws_iam_openid_connect_provider" "github" {
   count = local.is_prod ? 1 : 0
@@ -78,6 +81,18 @@ resource "aws_iam_role_policy" "github_actions" {
         Resource = [
           aws_ecr_repository.backend.arn,
           aws_ecr_repository.frontend.arn,
+        ]
+      },
+      # SG rule for temporary SSH access during deploy
+      {
+        Effect = "Allow"
+        Action = [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupIngress",
+        ]
+        Resource = [
+          aws_security_group.ec2.arn,
+          "arn:aws:ec2:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:security-group-rule/*",
         ]
       },
     ]
