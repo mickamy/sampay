@@ -81,9 +81,10 @@ Group=deploy
 WorkingDirectory=/app
 ExecStartPre=/app/scripts/ecr-login.sh
 ExecStartPre=/app/scripts/pull-secrets.sh
+ExecStart=/usr/bin/docker compose --env-file .env.compose -f compose.prod.yaml up -d postgres valkey
+ExecStart=/app/scripts/db-init.sh
+ExecStart=/app/scripts/run-migration.sh
 ExecStart=/usr/bin/docker compose --env-file .env.compose -f compose.prod.yaml up -d --remove-orphans
-ExecStartPost=/app/scripts/db-init.sh
-ExecStartPost=/app/scripts/run-migration.sh
 ExecStop=/usr/bin/docker compose --env-file .env.compose -f compose.prod.yaml down
 TimeoutStartSec=120
 
