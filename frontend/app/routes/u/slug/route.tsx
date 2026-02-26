@@ -17,7 +17,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
       description: "",
     });
   }
-  const origin = loaderData.profileUrl.replace(`/u/${loaderData.slug}`, "");
+  const origin = new URL(loaderData.profileUrl).origin;
   return buildMeta({
     title: m.profile_title({ name: loaderData.slug }),
     description: m.profile_description({ name: loaderData.slug }),

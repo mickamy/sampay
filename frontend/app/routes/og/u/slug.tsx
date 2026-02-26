@@ -15,22 +15,60 @@ interface FontEntry {
 
 let fontCache: FontEntry[] | null = null;
 
+const FONT_TIMEOUT_MS = 5000;
+
+async function fetchWithTimeout(
+  url: string,
+  timeoutMs: number,
+): Promise<Response> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { signal: controller.signal });
+  } finally {
+    clearTimeout(id);
+  }
+}
+
 async function loadFonts(): Promise<FontEntry[]> {
   if (fontCache) return fontCache;
-  const res = await fetch(
+
+  const res = await fetchWithTimeout(
     "https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap",
+    FONT_TIMEOUT_MS,
   );
   const css = await res.text();
-  const urls = [...css.matchAll(/src:\s*url\(([^)]+)\)/g)].map((m) => m[1]);
-  if (urls.length < 2)
-    throw new Error("Failed to parse font URLs from Google Fonts CSS");
-  const [regular, bold] = await Promise.all(
-    urls.slice(0, 2).map((u) => fetch(u).then((r) => r.arrayBuffer())),
+
+  const blocks = css.match(/@font-face\s*\{[^}]*\}/g) ?? [];
+  const requiredWeights = [400, 700] as const;
+  const weightToUrl: Partial<Record<(typeof requiredWeights)[number], string>> =
+    {};
+
+  for (const block of blocks) {
+    const weightMatch = block.match(/font-weight:\s*(\d+)/);
+    const srcMatch = block.match(/src:\s*url\(([^)]+)\)/);
+    if (!weightMatch || !srcMatch) continue;
+    const w = Number(weightMatch[1]);
+    if (w === 400 || w === 700) {
+      weightToUrl[w] = srcMatch[1];
+    }
+  }
+
+  const entries = await Promise.all(
+    requiredWeights.map(async (weight) => {
+      const url = weightToUrl[weight];
+      if (!url)
+        throw new Error(
+          `Failed to find font URL for weight ${weight} in Google Fonts CSS`,
+        );
+      const data = await fetchWithTimeout(url, FONT_TIMEOUT_MS).then((r) =>
+        r.arrayBuffer(),
+      );
+      return { data, weight } satisfies FontEntry;
+    }),
   );
-  fontCache = [
-    { data: regular, weight: 400 },
-    { data: bold, weight: 700 },
-  ];
+
+  fontCache = entries;
   return fontCache;
 }
 
@@ -58,6 +96,7 @@ function WalletIcon() {
 export async function loader({ params, request }: Route.LoaderArgs) {
   const slug = params.slug;
 
+  // Verify user exists; return 404 if not found
   const client = getClient({ service: UserProfileService, request });
   try {
     await client.getUserProfile({ slug });
