@@ -42,6 +42,7 @@ resource "aws_instance" "main" {
     app_domain      = local.app_domain
     api_domain      = local.api_domain
     pull_secrets_sh = file("${path.module}/templates/pull-secrets.sh")
+    db_init_sh     = file("${path.module}/templates/db-init.sh")
   })
 
   tags = {

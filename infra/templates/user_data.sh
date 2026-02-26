@@ -72,6 +72,7 @@ ExecStartPre=/app/scripts/ecr-login.sh
 ExecStartPre=/app/scripts/pull-secrets.sh
 EnvironmentFile=/app/.env.compose
 ExecStart=/usr/bin/docker compose -f compose.prod.yaml up -d --remove-orphans
+ExecStartPost=/app/scripts/db-init.sh
 ExecStop=/usr/bin/docker compose -f compose.prod.yaml down
 TimeoutStartSec=120
 
@@ -99,6 +100,12 @@ ACCOUNT=$(curl -s -H "X-aws-ec2-metadata-token: $IMDS_TOKEN" http://169.254.169.
 aws ecr get-login-password --region "$REGION" | docker login --username AWS --password-stdin "$ACCOUNT.dkr.ecr.$REGION.amazonaws.com"
 ECREOF
 chmod 700 /app/scripts/ecr-login.sh
+
+# Install DB init script
+cat > /app/scripts/db-init.sh << 'DBINITEOF'
+${db_init_sh}
+DBINITEOF
+chmod 700 /app/scripts/db-init.sh
 
 # Create placeholder env files with restrictive permissions
 # .env.compose: orchestration vars (ECR URLs, IMAGE_TAG, SM_PREFIX)

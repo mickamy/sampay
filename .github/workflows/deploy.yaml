@@ -107,72 +107,18 @@ jobs:
     environment: ${{ needs.resolve-env.outputs.environment }}
 
     steps:
-      - uses: actions/checkout@v6
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Get DB credentials from Secrets Manager
-        id: secrets
-        run: |
-          ENV=${{ needs.resolve-env.outputs.environment }}
-          APP_SECRET=$(aws secretsmanager get-secret-value \
-            --secret-id "sampay-${ENV}/app" \
-            --query SecretString --output text)
-
-          echo "::add-mask::$(echo "$APP_SECRET" | jq -r .DB_ADMIN_PASSWORD)"
-          echo "::add-mask::$(echo "$APP_SECRET" | jq -r .DB_WRITER_PASSWORD)"
-          echo "::add-mask::$(echo "$APP_SECRET" | jq -r .DB_READER_PASSWORD)"
-
-          echo "db_admin_password=$(echo "$APP_SECRET" | jq -r .DB_ADMIN_PASSWORD)" >> "$GITHUB_OUTPUT"
-          echo "db_writer_password=$(echo "$APP_SECRET" | jq -r .DB_WRITER_PASSWORD)" >> "$GITHUB_OUTPUT"
-          echo "db_reader_password=$(echo "$APP_SECRET" | jq -r .DB_READER_PASSWORD)" >> "$GITHUB_OUTPUT"
-
-      - name: Run DB init scripts via SSH
+      - name: Init DB and run migrations via SSH
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            export PGPASSWORD='${{ steps.secrets.outputs.db_admin_password }}'
+            # DB init (reads credentials from Secrets Manager on EC2)
+            /app/scripts/db-init.sh
 
-            # Create database if not exists
-            docker exec sampay-postgres-1 psql -U postgres -tc \
-              "SELECT 1 FROM pg_database WHERE datname = 'sampay'" | grep -q 1 || \
-            docker exec sampay-postgres-1 psql -U postgres -c "CREATE DATABASE sampay"
-
-            # Create users with passwords from SM
-            docker exec sampay-postgres-1 psql -U postgres -d sampay -c \
-              "DO \$\$ BEGIN
-                IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'sampay_writer') THEN
-                  CREATE USER sampay_writer WITH PASSWORD '${{ steps.secrets.outputs.db_writer_password }}';
-                ELSE
-                  ALTER USER sampay_writer WITH PASSWORD '${{ steps.secrets.outputs.db_writer_password }}';
-                END IF;
-                IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'sampay_reader') THEN
-                  CREATE USER sampay_reader WITH PASSWORD '${{ steps.secrets.outputs.db_reader_password }}';
-                ELSE
-                  ALTER USER sampay_reader WITH PASSWORD '${{ steps.secrets.outputs.db_reader_password }}';
-                END IF;
-              END \$\$;"
-
-            docker exec sampay-postgres-1 psql -U postgres -d sampay -c \
-              "GRANT USAGE ON SCHEMA public TO sampay_writer, sampay_reader"
-
-      - name: Run migrations via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: deploy
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            export PGPASSWORD='${{ steps.secrets.outputs.db_admin_password }}'
-            docker exec sampay-postgres-1 psql -U postgres -d sampay -c "SELECT 1" > /dev/null
-            echo "DB connection verified"
+            # TODO: run dbmate migrations here
+            echo "DB initialization complete"
 
   deploy:
     needs: [resolve-env, build-and-push, migrate]

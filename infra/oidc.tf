@@ -80,16 +80,6 @@ resource "aws_iam_role_policy" "github_actions" {
           aws_ecr_repository.frontend.arn,
         ]
       },
-      # Secrets Manager read (for DB credentials during migration)
-      {
-        Effect = "Allow"
-        Action = [
-          "secretsmanager:GetSecretValue",
-        ]
-        Resource = [
-          aws_secretsmanager_secret.app.arn,
-        ]
-      },
     ]
   })
 }
