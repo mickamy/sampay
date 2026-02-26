@@ -66,3 +66,9 @@ variable "email_from" {
   description = "Sender email address"
   default     = ""
 }
+
+variable "github_repo" {
+  type        = string
+  description = "GitHub repository (owner/repo)"
+  default     = "mickamy/sampay"
+}

@@ -72,3 +72,8 @@ output "sm_kvs_secret_arn" {
   value       = aws_secretsmanager_secret.kvs.arn
   description = "Secrets Manager KVS secret ARN"
 }
+
+output "github_actions_role_arn" {
+  value       = aws_iam_role.github_actions.arn
+  description = "IAM role ARN for GitHub Actions (set as AWS_ROLE_ARN in GitHub environment secrets)"
+}
