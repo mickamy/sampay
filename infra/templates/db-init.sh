@@ -32,12 +32,12 @@ DB_READER_PASSWORD=$(echo "$APP_JSON" | jq -r .DB_READER_PASSWORD)
 DB_NAME=$(echo "$APP_JSON" | jq -r .DB_NAME)
 
 psql_cmd() {
-  docker compose -f "$COMPOSE_FILE" exec -T -e PGPASSWORD="$DB_ADMIN_PASSWORD" postgres psql -U postgres "$@"
+  docker compose --env-file "$ENV_COMPOSE" -f "$COMPOSE_FILE" exec -T -e PGPASSWORD="$DB_ADMIN_PASSWORD" postgres psql -U postgres "$@"
 }
 
 # Wait for postgres to be ready
 for i in $(seq 1 30); do
-  if docker compose -f "$COMPOSE_FILE" exec -T postgres pg_isready -U postgres > /dev/null 2>&1; then
+  if docker compose --env-file "$ENV_COMPOSE" -f "$COMPOSE_FILE" exec -T postgres pg_isready -U postgres > /dev/null 2>&1; then
     break
   fi
   if [ "$i" -eq 30 ]; then

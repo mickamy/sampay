@@ -39,6 +39,7 @@ APP_JSON=$(get_secret "${SM_PREFIX}/app")
 run_migration() {
   docker run --rm --network "$NETWORK" \
     -e DOCKER=1 \
+    -e MODULE_ROOT=/ \
     -e "DB_HOST=$(echo "$APP_JSON" | jq -r .DB_HOST)" \
     -e "DB_PORT=$(echo "$APP_JSON" | jq -r .DB_PORT)" \
     -e "DB_NAME=$(echo "$APP_JSON" | jq -r .DB_NAME)" \
