@@ -17,6 +17,7 @@ import (
 	"github.com/mickamy/sampay/internal/domain/storage"
 	"github.com/mickamy/sampay/internal/domain/test"
 	"github.com/mickamy/sampay/internal/domain/user"
+	"github.com/mickamy/sampay/internal/lib/logger"
 )
 
 func NewServer(infra *di.Infra) http.Server {
@@ -29,6 +30,27 @@ func NewServer(infra *di.Infra) http.Server {
 	}
 
 	mux := http.NewServeMux()
+	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		if _, err := infra.WriterDB.ExecContext(r.Context(), "SELECT 1"); err != nil {
+			logger.Error(r.Context(), "failed to ping writer database", "err", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		if _, err := infra.ReaderDB.ExecContext(r.Context(), "SELECT 1"); err != nil {
+			logger.Error(r.Context(), "failed to ping reader database", "err", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		if err := infra.KVS.Ping(r.Context()); err != nil {
+			logger.Error(r.Context(), "failed to ping KVS", "err", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	})
 	mux.Handle("/api/", http.StripPrefix("/api", api))
 
 	return http.Server{
