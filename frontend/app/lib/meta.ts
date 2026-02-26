@@ -36,6 +36,8 @@ export function buildMeta({
   if (image) {
     meta.push(
       { property: "og:image", content: image },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
       { name: "twitter:image", content: image },
     );
   }
