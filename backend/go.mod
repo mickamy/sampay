@@ -32,7 +32,7 @@ require (
 	github.com/mickamy/enufstub v0.0.1
 	github.com/mickamy/errx v0.0.4
 	github.com/mickamy/errx/cerr v0.0.4
-	github.com/mickamy/go-typesafe-i18n v0.0.2
+	github.com/mickamy/go-typesafe-i18n v0.0.3
 	github.com/mickamy/gopanix v0.1.6
 	github.com/mickamy/ormgen v0.0.21
 	github.com/oklog/ulid/v2 v2.1.1

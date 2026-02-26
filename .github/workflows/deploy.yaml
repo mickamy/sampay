@@ -155,9 +155,15 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             ENV=${{ needs.resolve-env.outputs.environment }}
+            case "$ENV" in
+              prod) APP_ENV=production ;;
+              stg)  APP_ENV=staging ;;
+              *)    APP_ENV="$ENV" ;;
+            esac
 
             # Write .env.compose with orchestration vars
             cat > /app/.env.compose << EOF
+            APP_ENV=${APP_ENV}
             ECR_BACKEND_URL=${{ needs.build-and-push.outputs.ecr_backend_url }}
             ECR_FRONTEND_URL=${{ needs.build-and-push.outputs.ecr_frontend_url }}
             IMAGE_TAG=${{ needs.build-and-push.outputs.image_tag }}

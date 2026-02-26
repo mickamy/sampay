@@ -2,25 +2,30 @@ package i18n
 
 import (
 	"context"
-	"path/filepath"
+	"embed"
 
 	i18n "github.com/mickamy/go-typesafe-i18n"
 	"golang.org/x/text/language"
 
-	"github.com/mickamy/sampay/config"
 	"github.com/mickamy/sampay/internal/misc/contexts"
 )
 
 //go:generate go tool go-typesafe-i18n generate -base=ja -out=./messages/messages_gen.go ./locales
+
+//go:embed locales/*.yaml
+var localeFS embed.FS
 
 var bundle *i18n.Bundle
 var DefaultLanguage = language.Japanese
 
 func init() {
 	bundle = i18n.NewBundle(DefaultLanguage)
-	locales := filepath.Join(config.Common().ModuleRoot, "internal", "misc", "i18n", "locales")
-	bundle.MustLoadFile(filepath.Join(locales, "ja.yaml"))
-	bundle.MustLoadFile(filepath.Join(locales, "en.yaml"))
+
+	ja, _ := localeFS.ReadFile("locales/ja.yaml")
+	bundle.MustLoadBytes("ja.yaml", ja)
+
+	en, _ := localeFS.ReadFile("locales/en.yaml")
+	bundle.MustLoadBytes("en.yaml", en)
 }
 
 func Localize(tag language.Tag, msg i18n.Message) string {
