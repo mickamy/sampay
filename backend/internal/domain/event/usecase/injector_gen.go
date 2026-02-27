@@ -191,3 +191,27 @@ func MustNewUpdateEvent(infra *di.Infra) UpdateEvent {
 		participantRepo: eventParticipant,
 	}
 }
+
+// NewUpdateParticipantStatus initializes dependencies and constructs updateParticipantStatus.
+func NewUpdateParticipantStatus(infra *di.Infra) UpdateParticipantStatus {
+	event := repository.NewEvent(infra.DB)
+	eventParticipant := repository.NewEventParticipant(infra.DB)
+
+	return &updateParticipantStatus{
+		writer:          infra.WriterDB,
+		eventRepo:       event,
+		participantRepo: eventParticipant,
+	}
+}
+
+// MustNewUpdateParticipantStatus initializes dependencies and constructs updateParticipantStatus or panics on failure.
+func MustNewUpdateParticipantStatus(infra *di.Infra) UpdateParticipantStatus {
+	event := repository.NewEvent(infra.DB)
+	eventParticipant := repository.NewEventParticipant(infra.DB)
+
+	return &updateParticipantStatus{
+		writer:          infra.WriterDB,
+		eventRepo:       event,
+		participantRepo: eventParticipant,
+	}
+}
