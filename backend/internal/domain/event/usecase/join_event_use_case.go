@@ -57,7 +57,9 @@ func (uc *joinEvent) Do(ctx context.Context, input JoinEventInput) (JoinEventOut
 	var participant model.EventParticipant
 
 	if err := uc.writer.Transaction(ctx, func(tx *database.DB) error {
-		ev, err := uc.eventRepo.WithTx(tx).Get(ctx, input.EventID)
+		ev, err := uc.eventRepo.WithTx(tx).Get(
+			ctx, input.EventID, repository.EventPreloadTiers(),
+		)
 		if err != nil {
 			if errors.Is(err, database.ErrNotFound) {
 				return ErrJoinEventNotFound
@@ -75,6 +77,7 @@ func (uc *joinEvent) Do(ctx context.Context, input JoinEventInput) (JoinEventOut
 			EventID: input.EventID,
 			Name:    input.Name,
 			Tier:    input.Tier,
+			Amount:  ev.TierAmount(input.Tier),
 			Status:  model.ParticipantStatusUnpaid,
 		}
 

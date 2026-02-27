@@ -55,7 +55,6 @@ func (uc *getEvent) Do(ctx context.Context, input GetEventInput) (GetEventOutput
 		ev, err = uc.eventRepo.WithTx(tx).Get(
 			ctx, input.ID,
 			repository.EventPreloadParticipants(),
-			repository.EventPreloadTiers(),
 		)
 		if err != nil {
 			if errors.Is(err, database.ErrNotFound) {
@@ -83,8 +82,6 @@ func (uc *getEvent) Do(ctx context.Context, input GetEventInput) (GetEventOutput
 		//nolint:wrapcheck // errors from transaction callback are already wrapped inside
 		return GetEventOutput{}, err
 	}
-
-	ev.SetParticipantAmounts()
 
 	return GetEventOutput{
 		Event:          ev,

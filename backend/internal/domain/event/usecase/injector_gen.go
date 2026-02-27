@@ -168,11 +168,13 @@ func MustNewListMyEvents(infra *di.Infra) ListMyEvents {
 func NewUpdateEvent(infra *di.Infra) UpdateEvent {
 	event := repository.NewEvent(infra.DB)
 	eventTier := repository.NewEventTier(infra.DB)
+	eventParticipant := repository.NewEventParticipant(infra.DB)
 
 	return &updateEvent{
-		writer:    infra.WriterDB,
-		eventRepo: event,
-		tierRepo:  eventTier,
+		writer:          infra.WriterDB,
+		eventRepo:       event,
+		tierRepo:        eventTier,
+		participantRepo: eventParticipant,
 	}
 }
 
@@ -180,10 +182,12 @@ func NewUpdateEvent(infra *di.Infra) UpdateEvent {
 func MustNewUpdateEvent(infra *di.Infra) UpdateEvent {
 	event := repository.NewEvent(infra.DB)
 	eventTier := repository.NewEventTier(infra.DB)
+	eventParticipant := repository.NewEventParticipant(infra.DB)
 
 	return &updateEvent{
-		writer:    infra.WriterDB,
-		eventRepo: event,
-		tierRepo:  eventTier,
+		writer:          infra.WriterDB,
+		eventRepo:       event,
+		tierRepo:        eventTier,
+		participantRepo: eventParticipant,
 	}
 }

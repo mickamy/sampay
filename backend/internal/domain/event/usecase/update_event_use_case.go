@@ -12,6 +12,7 @@ import (
 	"github.com/mickamy/sampay/internal/domain/event/model"
 	"github.com/mickamy/sampay/internal/domain/event/repository"
 	"github.com/mickamy/sampay/internal/infra/storage/database"
+	"github.com/mickamy/sampay/internal/lib/slicex"
 	"github.com/mickamy/sampay/internal/lib/ulid"
 	"github.com/mickamy/sampay/internal/misc/contexts"
 	"github.com/mickamy/sampay/internal/misc/i18n/messages"
@@ -48,11 +49,12 @@ type UpdateEvent interface {
 }
 
 type updateEvent struct {
-	_         UpdateEvent          `inject:"returns"`
-	_         *di.Infra            `inject:"param"`
-	writer    *database.Writer     `inject:""`
-	eventRepo repository.Event     `inject:""`
-	tierRepo  repository.EventTier `inject:""`
+	_               UpdateEvent              `inject:"returns"`
+	_               *di.Infra                `inject:"param"`
+	writer          *database.Writer         `inject:""`
+	eventRepo       repository.Event         `inject:""`
+	tierRepo        repository.EventTier     `inject:""`
+	participantRepo repository.EventParticipant `inject:""`
 }
 
 func (uc *updateEvent) Do(ctx context.Context, input UpdateEventInput) (UpdateEventOutput, error) {
@@ -114,13 +116,17 @@ func (uc *updateEvent) Do(ctx context.Context, input UpdateEventInput) (UpdateEv
 				WithCode(errx.Internal)
 		}
 
-		tierPtrs := make([]*model.EventTier, len(tiers))
-		for i := range tiers {
-			tierPtrs[i] = &tiers[i]
-		}
-		if err := uc.tierRepo.WithTx(tx).CreateAll(ctx, tierPtrs); err != nil {
+		if err := uc.tierRepo.WithTx(tx).CreateAll(ctx, slicex.MapToPointer(tiers)); err != nil {
 			return errx.Wrap(err, "message", "failed to create tiers", "id", ev.ID).
 				WithCode(errx.Internal)
+		}
+
+		for i := range ev.Participants {
+			ev.Participants[i].Amount = ev.TierAmount(ev.Participants[i].Tier)
+			if err := uc.participantRepo.WithTx(tx).Update(ctx, &ev.Participants[i]); err != nil {
+				return errx.Wrap(err, "message", "failed to update participant amount").
+					WithCode(errx.Internal)
+			}
 		}
 
 		ev.Tiers = tiers

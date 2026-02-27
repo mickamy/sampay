@@ -54,7 +54,6 @@ func (uc *listEventParticipants) Do(
 		var err error
 		ev, err = uc.eventRepo.WithTx(tx).Get(
 			ctx, input.EventID,
-			repository.EventPreloadTiers(),
 			repository.EventPreloadParticipants(),
 		)
 		if err != nil {
@@ -74,8 +73,6 @@ func (uc *listEventParticipants) Do(
 		//nolint:wrapcheck // errors from transaction callback are already wrapped inside
 		return ListEventParticipantsOutput{}, err
 	}
-
-	ev.SetParticipantAmounts()
 
 	return ListEventParticipantsOutput{Participants: ev.Participants}, nil
 }

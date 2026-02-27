@@ -8,8 +8,8 @@ type EventParticipant struct {
 	EventID   string
 	Name      string
 	Tier      int
+	Amount    int
 	Status    string
-	Amount    int `db:"-"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

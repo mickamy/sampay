@@ -33,27 +33,15 @@ func TestListEventParticipants_Do(t *testing.T) {
 		})
 		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &ev))
 
-		t1 := fixture.EventTier(func(m *model.EventTier) {
-			m.EventID = ev.ID
-			m.Tier = 1
-			m.Count = 1
-			m.Amount = 3000
-		})
-		t3 := fixture.EventTier(func(m *model.EventTier) {
-			m.EventID = ev.ID
-			m.Tier = 3
-			m.Count = 1
-			m.Amount = 9000
-		})
-		require.NoError(t, query.EventTiers(infra.WriterDB).CreateAll(t.Context(), []*model.EventTier{&t1, &t3}))
-
 		p1 := fixture.EventParticipant(func(p *model.EventParticipant) {
 			p.EventID = ev.ID
 			p.Tier = 3
+			p.Amount = 9000
 		})
 		p2 := fixture.EventParticipant(func(p *model.EventParticipant) {
 			p.EventID = ev.ID
 			p.Tier = 1
+			p.Amount = 3000
 		})
 		require.NoError(t, query.EventParticipants(infra.WriterDB).Create(t.Context(), &p1))
 		require.NoError(t, query.EventParticipants(infra.WriterDB).Create(t.Context(), &p2))

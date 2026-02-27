@@ -39,13 +39,12 @@ func (e *Event) CalcTierAmounts() {
 	e.Remainder = e.TotalAmount - sum
 }
 
-// SetParticipantAmounts sets Amount on each participant from pre-computed tier amounts.
-func (e *Event) SetParticipantAmounts() {
-	tierAmounts := make(map[int]int, len(e.Tiers))
+// TierAmount returns the per-person amount for the given tier number.
+func (e *Event) TierAmount(tier int) int {
 	for _, t := range e.Tiers {
-		tierAmounts[t.Tier] = t.Amount
+		if t.Tier == tier {
+			return t.Amount
+		}
 	}
-	for i := range e.Participants {
-		e.Participants[i].Amount = tierAmounts[e.Participants[i].Tier]
-	}
+	return 0
 }
