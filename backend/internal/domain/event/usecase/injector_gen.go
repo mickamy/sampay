@@ -5,6 +5,7 @@ package usecase
 import (
 	di "github.com/mickamy/sampay/internal/di"
 	repository "github.com/mickamy/sampay/internal/domain/event/repository"
+	repository2 "github.com/mickamy/sampay/internal/domain/user/repository"
 )
 
 // NewCreateEvent initializes dependencies and constructs createEvent.
@@ -44,6 +45,34 @@ func MustNewDeleteEvent(infra *di.Infra) DeleteEvent {
 	return &deleteEvent{
 		writer:    infra.WriterDB,
 		eventRepo: event,
+	}
+}
+
+// NewGetEvent initializes dependencies and constructs getEvent.
+func NewGetEvent(infra *di.Infra) GetEvent {
+	event := repository.NewEvent(infra.DB)
+	endUser := repository2.NewEndUser(infra.DB)
+	userPaymentMethod := repository2.NewUserPaymentMethod(infra.DB)
+
+	return &getEvent{
+		reader:            infra.ReaderDB,
+		eventRepo:         event,
+		endUserRepo:       endUser,
+		paymentMethodRepo: userPaymentMethod,
+	}
+}
+
+// MustNewGetEvent initializes dependencies and constructs getEvent or panics on failure.
+func MustNewGetEvent(infra *di.Infra) GetEvent {
+	event := repository.NewEvent(infra.DB)
+	endUser := repository2.NewEndUser(infra.DB)
+	userPaymentMethod := repository2.NewUserPaymentMethod(infra.DB)
+
+	return &getEvent{
+		reader:            infra.ReaderDB,
+		eventRepo:         event,
+		endUserRepo:       endUser,
+		paymentMethodRepo: userPaymentMethod,
 	}
 }
 

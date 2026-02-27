@@ -9,6 +9,7 @@ type EventParticipant struct {
 	Name      string
 	Tier      int
 	Status    string
+	Amount    int `db:"-"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
