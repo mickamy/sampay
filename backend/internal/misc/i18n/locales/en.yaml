@@ -1,6 +1,9 @@
 event:
   use_case:
     error:
+      title_required: Title is required.
+      total_amount_positive: Total amount must be positive.
+      tier_count_invalid: Tier count must be 1, 3, or 5.
       not_found: Event not found.
       forbidden: You do not have permission to access this event.
 

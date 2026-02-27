@@ -69,6 +69,36 @@ func CommonResponseErrorInternal() i18n.Message {
 	return i18n.Message{ID: "common.response.error.internal"}
 }
 
+// EventUseCaseErrorForbidden returns a Message for "event.use_case.error.forbidden".
+// Template: このイベントにアクセスする権限がありません。
+func EventUseCaseErrorForbidden() i18n.Message {
+	return i18n.Message{ID: "event.use_case.error.forbidden"}
+}
+
+// EventUseCaseErrorNotFound returns a Message for "event.use_case.error.not_found".
+// Template: イベントが見つかりません。
+func EventUseCaseErrorNotFound() i18n.Message {
+	return i18n.Message{ID: "event.use_case.error.not_found"}
+}
+
+// EventUseCaseErrorTierCountInvalid returns a Message for "event.use_case.error.tier_count_invalid".
+// Template: ティア段階数は1、3、5のいずれかで指定してください。
+func EventUseCaseErrorTierCountInvalid() i18n.Message {
+	return i18n.Message{ID: "event.use_case.error.tier_count_invalid"}
+}
+
+// EventUseCaseErrorTitleRequired returns a Message for "event.use_case.error.title_required".
+// Template: タイトルは必須です。
+func EventUseCaseErrorTitleRequired() i18n.Message {
+	return i18n.Message{ID: "event.use_case.error.title_required"}
+}
+
+// EventUseCaseErrorTotalAmountPositive returns a Message for "event.use_case.error.total_amount_positive".
+// Template: 合計金額は1以上で入力してください。
+func EventUseCaseErrorTotalAmountPositive() i18n.Message {
+	return i18n.Message{ID: "event.use_case.error.total_amount_positive"}
+}
+
 // UserMapperErrorUnknownPaymentMethodType returns a Message for "user.mapper.error.unknown_payment_method_type".
 // Template: 不明な決済手段です。
 func UserMapperErrorUnknownPaymentMethodType() i18n.Message {
