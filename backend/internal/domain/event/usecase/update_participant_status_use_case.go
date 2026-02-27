@@ -26,7 +26,7 @@ var (
 
 type UpdateParticipantStatusInput struct {
 	ParticipantID string
-	Status        string
+	Status        model.ParticipantStatus
 }
 
 type UpdateParticipantStatusOutput struct {

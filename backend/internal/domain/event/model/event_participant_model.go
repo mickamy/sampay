@@ -2,6 +2,14 @@ package model
 
 import "time"
 
+type ParticipantStatus string
+
+const (
+	ParticipantStatusUnpaid    ParticipantStatus = "unpaid"
+	ParticipantStatusClaimed   ParticipantStatus = "claimed"
+	ParticipantStatusConfirmed ParticipantStatus = "confirmed"
+)
+
 //go:generate go tool ormgen -source=$GOFILE -destination=../query
 type EventParticipant struct {
 	ID        string
@@ -9,13 +17,7 @@ type EventParticipant struct {
 	Name      string
 	Tier      int
 	Amount    int
-	Status    string
+	Status    ParticipantStatus
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
-
-const (
-	ParticipantStatusUnpaid    = "unpaid"
-	ParticipantStatusClaimed   = "claimed"
-	ParticipantStatusConfirmed = "confirmed"
-)
