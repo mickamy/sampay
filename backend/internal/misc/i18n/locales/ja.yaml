@@ -43,6 +43,9 @@ event:
       invalid_tier: ティアが無効です。
       participant_not_found: 参加者が見つかりません。
       already_claimed: すでに支払い申告済みです。
+      tiers_required: ティア構成は必須です。
+      invalid_tier_config: ティア構成が無効です。
+      locked: 参加者が支払い申告済みのため、このイベントは編集できません。
 
 common:
   response:

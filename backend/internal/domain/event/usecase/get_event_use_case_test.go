@@ -37,6 +37,20 @@ func TestGetEvent_Do(t *testing.T) {
 		})
 		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &ev))
 
+		t1 := fixture.EventTier(func(m *model.EventTier) {
+			m.EventID = ev.ID
+			m.Tier = 1
+			m.Count = 1
+			m.Amount = 2500
+		})
+		t3 := fixture.EventTier(func(m *model.EventTier) {
+			m.EventID = ev.ID
+			m.Tier = 3
+			m.Count = 1
+			m.Amount = 7500
+		})
+		require.NoError(t, query.EventTiers(infra.WriterDB).CreateAll(t.Context(), []*model.EventTier{&t1, &t3}))
+
 		p1 := fixture.EventParticipant(func(p *model.EventParticipant) {
 			p.EventID = ev.ID
 			p.Tier = 3
@@ -56,13 +70,12 @@ func TestGetEvent_Do(t *testing.T) {
 		assert.Equal(t, endUser.UserID, out.User.UserID)
 		assert.Len(t, out.PaymentMethods, 1)
 		require.Len(t, out.Event.Participants, 2)
-		// totalWeight = 3 + 1 = 4
 		amountByID := make(map[string]int, len(out.Event.Participants))
 		for _, p := range out.Event.Participants {
 			amountByID[p.ID] = p.Amount
 		}
-		assert.Equal(t, 10000*3/4, amountByID[p1.ID])
-		assert.Equal(t, 10000*1/4, amountByID[p2.ID])
+		assert.Equal(t, 7500, amountByID[p1.ID])
+		assert.Equal(t, 2500, amountByID[p2.ID])
 	})
 
 	t.Run("not found", func(t *testing.T) {

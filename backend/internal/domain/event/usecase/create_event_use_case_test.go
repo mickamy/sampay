@@ -31,6 +31,11 @@ func TestCreateEvent_Do(t *testing.T) {
 			TotalAmount: 30000,
 			TierCount:   3,
 			HeldAt:      time.Now().Add(24 * time.Hour),
+			Tiers: []usecase.TierConfig{
+				{Tier: 1, Count: 2},
+				{Tier: 2, Count: 2},
+				{Tier: 3, Count: 1},
+			},
 		})
 
 		require.NoError(t, err)
@@ -39,6 +44,8 @@ func TestCreateEvent_Do(t *testing.T) {
 		assert.Equal(t, "party", out.Event.Title)
 		assert.Equal(t, 30000, out.Event.TotalAmount)
 		assert.Equal(t, 3, out.Event.TierCount)
+		require.Len(t, out.Event.Tiers, 3)
+		assert.Equal(t, out.Event.ID, out.Event.Tiers[0].EventID)
 	})
 
 	t.Run("empty title", func(t *testing.T) {
@@ -54,6 +61,7 @@ func TestCreateEvent_Do(t *testing.T) {
 			Title:       "",
 			TotalAmount: 30000,
 			TierCount:   1,
+			Tiers:       []usecase.TierConfig{{Tier: 1, Count: 5}},
 			HeldAt:      time.Now().Add(24 * time.Hour),
 		})
 
@@ -74,6 +82,7 @@ func TestCreateEvent_Do(t *testing.T) {
 			Title:       "party",
 			TotalAmount: -30000,
 			TierCount:   1,
+			Tiers:       []usecase.TierConfig{{Tier: 1, Count: 5}},
 			HeldAt:      time.Now().Add(24 * time.Hour),
 		})
 
@@ -94,6 +103,7 @@ func TestCreateEvent_Do(t *testing.T) {
 			Title:       "party",
 			TotalAmount: 30000,
 			TierCount:   2,
+			Tiers:       []usecase.TierConfig{{Tier: 1, Count: 5}, {Tier: 2, Count: 3}},
 			HeldAt:      time.Now().Add(24 * time.Hour),
 		})
 

@@ -37,11 +37,10 @@ type ListEventParticipants interface {
 }
 
 type listEventParticipants struct {
-	_               ListEventParticipants      `inject:"returns"`
-	_               *di.Infra                  `inject:"param"`
-	reader          *database.Reader           `inject:""`
-	eventRepo       repository.Event           `inject:""`
-	participantRepo repository.EventParticipant `inject:""`
+	_         ListEventParticipants `inject:"returns"`
+	_         *di.Infra             `inject:"param"`
+	reader    *database.Reader      `inject:""`
+	eventRepo repository.Event      `inject:""`
 }
 
 func (uc *listEventParticipants) Do(
@@ -49,10 +48,15 @@ func (uc *listEventParticipants) Do(
 ) (ListEventParticipantsOutput, error) {
 	userID := contexts.MustAuthenticatedUserID(ctx)
 
-	var participants []model.EventParticipant
+	var ev model.Event
 
 	if err := uc.reader.Transaction(ctx, func(tx *database.DB) error {
-		ev, err := uc.eventRepo.WithTx(tx).Get(ctx, input.EventID)
+		var err error
+		ev, err = uc.eventRepo.WithTx(tx).Get(
+			ctx, input.EventID,
+			repository.EventPreloadTiers(),
+			repository.EventPreloadParticipants(),
+		)
 		if err != nil {
 			if errors.Is(err, database.ErrNotFound) {
 				return ErrListEventParticipantsNotFound
@@ -65,19 +69,13 @@ func (uc *listEventParticipants) Do(
 			return ErrListEventParticipantsForbidden
 		}
 
-		participants, err = uc.participantRepo.WithTx(tx).ListByEventID(ctx, input.EventID)
-		if err != nil {
-			return errx.Wrap(err, "message", "failed to list participants", "event_id", input.EventID).
-				WithCode(errx.Internal)
-		}
-
-		model.CalcAmounts(ev.TotalAmount, participants)
-
 		return nil
 	}); err != nil {
 		//nolint:wrapcheck // errors from transaction callback are already wrapped inside
 		return ListEventParticipantsOutput{}, err
 	}
 
-	return ListEventParticipantsOutput{Participants: participants}, nil
+	ev.SetParticipantAmounts()
+
+	return ListEventParticipantsOutput{Participants: ev.Participants}, nil
 }

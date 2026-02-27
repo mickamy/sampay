@@ -10,6 +10,9 @@ event:
       invalid_tier: Invalid tier.
       participant_not_found: Participant not found.
       already_claimed: Payment has already been claimed.
+      tiers_required: Tier configuration is required.
+      invalid_tier_config: Tier configuration is invalid.
+      locked: This event cannot be edited because a participant has already reported payment.
 
 user:
   mapper:

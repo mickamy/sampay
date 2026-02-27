@@ -31,20 +31,24 @@ func MustNewClaimPayment(infra *di.Infra) ClaimPayment {
 // NewCreateEvent initializes dependencies and constructs createEvent.
 func NewCreateEvent(infra *di.Infra) CreateEvent {
 	event := repository.NewEvent(infra.DB)
+	eventTier := repository.NewEventTier(infra.DB)
 
 	return &createEvent{
 		writer:    infra.WriterDB,
 		eventRepo: event,
+		tierRepo:  eventTier,
 	}
 }
 
 // MustNewCreateEvent initializes dependencies and constructs createEvent or panics on failure.
 func MustNewCreateEvent(infra *di.Infra) CreateEvent {
 	event := repository.NewEvent(infra.DB)
+	eventTier := repository.NewEventTier(infra.DB)
 
 	return &createEvent{
 		writer:    infra.WriterDB,
 		eventRepo: event,
+		tierRepo:  eventTier,
 	}
 }
 
@@ -123,24 +127,20 @@ func MustNewJoinEvent(infra *di.Infra) JoinEvent {
 // NewListEventParticipants initializes dependencies and constructs listEventParticipants.
 func NewListEventParticipants(infra *di.Infra) ListEventParticipants {
 	event := repository.NewEvent(infra.DB)
-	eventParticipant := repository.NewEventParticipant(infra.DB)
 
 	return &listEventParticipants{
-		reader:          infra.ReaderDB,
-		eventRepo:       event,
-		participantRepo: eventParticipant,
+		reader:    infra.ReaderDB,
+		eventRepo: event,
 	}
 }
 
 // MustNewListEventParticipants initializes dependencies and constructs listEventParticipants or panics on failure.
 func MustNewListEventParticipants(infra *di.Infra) ListEventParticipants {
 	event := repository.NewEvent(infra.DB)
-	eventParticipant := repository.NewEventParticipant(infra.DB)
 
 	return &listEventParticipants{
-		reader:          infra.ReaderDB,
-		eventRepo:       event,
-		participantRepo: eventParticipant,
+		reader:    infra.ReaderDB,
+		eventRepo: event,
 	}
 }
 
@@ -167,19 +167,23 @@ func MustNewListMyEvents(infra *di.Infra) ListMyEvents {
 // NewUpdateEvent initializes dependencies and constructs updateEvent.
 func NewUpdateEvent(infra *di.Infra) UpdateEvent {
 	event := repository.NewEvent(infra.DB)
+	eventTier := repository.NewEventTier(infra.DB)
 
 	return &updateEvent{
 		writer:    infra.WriterDB,
 		eventRepo: event,
+		tierRepo:  eventTier,
 	}
 }
 
 // MustNewUpdateEvent initializes dependencies and constructs updateEvent or panics on failure.
 func MustNewUpdateEvent(infra *di.Infra) UpdateEvent {
 	event := repository.NewEvent(infra.DB)
+	eventTier := repository.NewEventTier(infra.DB)
 
 	return &updateEvent{
 		writer:    infra.WriterDB,
 		eventRepo: event,
+		tierRepo:  eventTier,
 	}
 }

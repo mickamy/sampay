@@ -87,6 +87,18 @@ func EventUseCaseErrorInvalidTier() i18n.Message {
 	return i18n.Message{ID: "event.use_case.error.invalid_tier"}
 }
 
+// EventUseCaseErrorInvalidTierConfig returns a Message for "event.use_case.error.invalid_tier_config".
+// Template: ティア構成が無効です。
+func EventUseCaseErrorInvalidTierConfig() i18n.Message {
+	return i18n.Message{ID: "event.use_case.error.invalid_tier_config"}
+}
+
+// EventUseCaseErrorLocked returns a Message for "event.use_case.error.locked".
+// Template: 参加者が支払い申告済みのため、このイベントは編集できません。
+func EventUseCaseErrorLocked() i18n.Message {
+	return i18n.Message{ID: "event.use_case.error.locked"}
+}
+
 // EventUseCaseErrorNameRequired returns a Message for "event.use_case.error.name_required".
 // Template: 名前は必須です。
 func EventUseCaseErrorNameRequired() i18n.Message {
@@ -109,6 +121,12 @@ func EventUseCaseErrorParticipantNotFound() i18n.Message {
 // Template: ティア段階数は1、3、5のいずれかで指定してください。
 func EventUseCaseErrorTierCountInvalid() i18n.Message {
 	return i18n.Message{ID: "event.use_case.error.tier_count_invalid"}
+}
+
+// EventUseCaseErrorTiersRequired returns a Message for "event.use_case.error.tiers_required".
+// Template: ティア構成は必須です。
+func EventUseCaseErrorTiersRequired() i18n.Message {
+	return i18n.Message{ID: "event.use_case.error.tiers_required"}
 }
 
 // EventUseCaseErrorTitleRequired returns a Message for "event.use_case.error.title_required".

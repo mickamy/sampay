@@ -8,7 +8,7 @@ import (
 	"github.com/mickamy/sampay/internal/domain/event/model"
 )
 
-func TestCalcTierAmounts(t *testing.T) {
+func TestEvent_CalcTierAmounts(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -81,14 +81,18 @@ func TestCalcTierAmounts(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			remainder := model.CalcTierAmounts(tt.totalAmount, tt.tiers)
+			ev := model.Event{
+				TotalAmount: tt.totalAmount,
+				Tiers:       tt.tiers,
+			}
+			ev.CalcTierAmounts()
 
-			got := make(map[int]int, len(tt.tiers))
-			for _, tier := range tt.tiers {
+			got := make(map[int]int, len(ev.Tiers))
+			for _, tier := range ev.Tiers {
 				got[tier.Tier] = tier.Amount
 			}
 			assert.Equal(t, tt.wantAmounts, got)
-			assert.Equal(t, tt.wantRemainder, remainder)
+			assert.Equal(t, tt.wantRemainder, ev.Remainder)
 		})
 	}
 }

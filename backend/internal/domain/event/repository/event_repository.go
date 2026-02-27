@@ -81,3 +81,7 @@ func (repo *event) WithTx(tx *database.DB) Event {
 func EventPreloadParticipants() scope.Scope {
 	return scope.Preload("Participants")
 }
+
+func EventPreloadTiers() scope.Scope {
+	return scope.Preload("Tiers")
+}
