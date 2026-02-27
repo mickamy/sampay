@@ -27,6 +27,26 @@ func MustNewCreateEvent(infra *di.Infra) CreateEvent {
 	}
 }
 
+// NewDeleteEvent initializes dependencies and constructs deleteEvent.
+func NewDeleteEvent(infra *di.Infra) DeleteEvent {
+	event := repository.NewEvent(infra.DB)
+
+	return &deleteEvent{
+		writer:    infra.WriterDB,
+		eventRepo: event,
+	}
+}
+
+// MustNewDeleteEvent initializes dependencies and constructs deleteEvent or panics on failure.
+func MustNewDeleteEvent(infra *di.Infra) DeleteEvent {
+	event := repository.NewEvent(infra.DB)
+
+	return &deleteEvent{
+		writer:    infra.WriterDB,
+		eventRepo: event,
+	}
+}
+
 // NewListMyEvents initializes dependencies and constructs listMyEvents.
 func NewListMyEvents(infra *di.Infra) ListMyEvents {
 	event := repository.NewEvent(infra.DB)
