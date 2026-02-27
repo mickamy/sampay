@@ -26,3 +26,23 @@ func MustNewCreateEvent(infra *di.Infra) CreateEvent {
 		eventRepo: event,
 	}
 }
+
+// NewListMyEvents initializes dependencies and constructs listMyEvents.
+func NewListMyEvents(infra *di.Infra) ListMyEvents {
+	event := repository.NewEvent(infra.DB)
+
+	return &listMyEvents{
+		reader:    infra.ReaderDB,
+		eventRepo: event,
+	}
+}
+
+// MustNewListMyEvents initializes dependencies and constructs listMyEvents or panics on failure.
+func MustNewListMyEvents(infra *di.Infra) ListMyEvents {
+	event := repository.NewEvent(infra.DB)
+
+	return &listMyEvents{
+		reader:    infra.ReaderDB,
+		eventRepo: event,
+	}
+}
