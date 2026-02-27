@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file event/v1/event.proto.
  */
 export const file_event_v1_event: GenFile = /*@__PURE__*/
-  fileDesc("ChRldmVudC92MS9ldmVudC5wcm90bxIIZXZlbnQudjEinwEKBUV2ZW50EgoKAmlkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSDQoFdGl0bGUYAyABKAkSEwoLZGVzY3JpcHRpb24YBCABKAkSFAoMdG90YWxfYW1vdW50GAUgASgFEhIKCnRpZXJfY291bnQYBiABKAUSKwoHaGVsZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAihwEKCkV2ZW50SW5wdXQSDQoFdGl0bGUYASABKAkSEwoLZGVzY3JpcHRpb24YAiABKAkSFAoMdG90YWxfYW1vdW50GAMgASgFEhIKCnRpZXJfY291bnQYBCABKAUSKwoHaGVsZF9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiuQEKEEV2ZW50UGFydGljaXBhbnQSCgoCaWQYASABKAkSEAoIZXZlbnRfaWQYAiABKAkSDAoEbmFtZRgDIAEoCRIMCgR0aWVyGAQgASgFEisKBnN0YXR1cxgFIAEoDjIbLmV2ZW50LnYxLlBhcnRpY2lwYW50U3RhdHVzEg4KBmFtb3VudBgGIAEoBRIuCgpjcmVhdGVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCqYAQoRUGFydGljaXBhbnRTdGF0dXMSIgoeUEFSVElDSVBBTlRfU1RBVFVTX1VOU1BFQ0lGSUVEEAASHQoZUEFSVElDSVBBTlRfU1RBVFVTX1VOUEFJRBABEh4KGlBBUlRJQ0lQQU5UX1NUQVRVU19DTEFJTUVEEAISIAocUEFSVElDSVBBTlRfU1RBVFVTX0NPTkZJUk1FRBADQosBCgxjb20uZXZlbnQudjFCCkV2ZW50UHJvdG9QAVouZ2l0aHViLmNvbS9taWNrYW15L3NhbXBheS9nZW4vZXZlbnQvdjE7ZXZlbnR2MaICA0VYWKoCCEV2ZW50LlYxygIIRXZlbnRcVjHiAhRFdmVudFxWMVxHUEJNZXRhZGF0YeoCCUV2ZW50OjpWMWIGcHJvdG8z", [file_google_protobuf_timestamp]);
+  fileDesc("ChRldmVudC92MS9ldmVudC5wcm90bxIIZXZlbnQudjEi1gEKBUV2ZW50EgoKAmlkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSDQoFdGl0bGUYAyABKAkSEwoLZGVzY3JpcHRpb24YBCABKAkSFAoMdG90YWxfYW1vdW50GAUgASgFEhEKCXJlbWFpbmRlchgGIAEoBRISCgp0aWVyX2NvdW50GAcgASgFEisKB2hlbGRfYXQYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEiIKBXRpZXJzGAkgAygLMhMuZXZlbnQudjEuRXZlbnRUaWVyIlYKCUV2ZW50VGllchIKCgJpZBgBIAEoCRIQCghldmVudF9pZBgCIAEoCRIMCgR0aWVyGAMgASgFEg0KBWNvdW50GAQgASgFEg4KBmFtb3VudBgFIAEoBSIpCgpUaWVyQ29uZmlnEgwKBHRpZXIYASABKAUSDQoFY291bnQYAiABKAUirAEKCkV2ZW50SW5wdXQSDQoFdGl0bGUYASABKAkSEwoLZGVzY3JpcHRpb24YAiABKAkSFAoMdG90YWxfYW1vdW50GAMgASgFEhIKCnRpZXJfY291bnQYBCABKAUSKwoHaGVsZF9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASIwoFdGllcnMYBiADKAsyFC5ldmVudC52MS5UaWVyQ29uZmlnIrkBChBFdmVudFBhcnRpY2lwYW50EgoKAmlkGAEgASgJEhAKCGV2ZW50X2lkGAIgASgJEgwKBG5hbWUYAyABKAkSDAoEdGllchgEIAEoBRIrCgZzdGF0dXMYBSABKA4yGy5ldmVudC52MS5QYXJ0aWNpcGFudFN0YXR1cxIOCgZhbW91bnQYBiABKAUSLgoKY3JlYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAqmAEKEVBhcnRpY2lwYW50U3RhdHVzEiIKHlBBUlRJQ0lQQU5UX1NUQVRVU19VTlNQRUNJRklFRBAAEh0KGVBBUlRJQ0lQQU5UX1NUQVRVU19VTlBBSUQQARIeChpQQVJUSUNJUEFOVF9TVEFUVVNfQ0xBSU1FRBACEiAKHFBBUlRJQ0lQQU5UX1NUQVRVU19DT05GSVJNRUQQA0KLAQoMY29tLmV2ZW50LnYxQgpFdmVudFByb3RvUAFaLmdpdGh1Yi5jb20vbWlja2FteS9zYW1wYXkvZ2VuL2V2ZW50L3YxO2V2ZW50djGiAgNFWFiqAghFdmVudC5WMcoCCEV2ZW50XFYx4gIURXZlbnRcVjFcR1BCTWV0YWRhdGHqAglFdmVudDo6VjFiBnByb3RvMw", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message event.v1.Event
@@ -44,14 +44,24 @@ export type Event = Message<"event.v1.Event"> & {
   totalAmount: number;
 
   /**
-   * @generated from field: int32 tier_count = 6;
+   * @generated from field: int32 remainder = 6;
+   */
+  remainder: number;
+
+  /**
+   * @generated from field: int32 tier_count = 7;
    */
   tierCount: number;
 
   /**
-   * @generated from field: google.protobuf.Timestamp held_at = 7;
+   * @generated from field: google.protobuf.Timestamp held_at = 8;
    */
   heldAt?: Timestamp;
+
+  /**
+   * @generated from field: repeated event.v1.EventTier tiers = 9;
+   */
+  tiers: EventTier[];
 };
 
 /**
@@ -60,6 +70,65 @@ export type Event = Message<"event.v1.Event"> & {
  */
 export const EventSchema: GenMessage<Event> = /*@__PURE__*/
   messageDesc(file_event_v1_event, 0);
+
+/**
+ * @generated from message event.v1.EventTier
+ */
+export type EventTier = Message<"event.v1.EventTier"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string event_id = 2;
+   */
+  eventId: string;
+
+  /**
+   * @generated from field: int32 tier = 3;
+   */
+  tier: number;
+
+  /**
+   * @generated from field: int32 count = 4;
+   */
+  count: number;
+
+  /**
+   * @generated from field: int32 amount = 5;
+   */
+  amount: number;
+};
+
+/**
+ * Describes the message event.v1.EventTier.
+ * Use `create(EventTierSchema)` to create a new message.
+ */
+export const EventTierSchema: GenMessage<EventTier> = /*@__PURE__*/
+  messageDesc(file_event_v1_event, 1);
+
+/**
+ * @generated from message event.v1.TierConfig
+ */
+export type TierConfig = Message<"event.v1.TierConfig"> & {
+  /**
+   * @generated from field: int32 tier = 1;
+   */
+  tier: number;
+
+  /**
+   * @generated from field: int32 count = 2;
+   */
+  count: number;
+};
+
+/**
+ * Describes the message event.v1.TierConfig.
+ * Use `create(TierConfigSchema)` to create a new message.
+ */
+export const TierConfigSchema: GenMessage<TierConfig> = /*@__PURE__*/
+  messageDesc(file_event_v1_event, 2);
 
 /**
  * @generated from message event.v1.EventInput
@@ -89,6 +158,11 @@ export type EventInput = Message<"event.v1.EventInput"> & {
    * @generated from field: google.protobuf.Timestamp held_at = 5;
    */
   heldAt?: Timestamp;
+
+  /**
+   * @generated from field: repeated event.v1.TierConfig tiers = 6;
+   */
+  tiers: TierConfig[];
 };
 
 /**
@@ -96,7 +170,7 @@ export type EventInput = Message<"event.v1.EventInput"> & {
  * Use `create(EventInputSchema)` to create a new message.
  */
 export const EventInputSchema: GenMessage<EventInput> = /*@__PURE__*/
-  messageDesc(file_event_v1_event, 1);
+  messageDesc(file_event_v1_event, 3);
 
 /**
  * @generated from message event.v1.EventParticipant
@@ -143,7 +217,7 @@ export type EventParticipant = Message<"event.v1.EventParticipant"> & {
  * Use `create(EventParticipantSchema)` to create a new message.
  */
 export const EventParticipantSchema: GenMessage<EventParticipant> = /*@__PURE__*/
-  messageDesc(file_event_v1_event, 2);
+  messageDesc(file_event_v1_event, 4);
 
 /**
  * @generated from enum event.v1.ParticipantStatus

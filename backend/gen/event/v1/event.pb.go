@@ -81,8 +81,10 @@ type Event struct {
 	Title         string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
 	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
 	TotalAmount   int32                  `protobuf:"varint,5,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty"`
-	TierCount     int32                  `protobuf:"varint,6,opt,name=tier_count,json=tierCount,proto3" json:"tier_count,omitempty"`
-	HeldAt        *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=held_at,json=heldAt,proto3" json:"held_at,omitempty"`
+	Remainder     int32                  `protobuf:"varint,6,opt,name=remainder,proto3" json:"remainder,omitempty"`
+	TierCount     int32                  `protobuf:"varint,7,opt,name=tier_count,json=tierCount,proto3" json:"tier_count,omitempty"`
+	HeldAt        *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=held_at,json=heldAt,proto3" json:"held_at,omitempty"`
+	Tiers         []*EventTier           `protobuf:"bytes,9,rep,name=tiers,proto3" json:"tiers,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -152,6 +154,13 @@ func (x *Event) GetTotalAmount() int32 {
 	return 0
 }
 
+func (x *Event) GetRemainder() int32 {
+	if x != nil {
+		return x.Remainder
+	}
+	return 0
+}
+
 func (x *Event) GetTierCount() int32 {
 	if x != nil {
 		return x.TierCount
@@ -166,6 +175,141 @@ func (x *Event) GetHeldAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *Event) GetTiers() []*EventTier {
+	if x != nil {
+		return x.Tiers
+	}
+	return nil
+}
+
+type EventTier struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	EventId       string                 `protobuf:"bytes,2,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
+	Tier          int32                  `protobuf:"varint,3,opt,name=tier,proto3" json:"tier,omitempty"`
+	Count         int32                  `protobuf:"varint,4,opt,name=count,proto3" json:"count,omitempty"`
+	Amount        int32                  `protobuf:"varint,5,opt,name=amount,proto3" json:"amount,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EventTier) Reset() {
+	*x = EventTier{}
+	mi := &file_event_v1_event_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EventTier) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventTier) ProtoMessage() {}
+
+func (x *EventTier) ProtoReflect() protoreflect.Message {
+	mi := &file_event_v1_event_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EventTier.ProtoReflect.Descriptor instead.
+func (*EventTier) Descriptor() ([]byte, []int) {
+	return file_event_v1_event_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *EventTier) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *EventTier) GetEventId() string {
+	if x != nil {
+		return x.EventId
+	}
+	return ""
+}
+
+func (x *EventTier) GetTier() int32 {
+	if x != nil {
+		return x.Tier
+	}
+	return 0
+}
+
+func (x *EventTier) GetCount() int32 {
+	if x != nil {
+		return x.Count
+	}
+	return 0
+}
+
+func (x *EventTier) GetAmount() int32 {
+	if x != nil {
+		return x.Amount
+	}
+	return 0
+}
+
+type TierConfig struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Tier          int32                  `protobuf:"varint,1,opt,name=tier,proto3" json:"tier,omitempty"`
+	Count         int32                  `protobuf:"varint,2,opt,name=count,proto3" json:"count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TierConfig) Reset() {
+	*x = TierConfig{}
+	mi := &file_event_v1_event_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TierConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TierConfig) ProtoMessage() {}
+
+func (x *TierConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_event_v1_event_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TierConfig.ProtoReflect.Descriptor instead.
+func (*TierConfig) Descriptor() ([]byte, []int) {
+	return file_event_v1_event_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *TierConfig) GetTier() int32 {
+	if x != nil {
+		return x.Tier
+	}
+	return 0
+}
+
+func (x *TierConfig) GetCount() int32 {
+	if x != nil {
+		return x.Count
+	}
+	return 0
+}
+
 type EventInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
@@ -173,13 +317,14 @@ type EventInput struct {
 	TotalAmount   int32                  `protobuf:"varint,3,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty"`
 	TierCount     int32                  `protobuf:"varint,4,opt,name=tier_count,json=tierCount,proto3" json:"tier_count,omitempty"`
 	HeldAt        *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=held_at,json=heldAt,proto3" json:"held_at,omitempty"`
+	Tiers         []*TierConfig          `protobuf:"bytes,6,rep,name=tiers,proto3" json:"tiers,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *EventInput) Reset() {
 	*x = EventInput{}
-	mi := &file_event_v1_event_proto_msgTypes[1]
+	mi := &file_event_v1_event_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -191,7 +336,7 @@ func (x *EventInput) String() string {
 func (*EventInput) ProtoMessage() {}
 
 func (x *EventInput) ProtoReflect() protoreflect.Message {
-	mi := &file_event_v1_event_proto_msgTypes[1]
+	mi := &file_event_v1_event_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -204,7 +349,7 @@ func (x *EventInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EventInput.ProtoReflect.Descriptor instead.
 func (*EventInput) Descriptor() ([]byte, []int) {
-	return file_event_v1_event_proto_rawDescGZIP(), []int{1}
+	return file_event_v1_event_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *EventInput) GetTitle() string {
@@ -242,6 +387,13 @@ func (x *EventInput) GetHeldAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *EventInput) GetTiers() []*TierConfig {
+	if x != nil {
+		return x.Tiers
+	}
+	return nil
+}
+
 type EventParticipant struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -257,7 +409,7 @@ type EventParticipant struct {
 
 func (x *EventParticipant) Reset() {
 	*x = EventParticipant{}
-	mi := &file_event_v1_event_proto_msgTypes[2]
+	mi := &file_event_v1_event_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -269,7 +421,7 @@ func (x *EventParticipant) String() string {
 func (*EventParticipant) ProtoMessage() {}
 
 func (x *EventParticipant) ProtoReflect() protoreflect.Message {
-	mi := &file_event_v1_event_proto_msgTypes[2]
+	mi := &file_event_v1_event_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -282,7 +434,7 @@ func (x *EventParticipant) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EventParticipant.ProtoReflect.Descriptor instead.
 func (*EventParticipant) Descriptor() ([]byte, []int) {
-	return file_event_v1_event_proto_rawDescGZIP(), []int{2}
+	return file_event_v1_event_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *EventParticipant) GetId() string {
@@ -338,16 +490,28 @@ var File_event_v1_event_proto protoreflect.FileDescriptor
 
 const file_event_v1_event_proto_rawDesc = "" +
 	"\n" +
-	"\x14event/v1/event.proto\x12\bevent.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\x01\n" +
+	"\x14event/v1/event.proto\x12\bevent.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa8\x02\n" +
 	"\x05Event\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x14\n" +
 	"\x05title\x18\x03 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x04 \x01(\tR\vdescription\x12!\n" +
-	"\ftotal_amount\x18\x05 \x01(\x05R\vtotalAmount\x12\x1d\n" +
+	"\ftotal_amount\x18\x05 \x01(\x05R\vtotalAmount\x12\x1c\n" +
+	"\tremainder\x18\x06 \x01(\x05R\tremainder\x12\x1d\n" +
 	"\n" +
-	"tier_count\x18\x06 \x01(\x05R\ttierCount\x123\n" +
-	"\aheld_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\x06heldAt\"\xbb\x01\n" +
+	"tier_count\x18\a \x01(\x05R\ttierCount\x123\n" +
+	"\aheld_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\x06heldAt\x12)\n" +
+	"\x05tiers\x18\t \x03(\v2\x13.event.v1.EventTierR\x05tiers\"x\n" +
+	"\tEventTier\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
+	"\bevent_id\x18\x02 \x01(\tR\aeventId\x12\x12\n" +
+	"\x04tier\x18\x03 \x01(\x05R\x04tier\x12\x14\n" +
+	"\x05count\x18\x04 \x01(\x05R\x05count\x12\x16\n" +
+	"\x06amount\x18\x05 \x01(\x05R\x06amount\"6\n" +
+	"\n" +
+	"TierConfig\x12\x12\n" +
+	"\x04tier\x18\x01 \x01(\x05R\x04tier\x12\x14\n" +
+	"\x05count\x18\x02 \x01(\x05R\x05count\"\xe7\x01\n" +
 	"\n" +
 	"EventInput\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
@@ -355,7 +519,8 @@ const file_event_v1_event_proto_rawDesc = "" +
 	"\ftotal_amount\x18\x03 \x01(\x05R\vtotalAmount\x12\x1d\n" +
 	"\n" +
 	"tier_count\x18\x04 \x01(\x05R\ttierCount\x123\n" +
-	"\aheld_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x06heldAt\"\xed\x01\n" +
+	"\aheld_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x06heldAt\x12*\n" +
+	"\x05tiers\x18\x06 \x03(\v2\x14.event.v1.TierConfigR\x05tiers\"\xed\x01\n" +
 	"\x10EventParticipant\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
 	"\bevent_id\x18\x02 \x01(\tR\aeventId\x12\x12\n" +
@@ -386,24 +551,28 @@ func file_event_v1_event_proto_rawDescGZIP() []byte {
 }
 
 var file_event_v1_event_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_event_v1_event_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_event_v1_event_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_event_v1_event_proto_goTypes = []any{
 	(ParticipantStatus)(0),        // 0: event.v1.ParticipantStatus
 	(*Event)(nil),                 // 1: event.v1.Event
-	(*EventInput)(nil),            // 2: event.v1.EventInput
-	(*EventParticipant)(nil),      // 3: event.v1.EventParticipant
-	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
+	(*EventTier)(nil),             // 2: event.v1.EventTier
+	(*TierConfig)(nil),            // 3: event.v1.TierConfig
+	(*EventInput)(nil),            // 4: event.v1.EventInput
+	(*EventParticipant)(nil),      // 5: event.v1.EventParticipant
+	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
 }
 var file_event_v1_event_proto_depIdxs = []int32{
-	4, // 0: event.v1.Event.held_at:type_name -> google.protobuf.Timestamp
-	4, // 1: event.v1.EventInput.held_at:type_name -> google.protobuf.Timestamp
-	0, // 2: event.v1.EventParticipant.status:type_name -> event.v1.ParticipantStatus
-	4, // 3: event.v1.EventParticipant.created_at:type_name -> google.protobuf.Timestamp
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	6, // 0: event.v1.Event.held_at:type_name -> google.protobuf.Timestamp
+	2, // 1: event.v1.Event.tiers:type_name -> event.v1.EventTier
+	6, // 2: event.v1.EventInput.held_at:type_name -> google.protobuf.Timestamp
+	3, // 3: event.v1.EventInput.tiers:type_name -> event.v1.TierConfig
+	0, // 4: event.v1.EventParticipant.status:type_name -> event.v1.ParticipantStatus
+	6, // 5: event.v1.EventParticipant.created_at:type_name -> google.protobuf.Timestamp
+	6, // [6:6] is the sub-list for method output_type
+	6, // [6:6] is the sub-list for method input_type
+	6, // [6:6] is the sub-list for extension type_name
+	6, // [6:6] is the sub-list for extension extendee
+	0, // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_event_v1_event_proto_init() }
@@ -417,7 +586,7 @@ func file_event_v1_event_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_event_v1_event_proto_rawDesc), len(file_event_v1_event_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
