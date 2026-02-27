@@ -120,6 +120,30 @@ func MustNewJoinEvent(infra *di.Infra) JoinEvent {
 	}
 }
 
+// NewListEventParticipants initializes dependencies and constructs listEventParticipants.
+func NewListEventParticipants(infra *di.Infra) ListEventParticipants {
+	event := repository.NewEvent(infra.DB)
+	eventParticipant := repository.NewEventParticipant(infra.DB)
+
+	return &listEventParticipants{
+		reader:          infra.ReaderDB,
+		eventRepo:       event,
+		participantRepo: eventParticipant,
+	}
+}
+
+// MustNewListEventParticipants initializes dependencies and constructs listEventParticipants or panics on failure.
+func MustNewListEventParticipants(infra *di.Infra) ListEventParticipants {
+	event := repository.NewEvent(infra.DB)
+	eventParticipant := repository.NewEventParticipant(infra.DB)
+
+	return &listEventParticipants{
+		reader:          infra.ReaderDB,
+		eventRepo:       event,
+		participantRepo: eventParticipant,
+	}
+}
+
 // NewListMyEvents initializes dependencies and constructs listMyEvents.
 func NewListMyEvents(infra *di.Infra) ListMyEvents {
 	event := repository.NewEvent(infra.DB)
