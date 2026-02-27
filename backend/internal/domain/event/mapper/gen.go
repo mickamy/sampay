@@ -6,7 +6,10 @@ import (
 )
 
 //go:generate go tool automapper -from=model.Event -to=eventv1.Event -output=./ -converter-pkg=../../../lib/converter
+//go:generate go tool automapper -from=model.EventParticipant -to=eventv1.EventParticipant -output=./ -converter-pkg=../../../lib/converter
 var (
 	_ model.Event
 	_ eventv1.Event
+	_ model.EventParticipant
+	_ eventv1.EventParticipant
 )
