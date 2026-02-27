@@ -11,13 +11,13 @@ import (
 )
 
 func init() {
-	automapper.RegisterFromE[string, userv1.PaymentMethodType](ToPaymentMethodType)
-	automapper.RegisterFrom[*string, string](StringToPtr)
-	automapper.RegisterFrom[int, int32](Int32ToInt)
-	automapper.RegisterFrom[int32, int](IntToInt32)
-	automapper.RegisterFrom[*timestamppb.Timestamp, time.Time](TimeToTimestamppb)
-	automapper.RegisterFrom[eventv1.ParticipantStatus, string](ToV1ParticipantStatus)
-	automapper.RegisterFrom[string, eventv1.ParticipantStatus](FromV1ParticipantStatus)
+	automapper.RegisterFromE[userv1.PaymentMethodType, string](ToPaymentMethodType)
+	automapper.RegisterFrom[string, *string](StringToPtr)
+	automapper.RegisterFrom[int32, int](Int32ToInt)
+	automapper.RegisterFrom[int, int32](IntToInt32)
+	automapper.RegisterFrom[time.Time, *timestamppb.Timestamp](TimeToTimestamppb)
+	automapper.RegisterFrom[string, eventv1.ParticipantStatus](ToV1ParticipantStatus)
+	automapper.RegisterFrom[eventv1.ParticipantStatus, string](FromV1ParticipantStatus)
 }
 
 func StringToPtr(s string) *string {

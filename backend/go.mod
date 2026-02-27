@@ -27,7 +27,7 @@ require (
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.11.2
-	github.com/mickamy/automapper v0.0.11
+	github.com/mickamy/automapper v0.1.0
 	github.com/mickamy/contest v0.0.3
 	github.com/mickamy/enufstub v0.0.1
 	github.com/mickamy/errx v0.0.4
