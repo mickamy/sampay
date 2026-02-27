@@ -9,6 +9,7 @@ export default [
   ]),
 
   route("u/:slug", "routes/u/slug/route.tsx"),
+  route("og/u/:slug.png", "routes/og/u/slug.tsx"),
 
   route("enter", "routes/enter/route.tsx"),
   route("api/check-slug", "routes/api/check-slug.ts"),

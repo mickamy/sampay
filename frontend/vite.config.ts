@@ -16,6 +16,9 @@ export default defineConfig({
     reactRouter(),
     tsconfigPaths(),
   ],
+  ssr: {
+    external: ["@resvg/resvg-js"],
+  },
   server: {
     allowedHosts: host ? [host] : [],
   },
