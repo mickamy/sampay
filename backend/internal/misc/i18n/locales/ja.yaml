@@ -41,6 +41,8 @@ event:
       forbidden: このイベントにアクセスする権限がありません。
       name_required: 名前は必須です。
       invalid_tier: ティアが無効です。
+      participant_not_found: 参加者が見つかりません。
+      already_claimed: すでに支払い申告済みです。
 
 common:
   response:

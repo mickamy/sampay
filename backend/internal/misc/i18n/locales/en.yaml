@@ -8,6 +8,8 @@ event:
       forbidden: You do not have permission to access this event.
       name_required: Name is required.
       invalid_tier: Invalid tier.
+      participant_not_found: Participant not found.
+      already_claimed: Payment has already been claimed.
 
 user:
   mapper:

@@ -8,6 +8,26 @@ import (
 	repository2 "github.com/mickamy/sampay/internal/domain/user/repository"
 )
 
+// NewClaimPayment initializes dependencies and constructs claimPayment.
+func NewClaimPayment(infra *di.Infra) ClaimPayment {
+	eventParticipant := repository.NewEventParticipant(infra.DB)
+
+	return &claimPayment{
+		writer:          infra.WriterDB,
+		participantRepo: eventParticipant,
+	}
+}
+
+// MustNewClaimPayment initializes dependencies and constructs claimPayment or panics on failure.
+func MustNewClaimPayment(infra *di.Infra) ClaimPayment {
+	eventParticipant := repository.NewEventParticipant(infra.DB)
+
+	return &claimPayment{
+		writer:          infra.WriterDB,
+		participantRepo: eventParticipant,
+	}
+}
+
 // NewCreateEvent initializes dependencies and constructs createEvent.
 func NewCreateEvent(infra *di.Infra) CreateEvent {
 	event := repository.NewEvent(infra.DB)

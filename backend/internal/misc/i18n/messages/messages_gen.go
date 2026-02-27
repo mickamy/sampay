@@ -69,6 +69,12 @@ func CommonResponseErrorInternal() i18n.Message {
 	return i18n.Message{ID: "common.response.error.internal"}
 }
 
+// EventUseCaseErrorAlreadyClaimed returns a Message for "event.use_case.error.already_claimed".
+// Template: すでに支払い申告済みです。
+func EventUseCaseErrorAlreadyClaimed() i18n.Message {
+	return i18n.Message{ID: "event.use_case.error.already_claimed"}
+}
+
 // EventUseCaseErrorForbidden returns a Message for "event.use_case.error.forbidden".
 // Template: このイベントにアクセスする権限がありません。
 func EventUseCaseErrorForbidden() i18n.Message {
@@ -91,6 +97,12 @@ func EventUseCaseErrorNameRequired() i18n.Message {
 // Template: イベントが見つかりません。
 func EventUseCaseErrorNotFound() i18n.Message {
 	return i18n.Message{ID: "event.use_case.error.not_found"}
+}
+
+// EventUseCaseErrorParticipantNotFound returns a Message for "event.use_case.error.participant_not_found".
+// Template: 参加者が見つかりません。
+func EventUseCaseErrorParticipantNotFound() i18n.Message {
+	return i18n.Message{ID: "event.use_case.error.participant_not_found"}
 }
 
 // EventUseCaseErrorTierCountInvalid returns a Message for "event.use_case.error.tier_count_invalid".
