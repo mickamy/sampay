@@ -1,19 +1,22 @@
 package model
 
-// CalcAmounts computes the split amount for each participant based on tier
-// weights and sets the Amount field on each participant in-place.
+// CalcTierAmounts computes the per-tier amount and sets it on each EventTier
+// in-place. Returns the remainder (totalAmount - sum of all tier amounts × counts).
 // The tier value itself is the weight (e.g. tier=3 means weight 3).
-// When there are no participants or total weight is zero, no amounts are set.
-func CalcAmounts(totalAmount int, participants []EventParticipant) {
+// When there are no tiers or total weight is zero, returns 0.
+func CalcTierAmounts(totalAmount int, tiers []EventTier) int {
 	var totalWeight int
-	for _, p := range participants {
-		totalWeight += p.Tier
+	for _, t := range tiers {
+		totalWeight += t.Tier * t.Count
 	}
 	if totalWeight == 0 {
-		return
+		return 0
 	}
 
-	for i := range participants {
-		participants[i].Amount = totalAmount * participants[i].Tier / totalWeight
+	sum := 0
+	for i := range tiers {
+		tiers[i].Amount = totalAmount * tiers[i].Tier / totalWeight
+		sum += tiers[i].Amount * tiers[i].Count
 	}
+	return totalAmount - sum
 }

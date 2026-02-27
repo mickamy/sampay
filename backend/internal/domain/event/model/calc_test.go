@@ -8,65 +8,72 @@ import (
 	"github.com/mickamy/sampay/internal/domain/event/model"
 )
 
-func TestCalcAmounts(t *testing.T) {
+func TestCalcTierAmounts(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name         string
-		totalAmount  int
-		participants []model.EventParticipant
-		wantAmounts  map[string]int
+		name          string
+		totalAmount   int
+		tiers         []model.EventTier
+		wantAmounts   map[int]int
+		wantRemainder int
 	}{
 		{
-			name:         "no participants",
-			totalAmount:  30000,
-			participants: nil,
-			wantAmounts:  map[string]int{},
+			name:          "no tiers",
+			totalAmount:   30000,
+			tiers:         nil,
+			wantAmounts:   map[int]int{},
+			wantRemainder: 0,
 		},
 		{
-			name:        "single tier (uniform split)",
+			name:        "single tier (uniform)",
 			totalAmount: 30000,
-			participants: []model.EventParticipant{
-				{ID: "a", Tier: 1},
-				{ID: "b", Tier: 1},
-				{ID: "c", Tier: 1},
-				{ID: "d", Tier: 1},
-				{ID: "e", Tier: 1},
-				{ID: "f", Tier: 1},
+			tiers: []model.EventTier{
+				{Tier: 1, Count: 6},
 			},
-			wantAmounts: map[string]int{
-				"a": 5000, "b": 5000, "c": 5000,
-				"d": 5000, "e": 5000, "f": 5000,
-			},
+			wantAmounts:   map[int]int{1: 5000},
+			wantRemainder: 0,
 		},
 		{
-			name:        "5-tier split",
+			name:        "3-tier exact split",
 			totalAmount: 30000,
-			participants: []model.EventParticipant{
-				{ID: "a", Tier: 5},
-				{ID: "b", Tier: 3},
-				{ID: "c", Tier: 3},
-				{ID: "d", Tier: 1},
+			tiers: []model.EventTier{
+				{Tier: 3, Count: 1},
+				{Tier: 2, Count: 1},
+				{Tier: 1, Count: 1},
 			},
-			// total weight = 12
-			// a: 30000*5/12=12500, b: 30000*3/12=7500, c: 7500, d: 30000*1/12=2500
-			wantAmounts: map[string]int{
-				"a": 12500, "b": 7500, "c": 7500, "d": 2500,
-			},
+			// totalWeight = 3+2+1 = 6
+			// tier3: 30000*3/6=15000, tier2: 30000*2/6=10000, tier1: 30000*1/6=5000
+			// sum = 15000+10000+5000 = 30000
+			wantAmounts:   map[int]int{3: 15000, 2: 10000, 1: 5000},
+			wantRemainder: 0,
 		},
 		{
-			name:        "3-tier split",
+			name:        "3-tier with remainder",
 			totalAmount: 10000,
-			participants: []model.EventParticipant{
-				{ID: "a", Tier: 3},
-				{ID: "b", Tier: 2},
-				{ID: "c", Tier: 1},
+			tiers: []model.EventTier{
+				{Tier: 3, Count: 1},
+				{Tier: 2, Count: 1},
+				{Tier: 1, Count: 1},
 			},
-			// total weight = 6
-			// a: 10000*3/6=5000, b: 10000*2/6=3333, c: 10000*1/6=1666
-			wantAmounts: map[string]int{
-				"a": 5000, "b": 3333, "c": 1666,
+			// totalWeight = 6
+			// tier3: 10000*3/6=5000, tier2: 10000*2/6=3333, tier1: 10000*1/6=1666
+			// sum = 5000+3333+1666 = 9999
+			wantAmounts:   map[int]int{3: 5000, 2: 3333, 1: 1666},
+			wantRemainder: 1,
+		},
+		{
+			name:        "5-tier multiple people with remainder",
+			totalAmount: 10001,
+			tiers: []model.EventTier{
+				{Tier: 3, Count: 2},
+				{Tier: 1, Count: 2},
 			},
+			// totalWeight = 3*2 + 1*2 = 8
+			// tier3: 10001*3/8=3750, tier1: 10001*1/8=1250
+			// sum = 3750*2 + 1250*2 = 10000
+			wantAmounts:   map[int]int{3: 3750, 1: 1250},
+			wantRemainder: 1,
 		},
 	}
 
@@ -74,13 +81,14 @@ func TestCalcAmounts(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			model.CalcAmounts(tt.totalAmount, tt.participants)
+			remainder := model.CalcTierAmounts(tt.totalAmount, tt.tiers)
 
-			got := make(map[string]int, len(tt.participants))
-			for _, p := range tt.participants {
-				got[p.ID] = p.Amount
+			got := make(map[int]int, len(tt.tiers))
+			for _, tier := range tt.tiers {
+				got[tier.Tier] = tier.Amount
 			}
 			assert.Equal(t, tt.wantAmounts, got)
+			assert.Equal(t, tt.wantRemainder, remainder)
 		})
 	}
 }
