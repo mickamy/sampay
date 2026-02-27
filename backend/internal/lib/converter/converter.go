@@ -1,6 +1,7 @@
 package converter
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -61,6 +62,8 @@ func FromV1ParticipantStatus(s eventv1.ParticipantStatus) (string, error) {
 		return "claimed", nil
 	case eventv1.ParticipantStatus_PARTICIPANT_STATUS_CONFIRMED:
 		return "confirmed", nil
+	case eventv1.ParticipantStatus_PARTICIPANT_STATUS_UNSPECIFIED:
+		return "", errors.New("unspecified participant status")
 	default:
 		return "", fmt.Errorf("unknown participant status: %v", s)
 	}

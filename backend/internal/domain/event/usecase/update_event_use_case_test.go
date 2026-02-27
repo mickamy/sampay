@@ -33,15 +33,15 @@ func TestUpdateEvent_Do(t *testing.T) {
 		sut := usecase.NewUpdateEvent(infra)
 		out, err := sut.Do(ctx, usecase.UpdateEventInput{
 			ID:          ev.ID,
-			Title:       "更新後タイトル",
-			Description: "更新後説明",
+			Title:       "updated title",
+			Description: "updated description",
 			TotalAmount: 50000,
 			TierCount:   5,
 			HeldAt:      time.Now().Add(48 * time.Hour),
 		})
 
 		require.NoError(t, err)
-		assert.Equal(t, "更新後タイトル", out.Event.Title)
+		assert.Equal(t, "updated title", out.Event.Title)
 		assert.Equal(t, 50000, out.Event.TotalAmount)
 		assert.Equal(t, 5, out.Event.TierCount)
 	})
@@ -57,7 +57,7 @@ func TestUpdateEvent_Do(t *testing.T) {
 		sut := usecase.NewUpdateEvent(infra)
 		_, err := sut.Do(ctx, usecase.UpdateEventInput{
 			ID:          "nonexistent",
-			Title:       "タイトル",
+			Title:       "title",
 			TotalAmount: 10000,
 			TierCount:   1,
 			HeldAt:      time.Now(),
@@ -82,7 +82,7 @@ func TestUpdateEvent_Do(t *testing.T) {
 		sut := usecase.NewUpdateEvent(infra)
 		_, err := sut.Do(ctx, usecase.UpdateEventInput{
 			ID:          ev.ID,
-			Title:       "タイトル",
+			Title:       "title",
 			TotalAmount: 10000,
 			TierCount:   1,
 			HeldAt:      time.Now(),

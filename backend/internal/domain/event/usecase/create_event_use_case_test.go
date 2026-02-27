@@ -26,8 +26,8 @@ func TestCreateEvent_Do(t *testing.T) {
 
 		sut := usecase.NewCreateEvent(infra)
 		out, err := sut.Do(ctx, usecase.CreateEventInput{
-			Title:       "飲み会",
-			Description: "新年会です",
+			Title:       "party",
+			Description: "new year party",
 			TotalAmount: 30000,
 			TierCount:   3,
 			HeldAt:      time.Now().Add(24 * time.Hour),
@@ -36,7 +36,7 @@ func TestCreateEvent_Do(t *testing.T) {
 		require.NoError(t, err)
 		assert.NotEmpty(t, out.Event.ID)
 		assert.Equal(t, endUser.UserID, out.Event.UserID)
-		assert.Equal(t, "飲み会", out.Event.Title)
+		assert.Equal(t, "party", out.Event.Title)
 		assert.Equal(t, 30000, out.Event.TotalAmount)
 		assert.Equal(t, 3, out.Event.TierCount)
 	})
@@ -71,7 +71,7 @@ func TestCreateEvent_Do(t *testing.T) {
 
 		sut := usecase.NewCreateEvent(infra)
 		_, err := sut.Do(ctx, usecase.CreateEventInput{
-			Title:       "飲み会",
+			Title:       "party",
 			TotalAmount: -30000,
 			TierCount:   1,
 			HeldAt:      time.Now().Add(24 * time.Hour),
@@ -91,7 +91,7 @@ func TestCreateEvent_Do(t *testing.T) {
 
 		sut := usecase.NewCreateEvent(infra)
 		_, err := sut.Do(ctx, usecase.CreateEventInput{
-			Title:       "飲み会",
+			Title:       "party",
 			TotalAmount: 30000,
 			TierCount:   2,
 			HeldAt:      time.Now().Add(24 * time.Hour),

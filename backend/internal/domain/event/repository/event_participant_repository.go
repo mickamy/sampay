@@ -36,7 +36,9 @@ func (repo *eventParticipant) Create(ctx context.Context, m *model.EventParticip
 	return nil
 }
 
-func (repo *eventParticipant) Get(ctx context.Context, id string, scopes ...scope.Scope) (model.EventParticipant, error) {
+func (repo *eventParticipant) Get(
+	ctx context.Context, id string, scopes ...scope.Scope,
+) (model.EventParticipant, error) {
 	m, err := query.EventParticipants(repo.db).Scopes(scopes...).Where("id = ?", id).First(ctx)
 	if errors.Is(err, orm.ErrNotFound) {
 		return model.EventParticipant{}, database.ErrNotFound
@@ -47,7 +49,9 @@ func (repo *eventParticipant) Get(ctx context.Context, id string, scopes ...scop
 	return m, nil
 }
 
-func (repo *eventParticipant) ListByEventID(ctx context.Context, eventID string, scopes ...scope.Scope) ([]model.EventParticipant, error) {
+func (repo *eventParticipant) ListByEventID(
+	ctx context.Context, eventID string, scopes ...scope.Scope,
+) ([]model.EventParticipant, error) {
 	participants, err := query.EventParticipants(repo.db).
 		Scopes(scopes...).
 		Where("event_id = ?", eventID).
