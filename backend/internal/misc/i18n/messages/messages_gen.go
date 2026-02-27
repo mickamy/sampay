@@ -75,6 +75,18 @@ func EventUseCaseErrorForbidden() i18n.Message {
 	return i18n.Message{ID: "event.use_case.error.forbidden"}
 }
 
+// EventUseCaseErrorInvalidTier returns a Message for "event.use_case.error.invalid_tier".
+// Template: ティアが無効です。
+func EventUseCaseErrorInvalidTier() i18n.Message {
+	return i18n.Message{ID: "event.use_case.error.invalid_tier"}
+}
+
+// EventUseCaseErrorNameRequired returns a Message for "event.use_case.error.name_required".
+// Template: 名前は必須です。
+func EventUseCaseErrorNameRequired() i18n.Message {
+	return i18n.Message{ID: "event.use_case.error.name_required"}
+}
+
 // EventUseCaseErrorNotFound returns a Message for "event.use_case.error.not_found".
 // Template: イベントが見つかりません。
 func EventUseCaseErrorNotFound() i18n.Message {

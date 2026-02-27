@@ -39,6 +39,8 @@ event:
       tier_count_invalid: ティア段階数は1、3、5のいずれかで指定してください。
       not_found: イベントが見つかりません。
       forbidden: このイベントにアクセスする権限がありません。
+      name_required: 名前は必須です。
+      invalid_tier: ティアが無効です。
 
 common:
   response:

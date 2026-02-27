@@ -6,6 +6,8 @@ event:
       tier_count_invalid: Tier count must be 1, 3, or 5.
       not_found: Event not found.
       forbidden: You do not have permission to access this event.
+      name_required: Name is required.
+      invalid_tier: Invalid tier.
 
 user:
   mapper:

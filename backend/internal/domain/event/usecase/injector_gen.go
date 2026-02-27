@@ -76,6 +76,30 @@ func MustNewGetEvent(infra *di.Infra) GetEvent {
 	}
 }
 
+// NewJoinEvent initializes dependencies and constructs joinEvent.
+func NewJoinEvent(infra *di.Infra) JoinEvent {
+	event := repository.NewEvent(infra.DB)
+	eventParticipant := repository.NewEventParticipant(infra.DB)
+
+	return &joinEvent{
+		writer:          infra.WriterDB,
+		eventRepo:       event,
+		participantRepo: eventParticipant,
+	}
+}
+
+// MustNewJoinEvent initializes dependencies and constructs joinEvent or panics on failure.
+func MustNewJoinEvent(infra *di.Infra) JoinEvent {
+	event := repository.NewEvent(infra.DB)
+	eventParticipant := repository.NewEventParticipant(infra.DB)
+
+	return &joinEvent{
+		writer:          infra.WriterDB,
+		eventRepo:       event,
+		participantRepo: eventParticipant,
+	}
+}
+
 // NewListMyEvents initializes dependencies and constructs listMyEvents.
 func NewListMyEvents(infra *di.Infra) ListMyEvents {
 	event := repository.NewEvent(infra.DB)
