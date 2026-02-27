@@ -13,7 +13,7 @@ var (
 	ErrValidateEventEmptyTitle = cmodel.NewLocalizableError(
 		errx.NewSentinel("title is required", errx.InvalidArgument),
 	).WithMessages(messages.EventUseCaseErrorTitleRequired())
-	ErrValidateEventNegativeTotalAmount = cmodel.NewLocalizableError(
+	ErrValidateEventNonPositiveTotalAmount = cmodel.NewLocalizableError(
 		errx.NewSentinel("total_amount must be positive", errx.InvalidArgument),
 	).WithMessages(messages.EventUseCaseErrorTotalAmountPositive())
 	ErrValidateEventInvalidTierCount = cmodel.NewLocalizableError(
@@ -27,8 +27,8 @@ func validateEventInput(ctx context.Context, title string, totalAmount, tierCoun
 			WithFieldViolation("title", ErrValidateEventEmptyTitle.LocalizeContext(ctx))
 	}
 	if totalAmount <= 0 {
-		return errx.Wrap(ErrValidateEventNegativeTotalAmount, "total_amount", totalAmount).
-			WithFieldViolation("total_amount", ErrValidateEventNegativeTotalAmount.LocalizeContext(ctx))
+		return errx.Wrap(ErrValidateEventNonPositiveTotalAmount, "total_amount", totalAmount).
+			WithFieldViolation("total_amount", ErrValidateEventNonPositiveTotalAmount.LocalizeContext(ctx))
 	}
 	switch tierCount {
 	case 1, 3, 5:

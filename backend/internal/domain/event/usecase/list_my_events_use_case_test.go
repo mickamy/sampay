@@ -26,7 +26,7 @@ func TestListMyEvents_Do(t *testing.T) {
 		ctx := contexts.SetAuthenticatedUserID(t.Context(), endUser.UserID)
 		ctx = contexts.SetLanguage(ctx, language.Japanese)
 
-		for i := 0; i < 3; i++ {
+		for range 3 {
 			ev := fixture.Event(func(e *model.Event) { e.UserID = endUser.UserID })
 			require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &ev))
 		}

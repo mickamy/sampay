@@ -78,7 +78,7 @@ func TestCreateEvent_Do(t *testing.T) {
 		})
 
 		require.Error(t, err)
-		require.ErrorIs(t, err, usecase.ErrValidateEventNegativeTotalAmount)
+		require.ErrorIs(t, err, usecase.ErrValidateEventNonPositiveTotalAmount)
 	})
 
 	t.Run("invalid tier_count", func(t *testing.T) {

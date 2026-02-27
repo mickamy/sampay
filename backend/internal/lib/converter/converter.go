@@ -1,6 +1,7 @@
 package converter
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/mickamy/automapper"
@@ -17,7 +18,7 @@ func init() {
 	automapper.RegisterFrom[int, int32](IntToInt32)
 	automapper.RegisterFrom[time.Time, *timestamppb.Timestamp](TimeToTimestamppb)
 	automapper.RegisterFrom[string, eventv1.ParticipantStatus](ToV1ParticipantStatus)
-	automapper.RegisterFrom[eventv1.ParticipantStatus, string](FromV1ParticipantStatus)
+	automapper.RegisterFromE[eventv1.ParticipantStatus, string](FromV1ParticipantStatus)
 }
 
 func StringToPtr(s string) *string {
@@ -52,15 +53,15 @@ func ToV1ParticipantStatus(s string) eventv1.ParticipantStatus {
 	}
 }
 
-func FromV1ParticipantStatus(s eventv1.ParticipantStatus) string {
+func FromV1ParticipantStatus(s eventv1.ParticipantStatus) (string, error) {
 	switch s {
 	case eventv1.ParticipantStatus_PARTICIPANT_STATUS_UNPAID:
-		return "unpaid"
+		return "unpaid", nil
 	case eventv1.ParticipantStatus_PARTICIPANT_STATUS_CLAIMED:
-		return "claimed"
+		return "claimed", nil
 	case eventv1.ParticipantStatus_PARTICIPANT_STATUS_CONFIRMED:
-		return "confirmed"
+		return "confirmed", nil
 	default:
-		return ""
+		return "", fmt.Errorf("unknown participant status: %v", s)
 	}
 }

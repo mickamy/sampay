@@ -95,7 +95,7 @@ func TestEventParticipant_ListByEventID(t *testing.T) {
 
 	db := newReadWriter(t)
 	ev := createEvent(t, db)
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		m := fixture.EventParticipant(func(p *model.EventParticipant) { p.EventID = ev.ID })
 		require.NoError(t, query.EventParticipants(db.Writer.DB).Create(t.Context(), &m))
 	}

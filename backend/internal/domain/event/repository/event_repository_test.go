@@ -87,7 +87,7 @@ func TestEvent_ListByUserID(t *testing.T) {
 
 	db := newReadWriter(t)
 	endUser := tseed.EndUser(t, db.Writer)
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		m := fixture.Event(func(e *model.Event) { e.UserID = endUser.UserID })
 		require.NoError(t, query.Events(db.Writer.DB).Create(t.Context(), &m))
 	}
