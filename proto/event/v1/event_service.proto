@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package event.v1;
+
+import "event/v1/event.proto";
+
+service EventService {
+  rpc ListMyEvents(ListMyEventsRequest) returns (ListMyEventsResponse);
+  rpc CreateEvent(CreateEventRequest) returns (CreateEventResponse);
+  rpc UpdateEvent(UpdateEventRequest) returns (UpdateEventResponse);
+  rpc DeleteEvent(DeleteEventRequest) returns (DeleteEventResponse);
+  rpc ListEventParticipants(ListEventParticipantsRequest) returns (ListEventParticipantsResponse);
+  rpc UpdateParticipantStatus(UpdateParticipantStatusRequest) returns (UpdateParticipantStatusResponse);
+}
+
+message ListMyEventsRequest {}
+
+message ListMyEventsResponse {
+  repeated Event events = 1;
+}
+
+message CreateEventRequest {
+  EventInput input = 1;
+}
+
+message CreateEventResponse {
+  Event event = 1;
+}
+
+message UpdateEventRequest {
+  string id = 1;
+  EventInput input = 2;
+}
+
+message UpdateEventResponse {
+  Event event = 1;
+}
+
+message DeleteEventRequest {
+  string id = 1;
+}
+
+message DeleteEventResponse {}
+
+message ListEventParticipantsRequest {
+  string event_id = 1;
+}
+
+message ListEventParticipantsResponse {
+  repeated EventParticipant participants = 1;
+}
+
+message UpdateParticipantStatusRequest {
+  string event_id = 1;
+  string participant_id = 2;
+  ParticipantStatus status = 3;
+}
+
+message UpdateParticipantStatusResponse {
+  EventParticipant participant = 1;
+}

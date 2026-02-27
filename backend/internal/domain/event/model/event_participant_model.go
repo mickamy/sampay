@@ -1,0 +1,21 @@
+package model
+
+import "time"
+
+//go:generate go tool ormgen -source=$GOFILE -destination=../query
+type EventParticipant struct {
+	ID        string
+	EventID   string
+	Name      string
+	Tier      int
+	Status    string
+	Amount    int `db:"-"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+const (
+	ParticipantStatusUnpaid    = "unpaid"
+	ParticipantStatusClaimed   = "claimed"
+	ParticipantStatusConfirmed = "confirmed"
+)

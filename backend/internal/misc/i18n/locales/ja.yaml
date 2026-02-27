@@ -31,6 +31,17 @@ user:
         reserved: このスラッグは予約されています。
         already_taken: このスラッグは既に使用されています。
 
+event:
+  use_case:
+    error:
+      title_required: タイトルは必須です。
+      total_amount_positive: 合計金額は1以上で入力してください。
+      tier_count_invalid: ティア段階数は1、3、5のいずれかで指定してください。
+      not_found: イベントが見つかりません。
+      forbidden: このイベントにアクセスする権限がありません。
+      name_required: 名前は必須です。
+      invalid_tier: ティアが無効です。
+
 common:
   response:
     error:

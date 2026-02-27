@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package event.v1;
+
+import "event/v1/event.proto";
+import "user/v1/user.proto";
+import "user/v1/payment_method.proto";
+
+service EventProfileService {
+  rpc GetEvent(GetEventRequest) returns (GetEventResponse);
+  rpc JoinEvent(JoinEventRequest) returns (JoinEventResponse);
+  rpc ClaimPayment(ClaimPaymentRequest) returns (ClaimPaymentResponse);
+}
+
+message GetEventRequest {
+  string id = 1;
+}
+
+message GetEventResponse {
+  Event event = 1;
+  user.v1.User user = 2;
+  repeated user.v1.PaymentMethod payment_methods = 3;
+  repeated EventParticipant participants = 4;
+}
+
+message JoinEventRequest {
+  string event_id = 1;
+  string name = 2;
+  int32 tier = 3;
+}
+
+message JoinEventResponse {
+  EventParticipant participant = 1;
+}
+
+message ClaimPaymentRequest {
+  string participant_id = 1;
+}
+
+message ClaimPaymentResponse {
+  EventParticipant participant = 1;
+}
