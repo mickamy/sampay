@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package event.v1;
+
+import "google/protobuf/timestamp.proto";
+
+message Event {
+  string id = 1;
+  string user_id = 2;
+  string title = 3;
+  string description = 4;
+  int32 total_amount = 5;
+  int32 tier_count = 6;
+  google.protobuf.Timestamp held_at = 7;
+}
+
+message EventInput {
+  string title = 1;
+  string description = 2;
+  int32 total_amount = 3;
+  int32 tier_count = 4;
+  google.protobuf.Timestamp held_at = 5;
+}
+
+enum ParticipantStatus {
+  PARTICIPANT_STATUS_UNSPECIFIED = 0;
+  PARTICIPANT_STATUS_UNPAID = 1;
+  PARTICIPANT_STATUS_CLAIMED = 2;
+  PARTICIPANT_STATUS_CONFIRMED = 3;
+}
+
+message EventParticipant {
+  string id = 1;
+  string event_id = 2;
+  string name = 3;
+  int32 tier = 4;
+  ParticipantStatus status = 5;
+  int32 amount = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
