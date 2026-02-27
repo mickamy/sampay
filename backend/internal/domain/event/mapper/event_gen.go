@@ -20,8 +20,19 @@ func ToV1EventPtr(src *model.Event) *eventv1.Event {
 		Title:       src.Title,
 		Description: src.Description,
 		TotalAmount: converter.IntToInt32(src.TotalAmount),
+		Remainder:   converter.IntToInt32(src.Remainder),
 		TierCount:   converter.IntToInt32(src.TierCount),
 		HeldAt:      converter.TimeToTimestamppb(src.HeldAt),
+		Tiers: func() []*eventv1.EventTier {
+			if src.Tiers == nil {
+				return nil
+			}
+			result := make([]*eventv1.EventTier, len(src.Tiers))
+			for i, v := range src.Tiers {
+				result[i] = ToV1EventTierPtr(&v)
+			}
+			return result
+		}(),
 	}
 
 }
@@ -35,8 +46,48 @@ func ToV1Event(src model.Event) eventv1.Event {
 		Title:       src.Title,
 		Description: src.Description,
 		TotalAmount: converter.IntToInt32(src.TotalAmount),
+		Remainder:   converter.IntToInt32(src.Remainder),
 		TierCount:   converter.IntToInt32(src.TierCount),
 		HeldAt:      converter.TimeToTimestamppb(src.HeldAt),
+		Tiers: func() []*eventv1.EventTier {
+			if src.Tiers == nil {
+				return nil
+			}
+			result := make([]*eventv1.EventTier, len(src.Tiers))
+			for i, v := range src.Tiers {
+				result[i] = ToV1EventTierPtr(&v)
+			}
+			return result
+		}(),
+	}
+
+}
+
+// ToV1EventTierPtr converts *EventTier to *EventTier.
+func ToV1EventTierPtr(src *model.EventTier) *eventv1.EventTier {
+	if src == nil {
+		return nil
+	}
+
+	return &eventv1.EventTier{
+		Id:      src.ID,
+		EventId: src.EventID,
+		Tier:    converter.IntToInt32(src.Tier),
+		Count:   converter.IntToInt32(src.Count),
+		Amount:  converter.IntToInt32(src.Amount),
+	}
+
+}
+
+// ToV1EventTier converts EventTier to EventTier.
+func ToV1EventTier(src model.EventTier) eventv1.EventTier {
+
+	return eventv1.EventTier{
+		Id:      src.ID,
+		EventId: src.EventID,
+		Tier:    converter.IntToInt32(src.Tier),
+		Count:   converter.IntToInt32(src.Count),
+		Amount:  converter.IntToInt32(src.Amount),
 	}
 
 }
