@@ -289,14 +289,21 @@ export default function EventPublicPage({
           </div>
 
           {/* CTA */}
-          <div className="mt-12 rounded-lg border bg-muted/50 p-6 text-center">
-            <Link to="/" className="block">
-              <p className="text-base font-semibold">{m.profile_cta_title()}</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {m.profile_cta_description()}
-              </p>
-            </Link>
-          </div>
+          {!(
+            myParticipant &&
+            myParticipant.status === ParticipantStatus.CONFIRMED
+          ) && (
+            <div className="mt-12 rounded-lg border bg-muted/50 p-6 text-center">
+              <Link to="/" className="block">
+                <p className="text-base font-semibold">
+                  {m.profile_cta_title()}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {m.profile_cta_description()}
+                </p>
+              </Link>
+            </div>
+          )}
         </div>
       </main>
     </div>
@@ -422,20 +429,36 @@ function StatusView({ participant }: { participant: SerializedParticipant }) {
   const isClaimed = participant.status === ParticipantStatus.CLAIMED;
 
   return (
-    <Card>
-      <CardContent className="py-6 text-center space-y-3">
-        <p className="text-lg font-semibold">
-          {m.event_public_your_amount({
-            amount: formatCurrency(participant.amount),
-          })}
-        </p>
-        <ParticipantStatusBadge status={participant.status} />
-        <p className="text-sm text-muted-foreground">
-          {isClaimed
-            ? m.event_public_claimed_message()
-            : m.event_public_confirmed_message()}
-        </p>
-      </CardContent>
-    </Card>
+    <div className="space-y-4">
+      <Card>
+        <CardContent className="py-6 text-center space-y-3">
+          <p className="text-lg font-semibold">
+            {m.event_public_your_amount({
+              amount: formatCurrency(participant.amount),
+            })}
+          </p>
+          <ParticipantStatusBadge status={participant.status} />
+          <p className="text-sm text-muted-foreground">
+            {isClaimed
+              ? m.event_public_claimed_message()
+              : m.event_public_confirmed_message()}
+          </p>
+        </CardContent>
+      </Card>
+      {!isClaimed && (
+        <Link to="/" className="block">
+          <Card className="bg-primary/5 border-primary/20 transition-colors hover:bg-primary/10">
+            <CardContent className="py-5 text-center space-y-1">
+              <p className="text-base font-semibold">
+                {m.event_public_cta_title()}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {m.event_public_cta_description()}
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+      )}
+    </div>
   );
 }
