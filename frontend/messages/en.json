@@ -130,5 +130,7 @@
   "event_public_ended_title": "This event has ended",
   "event_public_ended_description": "This event has been archived by the organizer and is no longer accepting participants.",
   "event_public_cta_title": "Hosting next time? →",
-  "event_public_cta_description": "Create your own event and collect payments with a single link"
+  "event_public_cta_description": "Create your own event and collect payments with a single link",
+  "privacy_page_title": "Privacy Policy",
+  "terms_page_title": "Terms of Service"
 }

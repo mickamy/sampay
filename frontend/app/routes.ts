@@ -16,6 +16,9 @@ export default [
   route("og/u/:slug.png", "routes/og/u/slug.tsx"),
   route("og/e/:id.png", "routes/og/e/$id.tsx"),
 
+  route("privacy", "routes/privacy.tsx"),
+  route("terms", "routes/terms.tsx"),
+
   route("enter", "routes/enter/route.tsx"),
   route("api/check-slug", "routes/api/check-slug.ts"),
 
