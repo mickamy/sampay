@@ -628,3 +628,233 @@ func TestEventService_UpdateParticipantStatus(t *testing.T) {
 		assert.Equal(t, "status", fv.GetField())
 	})
 }
+
+func TestEventService_ListMyEvents_Filter(t *testing.T) {
+	t.Parallel()
+
+	t.Run("returns only active events by default", func(t *testing.T) {
+		t.Parallel()
+
+		// arrange
+		infra := newInfra(t)
+		userID, authHeader := ctest.UserSession(t, infra)
+		active := fixture.Event(func(m *model.Event) { m.UserID = userID })
+		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &active))
+		now := time.Now()
+		archived := fixture.Event(func(m *model.Event) { m.UserID = userID; m.ArchivedAt = &now })
+		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &archived))
+
+		// act
+		var out eventv1.ListMyEventsResponse
+		ct := contest.NewWith(t,
+			contest.Bind(eventv1connect.NewEventServiceHandler)(handler.NewEventService(infra)),
+			connect.WithInterceptors(interceptor.NewInterceptors(infra)...),
+		).
+			Procedure(eventv1connect.EventServiceListMyEventsProcedure).
+			Header("Authorization", authHeader).
+			In(&eventv1.ListMyEventsRequest{IncludeArchived: false}).
+			Do()
+
+		// assert
+		ct.ExpectStatus(http.StatusOK).Out(&out)
+		require.Len(t, out.GetEvents(), 1)
+		assert.Equal(t, active.ID, out.GetEvents()[0].GetId())
+	})
+
+	t.Run("returns only archived events when include_archived is true", func(t *testing.T) {
+		t.Parallel()
+
+		// arrange
+		infra := newInfra(t)
+		userID, authHeader := ctest.UserSession(t, infra)
+		active := fixture.Event(func(m *model.Event) { m.UserID = userID })
+		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &active))
+		now := time.Now()
+		archived := fixture.Event(func(m *model.Event) { m.UserID = userID; m.ArchivedAt = &now })
+		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &archived))
+
+		// act
+		var out eventv1.ListMyEventsResponse
+		ct := contest.NewWith(t,
+			contest.Bind(eventv1connect.NewEventServiceHandler)(handler.NewEventService(infra)),
+			connect.WithInterceptors(interceptor.NewInterceptors(infra)...),
+		).
+			Procedure(eventv1connect.EventServiceListMyEventsProcedure).
+			Header("Authorization", authHeader).
+			In(&eventv1.ListMyEventsRequest{IncludeArchived: true}).
+			Do()
+
+		// assert
+		ct.ExpectStatus(http.StatusOK).Out(&out)
+		require.Len(t, out.GetEvents(), 1)
+		assert.Equal(t, archived.ID, out.GetEvents()[0].GetId())
+	})
+}
+
+func TestEventService_ArchiveEvent(t *testing.T) {
+	t.Parallel()
+
+	t.Run("archives event successfully", func(t *testing.T) {
+		t.Parallel()
+
+		// arrange
+		infra := newInfra(t)
+		userID, authHeader := ctest.UserSession(t, infra)
+		ev := fixture.Event(func(m *model.Event) { m.UserID = userID })
+		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &ev))
+
+		// act
+		var out eventv1.ArchiveEventResponse
+		ct := contest.NewWith(t,
+			contest.Bind(eventv1connect.NewEventServiceHandler)(handler.NewEventService(infra)),
+			connect.WithInterceptors(interceptor.NewInterceptors(infra)...),
+		).
+			Procedure(eventv1connect.EventServiceArchiveEventProcedure).
+			Header("Authorization", authHeader).
+			In(&eventv1.ArchiveEventRequest{Id: ev.ID}).
+			Do()
+
+		// assert
+		ct.ExpectStatus(http.StatusOK).Out(&out)
+		assert.Equal(t, ev.ID, out.GetEvent().GetId())
+		assert.NotNil(t, out.GetEvent().GetArchivedAt())
+	})
+
+	t.Run("returns not found for nonexistent event", func(t *testing.T) {
+		t.Parallel()
+
+		// arrange
+		infra := newInfra(t)
+		_, authHeader := ctest.UserSession(t, infra)
+
+		// act
+		ct := contest.NewWith(t,
+			contest.Bind(eventv1connect.NewEventServiceHandler)(handler.NewEventService(infra)),
+			connect.WithInterceptors(interceptor.NewInterceptors(infra)...),
+		).
+			Procedure(eventv1connect.EventServiceArchiveEventProcedure).
+			Header("Authorization", authHeader).
+			In(&eventv1.ArchiveEventRequest{Id: "nonexistent"}).
+			Do()
+
+		// assert
+		ct.ExpectStatus(http.StatusNotFound)
+		connErr := ct.Err()
+		ctest.AssertCode(t, connect.CodeNotFound, connErr)
+		localized := ctest.LocalizedMessage(t, connErr)
+		assert.Equal(t, i18n.Japanese(messages.EventUseCaseErrorNotFound()), localized)
+	})
+
+	t.Run("returns forbidden for other user's event", func(t *testing.T) {
+		t.Parallel()
+
+		// arrange
+		infra := newInfra(t)
+		_, authHeader := ctest.UserSession(t, infra)
+		otherUser := tseed.EndUser(t, infra.WriterDB)
+		ev := fixture.Event(func(m *model.Event) { m.UserID = otherUser.UserID })
+		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &ev))
+
+		// act
+		ct := contest.NewWith(t,
+			contest.Bind(eventv1connect.NewEventServiceHandler)(handler.NewEventService(infra)),
+			connect.WithInterceptors(interceptor.NewInterceptors(infra)...),
+		).
+			Procedure(eventv1connect.EventServiceArchiveEventProcedure).
+			Header("Authorization", authHeader).
+			In(&eventv1.ArchiveEventRequest{Id: ev.ID}).
+			Do()
+
+		// assert
+		ct.ExpectStatus(http.StatusForbidden)
+		connErr := ct.Err()
+		ctest.AssertCode(t, connect.CodePermissionDenied, connErr)
+		localized := ctest.LocalizedMessage(t, connErr)
+		assert.Equal(t, i18n.Japanese(messages.EventUseCaseErrorForbidden()), localized)
+	})
+}
+
+func TestEventService_UnarchiveEvent(t *testing.T) {
+	t.Parallel()
+
+	t.Run("unarchives event successfully", func(t *testing.T) {
+		t.Parallel()
+
+		// arrange
+		infra := newInfra(t)
+		userID, authHeader := ctest.UserSession(t, infra)
+		now := time.Now()
+		ev := fixture.Event(func(m *model.Event) { m.UserID = userID; m.ArchivedAt = &now })
+		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &ev))
+
+		// act
+		var out eventv1.UnarchiveEventResponse
+		ct := contest.NewWith(t,
+			contest.Bind(eventv1connect.NewEventServiceHandler)(handler.NewEventService(infra)),
+			connect.WithInterceptors(interceptor.NewInterceptors(infra)...),
+		).
+			Procedure(eventv1connect.EventServiceUnarchiveEventProcedure).
+			Header("Authorization", authHeader).
+			In(&eventv1.UnarchiveEventRequest{Id: ev.ID}).
+			Do()
+
+		// assert
+		ct.ExpectStatus(http.StatusOK).Out(&out)
+		assert.Equal(t, ev.ID, out.GetEvent().GetId())
+		assert.Nil(t, out.GetEvent().GetArchivedAt())
+	})
+
+	t.Run("returns not found for nonexistent event", func(t *testing.T) {
+		t.Parallel()
+
+		// arrange
+		infra := newInfra(t)
+		_, authHeader := ctest.UserSession(t, infra)
+
+		// act
+		ct := contest.NewWith(t,
+			contest.Bind(eventv1connect.NewEventServiceHandler)(handler.NewEventService(infra)),
+			connect.WithInterceptors(interceptor.NewInterceptors(infra)...),
+		).
+			Procedure(eventv1connect.EventServiceUnarchiveEventProcedure).
+			Header("Authorization", authHeader).
+			In(&eventv1.UnarchiveEventRequest{Id: "nonexistent"}).
+			Do()
+
+		// assert
+		ct.ExpectStatus(http.StatusNotFound)
+		connErr := ct.Err()
+		ctest.AssertCode(t, connect.CodeNotFound, connErr)
+		localized := ctest.LocalizedMessage(t, connErr)
+		assert.Equal(t, i18n.Japanese(messages.EventUseCaseErrorNotFound()), localized)
+	})
+
+	t.Run("returns forbidden for other user's event", func(t *testing.T) {
+		t.Parallel()
+
+		// arrange
+		infra := newInfra(t)
+		_, authHeader := ctest.UserSession(t, infra)
+		otherUser := tseed.EndUser(t, infra.WriterDB)
+		now := time.Now()
+		ev := fixture.Event(func(m *model.Event) { m.UserID = otherUser.UserID; m.ArchivedAt = &now })
+		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &ev))
+
+		// act
+		ct := contest.NewWith(t,
+			contest.Bind(eventv1connect.NewEventServiceHandler)(handler.NewEventService(infra)),
+			connect.WithInterceptors(interceptor.NewInterceptors(infra)...),
+		).
+			Procedure(eventv1connect.EventServiceUnarchiveEventProcedure).
+			Header("Authorization", authHeader).
+			In(&eventv1.UnarchiveEventRequest{Id: ev.ID}).
+			Do()
+
+		// assert
+		ct.ExpectStatus(http.StatusForbidden)
+		connErr := ct.Err()
+		ctest.AssertCode(t, connect.CodePermissionDenied, connErr)
+		localized := ctest.LocalizedMessage(t, connErr)
+		assert.Equal(t, i18n.Japanese(messages.EventUseCaseErrorForbidden()), localized)
+	})
+}
