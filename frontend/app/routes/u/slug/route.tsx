@@ -1,5 +1,6 @@
 import { Code, ConnectError } from "@connectrpc/connect";
 import { Link } from "react-router";
+import { Footer } from "~/components/footer";
 import { Header } from "~/components/header";
 import { PaymentMethodList } from "~/components/payment-method-list";
 import { UserProfileService } from "~/gen/user/v1/user_profile_pb";
@@ -89,9 +90,7 @@ export default function UserProfilePage({ loaderData }: Route.ComponentProps) {
           </div>
         </div>
       </main>
-      <footer className="border-t py-6 text-center text-sm text-muted-foreground">
-        {m.home_footer_copyright()}
-      </footer>
+      <Footer />
     </div>
   );
 }
