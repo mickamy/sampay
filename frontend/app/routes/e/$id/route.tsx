@@ -145,36 +145,55 @@ export async function action({ params, request }: Route.ActionArgs) {
     const name = (formData.get("name") as string) || "";
     const tier = Number(formData.get("tier")) || 1;
 
-    const { participant } = await client.joinEvent({
-      eventId,
-      name,
-      tier,
-    });
-
-    if (participant) {
-      const setCookie = await setParticipantId(
-        request,
+    try {
+      const { participant } = await client.joinEvent({
         eventId,
-        participant.id,
-      );
-      return redirect(`/e/${eventId}`, {
-        headers: { "Set-Cookie": setCookie },
+        name,
+        tier,
       });
+
+      if (participant) {
+        const setCookie = await setParticipantId(
+          request,
+          eventId,
+          participant.id,
+        );
+        return redirect(`/e/${eventId}`, {
+          headers: { "Set-Cookie": setCookie },
+        });
+      }
+      return redirect(`/e/${eventId}`);
+    } catch (error) {
+      if (error instanceof ConnectError) {
+        return { error: error.message };
+      }
+      throw error;
     }
-    return redirect(`/e/${eventId}`);
   }
 
   if (actionType === "claimPayment") {
     const participantId = formData.get("participantId") as string;
-    await client.claimPayment({ participantId });
-    return redirect(`/e/${eventId}`);
+    try {
+      await client.claimPayment({ participantId });
+      return redirect(`/e/${eventId}`);
+    } catch (error) {
+      if (error instanceof ConnectError) {
+        return { error: error.message };
+      }
+      throw error;
+    }
   }
 
   return redirect(`/e/${eventId}`);
 }
 
-export default function EventPublicPage({ loaderData }: Route.ComponentProps) {
+export default function EventPublicPage({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
   const { event, paymentMethods, myParticipant } = loaderData;
+  const actionError =
+    actionData && "error" in actionData ? (actionData.error as string) : null;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -245,6 +264,12 @@ export default function EventPublicPage({ loaderData }: Route.ComponentProps) {
                 </table>
               </CardContent>
             </Card>
+          )}
+
+          {actionError && (
+            <div className="mt-4 rounded-md border border-destructive bg-destructive/10 p-3 text-sm text-destructive">
+              {actionError}
+            </div>
           )}
 
           {/* State-dependent content */}

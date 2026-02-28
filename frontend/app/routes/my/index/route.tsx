@@ -28,8 +28,8 @@ interface EventItem {
 
 export function meta() {
   return buildMeta({
-    title: m.my_preview_title(),
-    description: m.my_preview_description(),
+    title: m.my_meta_title(),
+    description: m.my_meta_description(),
   });
 }
 

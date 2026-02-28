@@ -38,6 +38,8 @@
   "my_save": "保存",
   "my_save_success": "保存しました",
   "my_save_error": "保存に失敗しました",
+  "my_meta_title": "マイページ",
+  "my_meta_description": "決済手段やイベントを管理できます",
   "my_preview_title": "プレビュー",
   "my_preview_description": "相手にはこのように表示されます",
   "my_preview_empty": "送金リンクを登録すると、ここにプレビューが表示されます",

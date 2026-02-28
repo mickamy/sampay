@@ -38,6 +38,8 @@
   "my_save": "Save",
   "my_save_success": "Saved successfully",
   "my_save_error": "Failed to save",
+  "my_meta_title": "My Page",
+  "my_meta_description": "Manage your payment methods and events",
   "my_preview_title": "Preview",
   "my_preview_description": "This is how others will see your page",
   "my_preview_empty": "Register a payment link to see a preview here",

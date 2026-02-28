@@ -17,6 +17,7 @@ import {
   calcTierAmounts,
   formatCurrency,
   formatEventDate,
+  formatLocalDate,
   heldAtToInputValue,
 } from "~/model/event-model";
 import { m } from "~/paraglide/messages";
@@ -132,6 +133,7 @@ export function EventForm({
                 const raw = e.target.value.replace(/[^0-9]/g, "");
                 setTotalAmount(Number(raw) || 0);
               }}
+              min={1}
               required
             />
           </div>
@@ -149,7 +151,7 @@ export function EventForm({
                 >
                   <CalendarIcon className="mr-2 size-4" />
                   {heldAt
-                    ? formatEventDate(heldAt.toISOString())
+                    ? formatEventDate(formatLocalDate(heldAt))
                     : m.event_form_date_placeholder()}
                 </Button>
               </PopoverTrigger>
@@ -164,7 +166,7 @@ export function EventForm({
             <input
               type="hidden"
               name="heldAt"
-              value={heldAt ? heldAt.toISOString().slice(0, 10) : ""}
+              value={heldAt ? formatLocalDate(heldAt) : ""}
             />
           </div>
 
@@ -206,7 +208,8 @@ export function EventForm({
                       id={`tier_${tier}_count`}
                       name={`tier_${tier}_count`}
                       type="number"
-                      min={0}
+                      min={1}
+                      required
                       defaultValue={tierCounts[tier] ?? ""}
                       onChange={(e) =>
                         handleTierHeadcountChange(

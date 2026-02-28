@@ -1,8 +1,13 @@
+const ALLOWED_TIER_COUNTS = [1, 3, 5];
+
 export function parseEventFormData(formData: FormData) {
   const title = (formData.get("title") as string) || "";
   const description = (formData.get("description") as string) || "";
   const totalAmount = Number(formData.get("totalAmount")) || 0;
-  const tierCount = Number(formData.get("tierCount")) || 1;
+  const rawTierCount = Number(formData.get("tierCount")) || 1;
+  const tierCount = ALLOWED_TIER_COUNTS.includes(rawTierCount)
+    ? rawTierCount
+    : 1;
   const heldAtStr = formData.get("heldAt") as string;
 
   const tiers: { tier: number; count: number }[] = [];
@@ -11,14 +16,19 @@ export function parseEventFormData(formData: FormData) {
     tiers.push({ tier: i, count });
   }
 
+  const heldAtDate =
+    heldAtStr && !Number.isNaN(new Date(heldAtStr).getTime())
+      ? new Date(heldAtStr)
+      : undefined;
+
   return {
     title,
     description,
     totalAmount,
     tierCount,
-    heldAt: heldAtStr
+    heldAt: heldAtDate
       ? {
-          seconds: BigInt(Math.floor(new Date(heldAtStr).getTime() / 1000)),
+          seconds: BigInt(Math.floor(heldAtDate.getTime() / 1000)),
           nanos: 0,
         }
       : undefined,
@@ -61,11 +71,18 @@ export function calcTierAmounts(
   const totalWeight = tierCounts.reduce((sum, t) => sum + t.tier * t.count, 0);
   if (totalWeight === 0) return tierCounts.map((t) => ({ ...t, amount: 0 }));
 
-  return tierCounts.map((t) => ({
-    ...t,
-    amount:
-      Math.round((totalAmount * t.tier * t.count) / totalWeight / t.count) || 0,
-  }));
+  return tierCounts.map((t) => {
+    if (t.count === 0) {
+      return { ...t, amount: 0 };
+    }
+    const amount =
+      Math.round((totalAmount * t.tier * t.count) / totalWeight / t.count) || 0;
+    return { ...t, amount };
+  });
+}
+
+export function formatLocalDate(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
 export function heldAtToInputValue(
@@ -75,8 +92,8 @@ export function heldAtToInputValue(
   if (typeof heldAt === "string") {
     const d = new Date(heldAt);
     if (Number.isNaN(d.getTime())) return "";
-    return d.toISOString().slice(0, 10);
+    return formatLocalDate(d);
   }
   const ms = Number(heldAt.seconds) * 1000;
-  return new Date(ms).toISOString().slice(0, 10);
+  return formatLocalDate(new Date(ms));
 }
