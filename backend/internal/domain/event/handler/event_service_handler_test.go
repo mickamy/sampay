@@ -94,8 +94,8 @@ func TestEventService_CreateEvent(t *testing.T) {
 			Header("Authorization", authHeader).
 			In(&eventv1.CreateEventRequest{
 				Input: &eventv1.EventInput{
-					Title:       "忘年会",
-					Description: "2025年忘年会",
+					Title:       "bounenkai",
+					Description: "2025 bounenkai",
 					TotalAmount: 30000,
 					TierCount:   1,
 					HeldAt:      timestamppb.New(heldAt),
@@ -107,7 +107,7 @@ func TestEventService_CreateEvent(t *testing.T) {
 		// assert
 		ct.ExpectStatus(http.StatusOK).Out(&out)
 		assert.NotEmpty(t, out.GetEvent().GetId())
-		assert.Equal(t, "忘年会", out.GetEvent().GetTitle())
+		assert.Equal(t, "bounenkai", out.GetEvent().GetTitle())
 		assert.Equal(t, int32(30000), out.GetEvent().GetTotalAmount())
 		assert.Equal(t, int32(1), out.GetEvent().GetTierCount())
 	})
@@ -161,7 +161,7 @@ func TestEventService_CreateEvent(t *testing.T) {
 			Header("Authorization", authHeader).
 			In(&eventv1.CreateEventRequest{
 				Input: &eventv1.EventInput{
-					Title:       "忘年会",
+					Title:       "bounenkai",
 					TotalAmount: 30000,
 					TierCount:   2,
 					HeldAt:      timestamppb.New(time.Now().Add(24 * time.Hour)),
@@ -190,7 +190,12 @@ func TestEventService_UpdateEvent(t *testing.T) {
 		userID, authHeader := ctest.UserSession(t, infra)
 		ev := fixture.Event(func(m *model.Event) { m.UserID = userID; m.TierCount = 1 })
 		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &ev))
-		tier := fixture.EventTier(func(m *model.EventTier) { m.EventID = ev.ID; m.Tier = 1; m.Count = 3; m.Amount = ev.TotalAmount })
+		tier := fixture.EventTier(func(m *model.EventTier) {
+			m.EventID = ev.ID
+			m.Tier = 1
+			m.Count = 3
+			m.Amount = ev.TotalAmount
+		})
 		require.NoError(t, query.EventTiers(infra.WriterDB).Create(t.Context(), &tier))
 
 		// act
@@ -204,7 +209,7 @@ func TestEventService_UpdateEvent(t *testing.T) {
 			In(&eventv1.UpdateEventRequest{
 				Id: ev.ID,
 				Input: &eventv1.EventInput{
-					Title:       "新年会",
+					Title:       "shinnenkai",
 					Description: "updated",
 					TotalAmount: 50000,
 					TierCount:   1,
@@ -216,7 +221,7 @@ func TestEventService_UpdateEvent(t *testing.T) {
 
 		// assert
 		ct.ExpectStatus(http.StatusOK).Out(&out)
-		assert.Equal(t, "新年会", out.GetEvent().GetTitle())
+		assert.Equal(t, "shinnenkai", out.GetEvent().GetTitle())
 		assert.Equal(t, int32(50000), out.GetEvent().GetTotalAmount())
 	})
 
@@ -237,7 +242,7 @@ func TestEventService_UpdateEvent(t *testing.T) {
 			In(&eventv1.UpdateEventRequest{
 				Id: "nonexistent",
 				Input: &eventv1.EventInput{
-					Title:       "新年会",
+					Title:       "shinnenkai",
 					TotalAmount: 50000,
 					TierCount:   1,
 					HeldAt:      timestamppb.New(time.Now().Add(24 * time.Hour)),
@@ -263,7 +268,12 @@ func TestEventService_UpdateEvent(t *testing.T) {
 		otherUser := tseed.EndUser(t, infra.WriterDB)
 		ev := fixture.Event(func(m *model.Event) { m.UserID = otherUser.UserID })
 		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &ev))
-		tier := fixture.EventTier(func(m *model.EventTier) { m.EventID = ev.ID; m.Tier = 1; m.Count = 1; m.Amount = ev.TotalAmount })
+		tier := fixture.EventTier(func(m *model.EventTier) {
+			m.EventID = ev.ID
+			m.Tier = 1
+			m.Count = 1
+			m.Amount = ev.TotalAmount
+		})
 		require.NoError(t, query.EventTiers(infra.WriterDB).Create(t.Context(), &tier))
 
 		// act
@@ -276,7 +286,7 @@ func TestEventService_UpdateEvent(t *testing.T) {
 			In(&eventv1.UpdateEventRequest{
 				Id: ev.ID,
 				Input: &eventv1.EventInput{
-					Title:       "新年会",
+					Title:       "shinnenkai",
 					TotalAmount: 50000,
 					TierCount:   1,
 					HeldAt:      timestamppb.New(time.Now().Add(24 * time.Hour)),
@@ -301,7 +311,12 @@ func TestEventService_UpdateEvent(t *testing.T) {
 		userID, authHeader := ctest.UserSession(t, infra)
 		ev := fixture.Event(func(m *model.Event) { m.UserID = userID; m.TierCount = 1 })
 		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &ev))
-		tier := fixture.EventTier(func(m *model.EventTier) { m.EventID = ev.ID; m.Tier = 1; m.Count = 1; m.Amount = ev.TotalAmount })
+		tier := fixture.EventTier(func(m *model.EventTier) {
+			m.EventID = ev.ID
+			m.Tier = 1
+			m.Count = 1
+			m.Amount = ev.TotalAmount
+		})
 		require.NoError(t, query.EventTiers(infra.WriterDB).Create(t.Context(), &tier))
 		p := fixture.EventParticipant(func(m *model.EventParticipant) {
 			m.EventID = ev.ID
@@ -319,7 +334,7 @@ func TestEventService_UpdateEvent(t *testing.T) {
 			In(&eventv1.UpdateEventRequest{
 				Id: ev.ID,
 				Input: &eventv1.EventInput{
-					Title:       "新年会",
+					Title:       "shinnenkai",
 					TotalAmount: 50000,
 					TierCount:   1,
 					HeldAt:      timestamppb.New(time.Now().Add(24 * time.Hour)),

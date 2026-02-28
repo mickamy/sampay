@@ -38,7 +38,12 @@ func TestEventProfile_GetEvent(t *testing.T) {
 		require.NoError(t, uquery.UserPaymentMethods(infra.WriterDB).Create(t.Context(), &pm))
 		ev := fixture.Event(func(m *model.Event) { m.UserID = endUser.UserID; m.TierCount = 1 })
 		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &ev))
-		tier := fixture.EventTier(func(m *model.EventTier) { m.EventID = ev.ID; m.Tier = 1; m.Count = 3; m.Amount = ev.TotalAmount })
+		tier := fixture.EventTier(func(m *model.EventTier) {
+			m.EventID = ev.ID
+			m.Tier = 1
+			m.Count = 3
+			m.Amount = ev.TotalAmount
+		})
 		require.NoError(t, query.EventTiers(infra.WriterDB).Create(t.Context(), &tier))
 		p := fixture.EventParticipant(func(m *model.EventParticipant) {
 			m.EventID = ev.ID
@@ -128,7 +133,7 @@ func TestEventProfile_JoinEvent(t *testing.T) {
 			Procedure(eventv1connect.EventProfileServiceJoinEventProcedure).
 			In(&eventv1.JoinEventRequest{
 				EventId: ev.ID,
-				Name:    "田中太郎",
+				Name:    "Taro Tanaka",
 				Tier:    2,
 			}).
 			Do()
@@ -136,10 +141,10 @@ func TestEventProfile_JoinEvent(t *testing.T) {
 		// assert
 		ct.ExpectStatus(http.StatusOK).Out(&out)
 		assert.NotEmpty(t, out.GetParticipant().GetId())
-		assert.Equal(t, "田中太郎", out.GetParticipant().GetName())
+		assert.Equal(t, "Taro Tanaka", out.GetParticipant().GetName())
 		assert.Equal(t, int32(2), out.GetParticipant().GetTier())
 		assert.Equal(t, eventv1.ParticipantStatus_PARTICIPANT_STATUS_UNPAID, out.GetParticipant().GetStatus())
-		assert.Greater(t, out.GetParticipant().GetAmount(), int32(0))
+		assert.Positive(t, out.GetParticipant().GetAmount())
 	})
 
 	t.Run("returns error for empty name", func(t *testing.T) {
@@ -150,7 +155,12 @@ func TestEventProfile_JoinEvent(t *testing.T) {
 		owner := tseed.EndUser(t, infra.WriterDB)
 		ev := fixture.Event(func(m *model.Event) { m.UserID = owner.UserID; m.TierCount = 1 })
 		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &ev))
-		tier := fixture.EventTier(func(m *model.EventTier) { m.EventID = ev.ID; m.Tier = 1; m.Count = 3; m.Amount = ev.TotalAmount })
+		tier := fixture.EventTier(func(m *model.EventTier) {
+			m.EventID = ev.ID
+			m.Tier = 1
+			m.Count = 3
+			m.Amount = ev.TotalAmount
+		})
 		require.NoError(t, query.EventTiers(infra.WriterDB).Create(t.Context(), &tier))
 
 		// act
@@ -195,7 +205,7 @@ func TestEventProfile_JoinEvent(t *testing.T) {
 			Procedure(eventv1connect.EventProfileServiceJoinEventProcedure).
 			In(&eventv1.JoinEventRequest{
 				EventId: ev.ID,
-				Name:    "田中太郎",
+				Name:    "Taro Tanaka",
 				Tier:    5, // invalid: tier_count is 3
 			}).
 			Do()
@@ -222,7 +232,7 @@ func TestEventProfile_JoinEvent(t *testing.T) {
 			Procedure(eventv1connect.EventProfileServiceJoinEventProcedure).
 			In(&eventv1.JoinEventRequest{
 				EventId: "nonexistent",
-				Name:    "田中太郎",
+				Name:    "Taro Tanaka",
 				Tier:    1,
 			}).
 			Do()
