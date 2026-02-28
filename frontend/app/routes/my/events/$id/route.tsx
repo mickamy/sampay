@@ -136,12 +136,12 @@ export async function action({ request, params }: Route.ActionArgs) {
 
       if (actionType === "deleteEvent") {
         await client.deleteEvent({ id: eventId });
-        return redirect("/my/events");
+        return redirect("/my");
       }
 
       if (actionType === "archiveEvent") {
         await client.archiveEvent({ id: eventId });
-        return redirect("/my/events");
+        return redirect("/my");
       }
 
       if (actionType === "unarchiveEvent") {

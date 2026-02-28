@@ -6,7 +6,6 @@ export default [
   route("my", "routes/my/route.tsx", [
     index("routes/my/index/route.tsx"),
     route("edit", "routes/my/edit/route.tsx"),
-    route("events", "routes/my/events/index/route.tsx"),
     route("events/new", "routes/my/events/new/route.tsx"),
     route("events/:id", "routes/my/events/$id/route.tsx"),
     route("events/:id/edit", "routes/my/events/$id_.edit/route.tsx"),
