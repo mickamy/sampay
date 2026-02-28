@@ -55,6 +55,8 @@ export function meta({ loaderData }: Route.MetaArgs) {
   return buildMeta({
     title: loaderData.event.title,
     description: loaderData.event.description,
+    url: loaderData.eventUrl,
+    image: `${new URL(loaderData.eventUrl).origin}/og/e/${loaderData.event.id}.png`,
   });
 }
 
@@ -115,8 +117,11 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       ? (serializedParticipants.find((p) => p.id === participantId) ?? null)
       : null;
 
+    const origin = new URL(request.url).origin;
+
     return {
       event: serializedEvent,
+      eventUrl: `${origin}/e/${eventId}`,
       paymentMethods,
       myParticipant,
     };
