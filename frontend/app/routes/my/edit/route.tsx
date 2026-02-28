@@ -314,7 +314,7 @@ function PaymentMethodCard({ entry }: { entry: PaymentMethodEntry }) {
         <div className="space-y-2">
           <Label>{m.my_qr_label()}</Label>
           {displayImage && (
-            <div className="mb-2">
+            <div className="mb-2 flex justify-center">
               <Image
                 src={displayImage}
                 alt={`${label} QR`}
@@ -331,29 +331,35 @@ function PaymentMethodCard({ entry }: { entry: PaymentMethodEntry }) {
             aria-label={m.my_qr_label()}
             onChange={handleFileChange}
           />
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            {displayImage ? m.my_qr_change() : m.my_qr_label()}
-          </Button>
+          <div className="flex justify-center">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {displayImage ? m.my_qr_change() : m.my_qr_label()}
+            </Button>
+          </div>
           {qrFeedback === "autofilled" && (
-            <p className="text-sm text-green-600">{m.my_qr_url_autofilled()}</p>
+            <p className="text-sm text-green-600 text-center">
+              {m.my_qr_url_autofilled()}
+            </p>
           )}
           {qrFeedback === "not-url" && (
-            <p className="text-sm text-destructive">
+            <p className="text-sm text-destructive text-center">
               {m.my_qr_not_url_warning()}
             </p>
           )}
           {qrFeedback === "decode-failed" && (
-            <p className="text-sm text-destructive">
+            <p className="text-sm text-destructive text-center">
               {m.my_qr_decode_failed()}
             </p>
           )}
           {qrFeedback === "too-large" && (
-            <p className="text-sm text-destructive">{m.my_qr_too_large()}</p>
+            <p className="text-sm text-destructive text-center">
+              {m.my_qr_too_large()}
+            </p>
           )}
         </div>
       </CardContent>
