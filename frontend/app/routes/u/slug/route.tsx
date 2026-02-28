@@ -89,6 +89,9 @@ export default function UserProfilePage({ loaderData }: Route.ComponentProps) {
           </div>
         </div>
       </main>
+      <footer className="border-t py-6 text-center text-sm text-muted-foreground">
+        {m.home_footer_copyright()}
+      </footer>
     </div>
   );
 }

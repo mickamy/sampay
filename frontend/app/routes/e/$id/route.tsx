@@ -306,6 +306,9 @@ export default function EventPublicPage({
           )}
         </div>
       </main>
+      <footer className="border-t py-6 text-center text-sm text-muted-foreground">
+        {m.home_footer_copyright()}
+      </footer>
     </div>
   );
 }
@@ -445,20 +448,18 @@ function StatusView({ participant }: { participant: SerializedParticipant }) {
           </p>
         </CardContent>
       </Card>
-      {!isClaimed && (
-        <Link to="/" className="block">
-          <Card className="bg-primary/5 border-primary/20 transition-colors hover:bg-primary/10">
-            <CardContent className="py-5 text-center space-y-1">
-              <p className="text-base font-semibold">
-                {m.event_public_cta_title()}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {m.event_public_cta_description()}
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
-      )}
+      <Link to="/" className="block">
+        <Card className="bg-primary/5 border-primary/20 transition-colors hover:bg-primary/10">
+          <CardContent className="py-5 text-center space-y-1">
+            <p className="text-base font-semibold">
+              {m.event_public_cta_title()}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {m.event_public_cta_description()}
+            </p>
+          </CardContent>
+        </Card>
+      </Link>
     </div>
   );
 }
