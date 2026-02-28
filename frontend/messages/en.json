@@ -124,5 +124,7 @@
   "event_public_pay_instruction": "Please pay using one of the methods below",
   "event_public_claim_button": "Mark as paid",
   "event_public_claimed_message": "Waiting for organizer confirmation",
-  "event_public_confirmed_message": "Your payment has been confirmed. Thank you!"
+  "event_public_confirmed_message": "Your payment has been confirmed. Thank you!",
+  "event_public_ended_title": "This event has ended",
+  "event_public_ended_description": "This event has been archived by the organizer and is no longer accepting participants."
 }

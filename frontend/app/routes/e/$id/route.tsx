@@ -28,6 +28,7 @@ interface SerializedEvent {
   totalAmount: number;
   tierCount: number;
   heldAt?: string;
+  isArchived: boolean;
   tiers: { id: string; tier: number; count: number; amount: number }[];
 }
 
@@ -94,6 +95,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       heldAt: event.heldAt
         ? new Date(Number(event.heldAt.seconds) * 1000).toISOString()
         : undefined,
+      isArchived: event.archivedAt != null,
       tiers: event.tiers.map((t) => ({
         id: t.id,
         tier: t.tier,
@@ -247,7 +249,9 @@ export default function EventPublicPage({ loaderData }: Route.ComponentProps) {
 
           {/* State-dependent content */}
           <div className="mt-6">
-            {myParticipant === null ? (
+            {event.isArchived ? (
+              <EndedView />
+            ) : myParticipant === null ? (
               <JoinForm event={event} />
             ) : myParticipant.status === ParticipantStatus.UNPAID ? (
               <UnpaidView
@@ -271,6 +275,19 @@ export default function EventPublicPage({ loaderData }: Route.ComponentProps) {
         </div>
       </main>
     </div>
+  );
+}
+
+function EndedView() {
+  return (
+    <Card>
+      <CardContent className="py-6 text-center space-y-2">
+        <p className="text-lg font-semibold">{m.event_public_ended_title()}</p>
+        <p className="text-sm text-muted-foreground">
+          {m.event_public_ended_description()}
+        </p>
+      </CardContent>
+    </Card>
   );
 }
 
