@@ -30,20 +30,24 @@ func MustNewArchiveEvent(infra *di.Infra) ArchiveEvent {
 
 // NewClaimPayment initializes dependencies and constructs claimPayment.
 func NewClaimPayment(infra *di.Infra) ClaimPayment {
+	event := repository.NewEvent(infra.DB)
 	eventParticipant := repository.NewEventParticipant(infra.DB)
 
 	return &claimPayment{
 		writer:          infra.WriterDB,
+		eventRepo:       event,
 		participantRepo: eventParticipant,
 	}
 }
 
 // MustNewClaimPayment initializes dependencies and constructs claimPayment or panics on failure.
 func MustNewClaimPayment(infra *di.Infra) ClaimPayment {
+	event := repository.NewEvent(infra.DB)
 	eventParticipant := repository.NewEventParticipant(infra.DB)
 
 	return &claimPayment{
 		writer:          infra.WriterDB,
+		eventRepo:       event,
 		participantRepo: eventParticipant,
 	}
 }

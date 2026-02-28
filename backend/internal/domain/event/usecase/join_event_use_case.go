@@ -25,6 +25,9 @@ var (
 	ErrJoinEventInvalidTier = cmodel.NewLocalizableError(
 		errx.NewSentinel("invalid tier", errx.InvalidArgument),
 	).WithMessages(messages.EventUseCaseErrorInvalidTier())
+	ErrJoinEventArchived = cmodel.NewLocalizableError(
+		errx.NewSentinel("event is archived", errx.FailedPrecondition),
+	).WithMessages(messages.EventUseCaseErrorArchived())
 )
 
 type JoinEventInput struct {
@@ -66,6 +69,10 @@ func (uc *joinEvent) Do(ctx context.Context, input JoinEventInput) (JoinEventOut
 			}
 			return errx.Wrap(err, "message", "failed to get event", "event_id", input.EventID).
 				WithCode(errx.Internal)
+		}
+
+		if ev.ArchivedAt != nil {
+			return ErrJoinEventArchived
 		}
 
 		if input.Tier < 1 || input.Tier > ev.TierCount {

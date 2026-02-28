@@ -75,6 +75,12 @@ func EventUseCaseErrorAlreadyClaimed() i18n.Message {
 	return i18n.Message{ID: "event.use_case.error.already_claimed"}
 }
 
+// EventUseCaseErrorArchived returns a Message for "event.use_case.error.archived".
+// Template: このイベントはアーカイブ済みのため、新たな参加はできません。
+func EventUseCaseErrorArchived() i18n.Message {
+	return i18n.Message{ID: "event.use_case.error.archived"}
+}
+
 // EventUseCaseErrorEventMismatch returns a Message for "event.use_case.error.event_mismatch".
 // Template: 参加者が指定されたイベントに属していません。
 func EventUseCaseErrorEventMismatch() i18n.Message {

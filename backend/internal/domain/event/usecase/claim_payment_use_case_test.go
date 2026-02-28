@@ -2,6 +2,7 @@ package usecase_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -68,5 +69,30 @@ func TestClaimPayment_Do(t *testing.T) {
 		_, err := sut.Do(t.Context(), usecase.ClaimPaymentInput{ParticipantID: p.ID})
 
 		require.ErrorIs(t, err, usecase.ErrClaimPaymentAlreadyClaimed)
+	})
+
+	t.Run("archived event", func(t *testing.T) {
+		t.Parallel()
+
+		infra := newInfra(t)
+		endUser := tseed.EndUser(t, infra.WriterDB)
+
+		now := time.Now()
+		ev := fixture.Event(func(e *model.Event) {
+			e.UserID = endUser.UserID
+			e.ArchivedAt = &now
+		})
+		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &ev))
+
+		p := fixture.EventParticipant(func(p *model.EventParticipant) {
+			p.EventID = ev.ID
+			p.Status = model.ParticipantStatusUnpaid
+		})
+		require.NoError(t, query.EventParticipants(infra.WriterDB).Create(t.Context(), &p))
+
+		sut := usecase.NewClaimPayment(infra)
+		_, err := sut.Do(t.Context(), usecase.ClaimPaymentInput{ParticipantID: p.ID})
+
+		require.ErrorIs(t, err, usecase.ErrClaimPaymentArchived)
 	})
 }

@@ -2,6 +2,7 @@ package usecase_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -101,5 +102,28 @@ func TestJoinEvent_Do(t *testing.T) {
 		})
 
 		require.ErrorIs(t, err, usecase.ErrJoinEventInvalidTier)
+	})
+
+	t.Run("archived event", func(t *testing.T) {
+		t.Parallel()
+
+		infra := newInfra(t)
+		endUser := tseed.EndUser(t, infra.WriterDB)
+
+		now := time.Now()
+		ev := fixture.Event(func(e *model.Event) {
+			e.UserID = endUser.UserID
+			e.ArchivedAt = &now
+		})
+		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &ev))
+
+		sut := usecase.NewJoinEvent(infra)
+		_, err := sut.Do(t.Context(), usecase.JoinEventInput{
+			EventID: ev.ID,
+			Name:    "Alice",
+			Tier:    1,
+		})
+
+		require.ErrorIs(t, err, usecase.ErrJoinEventArchived)
 	})
 }
