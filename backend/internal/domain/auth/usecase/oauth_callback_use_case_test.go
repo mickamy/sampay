@@ -34,7 +34,7 @@ func (c *fakeOAuthClient) Callback(_ context.Context, _ string) (oauth.Payload, 
 func newFakeResolver(client oauth.Client) *oauth.Resolver {
 	return &oauth.Resolver{
 		Clients: map[oauth.Provider]oauth.Client{
-			oauth.ProviderGoogle: client,
+			oauth.ProviderLINE: client,
 		},
 	}
 }
@@ -44,7 +44,7 @@ func TestOAuthCallback_Do(t *testing.T) {
 
 	fakeUID := ulid.New()
 	fakePayload := oauth.Payload{
-		Provider: oauth.ProviderGoogle,
+		Provider: oauth.ProviderLINE,
 		UID:      fakeUID,
 		Name:     "Test User",
 		Email:    "test@example.com",
@@ -62,7 +62,7 @@ func TestOAuthCallback_Do(t *testing.T) {
 				return newFakeResolver(&fakeOAuthClient{payload: fakePayload})
 			},
 			input: usecase.OAuthCallbackInput{
-				Provider: model.OAuthProviderGoogle,
+				Provider: model.OAuthProviderLINE,
 				Code:     "valid_code",
 			},
 			assert: func(t *testing.T, infra *di.Infra, got usecase.OAuthCallbackOutput, err error) {
@@ -74,7 +74,7 @@ func TestOAuthCallback_Do(t *testing.T) {
 
 				// verify oauth account was created
 				account, err := query.OAuthAccounts(infra.DB).
-					Where("provider = ? AND uid = ?", "google", fakeUID).
+					Where("provider = ? AND uid = ?", "line", fakeUID).
 					First(t.Context())
 				require.NoError(t, err)
 				assert.Equal(t, fakeUID, account.UID)
@@ -94,7 +94,7 @@ func TestOAuthCallback_Do(t *testing.T) {
 				existingAccount := model.OAuthAccount{
 					ID:        ulid.New(),
 					EndUserID: user.ID,
-					Provider:  "google",
+					Provider:  "line",
 					UID:       fakeUID,
 				}
 				require.NoError(t, query.OAuthAccounts(infra.DB).Create(t.Context(), &existingAccount))
@@ -102,7 +102,7 @@ func TestOAuthCallback_Do(t *testing.T) {
 				return newFakeResolver(&fakeOAuthClient{payload: fakePayload})
 			},
 			input: usecase.OAuthCallbackInput{
-				Provider: model.OAuthProviderGoogle,
+				Provider: model.OAuthProviderLINE,
 				Code:     "valid_code",
 			},
 			assert: func(t *testing.T, infra *di.Infra, got usecase.OAuthCallbackOutput, err error) {
@@ -133,7 +133,7 @@ func TestOAuthCallback_Do(t *testing.T) {
 				})
 			},
 			input: usecase.OAuthCallbackInput{
-				Provider: model.OAuthProviderGoogle,
+				Provider: model.OAuthProviderLINE,
 				Code:     "invalid_code",
 			},
 			assert: func(t *testing.T, infra *di.Infra, got usecase.OAuthCallbackOutput, err error) {

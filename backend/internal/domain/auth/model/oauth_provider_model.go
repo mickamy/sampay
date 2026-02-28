@@ -7,6 +7,5 @@ func (m OAuthProvider) String() string {
 }
 
 const (
-	OAuthProviderGoogle OAuthProvider = "google"
-	OAuthProviderLINE   OAuthProvider = "line"
+	OAuthProviderLINE OAuthProvider = "line"
 )

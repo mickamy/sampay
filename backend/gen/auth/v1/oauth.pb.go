@@ -26,7 +26,6 @@ type OAuthProvider int32
 
 const (
 	OAuthProvider_O_AUTH_PROVIDER_UNSPECIFIED OAuthProvider = 0
-	OAuthProvider_O_AUTH_PROVIDER_GOOGLE      OAuthProvider = 1
 	OAuthProvider_O_AUTH_PROVIDER_LINE        OAuthProvider = 2
 )
 
@@ -34,12 +33,10 @@ const (
 var (
 	OAuthProvider_name = map[int32]string{
 		0: "O_AUTH_PROVIDER_UNSPECIFIED",
-		1: "O_AUTH_PROVIDER_GOOGLE",
 		2: "O_AUTH_PROVIDER_LINE",
 	}
 	OAuthProvider_value = map[string]int32{
 		"O_AUTH_PROVIDER_UNSPECIFIED": 0,
-		"O_AUTH_PROVIDER_GOOGLE":      1,
 		"O_AUTH_PROVIDER_LINE":        2,
 	}
 )
@@ -289,11 +286,10 @@ const file_auth_v1_oauth_proto_rawDesc = "" +
 	"\x05state\x18\x03 \x01(\tR\x05state\"Z\n" +
 	"\x15OAuthCallbackResponse\x12!\n" +
 	"\x04user\x18\x01 \x01(\v2\r.user.v1.UserR\x04user\x12\x1e\n" +
-	"\vis_new_user\x18\x02 \x01(\bR\tisNewUser*f\n" +
+	"\vis_new_user\x18\x02 \x01(\bR\tisNewUser*h\n" +
 	"\rOAuthProvider\x12\x1f\n" +
-	"\x1bO_AUTH_PROVIDER_UNSPECIFIED\x10\x00\x12\x1a\n" +
-	"\x16O_AUTH_PROVIDER_GOOGLE\x10\x01\x12\x18\n" +
-	"\x14O_AUTH_PROVIDER_LINE\x10\x022\xa8\x01\n" +
+	"\x1bO_AUTH_PROVIDER_UNSPECIFIED\x10\x00\x12\x18\n" +
+	"\x14O_AUTH_PROVIDER_LINE\x10\x02\"\x04\b\x01\x10\x01*\x16O_AUTH_PROVIDER_GOOGLE2\xa8\x01\n" +
 	"\fOAuthService\x12H\n" +
 	"\vGetOAuthURL\x12\x1b.auth.v1.GetOAuthURLRequest\x1a\x1c.auth.v1.GetOAuthURLResponse\x12N\n" +
 	"\rOAuthCallback\x12\x1d.auth.v1.OAuthCallbackRequest\x1a\x1e.auth.v1.OAuthCallbackResponseB\x84\x01\n" +

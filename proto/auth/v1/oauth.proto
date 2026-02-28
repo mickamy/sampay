@@ -16,7 +16,8 @@ service OAuthService {
 
 enum OAuthProvider {
   O_AUTH_PROVIDER_UNSPECIFIED = 0;
-  O_AUTH_PROVIDER_GOOGLE = 1;
+  reserved 1;
+  reserved "O_AUTH_PROVIDER_GOOGLE";
   O_AUTH_PROVIDER_LINE = 2;
 }
 

@@ -10,7 +10,7 @@ import (
 func OAuthAccount(setter func(m *model.OAuthAccount)) model.OAuthAccount {
 	m := model.OAuthAccount{
 		ID:       ulid.New(),
-		Provider: string(model.OAuthProviderGoogle),
+		Provider: string(model.OAuthProviderLINE),
 		UID:      uuid.NewString(),
 	}
 	if setter != nil {

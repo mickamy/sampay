@@ -7,8 +7,7 @@ func (p Provider) String() string {
 }
 
 const (
-	ProviderGoogle Provider = "google"
-	ProviderLINE   Provider = "line"
+	ProviderLINE Provider = "line"
 )
 
 type Payload struct {
