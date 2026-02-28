@@ -10,8 +10,23 @@ message Event {
   string title = 3;
   string description = 4;
   int32 total_amount = 5;
-  int32 tier_count = 6;
-  google.protobuf.Timestamp held_at = 7;
+  int32 remainder = 6;
+  int32 tier_count = 7;
+  google.protobuf.Timestamp held_at = 8;
+  repeated EventTier tiers = 9;
+}
+
+message EventTier {
+  string id = 1;
+  string event_id = 2;
+  int32 tier = 3;
+  int32 count = 4;
+  int32 amount = 5;
+}
+
+message TierConfig {
+  int32 tier = 1;
+  int32 count = 2;
 }
 
 message EventInput {
@@ -20,6 +35,7 @@ message EventInput {
   int32 total_amount = 3;
   int32 tier_count = 4;
   google.protobuf.Timestamp held_at = 5;
+  repeated TierConfig tiers = 6;
 }
 
 enum ParticipantStatus {

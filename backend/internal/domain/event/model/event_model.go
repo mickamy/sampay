@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"slices"
+	"time"
+)
 
 //go:generate go tool ormgen -source=$GOFILE -destination=../query
 type Event struct {
@@ -9,10 +12,53 @@ type Event struct {
 	Title       string
 	Description string
 	TotalAmount int
+	Remainder   int
 	TierCount   int
 	HeldAt      time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 
+	Tiers        []EventTier        `rel:"has_many,foreign_key:event_id"`
 	Participants []EventParticipant `rel:"has_many,foreign_key:event_id"`
+}
+
+// CalcTierAmounts computes the per-tier amount and sets it on each EventTier
+// in-place, then sets Remainder on the event.
+// The tier value itself is the weight (e.g. tier=3 means weight 3).
+func (e *Event) CalcTierAmounts() {
+	var totalWeight int
+	for _, t := range e.Tiers {
+		totalWeight += t.Tier * t.Count
+	}
+	if totalWeight == 0 {
+		e.Remainder = 0
+		for i := range e.Tiers {
+			e.Tiers[i].Amount = 0
+		}
+		return
+	}
+
+	sum := 0
+	for i := range e.Tiers {
+		e.Tiers[i].Amount = e.TotalAmount * e.Tiers[i].Tier / totalWeight
+		sum += e.Tiers[i].Amount * e.Tiers[i].Count
+	}
+	e.Remainder = e.TotalAmount - sum
+}
+
+// SortTiers sorts Tiers by tier number in ascending order.
+func (e *Event) SortTiers() {
+	slices.SortFunc(e.Tiers, func(a, b EventTier) int {
+		return a.Tier - b.Tier
+	})
+}
+
+// TierAmount returns the per-person amount for the given tier number.
+func (e *Event) TierAmount(tier int) int {
+	for _, t := range e.Tiers {
+		if t.Tier == tier {
+			return t.Amount
+		}
+	}
+	return 0
 }

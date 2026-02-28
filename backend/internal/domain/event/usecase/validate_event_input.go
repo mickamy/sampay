@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"time"
 
 	"github.com/mickamy/errx"
 
@@ -19,9 +20,26 @@ var (
 	ErrValidateEventInvalidTierCount = cmodel.NewLocalizableError(
 		errx.NewSentinel("tier_count must be 1, 3, or 5", errx.InvalidArgument),
 	).WithMessages(messages.EventUseCaseErrorTierCountInvalid())
+	ErrValidateEventTiersRequired = cmodel.NewLocalizableError(
+		errx.NewSentinel("tiers are required", errx.InvalidArgument),
+	).WithMessages(messages.EventUseCaseErrorTiersRequired())
+	ErrValidateEventInvalidTierConfig = cmodel.NewLocalizableError(
+		errx.NewSentinel("invalid tier config", errx.InvalidArgument),
+	).WithMessages(messages.EventUseCaseErrorInvalidTierConfig())
+	ErrValidateEventHeldAtRequired = cmodel.NewLocalizableError(
+		errx.NewSentinel("held_at is required", errx.InvalidArgument),
+	).WithMessages(messages.EventUseCaseErrorHeldAtRequired())
 )
 
-func validateEventInput(ctx context.Context, title string, totalAmount, tierCount int) error {
+// TierConfig represents a tier configuration input (tier number + count of people).
+type TierConfig struct {
+	Tier  int
+	Count int
+}
+
+func validateEventInput(
+	ctx context.Context, title string, totalAmount, tierCount int, heldAt time.Time, tiers []TierConfig,
+) error {
 	if title == "" {
 		return errx.Wrap(ErrValidateEventEmptyTitle).
 			WithFieldViolation("title", ErrValidateEventEmptyTitle.LocalizeContext(ctx))
@@ -37,5 +55,25 @@ func validateEventInput(ctx context.Context, title string, totalAmount, tierCoun
 		return errx.Wrap(ErrValidateEventInvalidTierCount, "tier_count", tierCount).
 			WithFieldViolation("tier_count", ErrValidateEventInvalidTierCount.LocalizeContext(ctx))
 	}
+
+	if heldAt.IsZero() {
+		return errx.Wrap(ErrValidateEventHeldAtRequired).
+			WithFieldViolation("held_at", ErrValidateEventHeldAtRequired.LocalizeContext(ctx))
+	}
+
+	if len(tiers) != tierCount {
+		return errx.Wrap(ErrValidateEventTiersRequired, "tiers", len(tiers), "tier_count", tierCount).
+			WithFieldViolation("tiers", ErrValidateEventTiersRequired.LocalizeContext(ctx))
+	}
+
+	seen := make(map[int]bool, tierCount)
+	for _, tc := range tiers {
+		if tc.Tier < 1 || tc.Tier > tierCount || tc.Count <= 0 || seen[tc.Tier] {
+			return errx.Wrap(ErrValidateEventInvalidTierConfig, "tier", tc.Tier, "count", tc.Count).
+				WithFieldViolation("tiers", ErrValidateEventInvalidTierConfig.LocalizeContext(ctx))
+		}
+		seen[tc.Tier] = true
+	}
+
 	return nil
 }

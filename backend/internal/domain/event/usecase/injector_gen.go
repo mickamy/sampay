@@ -8,23 +8,47 @@ import (
 	repository2 "github.com/mickamy/sampay/internal/domain/user/repository"
 )
 
+// NewClaimPayment initializes dependencies and constructs claimPayment.
+func NewClaimPayment(infra *di.Infra) ClaimPayment {
+	eventParticipant := repository.NewEventParticipant(infra.DB)
+
+	return &claimPayment{
+		writer:          infra.WriterDB,
+		participantRepo: eventParticipant,
+	}
+}
+
+// MustNewClaimPayment initializes dependencies and constructs claimPayment or panics on failure.
+func MustNewClaimPayment(infra *di.Infra) ClaimPayment {
+	eventParticipant := repository.NewEventParticipant(infra.DB)
+
+	return &claimPayment{
+		writer:          infra.WriterDB,
+		participantRepo: eventParticipant,
+	}
+}
+
 // NewCreateEvent initializes dependencies and constructs createEvent.
 func NewCreateEvent(infra *di.Infra) CreateEvent {
 	event := repository.NewEvent(infra.DB)
+	eventTier := repository.NewEventTier(infra.DB)
 
 	return &createEvent{
 		writer:    infra.WriterDB,
 		eventRepo: event,
+		tierRepo:  eventTier,
 	}
 }
 
 // MustNewCreateEvent initializes dependencies and constructs createEvent or panics on failure.
 func MustNewCreateEvent(infra *di.Infra) CreateEvent {
 	event := repository.NewEvent(infra.DB)
+	eventTier := repository.NewEventTier(infra.DB)
 
 	return &createEvent{
 		writer:    infra.WriterDB,
 		eventRepo: event,
+		tierRepo:  eventTier,
 	}
 }
 
@@ -100,6 +124,26 @@ func MustNewJoinEvent(infra *di.Infra) JoinEvent {
 	}
 }
 
+// NewListEventParticipants initializes dependencies and constructs listEventParticipants.
+func NewListEventParticipants(infra *di.Infra) ListEventParticipants {
+	event := repository.NewEvent(infra.DB)
+
+	return &listEventParticipants{
+		reader:    infra.ReaderDB,
+		eventRepo: event,
+	}
+}
+
+// MustNewListEventParticipants initializes dependencies and constructs listEventParticipants or panics on failure.
+func MustNewListEventParticipants(infra *di.Infra) ListEventParticipants {
+	event := repository.NewEvent(infra.DB)
+
+	return &listEventParticipants{
+		reader:    infra.ReaderDB,
+		eventRepo: event,
+	}
+}
+
 // NewListMyEvents initializes dependencies and constructs listMyEvents.
 func NewListMyEvents(infra *di.Infra) ListMyEvents {
 	event := repository.NewEvent(infra.DB)
@@ -123,19 +167,51 @@ func MustNewListMyEvents(infra *di.Infra) ListMyEvents {
 // NewUpdateEvent initializes dependencies and constructs updateEvent.
 func NewUpdateEvent(infra *di.Infra) UpdateEvent {
 	event := repository.NewEvent(infra.DB)
+	eventTier := repository.NewEventTier(infra.DB)
+	eventParticipant := repository.NewEventParticipant(infra.DB)
 
 	return &updateEvent{
-		writer:    infra.WriterDB,
-		eventRepo: event,
+		writer:          infra.WriterDB,
+		eventRepo:       event,
+		tierRepo:        eventTier,
+		participantRepo: eventParticipant,
 	}
 }
 
 // MustNewUpdateEvent initializes dependencies and constructs updateEvent or panics on failure.
 func MustNewUpdateEvent(infra *di.Infra) UpdateEvent {
 	event := repository.NewEvent(infra.DB)
+	eventTier := repository.NewEventTier(infra.DB)
+	eventParticipant := repository.NewEventParticipant(infra.DB)
 
 	return &updateEvent{
-		writer:    infra.WriterDB,
-		eventRepo: event,
+		writer:          infra.WriterDB,
+		eventRepo:       event,
+		tierRepo:        eventTier,
+		participantRepo: eventParticipant,
+	}
+}
+
+// NewUpdateParticipantStatus initializes dependencies and constructs updateParticipantStatus.
+func NewUpdateParticipantStatus(infra *di.Infra) UpdateParticipantStatus {
+	event := repository.NewEvent(infra.DB)
+	eventParticipant := repository.NewEventParticipant(infra.DB)
+
+	return &updateParticipantStatus{
+		writer:          infra.WriterDB,
+		eventRepo:       event,
+		participantRepo: eventParticipant,
+	}
+}
+
+// MustNewUpdateParticipantStatus initializes dependencies and constructs updateParticipantStatus or panics on failure.
+func MustNewUpdateParticipantStatus(infra *di.Infra) UpdateParticipantStatus {
+	event := repository.NewEvent(infra.DB)
+	eventParticipant := repository.NewEventParticipant(infra.DB)
+
+	return &updateParticipantStatus{
+		writer:          infra.WriterDB,
+		eventRepo:       event,
+		participantRepo: eventParticipant,
 	}
 }

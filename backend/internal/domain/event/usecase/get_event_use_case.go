@@ -52,7 +52,10 @@ func (uc *getEvent) Do(ctx context.Context, input GetEventInput) (GetEventOutput
 
 	if err := uc.reader.Transaction(ctx, func(tx *database.DB) error {
 		var err error
-		ev, err = uc.eventRepo.WithTx(tx).Get(ctx, input.ID, repository.EventPreloadParticipants())
+		ev, err = uc.eventRepo.WithTx(tx).Get(
+			ctx, input.ID,
+			repository.EventPreloadParticipants(),
+		)
 		if err != nil {
 			if errors.Is(err, database.ErrNotFound) {
 				return ErrGetEventNotFound
@@ -79,8 +82,6 @@ func (uc *getEvent) Do(ctx context.Context, input GetEventInput) (GetEventOutput
 		//nolint:wrapcheck // errors from transaction callback are already wrapped inside
 		return GetEventOutput{}, err
 	}
-
-	model.CalcAmounts(ev.TotalAmount, ev.Participants)
 
 	return GetEventOutput{
 		Event:          ev,

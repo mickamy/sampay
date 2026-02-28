@@ -17,6 +17,11 @@ func Events(db orm.Querier) *orm.Query[model.Event] {
 		db, orm.ResolveTableName[model.Event]("events"), eventsColumns, "id",
 		scanEvent, eventColumnValuePairs, nil,
 	)
+	q.RegisterJoin("Tiers", orm.JoinConfig{
+		TargetTable: orm.ResolveTableName[model.EventTier]("event_tiers"), TargetColumn: "event_id",
+		SourceTable: orm.ResolveTableName[model.Event]("events"), SourceColumn: "id",
+	})
+	q.RegisterPreloader("Tiers", preloadEventTiers)
 	q.RegisterJoin("Participants", orm.JoinConfig{
 		TargetTable: orm.ResolveTableName[model.EventParticipant]("event_participants"), TargetColumn: "event_id",
 		SourceTable: orm.ResolveTableName[model.Event]("events"), SourceColumn: "id",
@@ -31,7 +36,7 @@ func Events(db orm.Querier) *orm.Query[model.Event] {
 	return q
 }
 
-var eventsColumns = []string{"id", "user_id", "title", "description", "total_amount", "tier_count", "held_at", "created_at", "updated_at"}
+var eventsColumns = []string{"id", "user_id", "title", "description", "total_amount", "remainder", "tier_count", "held_at", "created_at", "updated_at"}
 
 func scanEvent(rows *sql.Rows) (model.Event, error) {
 	cols, _ := rows.Columns()
@@ -49,6 +54,8 @@ func scanEvent(rows *sql.Rows) (model.Event, error) {
 			dest[i] = &v.Description
 		case "total_amount":
 			dest[i] = &v.TotalAmount
+		case "remainder":
+			dest[i] = &v.Remainder
 		case "tier_count":
 			dest[i] = &v.TierCount
 		case "held_at":
@@ -67,11 +74,11 @@ func scanEvent(rows *sql.Rows) (model.Event, error) {
 
 func eventColumnValuePairs(v *model.Event, includesPK bool) ([]string, []any) {
 	if includesPK {
-		return []string{"id", "user_id", "title", "description", "total_amount", "tier_count", "held_at", "created_at", "updated_at"},
-			[]any{v.ID, v.UserID, v.Title, v.Description, v.TotalAmount, v.TierCount, v.HeldAt, v.CreatedAt, v.UpdatedAt}
+		return []string{"id", "user_id", "title", "description", "total_amount", "remainder", "tier_count", "held_at", "created_at", "updated_at"},
+			[]any{v.ID, v.UserID, v.Title, v.Description, v.TotalAmount, v.Remainder, v.TierCount, v.HeldAt, v.CreatedAt, v.UpdatedAt}
 	}
-	return []string{"user_id", "title", "description", "total_amount", "tier_count", "held_at", "created_at", "updated_at"},
-		[]any{v.UserID, v.Title, v.Description, v.TotalAmount, v.TierCount, v.HeldAt, v.CreatedAt, v.UpdatedAt}
+	return []string{"user_id", "title", "description", "total_amount", "remainder", "tier_count", "held_at", "created_at", "updated_at"},
+		[]any{v.UserID, v.Title, v.Description, v.TotalAmount, v.Remainder, v.TierCount, v.HeldAt, v.CreatedAt, v.UpdatedAt}
 }
 
 func setEventCreatedAt(v *model.Event, now time.Time) {
@@ -81,6 +88,27 @@ func setEventCreatedAt(v *model.Event, now time.Time) {
 }
 func setEventUpdatedAt(v *model.Event, now time.Time) {
 	v.UpdatedAt = now
+}
+func preloadEventTiers(ctx context.Context, db orm.Querier, results []model.Event) error {
+	if len(results) == 0 {
+		return nil
+	}
+	ids := make([]string, len(results))
+	for i := range results {
+		ids[i] = results[i].ID
+	}
+	related, err := EventTiers(db).Scopes(scope.In("event_id", ids)).All(ctx)
+	if err != nil {
+		return err
+	}
+	byFK := make(map[string][]model.EventTier)
+	for _, r := range related {
+		byFK[r.EventID] = append(byFK[r.EventID], r)
+	}
+	for i := range results {
+		results[i].Tiers = byFK[results[i].ID]
+	}
+	return nil
 }
 func preloadEventParticipants(ctx context.Context, db orm.Querier, results []model.Event) error {
 	if len(results) == 0 {

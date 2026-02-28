@@ -25,6 +25,20 @@ func Event(setter func(m *model.Event)) model.Event {
 	return m
 }
 
+func EventTier(setter func(m *model.EventTier)) model.EventTier {
+	m := model.EventTier{
+		ID:      ulid.New(),
+		EventID: ulid.New(),
+		Tier:    1,
+		Count:   1,
+		Amount:  0,
+	}
+	if setter != nil {
+		setter(&m)
+	}
+	return m
+}
+
 func EventParticipant(setter func(m *model.EventParticipant)) model.EventParticipant {
 	m := model.EventParticipant{
 		ID:      ulid.New(),

@@ -10,6 +10,7 @@ import (
 
 	eventv1 "github.com/mickamy/sampay/gen/event/v1"
 	userv1 "github.com/mickamy/sampay/gen/user/v1"
+	"github.com/mickamy/sampay/internal/domain/event/model"
 )
 
 func init() {
@@ -18,8 +19,8 @@ func init() {
 	automapper.RegisterFrom[int32, int](Int32ToInt)
 	automapper.RegisterFrom[int, int32](IntToInt32)
 	automapper.RegisterFrom[time.Time, *timestamppb.Timestamp](TimeToTimestamppb)
-	automapper.RegisterFrom[string, eventv1.ParticipantStatus](ToV1ParticipantStatus)
-	automapper.RegisterFromE[eventv1.ParticipantStatus, string](FromV1ParticipantStatus)
+	automapper.RegisterFrom[model.ParticipantStatus, eventv1.ParticipantStatus](ToV1ParticipantStatus)
+	automapper.RegisterFromE[eventv1.ParticipantStatus, model.ParticipantStatus](FromV1ParticipantStatus)
 }
 
 func StringToPtr(s string) *string {
@@ -41,27 +42,27 @@ func TimeToTimestamppb(t time.Time) *timestamppb.Timestamp {
 	return timestamppb.New(t)
 }
 
-func ToV1ParticipantStatus(s string) eventv1.ParticipantStatus {
+func ToV1ParticipantStatus(s model.ParticipantStatus) eventv1.ParticipantStatus {
 	switch s {
-	case "unpaid":
+	case model.ParticipantStatusUnpaid:
 		return eventv1.ParticipantStatus_PARTICIPANT_STATUS_UNPAID
-	case "claimed":
+	case model.ParticipantStatusClaimed:
 		return eventv1.ParticipantStatus_PARTICIPANT_STATUS_CLAIMED
-	case "confirmed":
+	case model.ParticipantStatusConfirmed:
 		return eventv1.ParticipantStatus_PARTICIPANT_STATUS_CONFIRMED
 	default:
 		return eventv1.ParticipantStatus_PARTICIPANT_STATUS_UNSPECIFIED
 	}
 }
 
-func FromV1ParticipantStatus(s eventv1.ParticipantStatus) (string, error) {
+func FromV1ParticipantStatus(s eventv1.ParticipantStatus) (model.ParticipantStatus, error) {
 	switch s {
 	case eventv1.ParticipantStatus_PARTICIPANT_STATUS_UNPAID:
-		return "unpaid", nil
+		return model.ParticipantStatusUnpaid, nil
 	case eventv1.ParticipantStatus_PARTICIPANT_STATUS_CLAIMED:
-		return "claimed", nil
+		return model.ParticipantStatusClaimed, nil
 	case eventv1.ParticipantStatus_PARTICIPANT_STATUS_CONFIRMED:
-		return "confirmed", nil
+		return model.ParticipantStatusConfirmed, nil
 	case eventv1.ParticipantStatus_PARTICIPANT_STATUS_UNSPECIFIED:
 		return "", errors.New("unspecified participant status")
 	default:

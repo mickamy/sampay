@@ -28,6 +28,14 @@ func TestJoinEvent_Do(t *testing.T) {
 		})
 		require.NoError(t, query.Events(infra.WriterDB).Create(t.Context(), &ev))
 
+		t2 := fixture.EventTier(func(m *model.EventTier) {
+			m.EventID = ev.ID
+			m.Tier = 2
+			m.Count = 3
+			m.Amount = 5000
+		})
+		require.NoError(t, query.EventTiers(infra.WriterDB).CreateAll(t.Context(), []*model.EventTier{&t2}))
+
 		sut := usecase.NewJoinEvent(infra)
 		out, err := sut.Do(t.Context(), usecase.JoinEventInput{
 			EventID: ev.ID,
@@ -39,6 +47,7 @@ func TestJoinEvent_Do(t *testing.T) {
 		assert.Equal(t, ev.ID, out.Participant.EventID)
 		assert.Equal(t, "Alice", out.Participant.Name)
 		assert.Equal(t, 2, out.Participant.Tier)
+		assert.Equal(t, 5000, out.Participant.Amount)
 		assert.Equal(t, model.ParticipantStatusUnpaid, out.Participant.Status)
 	})
 

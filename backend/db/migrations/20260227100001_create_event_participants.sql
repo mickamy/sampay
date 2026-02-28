@@ -5,6 +5,7 @@ CREATE TABLE event_participants
     event_id   CHAR(26)    NOT NULL REFERENCES events (id) ON DELETE CASCADE,
     name       TEXT        NOT NULL,
     tier       INT         NOT NULL DEFAULT 1,
+    amount     INT         NOT NULL DEFAULT 0,
     status     TEXT        NOT NULL DEFAULT 'unpaid',
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP

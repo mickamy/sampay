@@ -24,7 +24,7 @@ func EventParticipants(db orm.Querier) *orm.Query[model.EventParticipant] {
 	return q
 }
 
-var eventParticipantsColumns = []string{"id", "event_id", "name", "tier", "status", "created_at", "updated_at"}
+var eventParticipantsColumns = []string{"id", "event_id", "name", "tier", "amount", "status", "created_at", "updated_at"}
 
 func scanEventParticipant(rows *sql.Rows) (model.EventParticipant, error) {
 	cols, _ := rows.Columns()
@@ -40,6 +40,8 @@ func scanEventParticipant(rows *sql.Rows) (model.EventParticipant, error) {
 			dest[i] = &v.Name
 		case "tier":
 			dest[i] = &v.Tier
+		case "amount":
+			dest[i] = &v.Amount
 		case "status":
 			dest[i] = &v.Status
 		case "created_at":
@@ -56,11 +58,11 @@ func scanEventParticipant(rows *sql.Rows) (model.EventParticipant, error) {
 
 func eventParticipantColumnValuePairs(v *model.EventParticipant, includesPK bool) ([]string, []any) {
 	if includesPK {
-		return []string{"id", "event_id", "name", "tier", "status", "created_at", "updated_at"},
-			[]any{v.ID, v.EventID, v.Name, v.Tier, v.Status, v.CreatedAt, v.UpdatedAt}
+		return []string{"id", "event_id", "name", "tier", "amount", "status", "created_at", "updated_at"},
+			[]any{v.ID, v.EventID, v.Name, v.Tier, v.Amount, v.Status, v.CreatedAt, v.UpdatedAt}
 	}
-	return []string{"event_id", "name", "tier", "status", "created_at", "updated_at"},
-		[]any{v.EventID, v.Name, v.Tier, v.Status, v.CreatedAt, v.UpdatedAt}
+	return []string{"event_id", "name", "tier", "amount", "status", "created_at", "updated_at"},
+		[]any{v.EventID, v.Name, v.Tier, v.Amount, v.Status, v.CreatedAt, v.UpdatedAt}
 }
 
 func setEventParticipantCreatedAt(v *model.EventParticipant, now time.Time) {
