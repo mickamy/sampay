@@ -1,5 +1,6 @@
 import { Code, ConnectError } from "@connectrpc/connect";
 import { Form, Link, redirect } from "react-router";
+import { Footer } from "~/components/footer";
 import { Header } from "~/components/header";
 import { ParticipantStatusBadge } from "~/components/participant-status-badge";
 import { PaymentMethodList } from "~/components/payment-method-list";
@@ -288,11 +289,9 @@ export default function EventPublicPage({
             )}
           </div>
 
-          {/* CTA */}
-          {!(
-            myParticipant &&
-            myParticipant.status === ParticipantStatus.CONFIRMED
-          ) && (
+          {/* CTA — hidden when StatusView is shown (CLAIMED/CONFIRMED have their own CTA) */}
+          {(!myParticipant ||
+            myParticipant.status === ParticipantStatus.UNPAID) && (
             <div className="mt-12 rounded-lg border bg-muted/50 p-6 text-center">
               <Link to="/" className="block">
                 <p className="text-base font-semibold">
@@ -306,6 +305,7 @@ export default function EventPublicPage({
           )}
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
@@ -445,20 +445,18 @@ function StatusView({ participant }: { participant: SerializedParticipant }) {
           </p>
         </CardContent>
       </Card>
-      {!isClaimed && (
-        <Link to="/" className="block">
-          <Card className="bg-primary/5 border-primary/20 transition-colors hover:bg-primary/10">
-            <CardContent className="py-5 text-center space-y-1">
-              <p className="text-base font-semibold">
-                {m.event_public_cta_title()}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {m.event_public_cta_description()}
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
-      )}
+      <Link to="/" className="block">
+        <Card className="bg-primary/5 border-primary/20 transition-colors hover:bg-primary/10">
+          <CardContent className="py-5 text-center space-y-1">
+            <p className="text-base font-semibold">
+              {m.event_public_cta_title()}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {m.event_public_cta_description()}
+            </p>
+          </CardContent>
+        </Card>
+      </Link>
     </div>
   );
 }

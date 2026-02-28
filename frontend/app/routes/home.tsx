@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { Footer } from "~/components/footer";
 import { Header } from "~/components/header";
 import { Button } from "~/components/ui/button";
 import { isLoggedIn } from "~/lib/cookie/authenticated-cookie.server";
@@ -101,10 +102,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t py-6 text-center text-sm text-muted-foreground">
-        {m.home_footer_copyright()}
-      </footer>
+      <Footer />
     </div>
   );
 }
