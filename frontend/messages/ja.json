@@ -130,5 +130,7 @@
   "event_public_ended_title": "このイベントは終了しました",
   "event_public_ended_description": "主催者によりアーカイブされたため、新たな参加はできません。",
   "event_public_cta_title": "次の幹事はあなた？ →",
-  "event_public_cta_description": "Sampay なら集金リンクをひとつ作るだけ。無料で始められます"
+  "event_public_cta_description": "Sampay なら集金リンクをひとつ作るだけ。無料で始められます",
+  "privacy_page_title": "プライバシーポリシー",
+  "terms_page_title": "利用規約"
 }
