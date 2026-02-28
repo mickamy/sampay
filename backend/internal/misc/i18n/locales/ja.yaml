@@ -45,6 +45,9 @@ event:
       already_claimed: すでに支払い申告済みです。
       tiers_required: ティア構成は必須です。
       invalid_tier_config: ティア構成が無効です。
+      event_mismatch: 参加者が指定されたイベントに属していません。
+      held_at_required: 開催日時は必須です。
+      invalid_tier_update: 既存の参加者が使用しているティアを削除することはできません。
       locked: 参加者が支払い申告済みのため、このイベントは編集できません。
 
 common:

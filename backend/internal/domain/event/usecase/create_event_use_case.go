@@ -43,7 +43,9 @@ type createEvent struct {
 func (uc *createEvent) Do(ctx context.Context, input CreateEventInput) (CreateEventOutput, error) {
 	userID := contexts.MustAuthenticatedUserID(ctx)
 
-	if err := validateEventInput(ctx, input.Title, input.TotalAmount, input.TierCount, input.Tiers); err != nil {
+	if err := validateEventInput(
+		ctx, input.Title, input.TotalAmount, input.TierCount, input.HeldAt, input.Tiers,
+	); err != nil {
 		return CreateEventOutput{}, err
 	}
 

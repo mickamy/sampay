@@ -75,10 +75,22 @@ func EventUseCaseErrorAlreadyClaimed() i18n.Message {
 	return i18n.Message{ID: "event.use_case.error.already_claimed"}
 }
 
+// EventUseCaseErrorEventMismatch returns a Message for "event.use_case.error.event_mismatch".
+// Template: 参加者が指定されたイベントに属していません。
+func EventUseCaseErrorEventMismatch() i18n.Message {
+	return i18n.Message{ID: "event.use_case.error.event_mismatch"}
+}
+
 // EventUseCaseErrorForbidden returns a Message for "event.use_case.error.forbidden".
 // Template: このイベントにアクセスする権限がありません。
 func EventUseCaseErrorForbidden() i18n.Message {
 	return i18n.Message{ID: "event.use_case.error.forbidden"}
+}
+
+// EventUseCaseErrorHeldAtRequired returns a Message for "event.use_case.error.held_at_required".
+// Template: 開催日時は必須です。
+func EventUseCaseErrorHeldAtRequired() i18n.Message {
+	return i18n.Message{ID: "event.use_case.error.held_at_required"}
 }
 
 // EventUseCaseErrorInvalidTier returns a Message for "event.use_case.error.invalid_tier".
@@ -91,6 +103,12 @@ func EventUseCaseErrorInvalidTier() i18n.Message {
 // Template: ティア構成が無効です。
 func EventUseCaseErrorInvalidTierConfig() i18n.Message {
 	return i18n.Message{ID: "event.use_case.error.invalid_tier_config"}
+}
+
+// EventUseCaseErrorInvalidTierUpdate returns a Message for "event.use_case.error.invalid_tier_update".
+// Template: 既存の参加者が使用しているティアを削除することはできません。
+func EventUseCaseErrorInvalidTierUpdate() i18n.Message {
+	return i18n.Message{ID: "event.use_case.error.invalid_tier_update"}
 }
 
 // EventUseCaseErrorLocked returns a Message for "event.use_case.error.locked".

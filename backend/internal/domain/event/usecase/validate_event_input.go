@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"time"
 
 	"github.com/mickamy/errx"
 
@@ -25,6 +26,9 @@ var (
 	ErrValidateEventInvalidTierConfig = cmodel.NewLocalizableError(
 		errx.NewSentinel("invalid tier config", errx.InvalidArgument),
 	).WithMessages(messages.EventUseCaseErrorInvalidTierConfig())
+	ErrValidateEventHeldAtRequired = cmodel.NewLocalizableError(
+		errx.NewSentinel("held_at is required", errx.InvalidArgument),
+	).WithMessages(messages.EventUseCaseErrorHeldAtRequired())
 )
 
 // TierConfig represents a tier configuration input (tier number + count of people).
@@ -34,7 +38,7 @@ type TierConfig struct {
 }
 
 func validateEventInput(
-	ctx context.Context, title string, totalAmount, tierCount int, tiers []TierConfig,
+	ctx context.Context, title string, totalAmount, tierCount int, heldAt time.Time, tiers []TierConfig,
 ) error {
 	if title == "" {
 		return errx.Wrap(ErrValidateEventEmptyTitle).
@@ -50,6 +54,11 @@ func validateEventInput(
 	default:
 		return errx.Wrap(ErrValidateEventInvalidTierCount, "tier_count", tierCount).
 			WithFieldViolation("tier_count", ErrValidateEventInvalidTierCount.LocalizeContext(ctx))
+	}
+
+	if heldAt.IsZero() {
+		return errx.Wrap(ErrValidateEventHeldAtRequired).
+			WithFieldViolation("held_at", ErrValidateEventHeldAtRequired.LocalizeContext(ctx))
 	}
 
 	if len(tiers) != tierCount {

@@ -22,9 +22,13 @@ var (
 	ErrUpdateParticipantStatusForbidden = cmodel.NewLocalizableError(
 		errx.NewSentinel("forbidden", errx.PermissionDenied),
 	).WithMessages(messages.EventUseCaseErrorForbidden())
+	ErrUpdateParticipantStatusEventMismatch = cmodel.NewLocalizableError(
+		errx.NewSentinel("event_id mismatch", errx.InvalidArgument),
+	).WithMessages(messages.EventUseCaseErrorEventMismatch())
 )
 
 type UpdateParticipantStatusInput struct {
+	EventID       string
 	ParticipantID string
 	Status        model.ParticipantStatus
 }
@@ -61,6 +65,10 @@ func (uc *updateParticipantStatus) Do(
 			}
 			return errx.Wrap(err, "message", "failed to get participant", "id", input.ParticipantID).
 				WithCode(errx.Internal)
+		}
+
+		if participant.EventID != input.EventID {
+			return ErrUpdateParticipantStatusEventMismatch
 		}
 
 		ev, err := uc.eventRepo.WithTx(tx).Get(ctx, participant.EventID)

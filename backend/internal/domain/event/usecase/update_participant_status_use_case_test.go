@@ -37,6 +37,7 @@ func TestUpdateParticipantStatus_Do(t *testing.T) {
 
 		sut := usecase.NewUpdateParticipantStatus(infra)
 		out, err := sut.Do(ctx, usecase.UpdateParticipantStatusInput{
+			EventID:       ev.ID,
 			ParticipantID: p.ID,
 			Status:        model.ParticipantStatusConfirmed,
 		})
@@ -55,6 +56,7 @@ func TestUpdateParticipantStatus_Do(t *testing.T) {
 
 		sut := usecase.NewUpdateParticipantStatus(infra)
 		_, err := sut.Do(ctx, usecase.UpdateParticipantStatusInput{
+			EventID:       "nonexistent",
 			ParticipantID: "nonexistent",
 			Status:        model.ParticipantStatusConfirmed,
 		})
@@ -82,6 +84,7 @@ func TestUpdateParticipantStatus_Do(t *testing.T) {
 
 		sut := usecase.NewUpdateParticipantStatus(infra)
 		_, err := sut.Do(ctx, usecase.UpdateParticipantStatusInput{
+			EventID:       ev.ID,
 			ParticipantID: p.ID,
 			Status:        model.ParticipantStatusConfirmed,
 		})

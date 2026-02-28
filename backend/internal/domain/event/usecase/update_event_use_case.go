@@ -28,6 +28,9 @@ var (
 	ErrUpdateEventLocked = cmodel.NewLocalizableError(
 		errx.NewSentinel("event is locked", errx.FailedPrecondition),
 	).WithMessages(messages.EventUseCaseErrorLocked())
+	ErrUpdateEventInvalidTierUpdate = cmodel.NewLocalizableError(
+		errx.NewSentinel("invalid tier update", errx.InvalidArgument),
+	).WithMessages(messages.EventUseCaseErrorInvalidTierUpdate())
 )
 
 type UpdateEventInput struct {
@@ -60,7 +63,9 @@ type updateEvent struct {
 func (uc *updateEvent) Do(ctx context.Context, input UpdateEventInput) (UpdateEventOutput, error) {
 	userID := contexts.MustAuthenticatedUserID(ctx)
 
-	if err := validateEventInput(ctx, input.Title, input.TotalAmount, input.TierCount, input.Tiers); err != nil {
+	if err := validateEventInput(
+		ctx, input.Title, input.TotalAmount, input.TierCount, input.HeldAt, input.Tiers,
+	); err != nil {
 		return UpdateEventOutput{}, err
 	}
 
@@ -95,6 +100,17 @@ func (uc *updateEvent) Do(ctx context.Context, input UpdateEventInput) (UpdateEv
 				EventID: ev.ID,
 				Tier:    tc.Tier,
 				Count:   tc.Count,
+			}
+		}
+
+		// Build a set of new tier numbers for validation.
+		newTierSet := make(map[int]bool, len(input.Tiers))
+		for _, tc := range input.Tiers {
+			newTierSet[tc.Tier] = true
+		}
+		for _, p := range ev.Participants {
+			if !newTierSet[p.Tier] {
+				return ErrUpdateEventInvalidTierUpdate
 			}
 		}
 

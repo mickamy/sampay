@@ -12,6 +12,9 @@ event:
       already_claimed: Payment has already been claimed.
       tiers_required: Tier configuration is required.
       invalid_tier_config: Tier configuration is invalid.
+      event_mismatch: Participant does not belong to the specified event.
+      held_at_required: Event date is required.
+      invalid_tier_update: Cannot remove tiers that are currently assigned to participants.
       locked: This event cannot be edited because a participant has already reported payment.
 
 user:

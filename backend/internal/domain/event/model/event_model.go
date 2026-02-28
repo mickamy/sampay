@@ -28,6 +28,10 @@ func (e *Event) CalcTierAmounts() {
 		totalWeight += t.Tier * t.Count
 	}
 	if totalWeight == 0 {
+		e.Remainder = 0
+		for i := range e.Tiers {
+			e.Tiers[i].Amount = 0
+		}
 		return
 	}
 

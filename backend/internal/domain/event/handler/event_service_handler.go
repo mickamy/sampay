@@ -2,7 +2,7 @@ package handler
 
 import (
 	"context"
-	"errors"
+	"time"
 
 	"connectrpc.com/connect"
 	"github.com/mickamy/errx"
@@ -10,7 +10,6 @@ import (
 	v1 "github.com/mickamy/sampay/gen/event/v1"
 	"github.com/mickamy/sampay/gen/event/v1/eventv1connect"
 	"github.com/mickamy/sampay/internal/di"
-	cmodel "github.com/mickamy/sampay/internal/domain/common/model"
 	"github.com/mickamy/sampay/internal/domain/event/mapper"
 	"github.com/mickamy/sampay/internal/domain/event/model"
 	"github.com/mickamy/sampay/internal/domain/event/usecase"
@@ -60,21 +59,21 @@ func (h *EventService) CreateEvent(
 		}
 	})
 
+	var heldAt time.Time
+	if ts := input.GetHeldAt(); ts != nil {
+		heldAt = ts.AsTime()
+	}
+
 	out, err := h.createEvent.Do(ctx, usecase.CreateEventInput{
 		Title:       input.GetTitle(),
 		Description: input.GetDescription(),
 		TotalAmount: converter.Int32ToInt(input.GetTotalAmount()),
 		TierCount:   converter.Int32ToInt(input.GetTierCount()),
-		HeldAt:      input.GetHeldAt().AsTime(),
+		HeldAt:      heldAt,
 		Tiers:       tiers,
 	})
 	if err != nil {
 		logger.Error(ctx, "failed to execute use-case", "err", err)
-		var localizable *cmodel.LocalizableError
-		if errors.As(err, &localizable) {
-			return nil, errx.Wrap(err).
-				WithFieldViolation("input", localizable.LocalizeContext(ctx))
-		}
 		return nil, err //nolint:wrapcheck // use-case errors are already wrapped with errx
 	}
 
@@ -95,22 +94,22 @@ func (h *EventService) UpdateEvent(
 		}
 	})
 
+	var updateHeldAt time.Time
+	if ts := input.GetHeldAt(); ts != nil {
+		updateHeldAt = ts.AsTime()
+	}
+
 	out, err := h.updateEvent.Do(ctx, usecase.UpdateEventInput{
 		ID:          r.Msg.GetId(),
 		Title:       input.GetTitle(),
 		Description: input.GetDescription(),
 		TotalAmount: converter.Int32ToInt(input.GetTotalAmount()),
 		TierCount:   converter.Int32ToInt(input.GetTierCount()),
-		HeldAt:      input.GetHeldAt().AsTime(),
+		HeldAt:      updateHeldAt,
 		Tiers:       tiers,
 	})
 	if err != nil {
 		logger.Error(ctx, "failed to execute use-case", "err", err)
-		var localizable *cmodel.LocalizableError
-		if errors.As(err, &localizable) {
-			return nil, errx.Wrap(err).
-				WithFieldViolation("input", localizable.LocalizeContext(ctx))
-		}
 		return nil, err //nolint:wrapcheck // use-case errors are already wrapped with errx
 	}
 
@@ -165,6 +164,7 @@ func (h *EventService) UpdateParticipantStatus(
 	}
 
 	out, err := h.updateParticipantStatus.Do(ctx, usecase.UpdateParticipantStatusInput{
+		EventID:       r.Msg.GetEventId(),
 		ParticipantID: r.Msg.GetParticipantId(),
 		Status:        status,
 	})
