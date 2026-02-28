@@ -52,11 +52,11 @@ type UpdateEvent interface {
 }
 
 type updateEvent struct {
-	_               UpdateEvent              `inject:"returns"`
-	_               *di.Infra                `inject:"param"`
-	writer          *database.Writer         `inject:""`
-	eventRepo       repository.Event         `inject:""`
-	tierRepo        repository.EventTier     `inject:""`
+	_               UpdateEvent                 `inject:"returns"`
+	_               *di.Infra                   `inject:"param"`
+	writer          *database.Writer            `inject:""`
+	eventRepo       repository.Event            `inject:""`
+	tierRepo        repository.EventTier        `inject:""`
 	participantRepo repository.EventParticipant `inject:""`
 }
 

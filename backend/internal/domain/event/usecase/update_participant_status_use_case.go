@@ -43,9 +43,9 @@ type UpdateParticipantStatus interface {
 
 type updateParticipantStatus struct {
 	_               UpdateParticipantStatus     `inject:"returns"`
-	_               *di.Infra                  `inject:"param"`
-	writer          *database.Writer           `inject:""`
-	eventRepo       repository.Event           `inject:""`
+	_               *di.Infra                   `inject:"param"`
+	writer          *database.Writer            `inject:""`
+	eventRepo       repository.Event            `inject:""`
 	participantRepo repository.EventParticipant `inject:""`
 }
 

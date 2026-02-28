@@ -36,9 +36,9 @@ type ClaimPayment interface {
 }
 
 type claimPayment struct {
-	_               ClaimPayment               `inject:"returns"`
-	_               *di.Infra                  `inject:"param"`
-	writer          *database.Writer           `inject:""`
+	_               ClaimPayment                `inject:"returns"`
+	_               *di.Infra                   `inject:"param"`
+	writer          *database.Writer            `inject:""`
 	participantRepo repository.EventParticipant `inject:""`
 }
 
