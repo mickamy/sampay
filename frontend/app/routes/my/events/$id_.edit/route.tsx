@@ -24,7 +24,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     { request },
     async ({ getClient }) => {
       const client = getClient(EventService);
-      const { events } = await client.listMyEvents({});
+      const { events } = await client.listMyEvents({ includeArchived: false });
       const event = events.find((e) => e.id === eventId);
       if (!event) {
         throw new Response("Not found", { status: 404 });

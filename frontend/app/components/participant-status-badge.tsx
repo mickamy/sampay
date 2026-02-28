@@ -23,6 +23,7 @@ interface Props {
 }
 
 const STATUS_MAP: Record<number, string> = {
+  0: "UNPAID",
   1: "UNPAID",
   2: "CLAIMED",
   3: "CONFIRMED",

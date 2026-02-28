@@ -102,6 +102,7 @@
   "event_status_claimed": "申告済み",
   "event_status_confirmed": "確認済み",
   "event_confirm_payment": "確認",
+  "event_participants_empty": "まだ参加者がいません",
   "event_delete_button": "イベントを削除",
   "event_delete_confirm_title": "本当に削除しますか？",
   "event_delete_confirm_description": "この操作は取り消せません。すべての参加者データも削除されます。",

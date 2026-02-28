@@ -16,7 +16,7 @@ export async function action({ request }: Route.ActionArgs) {
     async ({ getClient }) => {
       const client = getClient(EventService);
       await client.createEvent({ input });
-      return redirect("/my/events");
+      return redirect("/my");
     },
   );
 

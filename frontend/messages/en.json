@@ -102,6 +102,7 @@
   "event_status_claimed": "Claimed",
   "event_status_confirmed": "Confirmed",
   "event_confirm_payment": "Confirm",
+  "event_participants_empty": "No participants yet",
   "event_delete_button": "Delete Event",
   "event_delete_confirm_title": "Are you sure?",
   "event_delete_confirm_description": "This action cannot be undone. All participant data will also be deleted.",

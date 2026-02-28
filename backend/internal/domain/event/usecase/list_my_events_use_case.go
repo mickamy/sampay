@@ -45,7 +45,7 @@ func (uc *listMyEvents) Do(ctx context.Context, input ListMyEventsInput) (ListMy
 	var events []model.Event
 	if err := uc.reader.Transaction(ctx, func(tx *database.DB) error {
 		var err error
-		events, err = uc.eventRepo.WithTx(tx).ListByUserID(ctx, userID, filterScope)
+		events, err = uc.eventRepo.WithTx(tx).ListByUserID(ctx, userID, filterScope, repository.EventPreloadTiers())
 		if err != nil {
 			return errx.Wrap(err, "message", "failed to list events", "user_id", userID).
 				WithCode(errx.Internal)

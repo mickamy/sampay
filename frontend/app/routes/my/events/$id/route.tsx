@@ -270,7 +270,7 @@ export default function EventDetailPage({ loaderData }: Route.ComponentProps) {
         <CardContent>
           {participants.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              {m.event_list_empty()}
+              {m.event_participants_empty()}
             </p>
           ) : (
             <div className="space-y-3">
