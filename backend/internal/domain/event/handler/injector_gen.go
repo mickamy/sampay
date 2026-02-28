@@ -41,6 +41,8 @@ func NewEventService(infra *di.Infra) *EventService {
 	deleteEvent := usecase.NewDeleteEvent(infra)
 	listEventParticipants := usecase.NewListEventParticipants(infra)
 	updateParticipantStatus := usecase.NewUpdateParticipantStatus(infra)
+	archiveEvent := usecase.NewArchiveEvent(infra)
+	unarchiveEvent := usecase.NewUnarchiveEvent(infra)
 
 	return &EventService{
 		listMyEvents:            listMyEvents,
@@ -49,6 +51,8 @@ func NewEventService(infra *di.Infra) *EventService {
 		deleteEvent:             deleteEvent,
 		listEventParticipants:   listEventParticipants,
 		updateParticipantStatus: updateParticipantStatus,
+		archiveEvent:            archiveEvent,
+		unarchiveEvent:          unarchiveEvent,
 	}
 }
 
@@ -60,6 +64,8 @@ func MustNewEventService(infra *di.Infra) *EventService {
 	deleteEvent := usecase.NewDeleteEvent(infra)
 	listEventParticipants := usecase.NewListEventParticipants(infra)
 	updateParticipantStatus := usecase.NewUpdateParticipantStatus(infra)
+	archiveEvent := usecase.NewArchiveEvent(infra)
+	unarchiveEvent := usecase.NewUnarchiveEvent(infra)
 
 	return &EventService{
 		listMyEvents:            listMyEvents,
@@ -68,5 +74,7 @@ func MustNewEventService(infra *di.Infra) *EventService {
 		deleteEvent:             deleteEvent,
 		listEventParticipants:   listEventParticipants,
 		updateParticipantStatus: updateParticipantStatus,
+		archiveEvent:            archiveEvent,
+		unarchiveEvent:          unarchiveEvent,
 	}
 }

@@ -36,7 +36,7 @@ func Events(db orm.Querier) *orm.Query[model.Event] {
 	return q
 }
 
-var eventsColumns = []string{"id", "user_id", "title", "description", "total_amount", "remainder", "tier_count", "held_at", "created_at", "updated_at"}
+var eventsColumns = []string{"id", "user_id", "title", "description", "total_amount", "remainder", "tier_count", "held_at", "archived_at", "created_at", "updated_at"}
 
 func scanEvent(rows *sql.Rows) (model.Event, error) {
 	cols, _ := rows.Columns()
@@ -60,6 +60,8 @@ func scanEvent(rows *sql.Rows) (model.Event, error) {
 			dest[i] = &v.TierCount
 		case "held_at":
 			dest[i] = &v.HeldAt
+		case "archived_at":
+			dest[i] = &v.ArchivedAt
 		case "created_at":
 			dest[i] = &v.CreatedAt
 		case "updated_at":
@@ -74,11 +76,11 @@ func scanEvent(rows *sql.Rows) (model.Event, error) {
 
 func eventColumnValuePairs(v *model.Event, includesPK bool) ([]string, []any) {
 	if includesPK {
-		return []string{"id", "user_id", "title", "description", "total_amount", "remainder", "tier_count", "held_at", "created_at", "updated_at"},
-			[]any{v.ID, v.UserID, v.Title, v.Description, v.TotalAmount, v.Remainder, v.TierCount, v.HeldAt, v.CreatedAt, v.UpdatedAt}
+		return []string{"id", "user_id", "title", "description", "total_amount", "remainder", "tier_count", "held_at", "archived_at", "created_at", "updated_at"},
+			[]any{v.ID, v.UserID, v.Title, v.Description, v.TotalAmount, v.Remainder, v.TierCount, v.HeldAt, v.ArchivedAt, v.CreatedAt, v.UpdatedAt}
 	}
-	return []string{"user_id", "title", "description", "total_amount", "remainder", "tier_count", "held_at", "created_at", "updated_at"},
-		[]any{v.UserID, v.Title, v.Description, v.TotalAmount, v.Remainder, v.TierCount, v.HeldAt, v.CreatedAt, v.UpdatedAt}
+	return []string{"user_id", "title", "description", "total_amount", "remainder", "tier_count", "held_at", "archived_at", "created_at", "updated_at"},
+		[]any{v.UserID, v.Title, v.Description, v.TotalAmount, v.Remainder, v.TierCount, v.HeldAt, v.ArchivedAt, v.CreatedAt, v.UpdatedAt}
 }
 
 func setEventCreatedAt(v *model.Event, now time.Time) {

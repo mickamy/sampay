@@ -8,6 +8,26 @@ import (
 	repository2 "github.com/mickamy/sampay/internal/domain/user/repository"
 )
 
+// NewArchiveEvent initializes dependencies and constructs archiveEvent.
+func NewArchiveEvent(infra *di.Infra) ArchiveEvent {
+	event := repository.NewEvent(infra.DB)
+
+	return &archiveEvent{
+		writer:    infra.WriterDB,
+		eventRepo: event,
+	}
+}
+
+// MustNewArchiveEvent initializes dependencies and constructs archiveEvent or panics on failure.
+func MustNewArchiveEvent(infra *di.Infra) ArchiveEvent {
+	event := repository.NewEvent(infra.DB)
+
+	return &archiveEvent{
+		writer:    infra.WriterDB,
+		eventRepo: event,
+	}
+}
+
 // NewClaimPayment initializes dependencies and constructs claimPayment.
 func NewClaimPayment(infra *di.Infra) ClaimPayment {
 	eventParticipant := repository.NewEventParticipant(infra.DB)
@@ -160,6 +180,26 @@ func MustNewListMyEvents(infra *di.Infra) ListMyEvents {
 
 	return &listMyEvents{
 		reader:    infra.ReaderDB,
+		eventRepo: event,
+	}
+}
+
+// NewUnarchiveEvent initializes dependencies and constructs unarchiveEvent.
+func NewUnarchiveEvent(infra *di.Infra) UnarchiveEvent {
+	event := repository.NewEvent(infra.DB)
+
+	return &unarchiveEvent{
+		writer:    infra.WriterDB,
+		eventRepo: event,
+	}
+}
+
+// MustNewUnarchiveEvent initializes dependencies and constructs unarchiveEvent or panics on failure.
+func MustNewUnarchiveEvent(infra *di.Infra) UnarchiveEvent {
+	event := repository.NewEvent(infra.DB)
+
+	return &unarchiveEvent{
+		writer:    infra.WriterDB,
 		eventRepo: event,
 	}
 }

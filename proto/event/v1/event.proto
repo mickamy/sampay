@@ -14,6 +14,7 @@ message Event {
   int32 tier_count = 7;
   google.protobuf.Timestamp held_at = 8;
   repeated EventTier tiers = 9;
+  optional google.protobuf.Timestamp archived_at = 10;
 }
 
 message EventTier {

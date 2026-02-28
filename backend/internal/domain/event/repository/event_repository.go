@@ -89,3 +89,11 @@ func EventPreloadParticipants() scope.Scope {
 func EventPreloadTiers() scope.Scope {
 	return scope.Preload("Tiers")
 }
+
+func EventActiveOnly() scope.Scope {
+	return scope.Where("archived_at IS NULL")
+}
+
+func EventArchivedOnly() scope.Scope {
+	return scope.Where("archived_at IS NOT NULL")
+}

@@ -30,6 +30,7 @@ interface SerializedEvent {
   remainder: number;
   tierCount: number;
   heldAt?: string;
+  isArchived: boolean;
   tiers: { id: string; tier: number; count: number; amount: number }[];
 }
 
@@ -48,14 +49,24 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     { request },
     async ({ getClient }) => {
       const client = getClient(EventService);
-      const [{ events }, { participants }] = await Promise.all([
-        client.listMyEvents({}),
-        client.listEventParticipants({ eventId }),
-      ]);
-      const event = events.find((e) => e.id === eventId);
+
+      // Try active first, then archived
+      const { events } = await client.listMyEvents({ includeArchived: false });
+      let event = events.find((e) => e.id === eventId);
+      let isArchived = false;
+
+      if (!event) {
+        const archived = await client.listMyEvents({ includeArchived: true });
+        event = archived.events.find((e) => e.id === eventId);
+        isArchived = true;
+      }
+
       if (!event) {
         throw new Response("Not found", { status: 404 });
       }
+
+      const { participants } = await client.listEventParticipants({ eventId });
+
       const serializedEvent: SerializedEvent = {
         id: event.id,
         title: event.title,
@@ -66,6 +77,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
         heldAt: event.heldAt
           ? new Date(Number(event.heldAt.seconds) * 1000).toISOString()
           : undefined,
+        isArchived,
         tiers: event.tiers.map((t) => ({
           id: t.id,
           tier: t.tier,
@@ -127,6 +139,16 @@ export async function action({ request, params }: Route.ActionArgs) {
         return redirect("/my/events");
       }
 
+      if (actionType === "archiveEvent") {
+        await client.archiveEvent({ id: eventId });
+        return redirect("/my/events");
+      }
+
+      if (actionType === "unarchiveEvent") {
+        await client.unarchiveEvent({ id: eventId });
+        return Response.json({ ok: true });
+      }
+
       return Response.json({ ok: true });
     },
   );
@@ -150,14 +172,16 @@ export default function EventDetailPage({ loaderData }: Route.ComponentProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{event.title}</h1>
-        <div className="flex items-center gap-2">
-          <Button asChild variant="outline" size="sm">
-            <Link to={`/my/events/${event.id}/edit`}>
-              <Pencil className="size-4" />
-              {m.event_edit_button()}
-            </Link>
-          </Button>
-        </div>
+        {!event.isArchived && (
+          <div className="flex items-center gap-2">
+            <Button asChild variant="outline" size="sm">
+              <Link to={`/my/events/${event.id}/edit`}>
+                <Pencil className="size-4" />
+                {m.event_edit_button()}
+              </Link>
+            </Button>
+          </div>
+        )}
       </div>
       <ShareButton url={shareUrl} name={event.title} />
 
@@ -289,35 +313,80 @@ export default function EventDetailPage({ loaderData }: Route.ComponentProps) {
         </CardContent>
       </Card>
 
-      {/* Delete */}
-      <div className="border-t pt-6">
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="destructive" className="w-full">
-              {m.event_delete_button()}
+      {/* Archive / Unarchive */}
+      {event.isArchived ? (
+        <div className="border-t pt-6">
+          <Form method="post">
+            <input type="hidden" name="_action" value="unarchiveEvent" />
+            <Button variant="outline" className="w-full" type="submit">
+              {m.event_unarchive_button()}
             </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                {m.event_delete_confirm_title()}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {m.event_delete_confirm_description()}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>{m.event_delete_cancel()}</AlertDialogCancel>
-              <Form method="post">
-                <input type="hidden" name="_action" value="deleteEvent" />
-                <AlertDialogAction variant="destructive" type="submit">
-                  {m.event_delete_confirm_action()}
-                </AlertDialogAction>
-              </Form>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
+          </Form>
+        </div>
+      ) : (
+        <div className="border-t pt-6 space-y-3">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" className="w-full">
+                {m.event_archive_button()}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  {m.event_archive_confirm_title()}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  {m.event_archive_confirm_description()}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>
+                  {m.event_archive_cancel()}
+                </AlertDialogCancel>
+                <Form method="post" className="w-full sm:w-auto">
+                  <input type="hidden" name="_action" value="archiveEvent" />
+                  <AlertDialogAction type="submit" className="w-full">
+                    {m.event_archive_confirm_action()}
+                  </AlertDialogAction>
+                </Form>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          {/* Delete */}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" className="w-full">
+                {m.event_delete_button()}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  {m.event_delete_confirm_title()}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  {m.event_delete_confirm_description()}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{m.event_delete_cancel()}</AlertDialogCancel>
+                <Form method="post" className="w-full sm:w-auto">
+                  <input type="hidden" name="_action" value="deleteEvent" />
+                  <AlertDialogAction
+                    variant="destructive"
+                    type="submit"
+                    className="w-full"
+                  >
+                    {m.event_delete_confirm_action()}
+                  </AlertDialogAction>
+                </Form>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      )}
     </div>
   );
 }

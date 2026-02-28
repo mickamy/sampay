@@ -11,9 +11,13 @@ service EventService {
   rpc DeleteEvent(DeleteEventRequest) returns (DeleteEventResponse);
   rpc ListEventParticipants(ListEventParticipantsRequest) returns (ListEventParticipantsResponse);
   rpc UpdateParticipantStatus(UpdateParticipantStatusRequest) returns (UpdateParticipantStatusResponse);
+  rpc ArchiveEvent(ArchiveEventRequest) returns (ArchiveEventResponse);
+  rpc UnarchiveEvent(UnarchiveEventRequest) returns (UnarchiveEventResponse);
 }
 
-message ListMyEventsRequest {}
+message ListMyEventsRequest {
+  bool include_archived = 1;
+}
 
 message ListMyEventsResponse {
   repeated Event events = 1;
@@ -58,4 +62,20 @@ message UpdateParticipantStatusRequest {
 
 message UpdateParticipantStatusResponse {
   EventParticipant participant = 1;
+}
+
+message ArchiveEventRequest {
+  string id = 1;
+}
+
+message ArchiveEventResponse {
+  Event event = 1;
+}
+
+message UnarchiveEventRequest {
+  string id = 1;
+}
+
+message UnarchiveEventResponse {
+  Event event = 1;
 }

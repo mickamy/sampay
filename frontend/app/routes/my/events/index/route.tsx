@@ -1,7 +1,8 @@
 import { CalendarDays, Plus } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { EventService } from "~/gen/event/v1/event_service_pb";
 import { withAuthentication } from "~/lib/api/request.server";
 import { formatCurrency, formatEventDate } from "~/model/event-model";
@@ -16,11 +17,16 @@ interface EventItem {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const url = new URL(request.url);
+  const tab = url.searchParams.get("tab") ?? "active";
+
   const result = await withAuthentication(
     { request },
     async ({ getClient }) => {
       const client = getClient(EventService);
-      const { events } = await client.listMyEvents({});
+      const { events } = await client.listMyEvents({
+        includeArchived: tab === "archived",
+      });
       const serialized = events.map((e) => ({
         id: e.id,
         title: e.title,
@@ -29,7 +35,7 @@ export async function loader({ request }: Route.LoaderArgs) {
           ? new Date(Number(e.heldAt.seconds) * 1000).toISOString()
           : undefined,
       }));
-      return Response.json({ events: serialized });
+      return Response.json({ events: serialized, tab });
     },
   );
 
@@ -38,11 +44,15 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 
   const data = await result.value.json();
-  return { events: data.events as EventItem[] };
+  return { events: data.events as EventItem[], tab: data.tab as string };
 }
 
 export default function EventListPage({ loaderData }: Route.ComponentProps) {
-  const { events } = loaderData;
+  const { events, tab } = loaderData;
+  const [, setSearchParams] = useSearchParams();
+
+  const emptyMessage =
+    tab === "archived" ? m.event_list_archived_empty() : m.event_list_empty();
 
   return (
     <>
@@ -56,13 +66,30 @@ export default function EventListPage({ loaderData }: Route.ComponentProps) {
         </Button>
       </div>
 
+      <Tabs
+        value={tab}
+        onValueChange={(v) => setSearchParams({ tab: v })}
+        className="mt-4"
+      >
+        <TabsList className="w-full">
+          <TabsTrigger value="active" className="flex-1">
+            {m.event_tab_active()}
+          </TabsTrigger>
+          <TabsTrigger value="archived" className="flex-1">
+            {m.event_tab_archived()}
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
       {events.length === 0 ? (
         <div className="mt-12 text-center">
           <CalendarDays className="mx-auto size-12 text-muted-foreground" />
-          <p className="mt-4 text-muted-foreground">{m.event_list_empty()}</p>
-          <Button asChild className="mt-4">
-            <Link to="/my/events/new">{m.event_list_empty_cta()}</Link>
-          </Button>
+          <p className="mt-4 text-muted-foreground">{emptyMessage}</p>
+          {tab !== "archived" && (
+            <Button asChild className="mt-4">
+              <Link to="/my/events/new">{m.event_list_empty_cta()}</Link>
+            </Button>
+          )}
         </div>
       ) : (
         <div className="mt-6 space-y-3">

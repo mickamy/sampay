@@ -22,9 +22,10 @@ const (
 )
 
 type ListMyEventsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	IncludeArchived bool                   `protobuf:"varint,1,opt,name=include_archived,json=includeArchived,proto3" json:"include_archived,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *ListMyEventsRequest) Reset() {
@@ -55,6 +56,13 @@ func (x *ListMyEventsRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ListMyEventsRequest.ProtoReflect.Descriptor instead.
 func (*ListMyEventsRequest) Descriptor() ([]byte, []int) {
 	return file_event_v1_event_service_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *ListMyEventsRequest) GetIncludeArchived() bool {
+	if x != nil {
+		return x.IncludeArchived
+	}
+	return false
 }
 
 type ListMyEventsResponse struct {
@@ -557,12 +565,189 @@ func (x *UpdateParticipantStatusResponse) GetParticipant() *EventParticipant {
 	return nil
 }
 
+type ArchiveEventRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ArchiveEventRequest) Reset() {
+	*x = ArchiveEventRequest{}
+	mi := &file_event_v1_event_service_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchiveEventRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchiveEventRequest) ProtoMessage() {}
+
+func (x *ArchiveEventRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_event_v1_event_service_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchiveEventRequest.ProtoReflect.Descriptor instead.
+func (*ArchiveEventRequest) Descriptor() ([]byte, []int) {
+	return file_event_v1_event_service_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *ArchiveEventRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type ArchiveEventResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Event         *Event                 `protobuf:"bytes,1,opt,name=event,proto3" json:"event,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ArchiveEventResponse) Reset() {
+	*x = ArchiveEventResponse{}
+	mi := &file_event_v1_event_service_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ArchiveEventResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ArchiveEventResponse) ProtoMessage() {}
+
+func (x *ArchiveEventResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_event_v1_event_service_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ArchiveEventResponse.ProtoReflect.Descriptor instead.
+func (*ArchiveEventResponse) Descriptor() ([]byte, []int) {
+	return file_event_v1_event_service_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *ArchiveEventResponse) GetEvent() *Event {
+	if x != nil {
+		return x.Event
+	}
+	return nil
+}
+
+type UnarchiveEventRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UnarchiveEventRequest) Reset() {
+	*x = UnarchiveEventRequest{}
+	mi := &file_event_v1_event_service_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UnarchiveEventRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UnarchiveEventRequest) ProtoMessage() {}
+
+func (x *UnarchiveEventRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_event_v1_event_service_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UnarchiveEventRequest.ProtoReflect.Descriptor instead.
+func (*UnarchiveEventRequest) Descriptor() ([]byte, []int) {
+	return file_event_v1_event_service_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *UnarchiveEventRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type UnarchiveEventResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Event         *Event                 `protobuf:"bytes,1,opt,name=event,proto3" json:"event,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UnarchiveEventResponse) Reset() {
+	*x = UnarchiveEventResponse{}
+	mi := &file_event_v1_event_service_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UnarchiveEventResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UnarchiveEventResponse) ProtoMessage() {}
+
+func (x *UnarchiveEventResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_event_v1_event_service_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UnarchiveEventResponse.ProtoReflect.Descriptor instead.
+func (*UnarchiveEventResponse) Descriptor() ([]byte, []int) {
+	return file_event_v1_event_service_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *UnarchiveEventResponse) GetEvent() *Event {
+	if x != nil {
+		return x.Event
+	}
+	return nil
+}
+
 var File_event_v1_event_service_proto protoreflect.FileDescriptor
 
 const file_event_v1_event_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1cevent/v1/event_service.proto\x12\bevent.v1\x1a\x14event/v1/event.proto\"\x15\n" +
-	"\x13ListMyEventsRequest\"?\n" +
+	"\x1cevent/v1/event_service.proto\x12\bevent.v1\x1a\x14event/v1/event.proto\"@\n" +
+	"\x13ListMyEventsRequest\x12)\n" +
+	"\x10include_archived\x18\x01 \x01(\bR\x0fincludeArchived\"?\n" +
 	"\x14ListMyEventsResponse\x12'\n" +
 	"\x06events\x18\x01 \x03(\v2\x0f.event.v1.EventR\x06events\"@\n" +
 	"\x12CreateEventRequest\x12*\n" +
@@ -586,14 +771,24 @@ const file_event_v1_event_service_proto_rawDesc = "" +
 	"\x0eparticipant_id\x18\x02 \x01(\tR\rparticipantId\x123\n" +
 	"\x06status\x18\x03 \x01(\x0e2\x1b.event.v1.ParticipantStatusR\x06status\"_\n" +
 	"\x1fUpdateParticipantStatusResponse\x12<\n" +
-	"\vparticipant\x18\x01 \x01(\v2\x1a.event.v1.EventParticipantR\vparticipant2\x9b\x04\n" +
+	"\vparticipant\x18\x01 \x01(\v2\x1a.event.v1.EventParticipantR\vparticipant\"%\n" +
+	"\x13ArchiveEventRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"=\n" +
+	"\x14ArchiveEventResponse\x12%\n" +
+	"\x05event\x18\x01 \x01(\v2\x0f.event.v1.EventR\x05event\"'\n" +
+	"\x15UnarchiveEventRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"?\n" +
+	"\x16UnarchiveEventResponse\x12%\n" +
+	"\x05event\x18\x01 \x01(\v2\x0f.event.v1.EventR\x05event2\xbf\x05\n" +
 	"\fEventService\x12M\n" +
 	"\fListMyEvents\x12\x1d.event.v1.ListMyEventsRequest\x1a\x1e.event.v1.ListMyEventsResponse\x12J\n" +
 	"\vCreateEvent\x12\x1c.event.v1.CreateEventRequest\x1a\x1d.event.v1.CreateEventResponse\x12J\n" +
 	"\vUpdateEvent\x12\x1c.event.v1.UpdateEventRequest\x1a\x1d.event.v1.UpdateEventResponse\x12J\n" +
 	"\vDeleteEvent\x12\x1c.event.v1.DeleteEventRequest\x1a\x1d.event.v1.DeleteEventResponse\x12h\n" +
 	"\x15ListEventParticipants\x12&.event.v1.ListEventParticipantsRequest\x1a'.event.v1.ListEventParticipantsResponse\x12n\n" +
-	"\x17UpdateParticipantStatus\x12(.event.v1.UpdateParticipantStatusRequest\x1a).event.v1.UpdateParticipantStatusResponseB\x92\x01\n" +
+	"\x17UpdateParticipantStatus\x12(.event.v1.UpdateParticipantStatusRequest\x1a).event.v1.UpdateParticipantStatusResponse\x12M\n" +
+	"\fArchiveEvent\x12\x1d.event.v1.ArchiveEventRequest\x1a\x1e.event.v1.ArchiveEventResponse\x12S\n" +
+	"\x0eUnarchiveEvent\x12\x1f.event.v1.UnarchiveEventRequest\x1a .event.v1.UnarchiveEventResponseB\x92\x01\n" +
 	"\fcom.event.v1B\x11EventServiceProtoP\x01Z.github.com/mickamy/sampay/gen/event/v1;eventv1\xa2\x02\x03EXX\xaa\x02\bEvent.V1\xca\x02\bEvent\\V1\xe2\x02\x14Event\\V1\\GPBMetadata\xea\x02\tEvent::V1b\x06proto3"
 
 var (
@@ -608,7 +803,7 @@ func file_event_v1_event_service_proto_rawDescGZIP() []byte {
 	return file_event_v1_event_service_proto_rawDescData
 }
 
-var file_event_v1_event_service_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_event_v1_event_service_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_event_v1_event_service_proto_goTypes = []any{
 	(*ListMyEventsRequest)(nil),             // 0: event.v1.ListMyEventsRequest
 	(*ListMyEventsResponse)(nil),            // 1: event.v1.ListMyEventsResponse
@@ -622,37 +817,47 @@ var file_event_v1_event_service_proto_goTypes = []any{
 	(*ListEventParticipantsResponse)(nil),   // 9: event.v1.ListEventParticipantsResponse
 	(*UpdateParticipantStatusRequest)(nil),  // 10: event.v1.UpdateParticipantStatusRequest
 	(*UpdateParticipantStatusResponse)(nil), // 11: event.v1.UpdateParticipantStatusResponse
-	(*Event)(nil),                           // 12: event.v1.Event
-	(*EventInput)(nil),                      // 13: event.v1.EventInput
-	(*EventParticipant)(nil),                // 14: event.v1.EventParticipant
-	(ParticipantStatus)(0),                  // 15: event.v1.ParticipantStatus
+	(*ArchiveEventRequest)(nil),             // 12: event.v1.ArchiveEventRequest
+	(*ArchiveEventResponse)(nil),            // 13: event.v1.ArchiveEventResponse
+	(*UnarchiveEventRequest)(nil),           // 14: event.v1.UnarchiveEventRequest
+	(*UnarchiveEventResponse)(nil),          // 15: event.v1.UnarchiveEventResponse
+	(*Event)(nil),                           // 16: event.v1.Event
+	(*EventInput)(nil),                      // 17: event.v1.EventInput
+	(*EventParticipant)(nil),                // 18: event.v1.EventParticipant
+	(ParticipantStatus)(0),                  // 19: event.v1.ParticipantStatus
 }
 var file_event_v1_event_service_proto_depIdxs = []int32{
-	12, // 0: event.v1.ListMyEventsResponse.events:type_name -> event.v1.Event
-	13, // 1: event.v1.CreateEventRequest.input:type_name -> event.v1.EventInput
-	12, // 2: event.v1.CreateEventResponse.event:type_name -> event.v1.Event
-	13, // 3: event.v1.UpdateEventRequest.input:type_name -> event.v1.EventInput
-	12, // 4: event.v1.UpdateEventResponse.event:type_name -> event.v1.Event
-	14, // 5: event.v1.ListEventParticipantsResponse.participants:type_name -> event.v1.EventParticipant
-	15, // 6: event.v1.UpdateParticipantStatusRequest.status:type_name -> event.v1.ParticipantStatus
-	14, // 7: event.v1.UpdateParticipantStatusResponse.participant:type_name -> event.v1.EventParticipant
-	0,  // 8: event.v1.EventService.ListMyEvents:input_type -> event.v1.ListMyEventsRequest
-	2,  // 9: event.v1.EventService.CreateEvent:input_type -> event.v1.CreateEventRequest
-	4,  // 10: event.v1.EventService.UpdateEvent:input_type -> event.v1.UpdateEventRequest
-	6,  // 11: event.v1.EventService.DeleteEvent:input_type -> event.v1.DeleteEventRequest
-	8,  // 12: event.v1.EventService.ListEventParticipants:input_type -> event.v1.ListEventParticipantsRequest
-	10, // 13: event.v1.EventService.UpdateParticipantStatus:input_type -> event.v1.UpdateParticipantStatusRequest
-	1,  // 14: event.v1.EventService.ListMyEvents:output_type -> event.v1.ListMyEventsResponse
-	3,  // 15: event.v1.EventService.CreateEvent:output_type -> event.v1.CreateEventResponse
-	5,  // 16: event.v1.EventService.UpdateEvent:output_type -> event.v1.UpdateEventResponse
-	7,  // 17: event.v1.EventService.DeleteEvent:output_type -> event.v1.DeleteEventResponse
-	9,  // 18: event.v1.EventService.ListEventParticipants:output_type -> event.v1.ListEventParticipantsResponse
-	11, // 19: event.v1.EventService.UpdateParticipantStatus:output_type -> event.v1.UpdateParticipantStatusResponse
-	14, // [14:20] is the sub-list for method output_type
-	8,  // [8:14] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	16, // 0: event.v1.ListMyEventsResponse.events:type_name -> event.v1.Event
+	17, // 1: event.v1.CreateEventRequest.input:type_name -> event.v1.EventInput
+	16, // 2: event.v1.CreateEventResponse.event:type_name -> event.v1.Event
+	17, // 3: event.v1.UpdateEventRequest.input:type_name -> event.v1.EventInput
+	16, // 4: event.v1.UpdateEventResponse.event:type_name -> event.v1.Event
+	18, // 5: event.v1.ListEventParticipantsResponse.participants:type_name -> event.v1.EventParticipant
+	19, // 6: event.v1.UpdateParticipantStatusRequest.status:type_name -> event.v1.ParticipantStatus
+	18, // 7: event.v1.UpdateParticipantStatusResponse.participant:type_name -> event.v1.EventParticipant
+	16, // 8: event.v1.ArchiveEventResponse.event:type_name -> event.v1.Event
+	16, // 9: event.v1.UnarchiveEventResponse.event:type_name -> event.v1.Event
+	0,  // 10: event.v1.EventService.ListMyEvents:input_type -> event.v1.ListMyEventsRequest
+	2,  // 11: event.v1.EventService.CreateEvent:input_type -> event.v1.CreateEventRequest
+	4,  // 12: event.v1.EventService.UpdateEvent:input_type -> event.v1.UpdateEventRequest
+	6,  // 13: event.v1.EventService.DeleteEvent:input_type -> event.v1.DeleteEventRequest
+	8,  // 14: event.v1.EventService.ListEventParticipants:input_type -> event.v1.ListEventParticipantsRequest
+	10, // 15: event.v1.EventService.UpdateParticipantStatus:input_type -> event.v1.UpdateParticipantStatusRequest
+	12, // 16: event.v1.EventService.ArchiveEvent:input_type -> event.v1.ArchiveEventRequest
+	14, // 17: event.v1.EventService.UnarchiveEvent:input_type -> event.v1.UnarchiveEventRequest
+	1,  // 18: event.v1.EventService.ListMyEvents:output_type -> event.v1.ListMyEventsResponse
+	3,  // 19: event.v1.EventService.CreateEvent:output_type -> event.v1.CreateEventResponse
+	5,  // 20: event.v1.EventService.UpdateEvent:output_type -> event.v1.UpdateEventResponse
+	7,  // 21: event.v1.EventService.DeleteEvent:output_type -> event.v1.DeleteEventResponse
+	9,  // 22: event.v1.EventService.ListEventParticipants:output_type -> event.v1.ListEventParticipantsResponse
+	11, // 23: event.v1.EventService.UpdateParticipantStatus:output_type -> event.v1.UpdateParticipantStatusResponse
+	13, // 24: event.v1.EventService.ArchiveEvent:output_type -> event.v1.ArchiveEventResponse
+	15, // 25: event.v1.EventService.UnarchiveEvent:output_type -> event.v1.UnarchiveEventResponse
+	18, // [18:26] is the sub-list for method output_type
+	10, // [10:18] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_event_v1_event_service_proto_init() }
@@ -667,7 +872,7 @@ func file_event_v1_event_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_event_v1_event_service_proto_rawDesc), len(file_event_v1_event_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

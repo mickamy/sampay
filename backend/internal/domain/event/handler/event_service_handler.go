@@ -28,12 +28,16 @@ type EventService struct {
 	deleteEvent             usecase.DeleteEvent             `inject:""`
 	listEventParticipants   usecase.ListEventParticipants   `inject:""`
 	updateParticipantStatus usecase.UpdateParticipantStatus `inject:""`
+	archiveEvent            usecase.ArchiveEvent            `inject:""`
+	unarchiveEvent          usecase.UnarchiveEvent          `inject:""`
 }
 
 func (h *EventService) ListMyEvents(
-	ctx context.Context, _ *connect.Request[v1.ListMyEventsRequest],
+	ctx context.Context, r *connect.Request[v1.ListMyEventsRequest],
 ) (*connect.Response[v1.ListMyEventsResponse], error) {
-	out, err := h.listMyEvents.Do(ctx, usecase.ListMyEventsInput{})
+	out, err := h.listMyEvents.Do(ctx, usecase.ListMyEventsInput{
+		IncludeArchived: r.Msg.GetIncludeArchived(),
+	})
 	if err != nil {
 		logger.Error(ctx, "failed to execute use-case", "err", err)
 		return nil, err //nolint:wrapcheck // use-case errors are already wrapped with errx
@@ -176,5 +180,39 @@ func (h *EventService) UpdateParticipantStatus(
 	participant := mapper.ToV1EventParticipant(out.Participant)
 	return connect.NewResponse(&v1.UpdateParticipantStatusResponse{
 		Participant: &participant,
+	}), nil
+}
+
+func (h *EventService) ArchiveEvent(
+	ctx context.Context, r *connect.Request[v1.ArchiveEventRequest],
+) (*connect.Response[v1.ArchiveEventResponse], error) {
+	out, err := h.archiveEvent.Do(ctx, usecase.ArchiveEventInput{
+		ID: r.Msg.GetId(),
+	})
+	if err != nil {
+		logger.Error(ctx, "failed to execute use-case", "err", err)
+		return nil, err //nolint:wrapcheck // use-case errors are already wrapped with errx
+	}
+
+	ev := mapper.ToV1Event(out.Event)
+	return connect.NewResponse(&v1.ArchiveEventResponse{
+		Event: &ev,
+	}), nil
+}
+
+func (h *EventService) UnarchiveEvent(
+	ctx context.Context, r *connect.Request[v1.UnarchiveEventRequest],
+) (*connect.Response[v1.UnarchiveEventResponse], error) {
+	out, err := h.unarchiveEvent.Do(ctx, usecase.UnarchiveEventInput{
+		ID: r.Msg.GetId(),
+	})
+	if err != nil {
+		logger.Error(ctx, "failed to execute use-case", "err", err)
+		return nil, err //nolint:wrapcheck // use-case errors are already wrapped with errx
+	}
+
+	ev := mapper.ToV1Event(out.Event)
+	return connect.NewResponse(&v1.UnarchiveEventResponse{
+		Event: &ev,
 	}), nil
 }
