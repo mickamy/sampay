@@ -23,14 +23,6 @@ func TestGetOAuthURL_Do(t *testing.T) {
 		assert   func(t *testing.T, got usecase.GetOAuthURLOutput, err error)
 	}{
 		{
-			name:     "google",
-			provider: model.OAuthProviderGoogle,
-			assert: func(t *testing.T, got usecase.GetOAuthURLOutput, err error) {
-				require.NoError(t, err)
-				assert.Contains(t, got.AuthenticationURL, "accounts.google.com")
-			},
-		},
-		{
 			name:     "line",
 			provider: model.OAuthProviderLINE,
 			assert: func(t *testing.T, got usecase.GetOAuthURLOutput, err error) {

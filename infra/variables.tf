@@ -43,18 +43,6 @@ variable "alert_email" {
   default     = ""
 }
 
-variable "google_client_id" {
-  type        = string
-  description = "Google OAuth client ID"
-  sensitive   = true
-}
-
-variable "google_client_secret" {
-  type        = string
-  description = "Google OAuth client secret"
-  sensitive   = true
-}
-
 variable "line_channel_id" {
   type        = string
   description = "LINE channel ID"

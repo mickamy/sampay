@@ -12,8 +12,7 @@ type Resolver struct {
 
 func NewResolverFromConfig(cfg config.OAuthConfig) *Resolver {
 	return &Resolver{Clients: map[Provider]Client{
-		ProviderGoogle: NewGoogle(cfg),
-		ProviderLINE:   NewLINE(cfg),
+		ProviderLINE: NewLINE(cfg),
 	}}
 }
 

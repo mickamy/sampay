@@ -13,8 +13,6 @@ func ToOAuthProvider(src authv1.OAuthProvider) (model.OAuthProvider, error) {
 	switch src {
 	case authv1.OAuthProvider_O_AUTH_PROVIDER_UNSPECIFIED:
 		// fall through to error
-	case authv1.OAuthProvider_O_AUTH_PROVIDER_GOOGLE:
-		return model.OAuthProviderGoogle, nil
 	case authv1.OAuthProvider_O_AUTH_PROVIDER_LINE:
 		return model.OAuthProviderLINE, nil
 	}

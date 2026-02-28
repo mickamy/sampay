@@ -28,16 +28,6 @@ func TestOAuth_GetOAuthURL(t *testing.T) {
 		assert   func(*testing.T, *contest.Client)
 	}{
 		{
-			name:     "google",
-			provider: authv1.OAuthProvider_O_AUTH_PROVIDER_GOOGLE,
-			assert: func(t *testing.T, ct *contest.Client) {
-				var out authv1.GetOAuthURLResponse
-				ct.ExpectStatus(http.StatusOK).
-					Out(&out)
-				assert.Contains(t, out.GetUrl(), "accounts.google.com")
-			},
-		},
-		{
 			name:     "line",
 			provider: authv1.OAuthProvider_O_AUTH_PROVIDER_LINE,
 			assert: func(t *testing.T, ct *contest.Client) {

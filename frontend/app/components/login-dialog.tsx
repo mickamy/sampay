@@ -26,20 +26,6 @@ export function LoginDialog() {
         </DialogHeader>
         <div className="flex flex-col gap-3">
           <Link
-            to="/oauth/google"
-            className="flex items-center justify-center gap-3 rounded-xl border border-gray-400 bg-white px-4 py-3.5 shadow-sm hover:bg-gray-50 active:bg-gray-100 transition-colors"
-          >
-            <Image
-              src="/oauth-provider/google.svg"
-              alt="Google"
-              width={20}
-              height={20}
-            />
-            <span className="text-sm font-medium text-gray-700">
-              {m.login_dialog_login_via_google()}
-            </span>
-          </Link>
-          <Link
             to="/oauth/line"
             className="flex items-center justify-center gap-3 rounded-xl bg-[#06C755] px-4 py-3.5 shadow-sm hover:bg-[#05b34c] active:bg-[#049a42] transition-colors"
           >
