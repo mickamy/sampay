@@ -160,6 +160,7 @@ func (h *EventService) UpdateParticipantStatus(
 	status, err := converter.FromV1ParticipantStatus(r.Msg.GetStatus())
 	if err != nil {
 		return nil, errx.Wrap(err, "message", "invalid status").
+			WithCode(errx.InvalidArgument).
 			WithFieldViolation("status", err.Error())
 	}
 
