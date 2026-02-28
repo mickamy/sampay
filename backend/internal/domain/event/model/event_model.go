@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"slices"
+	"time"
+)
 
 //go:generate go tool ormgen -source=$GOFILE -destination=../query
 type Event struct {
@@ -41,6 +44,13 @@ func (e *Event) CalcTierAmounts() {
 		sum += e.Tiers[i].Amount * e.Tiers[i].Count
 	}
 	e.Remainder = e.TotalAmount - sum
+}
+
+// SortTiers sorts Tiers by tier number in ascending order.
+func (e *Event) SortTiers() {
+	slices.SortFunc(e.Tiers, func(a, b EventTier) int {
+		return a.Tier - b.Tier
+	})
 }
 
 // TierAmount returns the per-person amount for the given tier number.

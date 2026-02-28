@@ -45,6 +45,7 @@ func (repo *event) Get(ctx context.Context, id string, scopes ...scope.Scope) (m
 	if err != nil {
 		return m, fmt.Errorf("repository: %w", err)
 	}
+	m.SortTiers()
 	return m, nil
 }
 
@@ -56,6 +57,9 @@ func (repo *event) ListByUserID(ctx context.Context, userID string, scopes ...sc
 		All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("repository: %w", err)
+	}
+	for i := range events {
+		events[i].SortTiers()
 	}
 	return events, nil
 }
