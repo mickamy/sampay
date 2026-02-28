@@ -76,6 +76,7 @@
   "event_form_description_placeholder": "イベントの詳細（任意）",
   "event_form_total_amount_label": "合計金額",
   "event_form_date_label": "開催日",
+  "event_form_date_placeholder": "日付を選択",
   "event_form_tier_count_label": "料金ランク数",
   "event_form_tier_count_1": "均等（1段階）",
   "event_form_tier_count_3": "3段階",

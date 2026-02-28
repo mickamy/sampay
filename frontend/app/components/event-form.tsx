@@ -1,13 +1,22 @@
+import { CalendarIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Form, useNavigation } from "react-router";
 import { Button } from "~/components/ui/button";
+import { Calendar } from "~/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import { Textarea } from "~/components/ui/textarea";
+import { cn } from "~/lib/utils";
 import {
   calcTierAmounts,
   formatCurrency,
+  formatEventDate,
   heldAtToInputValue,
 } from "~/model/event-model";
 import { m } from "~/paraglide/messages";
@@ -40,6 +49,11 @@ export function EventForm({
 }: EventFormProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
+
+  const [heldAt, setHeldAt] = useState<Date | undefined>(() => {
+    const v = heldAtToInputValue(defaultValues?.heldAt);
+    return v ? new Date(v) : undefined;
+  });
 
   const defaultTierCount = defaultValues?.tierCount ?? 1;
   const [tierCount, setTierCount] = useState(defaultTierCount);
@@ -123,12 +137,34 @@ export function EventForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="heldAt">{m.event_form_date_label()}</Label>
-            <Input
-              id="heldAt"
+            <Label>{m.event_form_date_label()}</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !heldAt && "text-muted-foreground",
+                  )}
+                >
+                  <CalendarIcon className="mr-2 size-4" />
+                  {heldAt
+                    ? formatEventDate(heldAt.toISOString())
+                    : m.event_form_date_placeholder()}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={heldAt}
+                  onSelect={setHeldAt}
+                />
+              </PopoverContent>
+            </Popover>
+            <input
+              type="hidden"
               name="heldAt"
-              type="date"
-              defaultValue={heldAtToInputValue(defaultValues?.heldAt)}
+              value={heldAt ? heldAt.toISOString().slice(0, 10) : ""}
             />
           </div>
 

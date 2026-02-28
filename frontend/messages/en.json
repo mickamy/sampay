@@ -76,6 +76,7 @@
   "event_form_description_placeholder": "Event details (optional)",
   "event_form_total_amount_label": "Total Amount",
   "event_form_date_label": "Date",
+  "event_form_date_placeholder": "Select a date",
   "event_form_tier_count_label": "Pricing Tiers",
   "event_form_tier_count_1": "Equal (1 tier)",
   "event_form_tier_count_3": "3 tiers",

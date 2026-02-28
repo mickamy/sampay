@@ -300,7 +300,9 @@ function JoinForm({ event }: { event: SerializedEvent }) {
                 <Label>{m.event_public_tier_label()}</Label>
                 <RadioGroup
                   name="tier"
-                  defaultValue={String(event.tiers[event.tiers.length - 1]?.tier ?? 1)}
+                  defaultValue={String(
+                    event.tiers[event.tiers.length - 1]?.tier ?? 1,
+                  )}
                   className="mt-2 space-y-2"
                 >
                   {[...event.tiers].reverse().map((tier) => (
