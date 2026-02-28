@@ -98,7 +98,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   return {
     event: data.event as SerializedEvent,
     participants: data.participants as SerializedParticipant[],
-    shareUrl: `${origin}/events/${data.event.id}`,
+    shareUrl: `${origin}/e/${data.event.id}`,
   };
 }
 

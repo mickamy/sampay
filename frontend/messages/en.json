@@ -102,5 +102,16 @@
   "event_delete_confirm_title": "Are you sure?",
   "event_delete_confirm_description": "This action cannot be undone. All participant data will also be deleted.",
   "event_delete_confirm_action": "Delete",
-  "event_delete_cancel": "Cancel"
+  "event_delete_cancel": "Cancel",
+  "event_public_not_found_title": "Event not found",
+  "event_public_name_label": "Your name",
+  "event_public_name_placeholder": "Enter your name",
+  "event_public_tier_label": "Pricing tier",
+  "event_public_join_button": "Join",
+  "event_public_join_error": "Failed to join",
+  "event_public_your_amount": "Amount to pay: {amount}",
+  "event_public_pay_instruction": "Please pay using one of the methods below",
+  "event_public_claim_button": "Mark as paid",
+  "event_public_claimed_message": "Waiting for organizer confirmation",
+  "event_public_confirmed_message": "Your payment has been confirmed. Thank you!"
 }

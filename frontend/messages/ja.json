@@ -102,5 +102,16 @@
   "event_delete_confirm_title": "本当に削除しますか？",
   "event_delete_confirm_description": "この操作は取り消せません。すべての参加者データも削除されます。",
   "event_delete_confirm_action": "削除する",
-  "event_delete_cancel": "キャンセル"
+  "event_delete_cancel": "キャンセル",
+  "event_public_not_found_title": "イベントが見つかりません",
+  "event_public_name_label": "あなたの名前",
+  "event_public_name_placeholder": "名前を入力",
+  "event_public_tier_label": "料金ランク",
+  "event_public_join_button": "参加する",
+  "event_public_join_error": "参加に失敗しました",
+  "event_public_your_amount": "お支払い金額: {amount}",
+  "event_public_pay_instruction": "以下の決済サービスからお支払いください",
+  "event_public_claim_button": "支払い済みにする",
+  "event_public_claimed_message": "主催者の確認をお待ちください",
+  "event_public_confirmed_message": "お支払いが確認されました。ありがとうございます！"
 }

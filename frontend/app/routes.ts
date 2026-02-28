@@ -12,6 +12,7 @@ export default [
     route("events/:id/edit", "routes/my/events/$id_.edit/route.tsx"),
   ]),
 
+  route("e/:id", "routes/e/$id/route.tsx"),
   route("u/:slug", "routes/u/slug/route.tsx"),
   route("og/u/:slug.png", "routes/og/u/slug.tsx"),
 
