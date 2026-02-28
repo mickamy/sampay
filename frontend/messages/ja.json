@@ -89,6 +89,7 @@
   "event_detail_total": "合計金額",
   "event_detail_collected": "回収済み",
   "event_detail_remaining": "残り",
+  "event_detail_tier_count": "ティア数",
   "event_tier_table_title": "料金テーブル",
   "event_tier_table_rank": "ランク",
   "event_tier_table_count": "人数",

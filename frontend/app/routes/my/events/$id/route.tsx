@@ -190,6 +190,14 @@ export default function EventDetailPage({ loaderData }: Route.ComponentProps) {
             </p>
             <p className="font-medium">{formatCurrency(remaining)}</p>
           </div>
+          {event.tierCount > 1 && (
+            <div>
+              <p className="text-sm text-muted-foreground">
+                {m.event_detail_tier_count()}
+              </p>
+              <p className="font-medium">{event.tierCount}</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -250,6 +258,11 @@ export default function EventDetailPage({ loaderData }: Route.ComponentProps) {
                   <div>
                     <p className="font-medium">{p.name}</p>
                     <div className="flex items-center gap-2 mt-1">
+                      {event.tierCount > 1 && (
+                        <span className="text-sm text-muted-foreground">
+                          {m.event_tier_table_rank()} {p.tier}
+                        </span>
+                      )}
                       <span className="text-sm text-muted-foreground">
                         {formatCurrency(p.amount)}
                       </span>

@@ -89,6 +89,7 @@
   "event_detail_total": "Total Amount",
   "event_detail_collected": "Collected",
   "event_detail_remaining": "Remaining",
+  "event_detail_tier_count": "Tiers",
   "event_tier_table_title": "Pricing Table",
   "event_tier_table_rank": "Tier",
   "event_tier_table_count": "Count",
