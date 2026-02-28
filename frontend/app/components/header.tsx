@@ -80,7 +80,7 @@ function DesktopNavigation({
                   asChild
                   className={navigationMenuTriggerStyle()}
                 >
-                  <Link to="/events">{m.header_events()}</Link>
+                  <Link to="/my/events">{m.header_events()}</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
@@ -136,7 +136,7 @@ function MobileNavigation({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuItem asChild>
-            <Link to="/events" className="gap-2">
+            <Link to="/my/events" className="gap-2">
               <CalendarDays size={16} />
               {m.header_events()}
             </Link>
