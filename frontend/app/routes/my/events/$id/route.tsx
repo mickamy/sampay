@@ -223,7 +223,7 @@ export default function EventDetailPage({ loaderData }: Route.ComponentProps) {
                 </tr>
               </thead>
               <tbody>
-                {event.tiers.map((tier) => (
+                {[...event.tiers].reverse().map((tier) => (
                   <tr key={tier.id} className="border-b last:border-0">
                     <td className="py-2">{tier.tier}</td>
                     <td className="py-2 text-right">{tier.count}</td>

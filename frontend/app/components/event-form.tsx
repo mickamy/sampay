@@ -146,7 +146,7 @@ export function EventForm({
                     value={opt.value}
                     checked={tierCount === opt.value}
                     onChange={() => handleTierCountChange(opt.value)}
-                    className="accent-primary"
+                    className="size-4 appearance-none rounded-full border border-input bg-background checked:border-primary checked:bg-primary checked:shadow-[inset_0_0_0_2px_white]"
                   />
                   <span className="text-sm">{opt.label()}</span>
                 </label>

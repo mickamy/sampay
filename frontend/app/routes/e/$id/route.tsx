@@ -230,7 +230,7 @@ export default function EventPublicPage({ loaderData }: Route.ComponentProps) {
                     </tr>
                   </thead>
                   <tbody>
-                    {event.tiers.map((tier) => (
+                    {[...event.tiers].reverse().map((tier) => (
                       <tr key={tier.id} className="border-b last:border-0">
                         <td className="py-2">{tier.tier}</td>
                         <td className="py-2 text-right">{tier.count}</td>
@@ -300,10 +300,10 @@ function JoinForm({ event }: { event: SerializedEvent }) {
                 <Label>{m.event_public_tier_label()}</Label>
                 <RadioGroup
                   name="tier"
-                  defaultValue={String(event.tiers[0]?.tier ?? 1)}
+                  defaultValue={String(event.tiers[event.tiers.length - 1]?.tier ?? 1)}
                   className="mt-2 space-y-2"
                 >
-                  {event.tiers.map((tier) => (
+                  {[...event.tiers].reverse().map((tier) => (
                     <div key={tier.id} className="flex items-center space-x-2">
                       <RadioGroupItem
                         value={String(tier.tier)}
