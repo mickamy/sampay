@@ -12,12 +12,16 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file event/v1/event_service.proto.
  */
 export const file_event_v1_event_service: GenFile = /*@__PURE__*/
-  fileDesc("ChxldmVudC92MS9ldmVudF9zZXJ2aWNlLnByb3RvEghldmVudC52MSIVChNMaXN0TXlFdmVudHNSZXF1ZXN0IjcKFExpc3RNeUV2ZW50c1Jlc3BvbnNlEh8KBmV2ZW50cxgBIAMoCzIPLmV2ZW50LnYxLkV2ZW50IjkKEkNyZWF0ZUV2ZW50UmVxdWVzdBIjCgVpbnB1dBgBIAEoCzIULmV2ZW50LnYxLkV2ZW50SW5wdXQiNQoTQ3JlYXRlRXZlbnRSZXNwb25zZRIeCgVldmVudBgBIAEoCzIPLmV2ZW50LnYxLkV2ZW50IkUKElVwZGF0ZUV2ZW50UmVxdWVzdBIKCgJpZBgBIAEoCRIjCgVpbnB1dBgCIAEoCzIULmV2ZW50LnYxLkV2ZW50SW5wdXQiNQoTVXBkYXRlRXZlbnRSZXNwb25zZRIeCgVldmVudBgBIAEoCzIPLmV2ZW50LnYxLkV2ZW50IiAKEkRlbGV0ZUV2ZW50UmVxdWVzdBIKCgJpZBgBIAEoCSIVChNEZWxldGVFdmVudFJlc3BvbnNlIjAKHExpc3RFdmVudFBhcnRpY2lwYW50c1JlcXVlc3QSEAoIZXZlbnRfaWQYASABKAkiUQodTGlzdEV2ZW50UGFydGljaXBhbnRzUmVzcG9uc2USMAoMcGFydGljaXBhbnRzGAEgAygLMhouZXZlbnQudjEuRXZlbnRQYXJ0aWNpcGFudCJ3Ch5VcGRhdGVQYXJ0aWNpcGFudFN0YXR1c1JlcXVlc3QSEAoIZXZlbnRfaWQYASABKAkSFgoOcGFydGljaXBhbnRfaWQYAiABKAkSKwoGc3RhdHVzGAMgASgOMhsuZXZlbnQudjEuUGFydGljaXBhbnRTdGF0dXMiUgofVXBkYXRlUGFydGljaXBhbnRTdGF0dXNSZXNwb25zZRIvCgtwYXJ0aWNpcGFudBgBIAEoCzIaLmV2ZW50LnYxLkV2ZW50UGFydGljaXBhbnQymwQKDEV2ZW50U2VydmljZRJNCgxMaXN0TXlFdmVudHMSHS5ldmVudC52MS5MaXN0TXlFdmVudHNSZXF1ZXN0Gh4uZXZlbnQudjEuTGlzdE15RXZlbnRzUmVzcG9uc2USSgoLQ3JlYXRlRXZlbnQSHC5ldmVudC52MS5DcmVhdGVFdmVudFJlcXVlc3QaHS5ldmVudC52MS5DcmVhdGVFdmVudFJlc3BvbnNlEkoKC1VwZGF0ZUV2ZW50EhwuZXZlbnQudjEuVXBkYXRlRXZlbnRSZXF1ZXN0Gh0uZXZlbnQudjEuVXBkYXRlRXZlbnRSZXNwb25zZRJKCgtEZWxldGVFdmVudBIcLmV2ZW50LnYxLkRlbGV0ZUV2ZW50UmVxdWVzdBodLmV2ZW50LnYxLkRlbGV0ZUV2ZW50UmVzcG9uc2USaAoVTGlzdEV2ZW50UGFydGljaXBhbnRzEiYuZXZlbnQudjEuTGlzdEV2ZW50UGFydGljaXBhbnRzUmVxdWVzdBonLmV2ZW50LnYxLkxpc3RFdmVudFBhcnRpY2lwYW50c1Jlc3BvbnNlEm4KF1VwZGF0ZVBhcnRpY2lwYW50U3RhdHVzEiguZXZlbnQudjEuVXBkYXRlUGFydGljaXBhbnRTdGF0dXNSZXF1ZXN0GikuZXZlbnQudjEuVXBkYXRlUGFydGljaXBhbnRTdGF0dXNSZXNwb25zZUKSAQoMY29tLmV2ZW50LnYxQhFFdmVudFNlcnZpY2VQcm90b1ABWi5naXRodWIuY29tL21pY2thbXkvc2FtcGF5L2dlbi9ldmVudC92MTtldmVudHYxogIDRVhYqgIIRXZlbnQuVjHKAghFdmVudFxWMeICFEV2ZW50XFYxXEdQQk1ldGFkYXRh6gIJRXZlbnQ6OlYxYgZwcm90bzM", [file_event_v1_event]);
+  fileDesc("ChxldmVudC92MS9ldmVudF9zZXJ2aWNlLnByb3RvEghldmVudC52MSIvChNMaXN0TXlFdmVudHNSZXF1ZXN0EhgKEGluY2x1ZGVfYXJjaGl2ZWQYASABKAgiNwoUTGlzdE15RXZlbnRzUmVzcG9uc2USHwoGZXZlbnRzGAEgAygLMg8uZXZlbnQudjEuRXZlbnQiOQoSQ3JlYXRlRXZlbnRSZXF1ZXN0EiMKBWlucHV0GAEgASgLMhQuZXZlbnQudjEuRXZlbnRJbnB1dCI1ChNDcmVhdGVFdmVudFJlc3BvbnNlEh4KBWV2ZW50GAEgASgLMg8uZXZlbnQudjEuRXZlbnQiRQoSVXBkYXRlRXZlbnRSZXF1ZXN0EgoKAmlkGAEgASgJEiMKBWlucHV0GAIgASgLMhQuZXZlbnQudjEuRXZlbnRJbnB1dCI1ChNVcGRhdGVFdmVudFJlc3BvbnNlEh4KBWV2ZW50GAEgASgLMg8uZXZlbnQudjEuRXZlbnQiIAoSRGVsZXRlRXZlbnRSZXF1ZXN0EgoKAmlkGAEgASgJIhUKE0RlbGV0ZUV2ZW50UmVzcG9uc2UiMAocTGlzdEV2ZW50UGFydGljaXBhbnRzUmVxdWVzdBIQCghldmVudF9pZBgBIAEoCSJRCh1MaXN0RXZlbnRQYXJ0aWNpcGFudHNSZXNwb25zZRIwCgxwYXJ0aWNpcGFudHMYASADKAsyGi5ldmVudC52MS5FdmVudFBhcnRpY2lwYW50IncKHlVwZGF0ZVBhcnRpY2lwYW50U3RhdHVzUmVxdWVzdBIQCghldmVudF9pZBgBIAEoCRIWCg5wYXJ0aWNpcGFudF9pZBgCIAEoCRIrCgZzdGF0dXMYAyABKA4yGy5ldmVudC52MS5QYXJ0aWNpcGFudFN0YXR1cyJSCh9VcGRhdGVQYXJ0aWNpcGFudFN0YXR1c1Jlc3BvbnNlEi8KC3BhcnRpY2lwYW50GAEgASgLMhouZXZlbnQudjEuRXZlbnRQYXJ0aWNpcGFudCIhChNBcmNoaXZlRXZlbnRSZXF1ZXN0EgoKAmlkGAEgASgJIjYKFEFyY2hpdmVFdmVudFJlc3BvbnNlEh4KBWV2ZW50GAEgASgLMg8uZXZlbnQudjEuRXZlbnQiIwoVVW5hcmNoaXZlRXZlbnRSZXF1ZXN0EgoKAmlkGAEgASgJIjgKFlVuYXJjaGl2ZUV2ZW50UmVzcG9uc2USHgoFZXZlbnQYASABKAsyDy5ldmVudC52MS5FdmVudDK/BQoMRXZlbnRTZXJ2aWNlEk0KDExpc3RNeUV2ZW50cxIdLmV2ZW50LnYxLkxpc3RNeUV2ZW50c1JlcXVlc3QaHi5ldmVudC52MS5MaXN0TXlFdmVudHNSZXNwb25zZRJKCgtDcmVhdGVFdmVudBIcLmV2ZW50LnYxLkNyZWF0ZUV2ZW50UmVxdWVzdBodLmV2ZW50LnYxLkNyZWF0ZUV2ZW50UmVzcG9uc2USSgoLVXBkYXRlRXZlbnQSHC5ldmVudC52MS5VcGRhdGVFdmVudFJlcXVlc3QaHS5ldmVudC52MS5VcGRhdGVFdmVudFJlc3BvbnNlEkoKC0RlbGV0ZUV2ZW50EhwuZXZlbnQudjEuRGVsZXRlRXZlbnRSZXF1ZXN0Gh0uZXZlbnQudjEuRGVsZXRlRXZlbnRSZXNwb25zZRJoChVMaXN0RXZlbnRQYXJ0aWNpcGFudHMSJi5ldmVudC52MS5MaXN0RXZlbnRQYXJ0aWNpcGFudHNSZXF1ZXN0GicuZXZlbnQudjEuTGlzdEV2ZW50UGFydGljaXBhbnRzUmVzcG9uc2USbgoXVXBkYXRlUGFydGljaXBhbnRTdGF0dXMSKC5ldmVudC52MS5VcGRhdGVQYXJ0aWNpcGFudFN0YXR1c1JlcXVlc3QaKS5ldmVudC52MS5VcGRhdGVQYXJ0aWNpcGFudFN0YXR1c1Jlc3BvbnNlEk0KDEFyY2hpdmVFdmVudBIdLmV2ZW50LnYxLkFyY2hpdmVFdmVudFJlcXVlc3QaHi5ldmVudC52MS5BcmNoaXZlRXZlbnRSZXNwb25zZRJTCg5VbmFyY2hpdmVFdmVudBIfLmV2ZW50LnYxLlVuYXJjaGl2ZUV2ZW50UmVxdWVzdBogLmV2ZW50LnYxLlVuYXJjaGl2ZUV2ZW50UmVzcG9uc2VCkgEKDGNvbS5ldmVudC52MUIRRXZlbnRTZXJ2aWNlUHJvdG9QAVouZ2l0aHViLmNvbS9taWNrYW15L3NhbXBheS9nZW4vZXZlbnQvdjE7ZXZlbnR2MaICA0VYWKoCCEV2ZW50LlYxygIIRXZlbnRcVjHiAhRFdmVudFxWMVxHUEJNZXRhZGF0YeoCCUV2ZW50OjpWMWIGcHJvdG8z", [file_event_v1_event]);
 
 /**
  * @generated from message event.v1.ListMyEventsRequest
  */
 export type ListMyEventsRequest = Message<"event.v1.ListMyEventsRequest"> & {
+  /**
+   * @generated from field: bool include_archived = 1;
+   */
+  includeArchived: boolean;
 };
 
 /**
@@ -226,6 +230,74 @@ export const UpdateParticipantStatusResponseSchema: GenMessage<UpdateParticipant
   messageDesc(file_event_v1_event_service, 11);
 
 /**
+ * @generated from message event.v1.ArchiveEventRequest
+ */
+export type ArchiveEventRequest = Message<"event.v1.ArchiveEventRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * Describes the message event.v1.ArchiveEventRequest.
+ * Use `create(ArchiveEventRequestSchema)` to create a new message.
+ */
+export const ArchiveEventRequestSchema: GenMessage<ArchiveEventRequest> = /*@__PURE__*/
+  messageDesc(file_event_v1_event_service, 12);
+
+/**
+ * @generated from message event.v1.ArchiveEventResponse
+ */
+export type ArchiveEventResponse = Message<"event.v1.ArchiveEventResponse"> & {
+  /**
+   * @generated from field: event.v1.Event event = 1;
+   */
+  event?: Event;
+};
+
+/**
+ * Describes the message event.v1.ArchiveEventResponse.
+ * Use `create(ArchiveEventResponseSchema)` to create a new message.
+ */
+export const ArchiveEventResponseSchema: GenMessage<ArchiveEventResponse> = /*@__PURE__*/
+  messageDesc(file_event_v1_event_service, 13);
+
+/**
+ * @generated from message event.v1.UnarchiveEventRequest
+ */
+export type UnarchiveEventRequest = Message<"event.v1.UnarchiveEventRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * Describes the message event.v1.UnarchiveEventRequest.
+ * Use `create(UnarchiveEventRequestSchema)` to create a new message.
+ */
+export const UnarchiveEventRequestSchema: GenMessage<UnarchiveEventRequest> = /*@__PURE__*/
+  messageDesc(file_event_v1_event_service, 14);
+
+/**
+ * @generated from message event.v1.UnarchiveEventResponse
+ */
+export type UnarchiveEventResponse = Message<"event.v1.UnarchiveEventResponse"> & {
+  /**
+   * @generated from field: event.v1.Event event = 1;
+   */
+  event?: Event;
+};
+
+/**
+ * Describes the message event.v1.UnarchiveEventResponse.
+ * Use `create(UnarchiveEventResponseSchema)` to create a new message.
+ */
+export const UnarchiveEventResponseSchema: GenMessage<UnarchiveEventResponse> = /*@__PURE__*/
+  messageDesc(file_event_v1_event_service, 15);
+
+/**
  * @generated from service event.v1.EventService
  */
 export const EventService: GenService<{
@@ -276,6 +348,22 @@ export const EventService: GenService<{
     methodKind: "unary";
     input: typeof UpdateParticipantStatusRequestSchema;
     output: typeof UpdateParticipantStatusResponseSchema;
+  },
+  /**
+   * @generated from rpc event.v1.EventService.ArchiveEvent
+   */
+  archiveEvent: {
+    methodKind: "unary";
+    input: typeof ArchiveEventRequestSchema;
+    output: typeof ArchiveEventResponseSchema;
+  },
+  /**
+   * @generated from rpc event.v1.EventService.UnarchiveEvent
+   */
+  unarchiveEvent: {
+    methodKind: "unary";
+    input: typeof UnarchiveEventRequestSchema;
+    output: typeof UnarchiveEventResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_event_v1_event_service, 0);

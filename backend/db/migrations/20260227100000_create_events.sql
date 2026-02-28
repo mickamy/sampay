@@ -9,6 +9,7 @@ CREATE TABLE events
     tier_count   INT         NOT NULL DEFAULT 1,
     remainder    INT         NOT NULL DEFAULT 0,
     held_at      TIMESTAMPTZ NOT NULL,
+    archived_at  TIMESTAMPTZ,
     created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

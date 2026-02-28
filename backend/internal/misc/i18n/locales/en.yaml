@@ -16,6 +16,7 @@ event:
       held_at_required: Event date is required.
       invalid_tier_update: Cannot remove tiers that are currently assigned to participants.
       locked: This event cannot be edited because a participant has already reported payment.
+      archived: This event has been archived and is no longer accepting participants.
 
 user:
   mapper:

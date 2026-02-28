@@ -21,6 +21,9 @@ var (
 	ErrClaimPaymentAlreadyClaimed = cmodel.NewLocalizableError(
 		errx.NewSentinel("already claimed", errx.FailedPrecondition),
 	).WithMessages(messages.EventUseCaseErrorAlreadyClaimed())
+	ErrClaimPaymentArchived = cmodel.NewLocalizableError(
+		errx.NewSentinel("event is archived", errx.FailedPrecondition),
+	).WithMessages(messages.EventUseCaseErrorArchived())
 )
 
 type ClaimPaymentInput struct {
@@ -39,6 +42,7 @@ type claimPayment struct {
 	_               ClaimPayment                `inject:"returns"`
 	_               *di.Infra                   `inject:"param"`
 	writer          *database.Writer            `inject:""`
+	eventRepo       repository.Event            `inject:""`
 	participantRepo repository.EventParticipant `inject:""`
 }
 
@@ -54,6 +58,15 @@ func (uc *claimPayment) Do(ctx context.Context, input ClaimPaymentInput) (ClaimP
 			}
 			return errx.Wrap(err, "message", "failed to get participant", "id", input.ParticipantID).
 				WithCode(errx.Internal)
+		}
+
+		ev, evErr := uc.eventRepo.WithTx(tx).Get(ctx, participant.EventID)
+		if evErr != nil {
+			return errx.Wrap(evErr, "message", "failed to get event", "event_id", participant.EventID).
+				WithCode(errx.Internal)
+		}
+		if ev.ArchivedAt != nil {
+			return ErrClaimPaymentArchived
 		}
 
 		if participant.Status != model.ParticipantStatusUnpaid {

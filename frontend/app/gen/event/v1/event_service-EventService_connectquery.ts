@@ -33,3 +33,13 @@ export const listEventParticipants = EventService.method.listEventParticipants;
  * @generated from rpc event.v1.EventService.UpdateParticipantStatus
  */
 export const updateParticipantStatus = EventService.method.updateParticipantStatus;
+
+/**
+ * @generated from rpc event.v1.EventService.ArchiveEvent
+ */
+export const archiveEvent = EventService.method.archiveEvent;
+
+/**
+ * @generated from rpc event.v1.EventService.UnarchiveEvent
+ */
+export const unarchiveEvent = EventService.method.unarchiveEvent;

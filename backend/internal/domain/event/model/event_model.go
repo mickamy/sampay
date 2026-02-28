@@ -15,6 +15,7 @@ type Event struct {
 	Remainder   int
 	TierCount   int
 	HeldAt      time.Time
+	ArchivedAt  *time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 

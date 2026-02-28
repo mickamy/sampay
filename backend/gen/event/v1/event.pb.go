@@ -85,6 +85,7 @@ type Event struct {
 	TierCount     int32                  `protobuf:"varint,7,opt,name=tier_count,json=tierCount,proto3" json:"tier_count,omitempty"`
 	HeldAt        *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=held_at,json=heldAt,proto3" json:"held_at,omitempty"`
 	Tiers         []*EventTier           `protobuf:"bytes,9,rep,name=tiers,proto3" json:"tiers,omitempty"`
+	ArchivedAt    *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=archived_at,json=archivedAt,proto3,oneof" json:"archived_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -178,6 +179,13 @@ func (x *Event) GetHeldAt() *timestamppb.Timestamp {
 func (x *Event) GetTiers() []*EventTier {
 	if x != nil {
 		return x.Tiers
+	}
+	return nil
+}
+
+func (x *Event) GetArchivedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ArchivedAt
 	}
 	return nil
 }
@@ -490,7 +498,7 @@ var File_event_v1_event_proto protoreflect.FileDescriptor
 
 const file_event_v1_event_proto_rawDesc = "" +
 	"\n" +
-	"\x14event/v1/event.proto\x12\bevent.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa8\x02\n" +
+	"\x14event/v1/event.proto\x12\bevent.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfa\x02\n" +
 	"\x05Event\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x14\n" +
@@ -501,7 +509,11 @@ const file_event_v1_event_proto_rawDesc = "" +
 	"\n" +
 	"tier_count\x18\a \x01(\x05R\ttierCount\x123\n" +
 	"\aheld_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\x06heldAt\x12)\n" +
-	"\x05tiers\x18\t \x03(\v2\x13.event.v1.EventTierR\x05tiers\"x\n" +
+	"\x05tiers\x18\t \x03(\v2\x13.event.v1.EventTierR\x05tiers\x12@\n" +
+	"\varchived_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampH\x00R\n" +
+	"archivedAt\x88\x01\x01B\x0e\n" +
+	"\f_archived_at\"x\n" +
 	"\tEventTier\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
 	"\bevent_id\x18\x02 \x01(\tR\aeventId\x12\x12\n" +
@@ -564,15 +576,16 @@ var file_event_v1_event_proto_goTypes = []any{
 var file_event_v1_event_proto_depIdxs = []int32{
 	6, // 0: event.v1.Event.held_at:type_name -> google.protobuf.Timestamp
 	2, // 1: event.v1.Event.tiers:type_name -> event.v1.EventTier
-	6, // 2: event.v1.EventInput.held_at:type_name -> google.protobuf.Timestamp
-	3, // 3: event.v1.EventInput.tiers:type_name -> event.v1.TierConfig
-	0, // 4: event.v1.EventParticipant.status:type_name -> event.v1.ParticipantStatus
-	6, // 5: event.v1.EventParticipant.created_at:type_name -> google.protobuf.Timestamp
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	6, // 2: event.v1.Event.archived_at:type_name -> google.protobuf.Timestamp
+	6, // 3: event.v1.EventInput.held_at:type_name -> google.protobuf.Timestamp
+	3, // 4: event.v1.EventInput.tiers:type_name -> event.v1.TierConfig
+	0, // 5: event.v1.EventParticipant.status:type_name -> event.v1.ParticipantStatus
+	6, // 6: event.v1.EventParticipant.created_at:type_name -> google.protobuf.Timestamp
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_event_v1_event_proto_init() }
@@ -580,6 +593,7 @@ func file_event_v1_event_proto_init() {
 	if File_event_v1_event_proto != nil {
 		return
 	}
+	file_event_v1_event_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

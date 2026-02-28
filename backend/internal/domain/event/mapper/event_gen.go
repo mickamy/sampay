@@ -33,6 +33,7 @@ func ToV1EventPtr(src *model.Event) *eventv1.Event {
 			}
 			return result
 		}(),
+		ArchivedAt: converter.PtrTimeToTimestamppb(src.ArchivedAt),
 	}
 
 }
@@ -59,6 +60,7 @@ func ToV1Event(src model.Event) eventv1.Event {
 			}
 			return result
 		}(),
+		ArchivedAt: converter.PtrTimeToTimestamppb(src.ArchivedAt),
 	}
 
 }

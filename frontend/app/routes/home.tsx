@@ -24,7 +24,7 @@ const SUPPORTED_SERVICES = ["paypay", "kyash", "rakuten_pay", "merpay"];
 export default function Home({ loaderData }: Route.ComponentProps) {
   const { isLoggedIn } = loaderData;
 
-  const ctaHref = isLoggedIn ? "/events/new" : "/oauth/google";
+  const ctaHref = isLoggedIn ? "/my/events/new" : "/oauth/google";
   const ctaLabel = isLoggedIn ? m.home_hero_cta_loggedin() : m.home_hero_cta();
 
   return (

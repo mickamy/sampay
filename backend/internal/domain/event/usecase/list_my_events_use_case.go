@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/mickamy/errx"
+	"github.com/mickamy/ormgen/scope"
 
 	"github.com/mickamy/sampay/internal/di"
 	"github.com/mickamy/sampay/internal/domain/event/model"
@@ -12,7 +13,9 @@ import (
 	"github.com/mickamy/sampay/internal/misc/contexts"
 )
 
-type ListMyEventsInput struct{}
+type ListMyEventsInput struct {
+	IncludeArchived bool
+}
 
 type ListMyEventsOutput struct {
 	Events []model.Event
@@ -29,13 +32,20 @@ type listMyEvents struct {
 	eventRepo repository.Event `inject:""`
 }
 
-func (uc *listMyEvents) Do(ctx context.Context, _ ListMyEventsInput) (ListMyEventsOutput, error) {
+func (uc *listMyEvents) Do(ctx context.Context, input ListMyEventsInput) (ListMyEventsOutput, error) {
 	userID := contexts.MustAuthenticatedUserID(ctx)
+
+	var filterScope scope.Scope
+	if input.IncludeArchived {
+		filterScope = repository.EventArchivedOnly()
+	} else {
+		filterScope = repository.EventActiveOnly()
+	}
 
 	var events []model.Event
 	if err := uc.reader.Transaction(ctx, func(tx *database.DB) error {
 		var err error
-		events, err = uc.eventRepo.WithTx(tx).ListByUserID(ctx, userID)
+		events, err = uc.eventRepo.WithTx(tx).ListByUserID(ctx, userID, filterScope, repository.EventPreloadTiers())
 		if err != nil {
 			return errx.Wrap(err, "message", "failed to list events", "user_id", userID).
 				WithCode(errx.Internal)

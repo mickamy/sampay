@@ -19,6 +19,7 @@ func init() {
 	automapper.RegisterFrom[int32, int](Int32ToInt)
 	automapper.RegisterFrom[int, int32](IntToInt32)
 	automapper.RegisterFrom[time.Time, *timestamppb.Timestamp](TimeToTimestamppb)
+	automapper.RegisterFrom[*time.Time, *timestamppb.Timestamp](PtrTimeToTimestamppb)
 	automapper.RegisterFrom[model.ParticipantStatus, eventv1.ParticipantStatus](ToV1ParticipantStatus)
 	automapper.RegisterFromE[eventv1.ParticipantStatus, model.ParticipantStatus](FromV1ParticipantStatus)
 }
@@ -40,6 +41,13 @@ func IntToInt32(i int) int32 {
 
 func TimeToTimestamppb(t time.Time) *timestamppb.Timestamp {
 	return timestamppb.New(t)
+}
+
+func PtrTimeToTimestamppb(t *time.Time) *timestamppb.Timestamp {
+	if t == nil {
+		return nil
+	}
+	return timestamppb.New(*t)
 }
 
 func ToV1ParticipantStatus(s model.ParticipantStatus) eventv1.ParticipantStatus {

@@ -1,4 +1,4 @@
-import { CalendarDays, LogOut, Menu, User, Wallet2 } from "lucide-react";
+import { LogOut, Menu, User, Wallet2 } from "lucide-react";
 import type { HTMLAttributes } from "react";
 import { Link } from "react-router";
 import { LoginDialog } from "~/components/login-dialog";
@@ -74,26 +74,16 @@ function DesktopNavigation({
       <NavigationMenu>
         <NavigationMenuList>
           {isLoggedIn && (
-            <>
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  asChild
-                  className={navigationMenuTriggerStyle()}
-                >
-                  <Link to="/events">{m.header_events()}</Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  asChild
-                  className={navigationMenuTriggerStyle()}
-                >
-                  <Link to="/my" className="flex items-center gap-1">
-                    {m.header_my_page()}
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            </>
+            <NavigationMenuItem>
+              <NavigationMenuLink
+                asChild
+                className={navigationMenuTriggerStyle()}
+              >
+                <Link to="/my" className="flex items-center gap-1">
+                  {m.header_my_page()}
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
           )}
           <NavigationMenuItem>
             {isLoggedIn ? (
@@ -135,12 +125,6 @@ function MobileNavigation({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem asChild>
-            <Link to="/events" className="gap-2">
-              <CalendarDays size={16} />
-              {m.header_events()}
-            </Link>
-          </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link to="/my" className="gap-2">
               <User size={16} />

@@ -51,6 +51,12 @@ const (
 	// EventServiceUpdateParticipantStatusProcedure is the fully-qualified name of the EventService's
 	// UpdateParticipantStatus RPC.
 	EventServiceUpdateParticipantStatusProcedure = "/event.v1.EventService/UpdateParticipantStatus"
+	// EventServiceArchiveEventProcedure is the fully-qualified name of the EventService's ArchiveEvent
+	// RPC.
+	EventServiceArchiveEventProcedure = "/event.v1.EventService/ArchiveEvent"
+	// EventServiceUnarchiveEventProcedure is the fully-qualified name of the EventService's
+	// UnarchiveEvent RPC.
+	EventServiceUnarchiveEventProcedure = "/event.v1.EventService/UnarchiveEvent"
 )
 
 // EventServiceClient is a client for the event.v1.EventService service.
@@ -61,6 +67,8 @@ type EventServiceClient interface {
 	DeleteEvent(context.Context, *connect.Request[v1.DeleteEventRequest]) (*connect.Response[v1.DeleteEventResponse], error)
 	ListEventParticipants(context.Context, *connect.Request[v1.ListEventParticipantsRequest]) (*connect.Response[v1.ListEventParticipantsResponse], error)
 	UpdateParticipantStatus(context.Context, *connect.Request[v1.UpdateParticipantStatusRequest]) (*connect.Response[v1.UpdateParticipantStatusResponse], error)
+	ArchiveEvent(context.Context, *connect.Request[v1.ArchiveEventRequest]) (*connect.Response[v1.ArchiveEventResponse], error)
+	UnarchiveEvent(context.Context, *connect.Request[v1.UnarchiveEventRequest]) (*connect.Response[v1.UnarchiveEventResponse], error)
 }
 
 // NewEventServiceClient constructs a client for the event.v1.EventService service. By default, it
@@ -110,6 +118,18 @@ func NewEventServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(eventServiceMethods.ByName("UpdateParticipantStatus")),
 			connect.WithClientOptions(opts...),
 		),
+		archiveEvent: connect.NewClient[v1.ArchiveEventRequest, v1.ArchiveEventResponse](
+			httpClient,
+			baseURL+EventServiceArchiveEventProcedure,
+			connect.WithSchema(eventServiceMethods.ByName("ArchiveEvent")),
+			connect.WithClientOptions(opts...),
+		),
+		unarchiveEvent: connect.NewClient[v1.UnarchiveEventRequest, v1.UnarchiveEventResponse](
+			httpClient,
+			baseURL+EventServiceUnarchiveEventProcedure,
+			connect.WithSchema(eventServiceMethods.ByName("UnarchiveEvent")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -121,6 +141,8 @@ type eventServiceClient struct {
 	deleteEvent             *connect.Client[v1.DeleteEventRequest, v1.DeleteEventResponse]
 	listEventParticipants   *connect.Client[v1.ListEventParticipantsRequest, v1.ListEventParticipantsResponse]
 	updateParticipantStatus *connect.Client[v1.UpdateParticipantStatusRequest, v1.UpdateParticipantStatusResponse]
+	archiveEvent            *connect.Client[v1.ArchiveEventRequest, v1.ArchiveEventResponse]
+	unarchiveEvent          *connect.Client[v1.UnarchiveEventRequest, v1.UnarchiveEventResponse]
 }
 
 // ListMyEvents calls event.v1.EventService.ListMyEvents.
@@ -153,6 +175,16 @@ func (c *eventServiceClient) UpdateParticipantStatus(ctx context.Context, req *c
 	return c.updateParticipantStatus.CallUnary(ctx, req)
 }
 
+// ArchiveEvent calls event.v1.EventService.ArchiveEvent.
+func (c *eventServiceClient) ArchiveEvent(ctx context.Context, req *connect.Request[v1.ArchiveEventRequest]) (*connect.Response[v1.ArchiveEventResponse], error) {
+	return c.archiveEvent.CallUnary(ctx, req)
+}
+
+// UnarchiveEvent calls event.v1.EventService.UnarchiveEvent.
+func (c *eventServiceClient) UnarchiveEvent(ctx context.Context, req *connect.Request[v1.UnarchiveEventRequest]) (*connect.Response[v1.UnarchiveEventResponse], error) {
+	return c.unarchiveEvent.CallUnary(ctx, req)
+}
+
 // EventServiceHandler is an implementation of the event.v1.EventService service.
 type EventServiceHandler interface {
 	ListMyEvents(context.Context, *connect.Request[v1.ListMyEventsRequest]) (*connect.Response[v1.ListMyEventsResponse], error)
@@ -161,6 +193,8 @@ type EventServiceHandler interface {
 	DeleteEvent(context.Context, *connect.Request[v1.DeleteEventRequest]) (*connect.Response[v1.DeleteEventResponse], error)
 	ListEventParticipants(context.Context, *connect.Request[v1.ListEventParticipantsRequest]) (*connect.Response[v1.ListEventParticipantsResponse], error)
 	UpdateParticipantStatus(context.Context, *connect.Request[v1.UpdateParticipantStatusRequest]) (*connect.Response[v1.UpdateParticipantStatusResponse], error)
+	ArchiveEvent(context.Context, *connect.Request[v1.ArchiveEventRequest]) (*connect.Response[v1.ArchiveEventResponse], error)
+	UnarchiveEvent(context.Context, *connect.Request[v1.UnarchiveEventRequest]) (*connect.Response[v1.UnarchiveEventResponse], error)
 }
 
 // NewEventServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -206,6 +240,18 @@ func NewEventServiceHandler(svc EventServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(eventServiceMethods.ByName("UpdateParticipantStatus")),
 		connect.WithHandlerOptions(opts...),
 	)
+	eventServiceArchiveEventHandler := connect.NewUnaryHandler(
+		EventServiceArchiveEventProcedure,
+		svc.ArchiveEvent,
+		connect.WithSchema(eventServiceMethods.ByName("ArchiveEvent")),
+		connect.WithHandlerOptions(opts...),
+	)
+	eventServiceUnarchiveEventHandler := connect.NewUnaryHandler(
+		EventServiceUnarchiveEventProcedure,
+		svc.UnarchiveEvent,
+		connect.WithSchema(eventServiceMethods.ByName("UnarchiveEvent")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/event.v1.EventService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case EventServiceListMyEventsProcedure:
@@ -220,6 +266,10 @@ func NewEventServiceHandler(svc EventServiceHandler, opts ...connect.HandlerOpti
 			eventServiceListEventParticipantsHandler.ServeHTTP(w, r)
 		case EventServiceUpdateParticipantStatusProcedure:
 			eventServiceUpdateParticipantStatusHandler.ServeHTTP(w, r)
+		case EventServiceArchiveEventProcedure:
+			eventServiceArchiveEventHandler.ServeHTTP(w, r)
+		case EventServiceUnarchiveEventProcedure:
+			eventServiceUnarchiveEventHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -251,4 +301,12 @@ func (UnimplementedEventServiceHandler) ListEventParticipants(context.Context, *
 
 func (UnimplementedEventServiceHandler) UpdateParticipantStatus(context.Context, *connect.Request[v1.UpdateParticipantStatusRequest]) (*connect.Response[v1.UpdateParticipantStatusResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("event.v1.EventService.UpdateParticipantStatus is not implemented"))
+}
+
+func (UnimplementedEventServiceHandler) ArchiveEvent(context.Context, *connect.Request[v1.ArchiveEventRequest]) (*connect.Response[v1.ArchiveEventResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("event.v1.EventService.ArchiveEvent is not implemented"))
+}
+
+func (UnimplementedEventServiceHandler) UnarchiveEvent(context.Context, *connect.Request[v1.UnarchiveEventRequest]) (*connect.Response[v1.UnarchiveEventResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("event.v1.EventService.UnarchiveEvent is not implemented"))
 }
