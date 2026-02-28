@@ -1,7 +1,10 @@
+import { CalendarDays, Plus } from "lucide-react";
 import { Link } from "react-router";
 import { PaymentMethodList } from "~/components/payment-method-list";
 import { ShareButton } from "~/components/share-button";
 import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
+import { EventService } from "~/gen/event/v1/event_service_pb";
 import {
   PaymentMethodService,
   type PaymentMethodType,
@@ -9,6 +12,7 @@ import {
 import { UserService } from "~/gen/user/v1/user_service_pb";
 import { withAuthentication } from "~/lib/api/request.server";
 import { buildMeta } from "~/lib/meta";
+import { formatCurrency, formatEventDate } from "~/model/event-model";
 import { paymentMethodTypeToKey } from "~/model/payment-method-model";
 import { m } from "~/paraglide/messages";
 import type { Route } from "./+types/route";
@@ -26,11 +30,25 @@ export async function loader({ request }: Route.LoaderArgs) {
     async ({ getClient }) => {
       const userClient = getClient(UserService);
       const paymentClient = getClient(PaymentMethodService);
-      const [{ user }, { paymentMethods }] = await Promise.all([
+      const eventClient = getClient(EventService);
+      const [{ user }, { paymentMethods }, { events }] = await Promise.all([
         userClient.getMe({}),
         paymentClient.listPaymentMethods({}),
+        eventClient.listMyEvents({}),
       ]);
-      return Response.json({ slug: user?.slug, paymentMethods });
+      const serializedEvents = events.map((e) => ({
+        id: e.id,
+        title: e.title,
+        totalAmount: e.totalAmount,
+        heldAt: e.heldAt
+          ? new Date(Number(e.heldAt.seconds) * 1000).toISOString()
+          : undefined,
+      }));
+      return Response.json({
+        slug: user?.slug,
+        paymentMethods,
+        events: serializedEvents,
+      });
     },
   );
 
@@ -58,37 +76,93 @@ export async function loader({ request }: Route.LoaderArgs) {
   const slug = (data.slug as string) || "";
   const origin = new URL(request.url).origin;
 
+  const events = (data.events ?? []) as {
+    id: string;
+    title: string;
+    totalAmount: number;
+    heldAt?: string;
+  }[];
+
   return {
     slug,
     profileUrl: slug ? `${origin}/u/${slug}` : "",
     paymentMethods: methods,
+    events,
   };
 }
 
 export default function MyIndexPage({ loaderData }: Route.ComponentProps) {
-  const { slug, profileUrl, paymentMethods } = loaderData;
+  const { slug, profileUrl, paymentMethods, events } = loaderData;
 
   return (
-    <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">{m.my_preview_title()}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {m.my_preview_description()}
-          </p>
+    <div className="space-y-10">
+      {/* Payment Methods */}
+      <section>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">{m.my_preview_title()}</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {m.my_preview_description()}
+            </p>
+          </div>
+          <Button asChild variant="outline">
+            <Link to="/my/edit">{m.my_edit()}</Link>
+          </Button>
         </div>
-        <Button asChild variant="outline">
-          <Link to="/my/edit">{m.my_edit()}</Link>
-        </Button>
-      </div>
-      {slug && profileUrl && (
-        <div className="mt-4">
-          <ShareButton url={profileUrl} name={slug} />
+        {slug && profileUrl && (
+          <div className="mt-4">
+            <ShareButton url={profileUrl} name={slug} />
+          </div>
+        )}
+        <div className="mt-6">
+          <PaymentMethodList paymentMethods={paymentMethods} />
         </div>
-      )}
-      <div className="mt-6">
-        <PaymentMethodList paymentMethods={paymentMethods} />
-      </div>
-    </>
+      </section>
+
+      {/* Events */}
+      <section>
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">{m.event_list_title()}</h2>
+          <Button asChild>
+            <Link to="/my/events/new">
+              <Plus className="size-4" />
+              {m.event_new_button()}
+            </Link>
+          </Button>
+        </div>
+
+        {events.length === 0 ? (
+          <div className="mt-8 text-center">
+            <CalendarDays className="mx-auto size-12 text-muted-foreground" />
+            <p className="mt-4 text-muted-foreground">{m.event_list_empty()}</p>
+            <Button asChild className="mt-4">
+              <Link to="/my/events/new">{m.event_list_empty_cta()}</Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="mt-4 space-y-3">
+            {events.map((event) => (
+              <Link key={event.id} to={`/my/events/${event.id}`}>
+                <Card className="transition-colors hover:bg-muted/50">
+                  <CardContent className="flex items-center justify-between py-4">
+                    <div>
+                      <h3 className="font-semibold">{event.title}</h3>
+                      {event.heldAt && (
+                        <p className="text-sm text-muted-foreground">
+                          {formatEventDate(event.heldAt)}
+                        </p>
+                      )}
+                    </div>
+                    <span className="text-sm font-medium">
+                      {formatCurrency(event.totalAmount)}
+                    </span>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
   );
 }
