@@ -37,6 +37,7 @@ func NewClaimPayment(infra *di.Infra) ClaimPayment {
 		writer:          infra.WriterDB,
 		eventRepo:       event,
 		participantRepo: eventParticipant,
+		producer:        infra.Producer,
 	}
 }
 
@@ -49,6 +50,7 @@ func MustNewClaimPayment(infra *di.Infra) ClaimPayment {
 		writer:          infra.WriterDB,
 		eventRepo:       event,
 		participantRepo: eventParticipant,
+		producer:        infra.Producer,
 	}
 }
 
