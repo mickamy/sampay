@@ -23,7 +23,7 @@ const (
 	last
 )
 
-func Get(s string, jobs Jobs) (job.Job, error) {
+func Get(s string, jobs *Jobs) (job.Job, error) {
 	types := _types()
 
 	idx := sort.Search(len(types), func(i int) bool {
