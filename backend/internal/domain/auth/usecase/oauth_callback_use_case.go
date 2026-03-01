@@ -114,7 +114,7 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 			}
 		}
 
-		if payload.Provider == oauth.ProviderLINE {
+		if payload.Provider == oauth.ProviderLINE && payload.LineFriendKnown {
 			if err := uc.lineFriendshipRepo.WithTx(tx).Upsert(ctx, &mmodel.LineFriendship{
 				EndUserID: endUser.UserID,
 				IsFriend:  payload.LineFriend,

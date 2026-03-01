@@ -3,6 +3,7 @@ package job
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/mickamy/sampay/internal/di"
@@ -45,11 +46,21 @@ func (j *ClaimNotification) Execute(ctx context.Context, payloadStr string) erro
 		uid, err = j.oauthAccountRepo.WithTx(tx).
 			GetUIDByEndUserIDAndProvider(ctx, payload.CreatorUserID, amodel.OAuthProviderLINE)
 		if err != nil {
+			if errors.Is(err, database.ErrNotFound) {
+				logger.Info(ctx, "LINE OAuth account not found; skipping push",
+					"user_id", payload.CreatorUserID)
+				return nil
+			}
 			return fmt.Errorf("failed to get LINE UID for user %s: %w", payload.CreatorUserID, err)
 		}
 
 		friendship, err := j.lineFriendshipRepo.WithTx(tx).GetByEndUserID(ctx, payload.CreatorUserID)
 		if err != nil {
+			if errors.Is(err, database.ErrNotFound) {
+				logger.Info(ctx, "line friendship not found; skipping push",
+					"user_id", payload.CreatorUserID)
+				return nil
+			}
 			return fmt.Errorf("failed to get friendship for user %s: %w", payload.CreatorUserID, err)
 		}
 		isFriend = friendship.IsFriend
