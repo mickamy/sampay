@@ -9,6 +9,7 @@ import (
 	"golang.org/x/oauth2"
 
 	"github.com/mickamy/sampay/config"
+	"github.com/mickamy/sampay/internal/lib/logger"
 )
 
 var lineEndpoint = oauth2.Endpoint{ //nolint:gosec // not credentials, just API endpoint URLs
@@ -39,7 +40,7 @@ func (c *lineClient) AuthenticationURL() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("oauth: failed to generate state: %w", err)
 	}
-	authURL := c.cfg.AuthCodeURL(s, oauth2.AccessTypeOffline)
+	authURL := c.cfg.AuthCodeURL(s, oauth2.AccessTypeOffline, oauth2.SetAuthURLParam("bot_prompt", "aggressive"))
 	return authURL, nil
 }
 
@@ -73,10 +74,41 @@ func (c *lineClient) Callback(ctx context.Context, code string) (Payload, error)
 		return Payload{}, fmt.Errorf("oauth: failed to decode profile: %w", err)
 	}
 
+	lineFriend := c.fetchFriendship(ctx, httpClient)
+
 	return Payload{
-		Provider: ProviderLINE,
-		UID:      u.UserID,
-		Name:     u.DisplayName,
-		Picture:  u.PictureURL,
+		Provider:   ProviderLINE,
+		UID:        u.UserID,
+		Name:       u.DisplayName,
+		Picture:    u.PictureURL,
+		LineFriend: lineFriend,
 	}, nil
+}
+
+func (c *lineClient) fetchFriendship(ctx context.Context, httpClient *http.Client) bool {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://api.line.me/friendship/v1/status", nil)
+	if err != nil {
+		logger.Warn(ctx, "failed to create friendship request", "err", err)
+		return false
+	}
+	resp, err := httpClient.Do(req) //nolint:gosec // URL is a constant, not user input
+	if err != nil {
+		logger.Warn(ctx, "failed to fetch friendship status", "err", err)
+		return false
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	if resp.StatusCode != http.StatusOK {
+		logger.Warn(ctx, "friendship API returned non-OK status", "status", resp.StatusCode)
+		return false
+	}
+
+	var f struct {
+		FriendFlag bool `json:"friendFlag"` //nolint:tagliatelle // LINE API response format
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&f); err != nil {
+		logger.Warn(ctx, "failed to decode friendship response", "err", err)
+		return false
+	}
+	return f.FriendFlag
 }

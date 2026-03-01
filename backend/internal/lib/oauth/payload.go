@@ -11,9 +11,10 @@ const (
 )
 
 type Payload struct {
-	Provider Provider
-	UID      string
-	Name     string
-	Email    string
-	Picture  string
+	Provider   Provider
+	UID        string
+	Name       string
+	Email      string
+	Picture    string
+	LineFriend bool
 }
