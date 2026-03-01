@@ -25,6 +25,33 @@ services:
     networks:
       default:
 
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+      args:
+        BIN_NAME: worker
+    env_file:
+      - ./backend/.env.docker
+    environment:
+      LINE_CHANNEL_ID: ${LINE_CHANNEL_ID:?LINE_CHANNEL_ID is required}
+      LINE_CHANNEL_SECRET: ${LINE_CHANNEL_SECRET:?LINE_CHANNEL_SECRET is required}
+      LINE_MESSAGING_CHANNEL_ID: ${LINE_CHANNEL_ID:?LINE_CHANNEL_ID is required}
+      LINE_MESSAGING_CHANNEL_SECRET: ${LINE_CHANNEL_SECRET:?LINE_CHANNEL_SECRET is required}
+      LINE_MESSAGING_CHANNEL_TOKEN: ${LINE_MESSAGING_CHANNEL_TOKEN:?LINE_MESSAGING_CHANNEL_TOKEN is required}
+    volumes:
+      - ./backend:/src
+      - go:/go
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+    networks:
+      default:
+
   grpc-tap:
     build:
       context: ./grpc-tap

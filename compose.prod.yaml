@@ -50,6 +50,27 @@ services:
         <<: *logging-options
         awslogs-stream: api
 
+  worker:
+    image: ${ECR_BACKEND_URL}:worker-${IMAGE_TAG}
+    environment:
+      ENV: ${APP_ENV}
+      MODULE_ROOT: ${MODULE_ROOT:-/app}
+      AWS_REGION: ${AWS_REGION:-ap-northeast-1}
+      SM_APP_SECRET: ${SM_APP_SECRET}
+      SM_DB_SECRET: ${SM_DB_SECRET}
+      SM_KVS_SECRET: ${SM_KVS_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    restart: unless-stopped
+    logging:
+      driver: awslogs
+      options:
+        <<: *logging-options
+        awslogs-stream: worker
+
   web:
     image: ${ECR_FRONTEND_URL}:${IMAGE_TAG}
     expose:
