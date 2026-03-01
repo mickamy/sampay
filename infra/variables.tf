@@ -55,6 +55,24 @@ variable "line_channel_secret" {
   sensitive   = true
 }
 
+variable "line_messaging_channel_id" {
+  type        = string
+  description = "LINE Messaging API channel ID"
+  sensitive   = true
+}
+
+variable "line_messaging_channel_secret" {
+  type        = string
+  description = "LINE Messaging API channel secret"
+  sensitive   = true
+}
+
+variable "line_messaging_channel_token" {
+  type        = string
+  description = "LINE Messaging API channel token"
+  sensitive   = true
+}
+
 variable "email_from" {
   type        = string
   description = "Sender email address"

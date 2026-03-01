@@ -70,9 +70,12 @@ resource "aws_secretsmanager_secret_version" "app" {
     SQS_WORKER_DLQ_URL     = aws_sqs_queue.worker_dlq.url
 
     # OAuth
-    OAUTH_REDIRECT_URL   = "https://${local.app_domain}/oauth/callback"
-    LINE_CHANNEL_ID      = var.line_channel_id
-    LINE_CHANNEL_SECRET  = var.line_channel_secret
+    OAUTH_REDIRECT_URL               = "https://${local.app_domain}/oauth/callback"
+    LINE_CHANNEL_ID                  = var.line_channel_id
+    LINE_CHANNEL_SECRET              = var.line_channel_secret
+    LINE_MESSAGING_CHANNEL_ID        = var.line_messaging_channel_id
+    LINE_MESSAGING_CHANNEL_SECRET    = var.line_messaging_channel_secret
+    LINE_MESSAGING_CHANNEL_TOKEN = var.line_messaging_channel_token
 
     # Misc
     EMAIL_FROM = var.email_from != "" ? var.email_from : "noreply@${var.domain}"

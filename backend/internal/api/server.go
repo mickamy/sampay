@@ -15,6 +15,7 @@ import (
 	"github.com/mickamy/sampay/internal/di"
 	"github.com/mickamy/sampay/internal/domain/auth"
 	"github.com/mickamy/sampay/internal/domain/event"
+	"github.com/mickamy/sampay/internal/domain/messaging"
 	"github.com/mickamy/sampay/internal/domain/storage"
 	"github.com/mickamy/sampay/internal/domain/test"
 	"github.com/mickamy/sampay/internal/domain/user"
@@ -53,6 +54,7 @@ func NewServer(infra *di.Infra) http.Server {
 		w.WriteHeader(http.StatusOK)
 	})
 	mux.Handle("/api/", http.StripPrefix("/api", api))
+	messaging.RegisterWebhook(mux)
 
 	return http.Server{
 		Addr:              ":" + strconv.Itoa(config.API().Port),
