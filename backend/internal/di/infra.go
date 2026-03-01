@@ -4,20 +4,24 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/mickamy/go-sqs-worker/producer"
+
 	"github.com/mickamy/sampay/config"
 	"github.com/mickamy/sampay/internal/infra/aws/s3"
+	"github.com/mickamy/sampay/internal/infra/aws/sqs"
 	"github.com/mickamy/sampay/internal/infra/storage/database"
 	"github.com/mickamy/sampay/internal/infra/storage/kvs"
 )
 
 type Infra struct {
-	_        context.Context  `inject:"param"` //nolint:containedctx // required by injector
-	_        config.KVSConfig `inject:"provider:config.KVS"`
-	DB       *database.DB     `inject:"provider:di.ProvideDB"` // shares connection with WriterDB; do not close separately
-	WriterDB *database.Writer `inject:""`
-	ReaderDB *database.Reader `inject:""`
-	KVS      *kvs.KVS         `inject:"provider:di.ProvideKVS"`
-	S3       s3.Client        `inject:"provider:di.ProvideS3"`
+	_        context.Context    `inject:"param"` //nolint:containedctx // required by injector
+	_        config.KVSConfig   `inject:"provider:config.KVS"`
+	DB       *database.DB       `inject:"provider:di.ProvideDB"` // shares connection with WriterDB; do not close separately
+	WriterDB *database.Writer   `inject:""`
+	ReaderDB *database.Reader   `inject:""`
+	KVS      *kvs.KVS           `inject:"provider:di.ProvideKVS"`
+	S3       s3.Client          `inject:"provider:di.ProvideS3"`
+	Producer *producer.Producer `inject:"provider:di.ProvideProducer"`
 }
 
 // Close releases all infrastructure resources.
@@ -86,4 +90,24 @@ func ProvideKVS(cfg config.KVSConfig) (*kvs.KVS, error) {
 	}
 
 	return kvStore, nil
+}
+
+func ProvideProducer(ctx context.Context, kvsCfg config.KVSConfig) (*producer.Producer, error) {
+	awsCfg := config.AWS()
+	sqsClient, err := sqs.New(ctx, awsCfg)
+	if err != nil {
+		return nil, fmt.Errorf("di: failed to initialize SQS client: %w", err)
+	}
+
+	redisURL := fmt.Sprintf("redis://:%s@%s", kvsCfg.Password, kvsCfg.Address())
+
+	p, err := producer.New(producer.Config{
+		WorkerQueueURL: awsCfg.SQSWorkerURL,
+		RedisURL:       redisURL,
+	}, sqsClient, nil)
+	if err != nil {
+		return nil, fmt.Errorf("di: failed to initialize producer: %w", err)
+	}
+
+	return p, nil
 }

@@ -15,6 +15,8 @@ type AWSConfig struct {
 	S3PrivateBucket    string `env:"S3_PRIVATE_BUCKET_NAME" validate:"required"`
 	LocalStackEndpoint string `env:"LOCALSTACK_ENDPOINT"`
 	CloudfrontDomain   string `env:"CLOUDFRONT_DOMAIN"      validate:"required"`
+	SQSWorkerURL       string `env:"SQS_WORKER_URL"         validate:"required"`
+	SQSWorkerDLQURL    string `env:"SQS_WORKER_DLQ_URL"     validate:"required"`
 }
 
 func (c AWSConfig) CloudfrontURL() string {
