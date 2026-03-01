@@ -32,6 +32,10 @@ func NewInfra(context context.Context) (*Infra, error) {
 	if err != nil {
 		return nil, err
 	}
+	provideProducer, err := ProvideProducer(context, kVS)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Infra{
 		DB:       provideDB,
@@ -39,6 +43,7 @@ func NewInfra(context context.Context) (*Infra, error) {
 		ReaderDB: provideReaderDB,
 		KVS:      provideKVS,
 		S3:       provideS3,
+		Producer: provideProducer,
 	}, nil
 }
 
@@ -67,6 +72,10 @@ func MustNewInfra(context context.Context) *Infra {
 	if err != nil {
 		panic(err)
 	}
+	provideProducer, err := ProvideProducer(context, kVS)
+	if err != nil {
+		panic(err)
+	}
 
 	return &Infra{
 		DB:       provideDB,
@@ -74,5 +83,6 @@ func MustNewInfra(context context.Context) *Infra {
 		ReaderDB: provideReaderDB,
 		KVS:      provideKVS,
 		S3:       provideS3,
+		Producer: provideProducer,
 	}
 }

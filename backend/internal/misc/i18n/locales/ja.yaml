@@ -51,6 +51,9 @@ event:
       locked: 参加者が支払い申告済みのため、このイベントは編集できません。
       archived: このイベントはアーカイブ済みのため、新たな参加はできません。
 
+messaging:
+  claim_notification: "{participant_name}さんが{event_title}の支払い（{amount:int}円）を申告しました"
+
 common:
   response:
     error:

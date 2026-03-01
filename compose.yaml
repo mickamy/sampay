@@ -8,10 +8,8 @@ services:
     env_file:
       - ./backend/.env.docker
     environment:
-      LINE_CHANNEL_ID: ${LINE_CHANNEL_ID:?LINE_CHANNEL_ID is required}
-      LINE_CHANNEL_SECRET: ${LINE_CHANNEL_SECRET:?LINE_CHANNEL_SECRET is required}
-      LINE_MESSAGING_CHANNEL_ID: ${LINE_CHANNEL_ID:?LINE_CHANNEL_ID is required}
-      LINE_MESSAGING_CHANNEL_SECRET: ${LINE_CHANNEL_SECRET:?LINE_CHANNEL_SECRET is required}
+      LINE_MESSAGING_CHANNEL_ID: ${LINE_MESSAGING_CHANNEL_ID:?LINE_MESSAGING_CHANNEL_ID is required}
+      LINE_MESSAGING_CHANNEL_SECRET: ${LINE_MESSAGING_CHANNEL_SECRET:?LINE_MESSAGING_CHANNEL_SECRET is required}
       LINE_MESSAGING_CHANNEL_TOKEN: ${LINE_MESSAGING_CHANNEL_TOKEN:?LINE_MESSAGING_CHANNEL_TOKEN is required}
     volumes:
       - ./backend:/src
@@ -22,6 +20,33 @@ services:
       interval: 3s
       retries: 5
       start_period: 30s
+    networks:
+      default:
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+      args:
+        BIN_NAME: worker
+    env_file:
+      - ./backend/.env.docker
+    environment:
+      LINE_CHANNEL_ID: ${LINE_CHANNEL_ID:?LINE_CHANNEL_ID is required}
+      LINE_CHANNEL_SECRET: ${LINE_CHANNEL_SECRET:?LINE_CHANNEL_SECRET is required}
+      LINE_MESSAGING_CHANNEL_ID: ${LINE_CHANNEL_ID:?LINE_CHANNEL_ID is required}
+      LINE_MESSAGING_CHANNEL_SECRET: ${LINE_CHANNEL_SECRET:?LINE_CHANNEL_SECRET is required}
+      LINE_MESSAGING_CHANNEL_TOKEN: ${LINE_MESSAGING_CHANNEL_TOKEN:?LINE_MESSAGING_CHANNEL_TOKEN is required}
+    volumes:
+      - ./backend:/src
+      - go:/go
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
     networks:
       default:
 

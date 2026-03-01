@@ -26,6 +26,7 @@ var reservedSlugs = map[string]struct{}{
 	"admin":    {},
 	"api":      {},
 	"auth":     {},
+	"e":        {},
 	"login":    {},
 	"logout":   {},
 	"my":       {},

@@ -5,12 +5,16 @@ import (
 	"errors"
 
 	"github.com/mickamy/errx"
+	"github.com/mickamy/go-sqs-worker/message"
+	"github.com/mickamy/go-sqs-worker/producer"
 
 	"github.com/mickamy/sampay/internal/di"
 	cmodel "github.com/mickamy/sampay/internal/domain/common/model"
 	"github.com/mickamy/sampay/internal/domain/event/model"
 	"github.com/mickamy/sampay/internal/domain/event/repository"
 	"github.com/mickamy/sampay/internal/infra/storage/database"
+	"github.com/mickamy/sampay/internal/job"
+	"github.com/mickamy/sampay/internal/lib/logger"
 	"github.com/mickamy/sampay/internal/misc/i18n/messages"
 )
 
@@ -44,10 +48,12 @@ type claimPayment struct {
 	writer          *database.Writer            `inject:""`
 	eventRepo       repository.Event            `inject:""`
 	participantRepo repository.EventParticipant `inject:""`
+	producer        *producer.Producer          `inject:""`
 }
 
 func (uc *claimPayment) Do(ctx context.Context, input ClaimPaymentInput) (ClaimPaymentOutput, error) {
 	var participant model.EventParticipant
+	var ev model.Event
 
 	if err := uc.writer.Transaction(ctx, func(tx *database.DB) error {
 		var err error
@@ -60,7 +66,8 @@ func (uc *claimPayment) Do(ctx context.Context, input ClaimPaymentInput) (ClaimP
 				WithCode(errx.Internal)
 		}
 
-		ev, evErr := uc.eventRepo.WithTx(tx).Get(ctx, participant.EventID)
+		var evErr error
+		ev, evErr = uc.eventRepo.WithTx(tx).Get(ctx, participant.EventID)
 		if evErr != nil {
 			return errx.Wrap(evErr, "message", "failed to get event", "event_id", participant.EventID).
 				WithCode(errx.Internal)
@@ -85,5 +92,30 @@ func (uc *claimPayment) Do(ctx context.Context, input ClaimPaymentInput) (ClaimP
 		return ClaimPaymentOutput{}, err
 	}
 
+	uc.enqueueClaimNotification(ctx, ev, participant)
+
 	return ClaimPaymentOutput{Participant: participant}, nil
+}
+
+func (uc *claimPayment) enqueueClaimNotification(
+	ctx context.Context,
+	ev model.Event,
+	participant model.EventParticipant,
+) {
+	msg, err := message.New(ctx, job.ClaimNotificationJob, job.ClaimNotificationPayload{
+		CreatorUserID:   ev.UserID,
+		EventTitle:      ev.Title,
+		ParticipantName: participant.Name,
+		Amount:          participant.Amount,
+	})
+	if err != nil {
+		logger.Error(ctx, "failed to create claim notification message",
+			"err", err, "event_id", ev.ID, "participant_id", participant.ID)
+		return
+	}
+
+	if err := uc.producer.Do(ctx, msg); err != nil {
+		logger.Error(ctx, "failed to enqueue claim notification",
+			"err", err, "event_id", ev.ID, "participant_id", participant.ID)
+	}
 }

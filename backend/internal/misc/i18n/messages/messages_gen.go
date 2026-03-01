@@ -165,6 +165,19 @@ func EventUseCaseErrorTotalAmountPositive() i18n.Message {
 	return i18n.Message{ID: "event.use_case.error.total_amount_positive"}
 }
 
+// MessagingClaimNotification returns a Message for "messaging.claim_notification".
+// Template: {participant_name}さんが{event_title}の支払い（{amount:int}円）を申告しました
+func MessagingClaimNotification(participant_name string, event_title string, amount int) i18n.Message {
+	return i18n.Message{
+		ID: "messaging.claim_notification",
+		Args: map[string]any{
+			"participant_name": participant_name,
+			"event_title":      event_title,
+			"amount":           amount,
+		},
+	}
+}
+
 // UserMapperErrorUnknownPaymentMethodType returns a Message for "user.mapper.error.unknown_payment_method_type".
 // Template: 不明な決済手段です。
 func UserMapperErrorUnknownPaymentMethodType() i18n.Message {
