@@ -32,6 +32,9 @@ user:
         reserved: This slug is reserved.
         already_taken: This slug is already taken.
 
+messaging:
+  claim_notification: "{participant_name} has reported payment of {amount:int} yen for {event_title}"
+
 common:
   response:
     error:

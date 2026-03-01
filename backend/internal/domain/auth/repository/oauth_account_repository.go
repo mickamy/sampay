@@ -18,6 +18,9 @@ type OAuthAccount interface {
 	GetByProviderAndUID(
 		ctx context.Context, provider model.OAuthProvider, uid string, scopes ...scope.Scope,
 	) (model.OAuthAccount, error)
+	GetUIDByEndUserIDAndProvider(
+		ctx context.Context, endUserID string, provider model.OAuthProvider,
+	) (string, error)
 	WithTx(tx *database.DB) OAuthAccount
 }
 
@@ -50,6 +53,21 @@ func (repo *oauthAccount) GetByProviderAndUID(
 		return m, fmt.Errorf("failed to find oauth account: %w", err)
 	}
 	return m, nil
+}
+
+func (repo *oauthAccount) GetUIDByEndUserIDAndProvider(
+	ctx context.Context, endUserID string, provider model.OAuthProvider,
+) (string, error) {
+	m, err := query.OAuthAccounts(repo.db).
+		Where("end_user_id = ? AND provider = ?", endUserID, provider).
+		First(ctx)
+	if errors.Is(err, orm.ErrNotFound) {
+		return "", database.ErrNotFound
+	}
+	if err != nil {
+		return "", fmt.Errorf("failed to find oauth account: %w", err)
+	}
+	return m.UID, nil
 }
 
 func (repo *oauthAccount) WithTx(tx *database.DB) OAuthAccount {
