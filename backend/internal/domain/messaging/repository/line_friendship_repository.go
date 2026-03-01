@@ -43,7 +43,7 @@ func (repo *lineFriendship) GetByEndUserID(ctx context.Context, endUserID string
 	if err != nil {
 		return model.LineFriendship{}, fmt.Errorf("repository: failed to query line friendship: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	if !rows.Next() {
 		if err := rows.Err(); err != nil {

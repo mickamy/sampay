@@ -17,8 +17,8 @@ import (
 )
 
 type ClaimNotificationPayload struct {
-	CreatorUserID   string `json:"creator_user_id" validate:"required"`
-	EventTitle      string `json:"event_title"     validate:"required"`
+	CreatorUserID   string `json:"creator_user_id"  validate:"required"`
+	EventTitle      string `json:"event_title"      validate:"required"`
 	ParticipantName string `json:"participant_name" validate:"required"`
 	Amount          int    `json:"amount"           validate:"required"`
 }
@@ -42,7 +42,8 @@ func (j *ClaimNotification) Execute(ctx context.Context, payloadStr string) erro
 
 	if err := j.reader.Transaction(ctx, func(tx *database.DB) error {
 		var err error
-		uid, err = j.oauthAccountRepo.WithTx(tx).GetUIDByEndUserIDAndProvider(ctx, payload.CreatorUserID, amodel.OAuthProviderLINE)
+		uid, err = j.oauthAccountRepo.WithTx(tx).
+			GetUIDByEndUserIDAndProvider(ctx, payload.CreatorUserID, amodel.OAuthProviderLINE)
 		if err != nil {
 			return fmt.Errorf("failed to get LINE UID for user %s: %w", payload.CreatorUserID, err)
 		}

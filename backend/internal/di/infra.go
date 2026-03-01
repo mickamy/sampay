@@ -14,9 +14,10 @@ import (
 )
 
 type Infra struct {
-	_        context.Context    `inject:"param"` //nolint:containedctx // required by injector
-	_        config.KVSConfig   `inject:"provider:config.KVS"`
-	DB       *database.DB       `inject:"provider:di.ProvideDB"` // shares connection with WriterDB; do not close separately
+	_ context.Context  `inject:"param"` //nolint:containedctx // required by injector
+	_ config.KVSConfig `inject:"provider:config.KVS"`
+	// DB shares connection with WriterDB; do not close separately.
+	DB       *database.DB       `inject:"provider:di.ProvideDB"`
 	WriterDB *database.Writer   `inject:""`
 	ReaderDB *database.Reader   `inject:""`
 	KVS      *kvs.KVS           `inject:"provider:di.ProvideKVS"`

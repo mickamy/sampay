@@ -66,7 +66,7 @@ func run(ctx context.Context) error {
 	workersCount := runtime.GOMAXPROCS(0)
 	var wg sync.WaitGroup
 
-	for i := 0; i < workersCount; i++ {
+	for i := range workersCount {
 		wg.Add(1)
 		go func(workerID int) {
 			defer wg.Done()

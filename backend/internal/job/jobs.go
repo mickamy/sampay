@@ -1,6 +1,7 @@
 package job
 
 import (
+	"errors"
 	"fmt"
 	"sort"
 
@@ -10,8 +11,9 @@ import (
 )
 
 type Jobs struct {
-	_                  *di.Infra `inject:"param"`
 	*ClaimNotification `inject:""`
+
+	_ *di.Infra `inject:"param"`
 }
 
 //go:generate go tool stringer -type=Type
@@ -36,7 +38,7 @@ func Get(s string, jobs *Jobs) (job.Job, error) {
 
 	switch types[idx] {
 	case first, last:
-		return nil, fmt.Errorf("type `first` and `last` should not be used")
+		return nil, errors.New("type `first` and `last` should not be used")
 	case ClaimNotificationJob:
 		return jobs.ClaimNotification, nil
 	}

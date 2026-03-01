@@ -109,11 +109,13 @@ func (uc *claimPayment) enqueueClaimNotification(
 		Amount:          participant.Amount,
 	})
 	if err != nil {
-		logger.Error(ctx, "failed to create claim notification message", "error", err, "event_id", ev.ID, "participant_id", participant.ID)
+		logger.Error(ctx, "failed to create claim notification message",
+			"error", err, "event_id", ev.ID, "participant_id", participant.ID)
 		return
 	}
 
 	if err := uc.producer.Do(ctx, msg); err != nil {
-		logger.Error(ctx, "failed to enqueue claim notification", "error", err, "event_id", ev.ID, "participant_id", participant.ID)
+		logger.Error(ctx, "failed to enqueue claim notification",
+			"error", err, "event_id", ev.ID, "participant_id", participant.ID)
 	}
 }
