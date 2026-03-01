@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import ReactMarkdown from "react-markdown";
 import { Footer } from "~/components/footer";
@@ -15,7 +15,9 @@ export function meta() {
 }
 
 export async function loader() {
-  const filePath = resolve("public/assets/privacy.md");
+  const devPath = resolve("public/assets/privacy.md");
+  const prodPath = resolve("build/client/assets/privacy.md");
+  const filePath = existsSync(devPath) ? devPath : prodPath;
   const markdown = readFileSync(filePath, "utf-8");
   return { markdown };
 }
