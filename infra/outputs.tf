@@ -1,3 +1,13 @@
+output "ecr_backend_url" {
+  value       = local.ecr_backend_url
+  description = "ECR backend repository URL"
+}
+
+output "ecr_frontend_url" {
+  value       = local.ecr_frontend_url
+  description = "ECR frontend repository URL"
+}
+
 output "s3_public_bucket" {
   value       = aws_s3_bucket.public.id
   description = "S3 public bucket name"
