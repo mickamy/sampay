@@ -31,18 +31,6 @@ variable "ssh_public_key" {
   description = "SSH public key for deploy user"
 }
 
-variable "ssh_allowed_cidrs" {
-  type        = list(string)
-  description = "CIDR blocks allowed for SSH access"
-  sensitive   = true
-}
-
-variable "alert_email" {
-  type        = string
-  description = "Email address for alarm notifications"
-  default     = ""
-}
-
 variable "line_channel_id" {
   type        = string
   description = "LINE channel ID"
