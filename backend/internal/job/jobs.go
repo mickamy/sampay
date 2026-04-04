@@ -6,14 +6,9 @@ import (
 	"sort"
 
 	"github.com/mickamy/go-sqs-worker/job"
-
-	"github.com/mickamy/sampay/internal/di"
 )
 
 type Jobs struct {
-	*ClaimNotification `inject:""`
-
-	_ *di.Infra `inject:"param"`
 }
 
 //go:generate go tool stringer -type=Type
@@ -39,11 +34,9 @@ func Get(s string, jobs *Jobs) (job.Job, error) {
 	switch types[idx] {
 	case first, last:
 		return nil, errors.New("type `first` and `last` should not be used")
-	case ClaimNotificationJob:
-		return jobs.ClaimNotification, nil
+	default:
+		return nil, fmt.Errorf("unknown job type: [%s]", types[idx])
 	}
-
-	return nil, fmt.Errorf("unknown job type: %s", s)
 }
 
 func _types() []Type {
