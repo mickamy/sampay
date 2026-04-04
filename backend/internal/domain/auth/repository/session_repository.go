@@ -76,9 +76,9 @@ func (repo *session) RefreshTokenExists(ctx context.Context, userID string, refr
 }
 
 func (repo *session) accessTokenKey(userID, accessToken string) string {
-	return fmt.Sprintf("session:%s:access:%s", userID, accessToken)
+	return fmt.Sprintf("sampay:session:%s:access:%s", userID, accessToken)
 }
 
 func (repo *session) refreshTokenKey(userID, refreshToken string) string {
-	return fmt.Sprintf("session:%s:refresh:%s", userID, refreshToken)
+	return fmt.Sprintf("sampay:session:%s:refresh:%s", userID, refreshToken)
 }
