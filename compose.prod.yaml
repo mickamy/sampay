@@ -1,7 +1,3 @@
-x-logging-options: &logging-options
-  awslogs-region: ${AWS_REGION:-ap-northeast-1}
-  awslogs-group: ${LOG_GROUP:-/sampay/prod}
-
 services:
   caddy:
     image: caddy:2-alpine
@@ -21,11 +17,6 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
-    logging:
-      driver: awslogs
-      options:
-        <<: *logging-options
-        awslogs-stream: caddy
 
   api:
     image: ${ECR_BACKEND_URL}:${IMAGE_TAG}
@@ -50,11 +41,6 @@ services:
       retries: 5
       start_period: 60s
     restart: unless-stopped
-    logging:
-      driver: awslogs
-      options:
-        <<: *logging-options
-        awslogs-stream: api
 
   worker:
     image: ${ECR_BACKEND_URL}:worker-${IMAGE_TAG}
@@ -77,11 +63,6 @@ services:
       retries: 5
       start_period: 30s
     restart: unless-stopped
-    logging:
-      driver: awslogs
-      options:
-        <<: *logging-options
-        awslogs-stream: worker
 
   web:
     image: ${ECR_FRONTEND_URL}:${IMAGE_TAG}
@@ -104,11 +85,6 @@ services:
       retries: 5
       start_period: 30s
     restart: unless-stopped
-    logging:
-      driver: awslogs
-      options:
-        <<: *logging-options
-        awslogs-stream: web
 
   postgres:
     image: postgres:18-alpine
@@ -124,11 +100,6 @@ services:
       timeout: 3s
       retries: 5
     restart: unless-stopped
-    logging:
-      driver: awslogs
-      options:
-        <<: *logging-options
-        awslogs-stream: postgres
 
   valkey:
     image: valkey/valkey:8-alpine
@@ -143,11 +114,6 @@ services:
       timeout: 3s
       retries: 5
     restart: unless-stopped
-    logging:
-      driver: awslogs
-      options:
-        <<: *logging-options
-        awslogs-stream: valkey
 
 volumes:
   caddy:
