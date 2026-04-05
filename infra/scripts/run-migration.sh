@@ -1,22 +1,21 @@
 #!/bin/bash
 set -euo pipefail
 
-ENV_COMPOSE="/app/.env.compose"
+ENV_FILE="/app/sampay/.env"
 NETWORK="app_default"
 
-# Resolve migration image: argument or derive from .env.compose
+# Resolve migration image: argument or derive from .env
 if [ -n "${1:-}" ]; then
   IMAGE="$1"
 else
-  ECR_BACKEND_URL=$(grep '^ECR_BACKEND_URL=' "$ENV_COMPOSE" | cut -d= -f2-)
-  IMAGE_TAG=$(grep '^IMAGE_TAG=' "$ENV_COMPOSE" | cut -d= -f2-)
+  ECR_BACKEND_URL=$(grep '^ECR_BACKEND_URL=' "$ENV_FILE" | cut -d= -f2-)
+  IMAGE_TAG=$(grep '^IMAGE_TAG=' "$ENV_FILE" | cut -d= -f2-)
   IMAGE="${ECR_BACKEND_URL}:migration-${IMAGE_TAG}"
 fi
 
 docker pull "$IMAGE"
 
-IMDS_TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 60")
-REGION=$(curl -s -H "X-aws-ec2-metadata-token: $IMDS_TOKEN" http://169.254.169.254/latest/meta-data/placement/region)
+REGION=ap-northeast-1
 
 get_secret() {
   aws secretsmanager get-secret-value \
@@ -27,10 +26,10 @@ get_secret() {
 }
 
 # Read SM_PREFIX from .env.compose
-if grep -q '^SM_PREFIX=' "$ENV_COMPOSE"; then
-  SM_PREFIX=$(grep '^SM_PREFIX=' "$ENV_COMPOSE" | cut -d= -f2-)
+if grep -q '^SM_PREFIX=' "$ENV_FILE"; then
+  SM_PREFIX=$(grep '^SM_PREFIX=' "$ENV_FILE" | cut -d= -f2-)
 else
-  echo "Error: SM_PREFIX is not set in $ENV_COMPOSE" >&2
+  echo "Error: SM_PREFIX is not set in $ENV_FILE" >&2
   exit 1
 fi
 
