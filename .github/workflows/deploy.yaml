@@ -133,36 +133,28 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Open SSH access in Security Group
-        id: sg
-        run: |
-          RUNNER_IP=$(curl -s https://checkip.amazonaws.com)
-          echo "runner_ip=${RUNNER_IP}" >> "$GITHUB_OUTPUT"
-          aws ec2 authorize-security-group-ingress \
-            --group-id ${{ secrets.EC2_SG_ID }} \
-            --protocol tcp \
-            --port 22 \
-            --cidr "${RUNNER_IP}/32"
-
       - name: Copy compose file to EC2
         uses: appleboy/scp-action@v1
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.PI_HOST }}
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "compose.prod.yaml"
-          target: "/app/"
+          target: "/app/sampay/"
+
+      - name: Copy script files to EC2
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.PI_HOST }}
+          username: deploy
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "infra/scripts/*"
+          target: "/app/sampay/scripts/"
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.PI_HOST }}
           username: deploy
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
@@ -172,9 +164,12 @@ jobs:
               stg)  APP_ENV=staging ;;
               *)    APP_ENV="$ENV" ;;
             esac
+            
+            # Move compose file into place
+            mv /app/sampay/compose.prod.yaml /app/sampay/compose.yaml
 
-            # Write .env.compose with orchestration vars
-            cat > /app/.env.compose << EOF
+            # Write .env with orchestration vars
+            cat > /app/sampay/.env << EOF
             APP_ENV=${APP_ENV}
             ECR_BACKEND_URL=${{ needs.build-and-push.outputs.ecr_backend_url }}
             ECR_FRONTEND_URL=${{ needs.build-and-push.outputs.ecr_frontend_url }}
@@ -190,8 +185,8 @@ jobs:
               docker login --username AWS --password-stdin ${{ needs.build-and-push.outputs.ecr_backend_url }}
 
             # Pull new images (app + migration)
-            cd /app
-            docker compose --env-file .env.compose -f compose.prod.yaml pull api web worker
+            cd /app/sampay
+            docker compose pull api web worker
             docker pull ${{ needs.build-and-push.outputs.ecr_backend_url }}:migration-${{ needs.build-and-push.outputs.image_tag }}
 
             # Restart services (pull-secrets.sh runs via ExecStartPre)
@@ -200,24 +195,15 @@ jobs:
             # Poll for all containers to be healthy (up to 90s)
             echo "Waiting for services to be healthy..."
             for i in $(seq 1 18); do
-              UNHEALTHY=$(docker compose --env-file .env.compose -f compose.prod.yaml ps --format json | jq -r 'select(.State != "running" or (.Health != null and .Health != "healthy")) | .Name' 2>/dev/null)
+              UNHEALTHY=$(docker compose ps --format json | jq -r 'select(.State != "running" or (.Health != null and .Health != "healthy")) | .Name' 2>/dev/null)
               if [ -z "$UNHEALTHY" ]; then
                 echo "All containers are healthy"
-                docker compose --env-file .env.compose -f compose.prod.yaml ps
+                docker compose ps
                 exit 0
               fi
               echo "Waiting... ($i/18) unhealthy: $UNHEALTHY"
               sleep 5
             done
             echo "ERROR: Containers not healthy after 90s"
-            docker compose --env-file .env.compose -f compose.prod.yaml ps
+            docker compose ps
             exit 1
-
-      - name: Revoke SSH access from Security Group
-        if: always()
-        run: |
-          aws ec2 revoke-security-group-ingress \
-            --group-id ${{ secrets.EC2_SG_ID }} \
-            --protocol tcp \
-            --port 22 \
-            --cidr "${{ steps.sg.outputs.runner_ip }}/32" 2>/dev/null || true
