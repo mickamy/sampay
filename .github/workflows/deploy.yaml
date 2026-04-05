@@ -141,6 +141,8 @@ jobs:
           username: sampay
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            set -euo pipefail
+            
             ENV=${{ needs.resolve-env.outputs.environment }}
 
             # Move compose file into place
