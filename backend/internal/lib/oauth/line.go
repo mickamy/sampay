@@ -55,7 +55,7 @@ func (c *lineClient) Callback(ctx context.Context, code string) (Payload, error)
 	if err != nil {
 		return Payload{}, fmt.Errorf("oauth: failed to create request: %w", err)
 	}
-	resp, err := httpClient.Do(req) //nolint:gosec // URL is a constant, not user input
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return Payload{}, fmt.Errorf("oauth: failed to get profile: %w", err)
 	}
@@ -95,7 +95,7 @@ func (c *lineClient) fetchFriendship(ctx context.Context, httpClient *http.Clien
 	if err != nil {
 		return false, fmt.Errorf("failed to create friendship request: %w", err)
 	}
-	resp, err := httpClient.Do(req) //nolint:gosec // URL is a constant, not user input
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return false, fmt.Errorf("failed to fetch friendship status: %w", err)
 	}

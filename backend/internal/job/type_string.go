@@ -9,13 +9,12 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[first-0]
-	_ = x[ClaimNotificationJob-1]
-	_ = x[last-2]
+	_ = x[last-1]
 }
 
-const _Type_name = "firstClaimNotificationJoblast"
+const _Type_name = "firstlast"
 
-var _Type_index = [...]uint8{0, 5, 25, 29}
+var _Type_index = [...]uint8{0, 5, 9}
 
 func (i Type) String() string {
 	idx := int(i) - 0

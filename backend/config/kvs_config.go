@@ -15,8 +15,8 @@ import (
 type KVSConfig struct {
 	Host     string `env:"KVS_HOST"     validate:"required"`
 	Port     int    `env:"KVS_PORT"     validate:"required"`
-	Username string `env:"KVS_USERNAME"`                     // may be empty on development
-	Password string `env:"KVS_PASSWORD" validate:"required"` //nolint:gosec // config struct, not a hardcoded secret
+	Username string `env:"KVS_USERNAME"` // may be empty on development
+	Password string `env:"KVS_PASSWORD" validate:"required"`
 }
 
 func (c KVSConfig) Address() string {

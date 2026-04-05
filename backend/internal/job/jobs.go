@@ -16,7 +16,6 @@ type Type int
 
 const (
 	first Type = iota
-	ClaimNotificationJob
 	last
 )
 
