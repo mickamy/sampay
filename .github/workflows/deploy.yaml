@@ -132,8 +132,9 @@ jobs:
           host: ${{ secrets.PI_HOST }}
           username: sampay
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "infra/scripts/*"
+          source: "infra/scripts/*.sh"
           target: "/app/sampay/scripts/"
+          strip_components: 2
           overwrite: true
 
       - name: Deploy via SSH
