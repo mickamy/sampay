@@ -11,8 +11,6 @@ import (
 	"github.com/mickamy/sampay/internal/domain/auth/model"
 	"github.com/mickamy/sampay/internal/domain/auth/repository"
 	cmodel "github.com/mickamy/sampay/internal/domain/common/model"
-	mmodel "github.com/mickamy/sampay/internal/domain/messaging/model"
-	mrepository "github.com/mickamy/sampay/internal/domain/messaging/repository"
 	umodel "github.com/mickamy/sampay/internal/domain/user/model"
 	urepository "github.com/mickamy/sampay/internal/domain/user/repository"
 	"github.com/mickamy/sampay/internal/infra/storage/database"
@@ -26,7 +24,7 @@ var (
 		errx.NewSentinel("unsupported provider", errx.InvalidArgument)).
 		WithMessages(messages.AuthUseCaseErrorUnsupportedOauthProvider())
 	ErrOAuthCallbackFailed = cmodel.NewLocalizableError(errx.NewSentinel("oauth callback failed", errx.InvalidArgument)).
-				WithMessages(messages.AuthUseCaseErrorOauthCallbackFailed())
+		WithMessages(messages.AuthUseCaseErrorOauthCallbackFailed())
 )
 
 type OAuthCallbackInput struct {
@@ -45,15 +43,14 @@ type OAuthCallback interface {
 }
 
 type oauthCallback struct {
-	_                  OAuthCallback              `inject:"returns"`
-	_                  *di.Infra                  `inject:"param"`
-	resolver           *oauth.Resolver            `inject:"param"`
-	writer             *database.Writer           `inject:""`
-	userRepo           urepository.User           `inject:""`
-	endUserRepo        urepository.EndUser        `inject:""`
-	oauthAccountRepo   repository.OAuthAccount    `inject:""`
-	sessionRepo        repository.Session         `inject:""`
-	lineFriendshipRepo mrepository.LineFriendship `inject:""`
+	_                OAuthCallback           `inject:"returns"`
+	_                *di.Infra               `inject:"param"`
+	resolver         *oauth.Resolver         `inject:"param"`
+	writer           *database.Writer        `inject:""`
+	userRepo         urepository.User        `inject:""`
+	endUserRepo      urepository.EndUser     `inject:""`
+	oauthAccountRepo repository.OAuthAccount `inject:""`
+	sessionRepo      repository.Session      `inject:""`
 }
 
 func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAuthCallbackOutput, error) {
@@ -110,16 +107,6 @@ func (uc *oauthCallback) Do(ctx context.Context, input OAuthCallbackInput) (OAut
 			endUser, err = uc.endUserRepo.WithTx(tx).Get(ctx, existingAccount.EndUserID)
 			if err != nil {
 				return errx.Wrap(err, "message", "failed to get end user").
-					WithCode(errx.Internal)
-			}
-		}
-
-		if payload.Provider == oauth.ProviderLINE && payload.LineFriendKnown {
-			if err := uc.lineFriendshipRepo.WithTx(tx).Upsert(ctx, &mmodel.LineFriendship{
-				EndUserID: endUser.UserID,
-				IsFriend:  payload.LineFriend,
-			}); err != nil {
-				return errx.Wrap(err, "message", "failed to upsert line friendship").
 					WithCode(errx.Internal)
 			}
 		}

@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/mickamy/errx"
-	"github.com/mickamy/go-sqs-worker/message"
 	"github.com/mickamy/go-sqs-worker/producer"
 
 	"github.com/mickamy/sampay/internal/di"
@@ -13,8 +12,6 @@ import (
 	"github.com/mickamy/sampay/internal/domain/event/model"
 	"github.com/mickamy/sampay/internal/domain/event/repository"
 	"github.com/mickamy/sampay/internal/infra/storage/database"
-	"github.com/mickamy/sampay/internal/job"
-	"github.com/mickamy/sampay/internal/lib/logger"
 	"github.com/mickamy/sampay/internal/misc/i18n/messages"
 )
 
@@ -92,30 +89,5 @@ func (uc *claimPayment) Do(ctx context.Context, input ClaimPaymentInput) (ClaimP
 		return ClaimPaymentOutput{}, err
 	}
 
-	uc.enqueueClaimNotification(ctx, ev, participant)
-
 	return ClaimPaymentOutput{Participant: participant}, nil
-}
-
-func (uc *claimPayment) enqueueClaimNotification(
-	ctx context.Context,
-	ev model.Event,
-	participant model.EventParticipant,
-) {
-	msg, err := message.New(ctx, job.ClaimNotificationJob, job.ClaimNotificationPayload{
-		CreatorUserID:   ev.UserID,
-		EventTitle:      ev.Title,
-		ParticipantName: participant.Name,
-		Amount:          participant.Amount,
-	})
-	if err != nil {
-		logger.Error(ctx, "failed to create claim notification message",
-			"err", err, "event_id", ev.ID, "participant_id", participant.ID)
-		return
-	}
-
-	if err := uc.producer.Do(ctx, msg); err != nil {
-		logger.Error(ctx, "failed to enqueue claim notification",
-			"err", err, "event_id", ev.ID, "participant_id", participant.ID)
-	}
 }

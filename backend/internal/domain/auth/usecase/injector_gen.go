@@ -5,7 +5,6 @@ package usecase
 import (
 	di "github.com/mickamy/sampay/internal/di"
 	repository "github.com/mickamy/sampay/internal/domain/auth/repository"
-	repository3 "github.com/mickamy/sampay/internal/domain/messaging/repository"
 	repository2 "github.com/mickamy/sampay/internal/domain/user/repository"
 	oauth "github.com/mickamy/sampay/internal/lib/oauth"
 )
@@ -68,16 +67,14 @@ func NewOAuthCallback(infra *di.Infra, resolver *oauth.Resolver) OAuthCallback {
 	endUser := repository2.NewEndUser(infra.DB)
 	oAuthAccount := repository.NewOAuthAccount(infra.DB)
 	session := repository.NewSession(infra.KVS)
-	lineFriendship := repository3.NewLineFriendship(infra.DB)
 
 	return &oauthCallback{
-		resolver:           resolver,
-		writer:             infra.WriterDB,
-		userRepo:           user,
-		endUserRepo:        endUser,
-		oauthAccountRepo:   oAuthAccount,
-		sessionRepo:        session,
-		lineFriendshipRepo: lineFriendship,
+		resolver:         resolver,
+		writer:           infra.WriterDB,
+		userRepo:         user,
+		endUserRepo:      endUser,
+		oauthAccountRepo: oAuthAccount,
+		sessionRepo:      session,
 	}
 }
 
@@ -87,16 +84,14 @@ func MustNewOAuthCallback(infra *di.Infra, resolver *oauth.Resolver) OAuthCallba
 	endUser := repository2.NewEndUser(infra.DB)
 	oAuthAccount := repository.NewOAuthAccount(infra.DB)
 	session := repository.NewSession(infra.KVS)
-	lineFriendship := repository3.NewLineFriendship(infra.DB)
 
 	return &oauthCallback{
-		resolver:           resolver,
-		writer:             infra.WriterDB,
-		userRepo:           user,
-		endUserRepo:        endUser,
-		oauthAccountRepo:   oAuthAccount,
-		sessionRepo:        session,
-		lineFriendshipRepo: lineFriendship,
+		resolver:         resolver,
+		writer:           infra.WriterDB,
+		userRepo:         user,
+		endUserRepo:      endUser,
+		oauthAccountRepo: oAuthAccount,
+		sessionRepo:      session,
 	}
 }
 

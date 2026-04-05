@@ -15,7 +15,6 @@ import (
 	"github.com/mickamy/sampay/config"
 	"github.com/mickamy/sampay/internal/di"
 	"github.com/mickamy/sampay/internal/infra/aws/sqs"
-	"github.com/mickamy/sampay/internal/job"
 	"github.com/mickamy/sampay/internal/lib/logger"
 )
 
@@ -50,14 +49,13 @@ func run(ctx context.Context) error {
 	}
 
 	redisURL := fmt.Sprintf("redis://:%s@%s", kvsCfg.Password, kvsCfg.Address())
-	jobs := job.NewJobs(infra)
 
 	c, err := consumer.New(consumer.Config{
 		WorkerQueueURL:     awsCfg.SQSWorkerURL,
 		DeadLetterQueueURL: awsCfg.SQSWorkerDLQURL,
 		RedisURL:           redisURL,
 	}, sqsClient, nil, func(jobType string) (sjob.Job, error) {
-		return job.Get(jobType, jobs)
+		return nil, fmt.Errorf("unknown job type: [%s]", jobType)
 	})
 	if err != nil {
 		return fmt.Errorf("failed to initialize consumer: %w", err)
