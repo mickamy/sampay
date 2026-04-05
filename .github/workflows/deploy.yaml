@@ -7,7 +7,7 @@ on:
       - "v*"
 
 concurrency:
-  group: deploy-${{ inputs.environment || 'prod' }}
+  group: deploy
   cancel-in-progress: false
 
 permissions:
@@ -120,7 +120,7 @@ jobs:
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.PI_HOST }}
-          username: deploy
+          username: sampay
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "compose.prod.yaml"
           target: "/app/sampay/"
@@ -129,7 +129,7 @@ jobs:
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.PI_HOST }}
-          username: deploy
+          username: sampay
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "infra/scripts/*"
           target: "/app/sampay/scripts/"
@@ -138,7 +138,7 @@ jobs:
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.PI_HOST }}
-          username: deploy
+          username: sampay
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             ENV=${{ needs.resolve-env.outputs.environment }}
