@@ -3,6 +3,7 @@ set -euo pipefail
 
 ENV_FILE="/app/sampay/.env"
 ENV_POSTGRES_FILE="/app/sampay/.env.postgres"
+REGION=ap-northeast-1
 
 get_secret() {
   aws secretsmanager get-secret-value \
