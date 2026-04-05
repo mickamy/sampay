@@ -150,6 +150,9 @@ jobs:
 
             # Move compose file into place
             mv /app/sampay/compose.prod.yaml /app/sampay/compose.yaml
+            
+            # Ensure scripts are executable
+            chmod 755 /app/sampay/scripts
 
             # Write .env with orchestration vars
             cat > /app/sampay/.env << EOF
