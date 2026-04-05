@@ -124,6 +124,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "compose.prod.yaml"
           target: "/app/sampay/"
+          overwrite: true
 
       - name: Copy script files to Raspberry Pi
         uses: appleboy/scp-action@v1
@@ -133,6 +134,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "infra/scripts/*"
           target: "/app/sampay/scripts/"
+          overwrite: true
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
