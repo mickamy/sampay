@@ -1,8 +1,6 @@
 services:
   api:
     image: ${ECR_BACKEND_URL}:${IMAGE_TAG}
-    expose:
-      - "8080"
     environment:
       ENV: ${APP_ENV}
       LOG_LEVEL: ${LOG_LEVEL:-info}
@@ -13,6 +11,8 @@ services:
       SM_KVS_SECRET: ${SM_KVS_SECRET}
     volumes:
       - ~/.aws:/home/appuser/.aws:ro
+    ports:
+      - "8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
@@ -53,8 +53,6 @@ services:
 
   web:
     image: ${ECR_FRONTEND_URL}:${IMAGE_TAG}
-    expose:
-      - "3000"
     environment:
       ENV: ${APP_ENV}
       MODULE_ROOT: ${MODULE_ROOT:-/app}
@@ -62,6 +60,8 @@ services:
       SM_APP_SECRET: ${SM_APP_SECRET}
       SESSION_SECRET: ${SESSION_SECRET}
       API_BASE_URL: http://api:8080/api
+    ports:
+      - "3000:3000"
     depends_on:
       api:
         condition: service_healthy
