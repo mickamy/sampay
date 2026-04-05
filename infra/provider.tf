@@ -20,7 +20,7 @@ provider "aws" {
   default_tags {
     tags = {
       Project     = "sampay"
-      Environment = var.environment
+      Environment = "production"
       ManagedBy   = "tf"
     }
   }
@@ -34,7 +34,7 @@ provider "aws" {
   default_tags {
     tags = {
       Project     = "sampay"
-      Environment = var.environment
+      Environment = "production"
       ManagedBy   = "tf"
     }
   }

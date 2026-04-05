@@ -112,5 +112,4 @@ resource "aws_secretsmanager_secret_version" "kvs" {
   secret_string = jsonencode({
     KVS_PASSWORD = random_password.kvs.result
   })
-
 }

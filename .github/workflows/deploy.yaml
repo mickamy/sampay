@@ -2,14 +2,6 @@ name: Deploy
 
 on:
   workflow_dispatch:
-    inputs:
-      environment:
-        description: "Target environment"
-        required: true
-        type: choice
-        options:
-          - stg
-          - prod
   push:
     tags:
       - "v*"
@@ -26,22 +18,7 @@ env:
   AWS_REGION: ap-northeast-1
 
 jobs:
-  resolve-env:
-    runs-on: ubuntu-latest
-    outputs:
-      environment: ${{ steps.resolve.outputs.environment }}
-    steps:
-      - name: Resolve environment
-        id: resolve
-        run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
-            echo "environment=prod" >> "$GITHUB_OUTPUT"
-          else
-            echo "environment=${{ inputs.environment }}" >> "$GITHUB_OUTPUT"
-          fi
-
   build-and-push:
-    needs: resolve-env
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: ${{ needs.resolve-env.outputs.environment }}
@@ -68,13 +45,12 @@ jobs:
         id: meta
         run: |
           ENV=${{ needs.resolve-env.outputs.environment }}
-          PREFIX="sampay-${ENV}"
           REGISTRY=${{ steps.ecr-login.outputs.registry }}
           TAG="${GITHUB_SHA::8}"
 
           echo "image_tag=${TAG}" >> "$GITHUB_OUTPUT"
-          echo "ecr_backend_url=${REGISTRY}/${PREFIX}/backend" >> "$GITHUB_OUTPUT"
-          echo "ecr_frontend_url=${REGISTRY}/${PREFIX}/frontend" >> "$GITHUB_OUTPUT"
+          echo "ecr_backend_url=${REGISTRY}/sampay/backend" >> "$GITHUB_OUTPUT"
+          echo "ecr_frontend_url=${REGISTRY}/sampay/frontend" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -125,7 +101,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=migration
 
   deploy:
-    needs: [resolve-env, build-and-push]
+    needs: [build-and-push]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: ${{ needs.resolve-env.outputs.environment }}
@@ -159,25 +135,20 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             ENV=${{ needs.resolve-env.outputs.environment }}
-            case "$ENV" in
-              prod) APP_ENV=production ;;
-              stg)  APP_ENV=staging ;;
-              *)    APP_ENV="$ENV" ;;
-            esac
-            
+
             # Move compose file into place
             mv /app/sampay/compose.prod.yaml /app/sampay/compose.yaml
 
             # Write .env with orchestration vars
             cat > /app/sampay/.env << EOF
-            APP_ENV=${APP_ENV}
+            APP_ENV=production
             ECR_BACKEND_URL=${{ needs.build-and-push.outputs.ecr_backend_url }}
             ECR_FRONTEND_URL=${{ needs.build-and-push.outputs.ecr_frontend_url }}
             IMAGE_TAG=${{ needs.build-and-push.outputs.image_tag }}
-            SM_PREFIX=sampay-${ENV}
-            SM_APP_SECRET=sampay-${ENV}/app
-            SM_DB_SECRET=sampay-${ENV}/db
-            SM_KVS_SECRET=sampay-${ENV}/kvs
+            SM_PREFIX=sampay
+            SM_APP_SECRET=sampay/app
+            SM_DB_SECRET=sampay/db
+            SM_KVS_SECRET=sampay/kvs
             EOF
 
             # Login to ECR

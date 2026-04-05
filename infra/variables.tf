@@ -4,31 +4,10 @@ variable "aws_profile" {
   default     = null
 }
 
-variable "environment" {
-  type        = string
-  description = "Environment name (stg or prod)"
-
-  validation {
-    condition     = contains(["stg", "prod"], var.environment)
-    error_message = "environment must be 'stg' or 'prod'"
-  }
-}
-
 variable "domain" {
   type        = string
   description = "Base domain name"
   default     = "sampay.link"
-}
-
-variable "instance_type" {
-  type        = string
-  description = "EC2 instance type"
-  default     = "t4g.small"
-}
-
-variable "ssh_public_key" {
-  type        = string
-  description = "SSH public key for deploy user"
 }
 
 variable "line_channel_id" {
