@@ -30,7 +30,7 @@ services:
       SM_DB_SECRET: ${SM_DB_SECRET}
       SM_KVS_SECRET: ${SM_KVS_SECRET}
     volumes:
-      - ~/.aws:/root/.aws
+      - ~/.aws:/home/appuser/.aws:ro
     depends_on:
       postgres:
         condition: service_healthy
