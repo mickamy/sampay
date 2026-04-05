@@ -171,7 +171,7 @@ jobs:
             docker pull ${{ needs.build-and-push.outputs.ecr_backend_url }}:migration-${{ needs.build-and-push.outputs.image_tag }}
 
             # Restart services (pull-secrets.sh runs via ExecStartPre)
-            systemctl restart sampay || true
+            systemctl restart sampay
 
             # Poll for all containers to be healthy (up to 90s)
             echo "Waiting for services to be healthy..."
