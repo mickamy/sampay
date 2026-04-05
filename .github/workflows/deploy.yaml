@@ -161,6 +161,17 @@ jobs:
             SM_KVS_SECRET=sampay/kvs
             EOF
 
+            # Write Caddyfile
+            cat > /app/sampay/Caddyfile << EOF
+            sampay.link {
+              reverse_proxy web:3000
+            }
+  
+            api.sampay.link {
+              reverse_proxy api:8080
+            }
+            EOF
+
             # Login to ECR
             REGISTRY_URL=$(echo "${{ needs.build-and-push.outputs.ecr_backend_url }}" | cut -d'/' -f1)
             aws ecr get-login-password --region ${{ env.AWS_REGION }} | \
