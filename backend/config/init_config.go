@@ -42,7 +42,12 @@ func init() {
 			panic("AWS_REGION environment variable is not set")
 		}
 
-		if err := initBySecretsManager(context.Background(), region, "sampay/app"); err != nil {
+		secretID, ok := os.LookupEnv("SM_APP_SECRET")
+		if !ok {
+			secretID = "sampay/app"
+		}
+
+		if err := initBySecretsManager(context.Background(), region, secretID); err != nil {
 			panic(fmt.Errorf("failed to init secrets manager: %w", err))
 		}
 	case EnvDevelopment, EnvTest:
