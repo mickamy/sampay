@@ -52,7 +52,6 @@ RUN --mount=type=cache,target=/var/cache/apk \
     apk --update add \
         ca-certificates \
         tzdata \
-        aws-cli \
         && \
         update-ca-certificates
 
