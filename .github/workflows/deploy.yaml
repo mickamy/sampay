@@ -21,7 +21,6 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment: ${{ needs.resolve-env.outputs.environment }}
 
     outputs:
       image_tag: ${{ steps.meta.outputs.image_tag }}
@@ -44,7 +43,6 @@ jobs:
       - name: Set image metadata
         id: meta
         run: |
-          ENV=${{ needs.resolve-env.outputs.environment }}
           REGISTRY=${{ steps.ecr-login.outputs.registry }}
           TAG="${GITHUB_SHA::8}"
 
@@ -104,7 +102,6 @@ jobs:
     needs: [build-and-push]
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment: ${{ needs.resolve-env.outputs.environment }}
 
     steps:
       - uses: actions/checkout@v6
@@ -146,8 +143,6 @@ jobs:
           script: |
             set -euo pipefail
             
-            ENV=${{ needs.resolve-env.outputs.environment }}
-
             # Move compose file into place
             mv /app/sampay/compose.prod.yaml /app/sampay/compose.yaml
             
