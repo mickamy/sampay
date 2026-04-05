@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ENV_FILE="/app/sampay/.env"
-NETWORK="app_default"
+NETWORK="sampay_default"
 
 # Resolve migration image: argument or derive from .env
 if [ -n "${1:-}" ]; then

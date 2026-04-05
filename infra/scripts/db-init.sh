@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
+REGION=ap-northeast-1
 ENV_FILE="/app/sampay/.env"
 
 get_secret() {
