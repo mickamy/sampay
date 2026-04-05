@@ -162,8 +162,9 @@ jobs:
             EOF
 
             # Login to ECR
+            REGISTRY_URL=$(echo "${{ needs.build-and-push.outputs.ecr_backend_url }}" | cut -d'/' -f1)
             aws ecr get-login-password --region ${{ env.AWS_REGION }} | \
-              docker login --username AWS --password-stdin ${{ needs.build-and-push.outputs.ecr_backend_url }}
+              docker login --username AWS --password-stdin "$REGISTRY_URL"
 
             # Pull new images (app + migration)
             cd /app/sampay
