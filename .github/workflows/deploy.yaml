@@ -109,7 +109,14 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Copy compose file to EC2
+      - name: Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
+          tags: tag:github-actions
+
+      - name: Copy compose file to Raspberry Pi
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.PI_HOST }}
@@ -118,7 +125,7 @@ jobs:
           source: "compose.prod.yaml"
           target: "/app/sampay/"
 
-      - name: Copy script files to EC2
+      - name: Copy script files to Raspberry Pi
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.PI_HOST }}
@@ -161,7 +168,7 @@ jobs:
             docker pull ${{ needs.build-and-push.outputs.ecr_backend_url }}:migration-${{ needs.build-and-push.outputs.image_tag }}
 
             # Restart services (pull-secrets.sh runs via ExecStartPre)
-            sudo systemctl restart sampay || true
+            systemctl restart sampay || true
 
             # Poll for all containers to be healthy (up to 90s)
             echo "Waiting for services to be healthy..."
